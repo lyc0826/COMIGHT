@@ -20,7 +20,7 @@ using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
 
-//Remark another
+//Remove remark
 
 
 namespace COMIGHT
