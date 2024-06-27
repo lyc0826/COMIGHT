@@ -24,11 +24,11 @@
         <DockPanel Grid.Row="0" Grid.Column="0" >
             <Menu DockPanel.Dock="Top" Height="30" UseLayoutRounding="True" FontSize="14" VerticalContentAlignment="Center" >
                 <MenuItem Header="文档处理">
+                    <MenuItem x:Name="mnuBatchAdjustWordDocument" Header="批量调整Word文档格式" Click="MnuBatchAdjustWordDocuments_Click" />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="结构化文档表导出为Word文档" Click="MnuExportDocumentTableIntoWord_Click"  />
                     <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="文本框文字导入结构化文档表和Word文档" Click="MnuImportTextboxIntoDocumentTableAndWord_Click"  />
-                    <MenuItem x:Name="mnuExtractFromWordIntoDocumentTable" Header="提取Word文档内容至结构化文档表" Click="MnuExtractFromWordIntoDocumentTable_Click"   /> 
+                    <MenuItem x:Name="mnuExtractFromWordIntoDocumentTable" Header="提取Word文档内容至结构化文档表" Click="MnuExtractFromWordIntoDocumentTable_Click"   />
                     <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "合并文档和表格" Click="MnuMergeDocumentsAndTables_Click" />
-                    <MenuItem x:Name="mnuBatchAdjustWordDocument" Header="批量调整Word文档格式" Click="MnuBatchAdjustWordDocuments_Click" />
                 </MenuItem>
                 <MenuItem Header="表格处理">
                     <MenuItem x:Name="mnuBatchAdjustExcelWorkbooks" Header= "批量调整Excel工作簿格式" Click="MnuBatchAdjustExcelWorkbooks_Click" />
