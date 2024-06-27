@@ -31,8 +31,8 @@
                     <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "合并文档和表格" Click="MnuMergeDocumentsAndTables_Click" />
                 </MenuItem>
                 <MenuItem Header="表格处理">
-                    <MenuItem x:Name="mnuBatchAdjustExcelWorksheets" Header= "批量调整Excel工作表格式" Click="MnuBatchAdjustExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "批处理Excel工作表" Click="MnuBatchProcessExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuBatchAdjustExcelWorkbooks" Header= "批量调整Excel工作簿格式" Click="MnuBatchAdjustExcelWorkbooks_Click" />
+                    <MenuItem x:Name="mnuBatchProcessExcelWorkbooks" Header= "批处理Excel工作簿" Click="MnuBatchProcessExcelWorkbooks_Click" />
                     <MenuItem x:Name="mnuSplitExcelWorksheet" Header= "拆分Excel工作表" Click="MnuSplitExcelWorksheet_Click" />
                     <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "比较Excel工作表" Click="MnuCompareExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuScreenStocks" Header= "筛选股票" Click="MnuScreenStocks_Click" />

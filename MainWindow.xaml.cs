@@ -65,14 +65,14 @@ namespace COMIGHT
             await BatchAdjustWordDocumentsAsync();
         }
 
-        private void MnuBatchAdjustExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchAdjustExcelWorkbooks_Click(object sender, RoutedEventArgs e)
         {
-            BatchAdjustExcelWorksheets();
+            BatchAdjustExcelWorkbooks();
         }
 
-        private void MnuBatchProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchProcessExcelWorkbooks_Click(object sender, RoutedEventArgs e)
         {
-            BatchProcessExcelWorksheets();
+            BatchProcessExcelWorkbooks();
         }
 
         private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
@@ -204,7 +204,7 @@ namespace COMIGHT
 
         }
 
-        private void BatchAdjustExcelWorksheets()
+        private void BatchAdjustExcelWorkbooks()
         {
             try
             {
@@ -281,13 +281,13 @@ namespace COMIGHT
             }
         }
 
-        private void BatchProcessExcelWorksheets()
+        private void BatchProcessExcelWorkbooks()
         {
             string currentFilePath = "";
             try
             {
                 string functionOptions = string.Join('\n', new string[] {"输入功能选项：", "1-记录合并；", "2-数值累加；", "3-提取单元格数据；", "4-文本型数字转数值型；",
-                    "5-复制公式到多Excel工作表；", "6-提取单元格数据给工作簿文件名加前缀；"});
+                    "5-复制公式到多Excel工作簿；", "6-提取单元格数据给文件名加前缀；"});
                 InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
@@ -620,7 +620,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 5: //复制公式到多Excel工作表
+                                case 5: //复制公式到多Excel工作簿
 
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) // '如果是第一个文件的第一个Excel工作表
                                     {
@@ -647,7 +647,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 6: //提取单元格数据给工作簿文件名加前缀
+                                case 6: //提取单元格数据给文件名加前缀
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) // '遍历所有操作区域
                                     {
                                         for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
