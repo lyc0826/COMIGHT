@@ -20,7 +20,7 @@ using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
 
-//EFG
+
 
 
 namespace COMIGHT
@@ -483,7 +483,7 @@ namespace COMIGHT
             return count; //计数器值赋给函数返回值
         }
 
-        // 定义年份正则表达式，匹配模式为：前方不能出现“至到-~”，空格制表符任意多个；“20”，阿拉伯数字2个/或“二[〇零]”，中文数字2个
+        // 定义年份正则表达式变量，匹配模式为：前方不能出现“至到-~”，空格制表符任意多个；“20”，阿拉伯数字2个/或“二[〇零]”，中文数字2个
         public static Regex regExYear = new Regex(@"(?<![至到\-~][ |\t]*)(?:20\d{2}|二[〇零][一二三四五六七八九〇零]{2})");
 
         public static string GetArabicYear(string inText)
@@ -657,7 +657,7 @@ namespace COMIGHT
             outText = Regex.Replace(outText, @"(^|.*?)[\*_]+(.*?)[\*_]+(.*?|$)", "$1$2$3", RegexOptions.Multiline);
             // 引用符号正则表达式匹配模式为：开头标记，“>”；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^>", "", RegexOptions.Multiline);
-            // 列表符号正则表达式匹配模式为：开头标记，“*-”，空格任意多个；将匹配到的字符串替换为空
+            // 无序列表符号正则表达式匹配模式为：开头标记，“*-”，空格任意多个；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^[\*-][ ]*", "", RegexOptions.Multiline);
 
             // 代码引用符号转义符号正则表达式匹配模式为：“`”至少2个，；将匹配到的字符串替换为空
@@ -721,7 +721,7 @@ namespace COMIGHT
         }
 
 
-        //定义小标题句正则表达式，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
+        //定义小标题句正则表达式变量，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
         public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
 
         public static string PutHeadingSentenceFirst(this string inText)
