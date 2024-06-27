@@ -67,7 +67,7 @@
                 <Button x:Name="btnShortenText" Content="提取" Height="30" Width="50" HorizontalContentAlignment="Center" Click="BtnExtractText_Click" />
             </StackPanel>
         </Grid>
-        <TextBox x:Name="txtbxInText" Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxInText_MouseDoubleClick" TextChanged="txtbxInText_TextChanged" />
+        <TextBox x:Name="txtbxInText" Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxInText_MouseDoubleClick" TextChanged="TxtbxInText_TextChanged" />
         <Label Content="可导出文字↓" Height="30" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <TextBox x:Name="txtbxExportableText" Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" />
         <Label x:Name="lblStatus" Height="30" Grid.Row="5" Grid.Column="0" FontSize="14" VerticalContentAlignment="Center" />

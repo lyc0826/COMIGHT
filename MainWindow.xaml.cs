@@ -157,7 +157,7 @@ namespace COMIGHT
             }
         }
 
-        private void txtbxInText_TextChanged(object sender, TextChangedEventArgs e)
+        private void TxtbxInText_TextChanged(object sender, TextChangedEventArgs e)
         {
             txtbxTargetLength.Text = Convert.ToString(txtbxInText.Text.Length); //将输入文本框文字的字数赋值给目标字数文本框
         }
@@ -905,7 +905,7 @@ namespace COMIGHT
 
                 string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
 
-                //定义可用Excel打开的文件正则表达式，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
+                //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
                 Regex regExExcelFile = new Regex(@"(?:(?:xls)|(?:et))$", RegexOptions.IgnoreCase);
                 //可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
                 Regex regExWordFile = new Regex(@"(?:(?:doc)|(?:wps))$", RegexOptions.IgnoreCase);
@@ -1312,8 +1312,8 @@ namespace COMIGHT
 
                     List<List<string>> lstWordTexts = new List<List<string>>();  // 定义Word文本列表
 
-                    Regex regExParagraphText = new Regex(@".{100,300}(?:。|$)");  // 定义段落文字正则表达式，匹配模式为：任意字符100-300字，句号或结尾标志（限定每段正文字数）
-                    // 定义“未来”小标题正则表达式，匹配模式为：不含“总|小 结”、不含“。；;”的任意字符2-50个，“计划|要点|展望|设想|打算|思路|方向”，“。：:”至多一个，结尾符号
+                    Regex regExParagraphText = new Regex(@".{100,300}(?:。|$)");  // 定义段落文字正则表达式变量，匹配模式为：任意字符100-300字，句号或结尾标志（限定每段正文字数）
+                    // 定义“未来”小标题正则表达式变量，匹配模式为：不含“总|小 结”、不含“。；;”的任意字符2-50个，“计划|要点|展望|设想|打算|思路|方向”，“。：:”至多一个，结尾符号
                     Regex regExFutureHeading = new Regex(@"^(?:(?![总小]结)[^。；;]){2,50}(?:计划|打算|要点|展望|设想|思路|方向)[。：:]?$", RegexOptions.Multiline);
 
                     foreach (string wordFile in wordFilePaths) // 遍历Word文件列表的所有文件
@@ -1450,7 +1450,7 @@ namespace COMIGHT
                                 if (headingAndContentRelevance >= 0.3)  // 如果小标题与Word正文列表当前元素列表的正文文字的相关度大于设定值
                                 {
                                     lastRowIndex = extractedWorksheet.Dimension.End.Row; //获取“提取”工作表的最后一个已使用行的索引号
-                                    Regex regExHeadingSentence = new Regex(headingsWorksheet.Cells[i, 3].Text + @"[。：:]"); // 定义小标题句正则表达式，匹配模式为：当前小标题文字，“。：:”
+                                    Regex regExHeadingSentence = new Regex(headingsWorksheet.Cells[i, 3].Text + @"[。：:]"); // 定义小标题句正则表达式变量，匹配模式为：当前小标题文字，“。：:”
                                     // 将Word正文列表当前元素列表的正文文字中被小标题句正则表达式匹配到的文字替换为空（避免与现存小标题重复），赋值给“提取”工作表第一个空白行的“文字”单元格
                                     extractedWorksheet.Cells[lastRowIndex + 1, 3].Value = regExHeadingSentence.Replace(lstWordTexts[k][0], "");
                                     // 将当前小标题与Word正文列表当前元素列表的正文文字的相关度保留4位小数，赋值给“提取”工作表第一个空白行的“相关度”单元格
