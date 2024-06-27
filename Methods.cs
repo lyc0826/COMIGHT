@@ -721,19 +721,19 @@ namespace COMIGHT
         }
 
 
-        ////定义小标题句正则表达式，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
-        //public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
-        
-        //public static string PutHeadingSentenceFirst(this string inText)
-        //{
-        //    if (string.IsNullOrWhiteSpace(inText)) //如果输入文字为null或全空白字符，则将空字符串赋值给函数返回值
-        //    {
-        //        return string.Empty;
-        //    }
-            
-        //    //将输入文本中被小标题句正则表达式匹配到的字符串替换为捕获组2、1、3合并后的字符串（即将小标题句提到最前方），赋值给函数返回值
-        //    return regExHeadingSentence.Replace(inText, "$2$1$3");
-        //}
+        //定义小标题句正则表达式，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
+        public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
+
+        public static string PutHeadingSentenceFirst(this string inText)
+        {
+            if (string.IsNullOrWhiteSpace(inText)) //如果输入文字为null或全空白字符，则将空字符串赋值给函数返回值
+            {
+                return string.Empty;
+            }
+
+            //将输入文本中被小标题句正则表达式匹配到的字符串替换为捕获组2、1、3合并后的字符串（即将小标题句提到最前方），赋值给函数返回值
+            return regExHeadingSentence.Replace(inText, "$2$1$3");
+        }
 
         public static async Task RepairWordDocumentsAsync(List<string> filePaths)
         {
