@@ -1,0 +1,2131 @@
+﻿using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Word;
+using Microsoft.Win32;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using Xceed.Words.NET;
+using static COMIGHT.Methods;
+using DataTable = System.Data.DataTable;
+using MSExcel = Microsoft.Office.Interop.Excel;
+using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
+using MSWord = Microsoft.Office.Interop.Word;
+using MSWordDocument = Microsoft.Office.Interop.Word.Document;
+using Paragraph = Xceed.Document.NET.Paragraph;
+using Table = Xceed.Document.NET.Table;
+using TableCell = Xceed.Document.NET.Cell;
+using TableRow = Xceed.Document.NET.Row;
+using Task = System.Threading.Tasks.Task;
+using Window = System.Windows.Window;
+
+
+
+
+namespace COMIGHT
+{
+    /// <summary>
+    /// MainWindow.xaml 的交互逻辑
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
+
+            lblStatus.Content = $"© {DateTime.Now:yyyy} Yuechen Lou。保留所有权利。";
+        }
+
+        private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
+        {
+            await ExportDocumentTableIntoWordAsync();
+        }
+
+        private void MnuImportTextboxIntoDocumentTableAndWord_Click(object sender, RoutedEventArgs e)
+        {
+            ImportTextboxIntoDocumentTableAndWord();
+        }
+
+        private void MnuExtractFromWordIntoDocumentTable_Click(object sender, RoutedEventArgs e)
+        {
+            ExtractFromWordIntoDocumentTable();
+        }
+
+        private async void MnuBatchAdjustWordDocuments_Click(object sender, RoutedEventArgs e)
+        {
+            await BatchAdjustWordDocumentsAsync();
+        }
+
+        private void MnuBatchAdjustExcelWorkbooks_Click(object sender, RoutedEventArgs e)
+        {
+            BatchAdjustExcelWorkbooks();
+        }
+
+        private void MnuBatchProcessExcelWorkbooks_Click(object sender, RoutedEventArgs e)
+        {
+            BatchProcessExcelWorkbooks();
+        }
+
+        private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
+        {
+            SplitExcelWorksheet();
+        }
+
+        private void MnuCompareExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        {
+            CompareExcelWorksheets();
+        }
+
+        private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
+        {
+            ScreenStocks();
+        }
+
+        private async void MnuBatchConvertOfficeFilesTypes_Click(object sender, RoutedEventArgs e)
+        {
+            await BatchConvertOfficeFilesTypes();
+        }
+
+        private void MnuMergeDocumentsAndTables_Click(object sender, RoutedEventArgs e)
+        {
+            MergeDocumentsAndTables();
+        }
+
+        private void MnuMakeFileList_Click(object sender, RoutedEventArgs e)
+        {
+            MakeFileList();
+        }
+
+        private void MnuMakeFolders_Click(object sender, RoutedEventArgs e)
+        {
+            MakeFolders();
+        }
+
+        private void MnuCreateSeatPlates_Click(object sender, RoutedEventArgs e)
+        {
+            CreateSeatPlates();
+        }
+
+        private void MnuBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetInstanceCountByHandle<BrowserWindow>() < 3) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
+            {
+                BrowserWindow browserWindow = new BrowserWindow();
+                browserWindow.Show();
+            }
+        }
+
+        private void MnuSetPandocPath_Click(object sender, RoutedEventArgs e)
+        {
+            SetPandocPath();
+        }
+
+        private void MnuExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void BtnExtractText_Click(object sender, RoutedEventArgs e)
+        {
+            ExtractText();
+        }
+
+        private void TxtbxExportableText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
+            if (MessageBox.Show("是否清除内容？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                txtbxExportableText.Text = "";
+            }
+        }
+
+        private void TxtbxInText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
+            if (MessageBox.Show("是否清除内容？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                txtbxInText.Text = "";
+            }
+        }
+
+        private void txtbxInText_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            txtbxTargetLength.Text = Convert.ToString(txtbxInText.Text.Length); //将输入文本框文字的字数赋值给目标字数文本框
+        }
+
+        private async Task BatchAdjustWordDocumentsAsync()
+        {
+            try
+            {
+                string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-排版", "2-修复混乱格式" });
+                InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
+                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+                {
+                    return;
+                }
+
+                List<string>? filePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                switch (functionNum) //根据功能序号进入相应的分支
+                {
+                    case 1: //排版
+                        await FormatWordDocumentsAsync(filePaths);
+                        break;
+                    case 2: //修复混乱格式
+                        await RepairWordDocumentsAsync(filePaths);
+                        break;
+                }
+
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        private void BatchAdjustExcelWorkbooks()
+        {
+            try
+            {
+                string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-调整Excel工作表打印版式；", "2-撤销Excel工作表隐藏状态；" });
+                InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
+                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+                {
+                    return;
+                }
+
+                List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                int fileNum = 0;
+                foreach (string filePath in filePaths) //遍历所有文件
+                {
+                    switch (functionNum) //根据功能序号进入相应的分支
+                    {
+                        case 1: //调整Excel工作表打印版式
+                            GetHeaderAndFooterCount(out int headerCount, out int footerCount); //获取表头、表尾行数
+                            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
+                            {
+                                foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
+                                {
+                                    TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
+                                    FormatExcelWorksheet(excelWorksheet, headerCount, footerCount); //设置当前Excel工作表格式
+                                    if (excelWorksheet.Index == excelPackage.Workbook.Worksheets.Count - 1) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    {
+                                        excelPackage.Save();
+                                    }
+                                }
+                            }
+                            fileNum++; //文件计数器加1
+
+                            break;
+
+                        case 2:  //撤销Excel工作表隐藏状态             
+                            int hiddenExcelWorksheetCount = 0;
+                            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
+                            {
+                                foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
+                                {
+                                    if (excelWorksheet.Hidden != eWorkSheetHidden.Visible) //如果当前Excel工作表不可见，则将其设为可见，隐藏工作表计数器加一
+                                    {
+                                        excelWorksheet.Hidden = eWorkSheetHidden.Visible;
+                                        hiddenExcelWorksheetCount++;
+                                    }
+                                }
+                                if (hiddenExcelWorksheetCount > 0) //如果隐藏Excel工作表数量大于0
+                                {
+                                    fileNum++;  //文件计数器加一
+                                }
+                                excelPackage.Save(); //保存Excel工作簿
+                            }
+
+                            break;
+                    }
+                }
+                MessageBox.Show($"{fileNum}个文件操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void BatchProcessExcelWorkbooks()
+        {
+            string currentFilePath = "";
+            try
+            {
+                string functionOptions = string.Join('\n', new string[] {"输入功能选项：", "1-记录合并；", "2-数值累加；", "3-提取单元格数据；", "4-文本型数字转数值型；",
+                    "5-复制公式到多Excel工作簿；", "6-提取单元格数据给文件名加前缀；"});
+                InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
+                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                if (functionNum < 1 || functionNum > 6) //如果功能选项不在设定范围，则结束本过程
+                {
+                    return;
+                }
+
+                List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                int fileNum;
+                int excelWorksheetIndexLower = 0;
+                int excelWorksheetIndexUpper = 0;
+                string? excelWorksheetName = null;
+                bool useExcelWorksheetIndex = true;
+                int headerCount = 0;
+                int footerCount = 0;
+                List<string>? lstOperatingRangeAddresses = null;
+
+                string latestExcelWorksheetIndexesStr = Properties.Settings.Default.latestExcelWorksheetIndexesStr; //读取设置中保存的Excel工作表索引号范围字符串
+                inputDialog = new InputDialog("输入要处理的Excel工作表索引号起止范围（用英文连字号隔开，如：“1-1”代表第1张工作表，“1-3”代表第1至第3张工作表）；输入空白值则按工作表名指定", latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+
+                string excelWorksheetIndexesStr = inputDialog.Answer; //获取对话框返回的Excel工作表索引号范围字符串
+                if (excelWorksheetIndexesStr != string.Empty)
+                {
+                    Properties.Settings.Default.latestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串存入设置
+                    Properties.Settings.Default.Save();
+                    //将Excel索引号字符串拆分成数组，转换成列表，并移除每个元素的首尾空白字符
+                    List<string> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => e.Trim());
+                    excelWorksheetIndexLower = Convert.ToInt32(lstExcelWorksheetIndexesStr[0]) - 1; //获取Excel工作表索引号范围起始值（Excel工作表索引号从1开始，EPPlus从0开始）
+                    excelWorksheetIndexUpper = Convert.ToInt32(lstExcelWorksheetIndexesStr[1]) - 1; //获取Excel工作表索引号范围结束值
+                    useExcelWorksheetIndex = true; //“使用工作表索引号”变量赋值为true
+                }
+                else
+                {
+                    string latestExcelWorksheetName = Properties.Settings.Default.latestExcelWorksheetName; //读取设置中保存的Excel工作表名称
+                    inputDialog = new InputDialog("输入要处理的Excel工作表名称（如：“Sheet1”，每次只能处理一张工作表）", latestExcelWorksheetName); //弹出对话框，输入工作表名称
+                    if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                    {
+                        return;
+                    }
+                    excelWorksheetName = inputDialog.Answer;
+                    Properties.Settings.Default.latestExcelWorksheetName = excelWorksheetName; // 将对话框返回的Excel工作表名称存入设置
+                    Properties.Settings.Default.Save();
+                    useExcelWorksheetIndex = false; //“使用工作表索引号”变量赋值为false
+                }
+
+                switch (functionNum) //根据功能序号进入相应的分支
+                {
+                    case 1: //记录合并
+                        GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
+                        break;
+
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作簿, 6-提取单元格数据给文件名加前缀
+                        string latestOperatingRangeAddresses = Properties.Settings.Default.latestOperatingRangeAddresses; //读取设置中保存的操作区域
+                        inputDialog = new InputDialog("输入操作区域（用英文逗号隔开，如：“B2:C3,B4:C5”）", latestOperatingRangeAddresses); //弹出对话框，输入操作区域
+                        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                        {
+                            return;
+                        }
+                        string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
+                        Properties.Settings.Default.latestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域存入设置
+                        Properties.Settings.Default.Save();
+                        //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
+                        lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
+                        break;
+                }
+
+                ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
+                ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //在目标Excel工作簿中添加一个工作表，赋值给目标工作表变量
+                string? excelFileName = null; //定义被处理Excel工作簿文件名变量
+                string? targetFolderPath = null; //定义目标文件夹路径变量
+                string? targetFileMainName = null; //定义目标文件主名变量
+                string? targetExcelWorkbookPrefix = null; //定义目标Excel工作簿前缀变量
+                DataTable? dataTable = null; //定义DataTable变量
+                DataRow? dataRow = null; //定义DataTable行变量
+                List<string>? templateExcelFilePaths = null; //定义模板Excel文件列表
+                ExcelPackage? templateExcelPackage = null; //定义模板Excel包变量
+                ExcelWorksheet? templateExcelWorksheet = null; //定义模板Excel工作表变量
+
+                fileNum = 1;
+                foreach (string excelFilePath in filePaths) //遍历所有文件
+                {
+                    currentFilePath = excelFilePath; //将当前Excel文件路径全名赋值给当前文件路径全名变量
+                    List<string> lstPrefixes = new List<string> { }; //定义文件名前缀列表（给Excel文件名加前缀用）
+
+                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePath))) //打开当前Excel工作簿，赋值给Excel包变量
+                    {
+                        ExcelWorkbook excelWorkbook = excelPackage.Workbook; //将工作簿赋值给工作簿变量
+                        excelFileName = Path.GetFileName(excelFilePath); //获取当前被处理Excel工作簿文件主名
+
+                        if (fileNum == 1) //如果当前是第一个Excel工作簿文件
+                        {
+                            targetFileMainName = Path.GetFileNameWithoutExtension(excelFileName); //目标文件主名变量赋值
+                            switch (functionNum) //根据功能序号进入相应的分支
+                            {
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:  // 1-记录合并; 2-数值累加; 3-提取单元格数据; 4-文本型数字转数值型
+                                    targetFolderPath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, "汇总表格"); //获取目标文件的文件夹路径
+                                    targetExcelWorkbookPrefix = $"{functionNum}汇总"; //获取目标Excel工作簿类型
+                                    break;
+                            }
+                        }
+
+                        if (useExcelWorksheetIndex) //如果使用Excel工作表索引号
+                        {
+                            //如果指定的Excel工作表索引号大于工作表数量-1，将索引号限制为工作表数量-1
+                            excelWorksheetIndexLower = Math.Min(excelWorksheetIndexLower, excelWorkbook.Worksheets.Count - 1);
+                            excelWorksheetIndexUpper = Math.Min(excelWorksheetIndexUpper, excelWorkbook.Worksheets.Count - 1);
+                        }
+                        else //否则
+                        {
+                            excelWorksheetIndexLower = excelWorkbook.Worksheets[excelWorksheetName].Index; //获取指定名称Excel工作表的索引号
+                            excelWorksheetIndexUpper = excelWorksheetIndexLower;
+                        }
+
+                        for (int i = excelWorksheetIndexLower; i <= excelWorksheetIndexUpper; i++) //遍历指定范围内的所有Excel工作表
+                        {
+                            ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i];
+                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex) //如果当前Excel工作表为隐藏，弹出提示框并结束本过程
+                            {
+                                MessageBox.Show("部分文件存在隐藏Excel工作表。先撤销工作表隐藏状态，然后重新确定工作表索引号范围。", "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
+                            {
+                                continue;
+                            }
+
+                            switch (functionNum) //根据功能序号进入相应的分支
+                            {
+                                case 1: //记录合并
+
+                                    TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
+                                    if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
+                                    {
+                                        continue;
+                                    }
+
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件和第一个Excel工作表
+                                    {
+                                        if (excelWorksheet.Dimension.Rows >= footerCount + 1) //如果源区域的行数大于等于表尾行数+1（去除表尾后，还有数据）
+                                        {
+                                            //将当前被处理Excel工作表除去表尾部分的格式复制到目标工作表（从第1行第3列开始）
+                                            excelWorksheet.Cells[1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells[1, 3]);
+                                            //将被处理Excel工作表除去表尾部分的数据复制到目标工作表（从第1行第3列开始）
+                                            excelWorksheet.Cells[1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells[1, 3]);
+                                            //将当前被处理Excel工作簿文件名赋值给目标工作表从表头下方第1行到最末行的工作簿文件名单元格
+                                            targetExcelWorksheet.Cells[headerCount + 1, 1, targetExcelWorksheet.Dimension.End.Row, 1].Value = excelFileName;
+                                            //将当前被处理Excel工作表名赋值给目标工作表从表头下方第1行到最末行的工作表名单元格
+                                            targetExcelWorksheet.Cells[headerCount + 1, 2, targetExcelWorksheet.Dimension.End.Row, 2].Value = excelWorksheet.Name;
+                                            if (headerCount >= 1) //如果表头大于等于1行，则在目标工作表的表头最末行的第1、2列单元格分别添加"工作簿文件名", "工作表名"的列名
+                                            {
+                                                targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "工作簿文件名", "工作表名" } });
+                                            }
+                                        }
+                                    }
+
+                                    else //否则
+                                    {
+                                        if (excelWorksheet.Dimension.Rows >= headerCount + footerCount + 1) // 如果复制区域行数大于等于表头行加表尾行加1（有数据内容）
+                                        {
+                                            int lastRowIndex = targetExcelWorksheet.Dimension.End.Row; // 获取目标Excel工作表最后一个不为空的行号
+                                            //将当前被处理Excel工作表除去表头表尾部分的格式复制到目标工作表（从第1个空白行第3列开始）
+                                            excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 3]);
+                                            //将当前被处理Excel工作表除去表头表尾部分的数据复制到目标工作表（从第1个空白行第3列开始）
+                                            excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 3]);
+                                            //将当前被处理Excel工作簿文件名赋值给目标工作表从第1个空白行到最末行的工作簿文件名单元格
+                                            targetExcelWorksheet.Cells[lastRowIndex + 1, 1, targetExcelWorksheet.Dimension.End.Row, 1].Value = excelFileName;
+                                            //将当前被处理Excel工作表名赋值给目标工作表从第1个空白行到最末行的工作表名单元格
+                                            targetExcelWorksheet.Cells[lastRowIndex + 1, 2, targetExcelWorksheet.Dimension.End.Row, 2].Value = excelWorksheet.Name;
+                                        }
+                                    }
+
+                                    break;
+
+                                case 2: //数值累加
+
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
+                                    {
+                                        // 整体复制粘贴到目标Excel工作表
+                                        excelWorksheet.Cells[excelWorksheet.Dimension.Address].CopyStyles(targetExcelWorksheet.Cells["A1"]); //将被处理Excel工作表的已使用区域的格式复制到目标工作表
+                                        excelWorksheet.Cells[excelWorksheet.Dimension.Address].Copy(targetExcelWorksheet.Cells["A1"]); //将被处理Excel工作表的已使用区域的数据复制到目标工作表
+
+                                        // 清除操作区域数据
+                                        foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
+                                        {
+                                            targetExcelWorksheet.Cells[anOperatingRange].Clear(); // 清除目标Excel工作表当前操作区域数据
+                                        }
+                                    }
+
+                                    // 累加操作区域数值
+                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
+                                    {
+                                        for (int k = 0; k < targetExcelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        {
+                                            for (int l = 0; l < targetExcelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            {
+                                                string cellStr1 = targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text; //将目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
+                                                string cellStr2 = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text; //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
+                                                double cellNumVal1 = 0, cellNumVal2 = 0;
+                                                double.TryParse(cellStr1, out cellNumVal1); //将单元格字符串1转换成数值，如果成功则将转换后的数值赋值给单元格数值1变量
+                                                double.TryParse(cellStr2, out cellNumVal2); //将单元格字符串2转换成数值，如果成功则将转换后的数值赋值给单元格数值2变量
+                                                //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
+                                                targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Value = cellNumVal1 + cellNumVal2;
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+                                case 3: //提取单元格数据
+
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件的第一个Excel工作表
+                                    {
+                                        dataTable = new DataTable(); //定义DataTable
+                                        dataTable.Columns.Add("文件名"); //添加列
+                                        dataTable.Columns.Add("工作表");
+
+                                        foreach (string anOperatingRange in lstOperatingRangeAddresses!)
+                                        {
+                                            for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                            {
+                                                for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                                {
+                                                    dataTable.Columns.Add(excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Address.ToString()); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格地址加入DataTable列字段
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    dataRow = dataTable!.NewRow(); //定义DataTable新数据行
+                                    dataRow["文件名"] = excelFileName;
+                                    dataRow["工作表"] = excelWorksheet.Name;
+                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
+                                    {
+                                        for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        {
+                                            for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            {
+                                                //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值赋值给DataTable行中对应单元格地址的列字段
+                                                ExcelRangeBase cell = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1);
+                                                dataRow[cell.Address.ToString()] = cell?.Value;
+                                            }
+                                        }
+                                    }
+
+                                    dataTable.Rows.Add(dataRow); //向DataTable添加数据行
+
+                                    //如果当前文件是文件列表中的最后一个，且当前Excel工作表也是最后一个，且DataTable的行数和列数均不为0，则将DataTable写入目标工作表
+                                    if (fileNum == filePaths.Count && i == excelWorksheetIndexUpper
+                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0) 
+                                    {
+                                        targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
+                                    }
+                                    break;
+
+                                case 4: //文本型数字转数值型
+
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // '如果是第一个文件的第一个Excel工作表
+                                    {
+                                        dataTable = new DataTable(); //定义DataTable
+                                        dataTable.Columns.AddRange(new DataColumn[]
+                                            {
+                                                new DataColumn("文件名"),
+                                                new DataColumn("工作表"),
+                                                new DataColumn("未转换单元格地址"),
+                                                new DataColumn("未转换单元格值")
+                                            }); //向DataTable添加列
+
+                                    }
+
+                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
+                                    {
+                                        for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        {
+                                            for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            {
+                                                //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格数据转换成数值型
+                                                double cellNumVal;
+                                                ExcelRangeBase cell = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1);
+                                                if (double.TryParse(cell.Text, out cellNumVal)) //将当前单元格转换为数值，如果成功则将转换得到的数值赋值给单元格数值变量
+                                                {
+                                                    cell.Style.Numberformat.Format = ""; //将当前单元格的格式设为常规
+                                                    cell.Value = cellNumVal; //将转换得到的数值赋值给当前单元格
+                                                }
+                                                else //否则
+                                                {
+                                                    dataRow = dataTable!.NewRow(); //定义DataTable新数据行
+                                                    //将相关数据填入字段列
+                                                    dataRow["文件名"] = excelFileName;
+                                                    dataRow["工作表"] = excelWorksheet.Name;
+                                                    dataRow["未转换单元格地址"] = cell.Address;
+                                                    dataRow["未转换单元格值"] = cell.Value;
+                                                    dataTable.Rows.Add(dataRow); //向DataTable添加数据行
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    {
+                                        excelPackage.Save();
+                                    }
+
+                                    //如果当前文件是文件列表中的最后一个，且当前Excel工作表也是最后一个，且DataTable的行数和列数均不为0，则将DataTable写入目标工作表
+                                    if (fileNum == filePaths.Count && i == excelWorksheetIndexUpper
+                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0) 
+                                    {
+                                        targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
+                                    }
+
+                                    break;
+
+                                case 5: //复制公式到多Excel工作簿
+
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // '如果是第一个文件的第一个Excel工作表
+                                    {
+                                        MessageBox.Show("即将打开模板Excel工作簿选择对话框。模板不能与任一待处理Excel工作簿同名，且只能复制第1张工作表内的公式",
+                                            "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                                        templateExcelFilePaths = SelectFiles(FileType.Excel, false, "选择公式模板Excel工作簿"); //选择模板文件
+                                        if (templateExcelFilePaths == null) //如果文件为null，结束本过程
+                                        {
+                                            return;
+                                        }
+                                        templateExcelPackage = new ExcelPackage(new FileInfo(templateExcelFilePaths[0])); //打开模板Excel工作簿，赋值给模板Excel包变量
+                                        templateExcelWorksheet = templateExcelPackage.Workbook.Worksheets[0]; //将模板Excel工作簿第一个（0号）工作表赋值给模板工作表变量
+                                    }
+
+                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // '遍历所有操作区域
+                                    {
+                                        templateExcelWorksheet?.Cells[anOperatingRange].Copy(excelWorksheet.Cells[anOperatingRange]); //将模板Excel工作表指定区域的公式复制到当前工作表中
+                                    }
+
+                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    {
+                                        excelPackage.Save();
+                                    }
+
+                                    break;
+
+                                case 6: //提取单元格数据给文件名加前缀
+                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // '遍历所有操作区域
+                                    {
+                                        for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        {
+                                            for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            {
+                                                lstPrefixes.Add(excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格数据转换成文本并追加到前缀列表
+                                            }
+                                        }
+
+                                    }
+
+                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个
+                                    {
+                                        string prefixes = string.Join(' ', lstPrefixes); //合并前缀列表中的字符串，当中用空格分隔
+                                        excelPackage.Dispose(); //关闭当前被处理Excel工作簿
+                                        //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
+                                        string renamedExcelFileName = CleanName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
+                                        string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
+                                        File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
+                                    }
+
+                                    break;
+                            }
+                        }
+                    }
+                    fileNum++; //文件计数器加1
+                }
+
+                if (targetExcelWorkbookPrefix != null)  //如果目标Excel工作簿前缀不为null（需要保存目标工作簿）
+                {
+                    //创建目标文件夹
+                    if (!Directory.Exists(targetFolderPath))
+                    {
+                        Directory.CreateDirectory(targetFolderPath!);
+                    }
+
+                    //获取目标工作表表头行数
+                    //根据功能序号返回相应的目标工作表表头行数
+                    int targetheaderCount = functionNum switch 
+                    {
+                        1 => headerCount,  //记录合并，输出记录合并后的汇总表，表头行数为源数据表格的表头行数
+                        3 => 1,  //提取单元格数据，输出提取单元格值后的汇总表，表头行数为1
+                        4 => 1,  //文本型数字转数值型，输出未能转换为数值的单元格地址和值的汇总表，表头行数为1
+                        _ => 0  //其余情况，表头行数为0
+                    };
+                    
+                    FormatExcelWorksheet(targetExcelWorksheet, targetheaderCount, 0); //设置目标Excel工作表格式
+                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"{targetExcelWorkbookPrefix}_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                    targetExcelPackage.SaveAs(targetExcelFile);
+                    targetExcelPackage.Dispose(); //关闭目标Excel工作簿
+                }
+                templateExcelPackage?.Dispose(); //关闭模板Excel工作簿（仅在模板工作簿已打开的情况下）
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message} at {currentFilePath}。", "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+
+        private void CompareExcelWorksheets()
+        {
+            try
+            {
+                List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "选择起始数据的Excel工作簿"); //获取所选起始数据文件列表
+                List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "选择终点数据的Excel工作簿"); //获取所选终点数据文件列表
+
+                if (startFilePaths == null || endFilePaths == null) //如果起始数据或终点数据文件列表有一个为null，则结束本过程
+                {
+                    return;
+                }
+
+                GetHeaderAndFooterCount(out int headerCount, out int footerCount); //获取表头、表尾行数
+
+                string? columnLetter = GetKeyColumnLetter(); //获取主键列符
+                if (columnLetter == null) //如果主键列符为null，则结束本过程
+                {
+                    return;
+                }
+
+                DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], 1, headerCount, footerCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+                DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], 1, headerCount, footerCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+
+                if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则结束本过程
+                {
+                    return;
+                }
+
+                //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
+                string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
+
+                List<string> lstRecordKeys = new List<string> { }; //定义记录主键列表
+                List<string> lstComparedFields = new List<string> { }; //定义被比较字段列表
+
+                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和被比较字段列表中
+                foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
+                {
+                    lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
+                }
+                foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
+                {
+                    lstComparedFields.Add(endDataColumn.ColumnName); //将当前数据列名称添加到被比较字段列表中
+                }
+                foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
+                {
+                    string key = Convert.ToString(startDataRow[keyDataColumnName])!; //获取当前数据行主键数据列的值
+                    if (!lstRecordKeys.Contains(key)) //如果记录主键列表不含当前数据行的主键数据列的值，则将该值添加到记录主键列表中
+                    {
+                        lstRecordKeys.Add(key);
+                    }
+                }
+                foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历终点DataTable的每一数据列
+                {
+                    if (!lstComparedFields.Contains(startDataColumn.ColumnName))  //如果被比较字段列表不含当前数据列名称，则将该数据列名称添加到被比较字段列表中
+                    {
+                        lstComparedFields.Add(startDataColumn.ColumnName);
+                    }
+                }
+
+                DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
+                foreach (string comparedField in lstComparedFields) //遍历被比较字段列表的所有元素
+                {
+                    differenceDataTable.Columns.Add(comparedField, typeof(string)); //将当前被比较字段名称作为新数据列添加到差异DataTable中，数据类型为string
+                }
+
+                foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
+                {
+                    DataRow differenceDataRow = differenceDataTable.NewRow(); //定义差异DataTable新数据行，赋值给差异DataTable数据行变量
+                    differenceDataRow[keyDataColumnName] = recordKey; //将当前记录主键赋值给差异DataTable新数据行的主键数据列
+                    differenceDataTable.Rows.Add(differenceDataRow); //向差异DataTable添加该新数据行
+
+                    //从起始和终点DataTable中筛选出主键数据列的值为当前主键的行，并取其中第一个，分别赋值给起始数据行和终点数据行
+                    DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+                    DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+
+                    foreach (string comparedField in lstComparedFields) //遍历所有被比较字段
+                    {
+                        if (comparedField == keyDataColumnName) //如果当前被比较字段等于主键列名称，则直接跳过进入下一个循环
+                        {
+                            continue;
+                        }
+
+                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有被比较字段，则得到起始（终点）数据行被比较字段列的数据字符串；否则得到空字符串
+                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(comparedField) ?
+                                Convert.ToString(startDataRow[comparedField])! : "";
+                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(comparedField) ?
+                                Convert.ToString(endDataRow[comparedField])! : "";
+                        string result;
+                        if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为“一致”
+                        {
+                            result = "一致";
+                        }
+                        else //否则
+                        {
+                            double startDataValue, endDataValue;
+                            //将起始和终点数据字符串转换成数值，如果成功则将转换结果赋值给各自的数据数值变量并将true赋值给各自的“数据为数值”变量；否则将false赋值给各自的“数据为数值”变量
+                            bool startDataIsNumeric = double.TryParse(startDataStr, out startDataValue);
+                            bool endDataIsNumeric = double.TryParse(endDataStr, out endDataValue);
+
+                            //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
+                            if (!startDataIsNumeric || !endDataIsNumeric)
+                            {
+                                result = $"原：{startDataStr}\n现：{endDataStr}";
+                            }
+                            else //否则
+                            {
+                                double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
+                                double percent = startDataValue != 0 ? Math.Round((difference / startDataValue) * 100, 2) : double.NaN; //获取终点和起始数据的变化率百分比：如果起始数值不为零，得到变化率百分比；否则得到NaN
+                                result = $"原{startDataValue}，现{endDataValue}\n差{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+                            }
+                        }
+                        differenceDataRow[comparedField] = result; //将结果赋值给差异DataTable当前新数据行的被比较字段列
+                    }
+                }
+
+                // 清除全部为“一致”的数据行
+                for (int i = differenceDataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
+                {
+                    //如果当前数据行所有数据列字段（不包括主键列）数据的值均为“一致”，则删除当前数据行
+                    if (differenceDataTable.Rows[i].ItemArray.Where((value, index) => differenceDataTable.Columns[index].ColumnName != keyDataColumnName)
+                        .All(value => Convert.ToString(value) == "一致"))
+                    {
+                        differenceDataTable.Rows[i].Delete();
+                    }
+                }
+
+                //清除全部为“一致”的数据列
+                for (int j = differenceDataTable.Columns.Count - 1; j >= 0; j--) // 遍历DataTable所有数据列
+                {
+                    //如果所有数据行的当前数据列字段数据均为 "一致"，则删除当前数据列
+                    if (differenceDataTable.AsEnumerable().All(dataRow => Convert.ToString(dataRow[j]) == "一致"))
+                    {
+                        differenceDataTable.Columns.RemoveAt(j);
+                    }
+                }
+                differenceDataTable.AcceptChanges(); //接受上述更改
+                if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
+                {
+                    MessageBox.Show("两表数据完全相同，将不输出比较结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(endFilePaths[0])!, "比较结果"); //获取目标文件夹路径
+
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath!);
+                }
+                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"比较结果_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+
+                using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
+                {
+                    ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"数据比较"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
+                    targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
+
+                    //将目标工作表从第2行第2列单元格开始到末尾的区域赋值给记录区域变量
+                    ExcelRange recordRange = targetExcelWorksheet.Cells[2, 2, targetExcelWorksheet.Dimension.End.Row, targetExcelWorksheet.Dimension.End.Column];
+                    foreach (ExcelRangeBase cell in recordRange) //遍历记录区域的所有单元格
+                    {
+                        if (cell.Text != "一致") //如果单元格的文字不为“一致”，则将字体颜色设为红色
+                        {
+                            cell.Style.Font.Color.SetColor(Color.Red);
+                        }
+                    }
+                    FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
+                    excelPackage.SaveAs(targetExcelFile);
+                }
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+
+        }
+
+        public async Task BatchConvertOfficeFilesTypes()
+        {
+            MSExcel.Application? msExcelApp = null;
+            MSWord.Application? msWordApp = null;
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "选择旧版Office或WPS文件"); //打开文件选择对话框，选择文件
+                if (filePaths == null) // 如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
+
+                //定义可用Excel打开的文件正则表达式，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
+                Regex regExExcelFile = new Regex(@"(?:(?:xls)|(?:et))$", RegexOptions.IgnoreCase);
+                //可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
+                Regex regExWordFile = new Regex(@"(?:(?:doc)|(?:wps))$", RegexOptions.IgnoreCase);
+
+                Task task = Task.Run(() => process());
+                void process()
+                {
+                    if (filePaths.Any(f => regExExcelFile.IsMatch(f))) //如果文件列表中有任一文件被可用Excel打开的文件正则表达式匹配成功
+                    {
+                        msExcelApp = new MSExcel.Application(); //打开Excel应用程序，赋值给Excel应用程序变量
+                        msExcelApp.Visible = false;
+                        msExcelApp.DisplayAlerts = false;
+                    }
+
+                    if (filePaths.Any(f => regExWordFile.IsMatch(f))) //如果文件列表中有任一文件被可用Word打开的文件正则表达式匹配成功
+                    {
+                        msWordApp = new MSWord.Application(); //打开Word应用程序，赋值给Word应用程序变量
+                        msWordApp.Visible = false;
+                        msWordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
+                    }
+
+                    foreach (string filePath in filePaths) //遍历所有文件
+                    {
+                        if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
+                        {
+                            MSExcelWorkbook msExcelWorkbook = msExcelApp!.Workbooks.Open(filePath); //打开当前Excel工作簿，赋值给Excel工作簿变量
+                            string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
+                            //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
+                            targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
+                                Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx"); //DateTime.Now.ToString("ssfff")
+                            msExcelWorkbook.SaveAs(Filename: targetFilePath, FileFormat: XlFileFormat.xlWorkbookDefault); //目标Excel工作簿另存为xlsx格式
+                            msExcelWorkbook.Close(); //关闭当前Excel工作簿
+                        }
+                        else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
+                        {
+                            MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开当前Word文档，赋值给Word文档变量
+                            string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
+                            //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
+                            targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
+                                Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
+                            //目标Word文件另存为docx格式，使用最新Word版本兼容模式
+                            msWordDocument.SaveAs2(FileName: targetFilePath, FileFormat: WdSaveFormat.wdFormatDocumentDefault, CompatibilityMode: WdCompatibilityMode.wdCurrent);
+                            msWordDocument.Close(); //关闭当前Word文件
+                        }
+                        File.Delete(filePath); //删除当前文件
+                    }
+                }
+                await task;
+
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            finally
+            {
+                KillOfficeApps(new object[] { msExcelApp!, msWordApp! }); //结束Office应用程序进程
+            }
+
+        }
+
+        public void CreateSeatPlates()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择名册Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                using (ExcelPackage sourceExcelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开源数据Excel工作簿，赋值给源数据Excel包变量（源数据Excel工作簿）
+                using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量（目标Excel工作簿）
+                {
+                    ExcelWorksheet sourceExcelWorksheet = sourceExcelPackage.Workbook.Worksheets[0]; //将工作表1（0号）赋值给源工作表变量
+
+                    TrimCellsStrings(sourceExcelWorksheet); //删除源数据Excel工作表内所有文本型单元格值的首尾空格
+                    RemoveWorksheetEmptyRowsAndColumns(sourceExcelWorksheet); //删除源数据Excel工作表内所有空白行和空白列
+                    if (sourceExcelWorksheet.Dimension == null) //如果工作表为空，则抛出异常
+                    {
+                        throw new Exception("无有效数据！");
+                    }
+
+                    for (int i = 1; i <= sourceExcelWorksheet.Dimension.End.Row; i++) //遍历源数据工作表所有行
+                    {
+                        string name = sourceExcelWorksheet.Cells[i, 1].Text; // 将A列当前行的文字赋值给名称变量
+
+                        // 在目标工作簿中添加一个工作表，表名为编号i加名称后截取前8个字符，赋值给目标Excel工作表变量
+                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanName(i.ToString() + name, 8));
+
+                        // 在目标工作表中插入名称并设置样式
+                        targetExcelWorksheet.Cells["A1:A2"].Merge = true; //合并A1、A2单元格
+                        targetExcelWorksheet.Cells["B1:B2"].Merge = true;
+                        targetExcelWorksheet.Columns[1, 2].Width = 48; //设置1、2列的列宽
+                        targetExcelWorksheet.Rows[1, 2].Height = 275; //设置1、2行的行高
+
+                        ExcelRange cellA = targetExcelWorksheet.Cells["A1"];  //将A1单元格赋值给单元格A变量
+                        ExcelRange cellB = targetExcelWorksheet.Cells["B1"];  //将B1单元格赋值给单元格B变量
+                        cellA.Value = name; //将当前名称赋值给单元格A
+                        cellB.Formula = "=A1"; //将公式赋值给单元格B，使之与A1相等
+                        cellA.Style.TextRotation = 180; //设定单元格A文字角度：从X轴开始顺时针旋转，旋转角度为负值，设定值等于90°-旋转角度（最多不超过-90°）
+                        cellB.Style.TextRotation = 90; //设定单元格B文字角度：从X轴开始逆时针旋转，旋转角度为正值，设定值等于旋转角度（最多不超过90°）
+
+                        ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
+                        cellABStyle.Font.Name = "华文行楷"; //设置字体
+                        cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
+                        cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
+                        cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
+                        cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
+                        cellABStyle.WrapText = name.Contains('\n') ? true : false; //文字自动换行：如果单元格文字含换行符，为true，否则为false
+
+                    }
+
+                    // 设置页面为A4，横向，页边距为0.4cm
+                    foreach (ExcelWorksheet excelWorksheet in targetExcelPackage.Workbook.Worksheets)
+                    {
+                        ExcelPrinterSettings printerSettings = excelWorksheet.PrinterSettings; //将当前Excel工作表打印设置赋值给工作表打印设置变量
+                        printerSettings.PaperSize = ePaperSize.A4; // 纸张设置为A4
+                        printerSettings.Orientation = eOrientation.Landscape; //方向为横向
+                        printerSettings.HorizontalCentered = false; //表格水平居中为false
+                        printerSettings.VerticalCentered = false; //表格垂直居中为false
+                        printerSettings.TopMargin = (decimal)(0.4 / 2.54); // 边距0.4cm转inch
+                        printerSettings.BottomMargin = (decimal)(0.4 / 2.54);
+                        printerSettings.LeftMargin = (decimal)(0.4 / 2.54);
+                        printerSettings.RightMargin = (decimal)(0.4 / 2.54);
+                    }
+
+                    // 保存目标工作簿
+                    string targetFilePath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"座位牌_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
+                    targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
+                    MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void ImportTextboxIntoDocumentTableAndWord()
+        {
+            try
+            {
+                InputDialog inputDialog;
+                string functionOptions = string.Join('\n', new string[]
+                    { "输入功能选项：", "1-导入结构化文档表", "2-导入纯文本Word文档", "3-导入带格式Word文档（仅限MarkDown文本）" });
+                inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                if (functionNum < 1 || functionNum > 3) //如果功能选项不在设定范围，则结束本过程
+                {
+                    return;
+                }
+
+                //移除导出文本框文字的Markdown符号，按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+                List<string> lstParagraphs = txtbxExportableText.Text.RemoveMarkDownMarks()
+                    .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
+                {
+                    throw new Exception("无有效数据！");
+                }
+
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "导入文档表"); //获取目标文件夹路径
+                //移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，赋值给目标文件主名变量
+                string targetFileMainName = CleanName(lstParagraphs[0], 40);
+
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath);
+                }
+
+                switch (functionNum)  //根据功能序号进入相应的分支
+                {
+                    case 1: //导入结构化文档表
+                        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.xlsx"); //获取目标结构化文档表文件路径全名
+                        ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
+
+                        break;
+
+                    case 2: //导入纯文本Word文档
+                        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
+                        using (DocX targetWordDocument = DocX.Create(targetWordFilePath)) //新建目标Word文档，赋值给目标Word文档变量
+                        {
+                            foreach (string paragraphText in lstParagraphs) //遍历段落列表所有元素
+                            {
+                                targetWordDocument.InsertParagraph(paragraphText); //将当前元素的段落文字插入目标Word文档
+                            }
+                            targetWordDocument.Save(); //保存目标Word文档
+                        }
+
+                        break;
+
+                    case 3: //导入带格式Word文档
+                        //导入目标Markdown文档
+                        string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
+                        File.WriteAllText(targetMDFilePath, txtbxExportableText.Text); //将导出文本框内的markdown文字导入目标Markdown文档
+
+                        //将目标Markdown文档转换为目标Markdown Word文档
+                        string targetMDWordFilePath = Path.Combine(targetFolderPath, $"MD{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
+
+                        string? pandocPath = Properties.Settings.Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
+                        if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，则抛出异常
+                        {
+                            throw new Exception("Pandoc程序设置错误！");
+                        }
+
+                        ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                        {
+                            FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
+                                                   //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
+                            Arguments = $"-f markdown -t docx \"{targetMDFilePath}\" -o \"{targetMDWordFilePath}\"",
+                            RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
+                            UseShellExecute = false, //设定使用操作系统shell执行程序为false
+                            CreateNoWindow = true, //设定不创建窗口
+                        };
+                        //启动新进程
+                        using (Process process = Process.Start(startInfo)!)
+                        {
+                            process.WaitForExit(); //等待进程结束
+                            if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
+                            {
+                                throw new Exception("Markdown至Docx转换失败！");
+                            }
+                        }
+                        File.Delete(targetMDFilePath); //删除目标Markdown文件
+
+                        break;
+
+                }
+
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        private void MakeFolders()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择创建文件夹数据Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"文件夹_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
+
+                if (dataTable == null) //如果DataTable为null，则抛出异常
+                {
+                    throw new Exception("无有效数据！");
+                }
+
+                // 创建目标文件夹路径
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath);
+                }
+
+                for (int i = 0; i < dataTable!.Rows.Count; i++) //遍历DataTable所有数据行
+                {
+                    string newPathStr = ""; //每下移一个数据行，新文件夹路径字符串变量清零
+                    for (int j = 0; j < dataTable.Columns.Count; j++) //遍历所有数据列
+                    {
+                        dataTable.Rows[i][j] = CleanName(Convert.ToString(dataTable.Rows[i][j])!, 40); //去除DataTable当前数据行当前数据列数据的文件夹名中不可用于文件夹名的字符，截取指定数量的字符
+                        newPathStr = newPathStr + Convert.ToString(dataTable.Rows[i][j]); //每右移一个数据列，新文件夹路径字符串延长一级（包含当前文件夹名和所有上级文件夹名），赋值给新文件夹路径字符串变量
+                        if (i >= 1 && newPathStr == "") //如果当前数据行索引号大于等于1（从第2个记录行起），且新文件夹路径字符串变量为空，则将DataTable当前数据行当前数据列的元素填充为上一行同数据列的文件夹名
+                        {
+                            dataTable.Rows[i][j] = Convert.ToString(dataTable.Rows[i - 1][j]);
+                        }
+                    }
+                }
+
+                // 创建各级文件夹路径
+                for (int i = 0; i < dataTable.Rows.Count; i++) //遍历DataTable所有数据行
+                {
+                    string newPath = targetFolderPath; //将目标文件夹路径赋值给新文件夹路径
+                    for (int j = 0; j < dataTable.Columns.Count; j++) //遍历DataTable所有数据列
+                    {
+                        if (dataTable.Rows[i][j] != null) //如果当前数据行当前数据列的数据不为空
+                        {
+                            newPath = Path.Combine(newPath, Convert.ToString(dataTable.Rows[i][j])!); //将现有新文件夹路径和当前数据行当前数据列的文件夹名合并，重新赋值给自身
+
+                            if (!Directory.Exists(newPath)) //如果新建文件夹路径不存在，则建立此文件夹路径
+                            {
+                                Directory.CreateDirectory(newPath);
+                            }
+                        }
+                    }
+                }
+                MessageBox.Show("文件夹已建立完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        public async Task ExportDocumentTableIntoWordAsync()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择结构化文档表Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, "导出文档"); //获取目标文件夹路径
+
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径
+                {
+                    Directory.CreateDirectory(targetFolderPath);
+                }
+
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文档文件路径全名
+                await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
+
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void ExtractText()
+        {
+            try
+            {
+                int targetLength = Convert.ToInt32(txtbxTargetLength.Text); //获取目标字数
+                string extractedText = ProceedToExtractText(txtbxInText.Text, '\n', targetLength); //将输入文字的总字数缩减到目标字数
+
+                txtbxExportableText.Text = extractedText; //将缩短文字赋值给缩短文字文本框
+                txtbxExportableText.Focus(); // 确保文本框获取焦点
+                txtbxExportableText.SelectAll(); //全选文字
+                txtbxExportableText.Copy(); //复制到剪贴板
+                txtbxExportableText.Select(0, 0); //取消全选
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void ExtractFromWordIntoDocumentTable()
+        {
+            try
+            {
+                List<string>? excelFilePaths = SelectFiles(FileType.Excel, false, "选择结构化文档表Excel工作簿"); //获取所选Excel文件列表
+                if (excelFilePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                // 打开专用模板，确认“小标题”工作表内含有效数据
+                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePaths[0]))) //打开结构化文档表Excel工作簿，赋值给excel包变量
+                {
+                    ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets[0]; //将“小标题”工作表（第1张，0号）赋值给“小标题”工作表变量
+
+                    TrimCellsStrings(headingsWorksheet); //删除“小标题”Excel工作表内所有文本型单元格值的首尾空格
+                    RemoveWorksheetEmptyRowsAndColumns(headingsWorksheet); //移除“小标题”工作表空白行
+                    if ((headingsWorksheet.Dimension?.Rows ?? 0) <= 1) // 如果“小标题”工作表已使用行数（如果工作表为空， 则为0）小于等于1，只有表头无有效数据，则抛出异常
+                    {
+                        throw new Exception("无有效数据。");
+                    }
+
+                    while (excelPackage.Workbook.Worksheets.Count > 3) //当Excel工作簿中的工作表大于3张，则继续循环，删除最后一张
+                    {
+                        excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
+                    }
+
+                    // 新增“提取”工作表并初始化表头
+                    ExcelWorksheet extractedWorksheet = excelPackage.Workbook.Worksheets.Add($"提取{new Random().Next(1000, 10000)}");
+                    extractedWorksheet.Cells["A1:I1"].LoadFromArrays(new List<object[]> { new object[]
+                        { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类", "相关度", "基准小标题", "原文来源" } });  // 对应1-9列
+
+                    // 选择并读取文档
+                    List<string>? wordFilePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选Word文件列表
+                    if (wordFilePaths == null) //如果文件列表为null，则结束本过程
+                    {
+                        return;
+                    }
+
+                    List<List<string>> lstWordTexts = new List<List<string>>();  // 定义Word文本列表
+
+                    Regex regExParagraphText = new Regex(@".{100,300}(?:。|$)");  // 定义段落文字正则表达式，匹配模式为：任意字符100-300字，句号或结尾标志（限定每段正文字数）
+                    // 定义“未来”小标题正则表达式，匹配模式为：不含“总|小 结”、不含“。；;”的任意字符2-50个，“计划|要点|展望|设想|打算|思路|方向”，“。：:”至多一个，结尾符号
+                    Regex regExFutureHeading = new Regex(@"^(?:(?![总小]结)[^。；;]){2,50}(?:计划|打算|要点|展望|设想|思路|方向)[。：:]?$", RegexOptions.Multiline);
+
+                    foreach (string wordFile in wordFilePaths) // 遍历Word文件列表的所有文件
+                    {
+                        if (new FileInfo(wordFile).Length == 0) //如果当前文件大小为0，直接跳过进入下一个循环
+                        {
+                            continue;
+                        }
+                        string wordFileName = Path.GetFileName(wordFile); //获取当前Word文件名
+                        string totalWordTextHeading = "";
+                        string wordTextHeading0 = "", wordTextHeading1 = "", wordTextHeading2 = "", wordTextHeading3 = "", wordTextHeading4 = "",
+                            wordTextHeadingUnNumbered = "";
+                        using (DocX wordDocument = DocX.Load(wordFile)) //打开当前Word文件，赋值给Word文档变量
+                        {
+                            foreach (Paragraph paragraph in wordDocument.Paragraphs) //遍历所有段落
+                            {
+                                if (string.IsNullOrWhiteSpace(paragraph.Text)) //如果当前段落为null或全空白字符，则直接跳过进入下一个循环
+                                {
+                                    continue;
+                                }
+
+                                string paragraphText = paragraph.Text.Trim(); //移除当前段落文字首尾空白字符，赋值给段落文字变量
+
+                                //获取当前总Word正文标题
+                                if (paragraphText.Length < 50) //如果当前段落字数少于50字
+                                {
+                                    switch (GetTitleLevel(paragraphText)) //根据当前段落的小标题级别进入相应的分支，将小标题分别赋值给对应级别的Word正文小标题变量
+                                    {
+                                        case "": //如果未标注编号
+                                            wordTextHeadingUnNumbered = paragraphText;
+                                            wordTextHeading0 = ""; wordTextHeading1 = ""; wordTextHeading2 = ""; wordTextHeading3 = ""; wordTextHeading4 = "";
+                                            break;
+                                        case "0级": //如果为0级
+                                            wordTextHeading0 = paragraphText;
+                                            wordTextHeading1 = ""; wordTextHeading2 = ""; wordTextHeading3 = ""; wordTextHeading4 = "";
+                                            break;
+                                        case "1级":
+                                            wordTextHeading1 = paragraphText;
+                                            wordTextHeading2 = ""; wordTextHeading3 = ""; wordTextHeading4 = "";
+                                            break;
+                                        case "2级":
+                                            wordTextHeading2 = paragraphText;
+                                            wordTextHeading3 = ""; wordTextHeading4 = "";
+                                            break;
+                                        case "3级":
+                                            wordTextHeading3 = paragraphText;
+                                            wordTextHeading4 = "";
+                                            break;
+                                        case "4级":
+                                            wordTextHeading4 = paragraphText;
+                                            break;
+                                    }
+                                }
+                                //将各级Word正文小标题中不为null或全空白字符的元素合并后，去除首尾的空白字符，赋值给总Word正文小标题变量
+                                totalWordTextHeading = string.Join('\n', new string[] { wordTextHeadingUnNumbered, wordTextHeading0, wordTextHeading1, wordTextHeading2, wordTextHeading3, wordTextHeading4 }
+                                    .Where(s => !string.IsNullOrWhiteSpace(s))).Trim();
+
+                                paragraphText = RemoveHeadingNum(paragraphText); //移除段落文字的小标题编号，重新赋值给自身
+                                //获取段落文字经过段落文字正则表达式匹配后的结果
+                                MatchCollection matchesParagraphTexts = regExParagraphText.Matches(paragraphText);
+                                //重新赋值给段落文字变量：如果正则表达式匹配结果集合元素数大于0，则得到第一个结果的字符串，否则得到空字符串
+                                paragraphText = matchesParagraphTexts.Count > 0 ? matchesParagraphTexts[0].Value : "";
+                                //将当前段落文字、当前Word文件名加小标题结构分别赋值给新列表的0号（正文文字）、1号元素（原文来源），而后将新列表追加到全文本列表中
+                                lstWordTexts.Add(new List<string> { paragraphText, (wordFileName + '\n' + totalWordTextHeading) });
+
+                            }
+                        }
+                    }
+
+                    string baseHeading0 = "", baseHeading1 = "", baseHeading2 = "", baseHeading3 = "", baseHeading4 = "";
+
+                    // 判断Word正文与小标题的关系，提取相关性高的正文
+                    for (int i = 2; i <= headingsWorksheet.Dimension!.End.Row; i++)  // 遍历“小标题”工作表第2行开始到末尾的所有行
+                    {
+                        //获取当前总基准小标题
+                        string baseHeading = headingsWorksheet.Cells[i, 3].Text; //将当前行的小标题文字赋值给基准小标题变量
+                        switch (headingsWorksheet.Cells[i, 1].Text) //根据当前行的小标题级别进入相应的分支，将小标题赋值给对应级别的基准小标题变量
+                        {
+                            case "0级": //如果为0级
+                                baseHeading0 = baseHeading;
+                                baseHeading1 = ""; baseHeading2 = ""; baseHeading3 = ""; baseHeading4 = "";
+                                break;
+                            case "1级":
+                                baseHeading1 = baseHeading;
+                                baseHeading2 = ""; baseHeading3 = ""; baseHeading4 = "";
+                                break;
+                            case "2级":
+                                baseHeading2 = baseHeading;
+                                baseHeading3 = ""; baseHeading4 = "";
+                                break;
+                            case "3级":
+                                baseHeading3 = baseHeading;
+                                baseHeading4 = "";
+                                break;
+                            case "4级":
+                                baseHeading4 = baseHeading;
+                                break;
+                        }
+                        //将各级基准小标题中不为null或全空白字符的部分合并后，去除首尾的空白字符，赋值给总基准小标题变量
+                        string totalBasedHeading = string.Join('\n', new string[] { baseHeading0, baseHeading1, baseHeading2, baseHeading3, baseHeading4 }.Where(s => !string.IsNullOrWhiteSpace(s))).Trim();
+
+                        //将当前行的小标题级别和文字赋值给“提取”工作表的相应单元格
+                        int lastRowIndex = extractedWorksheet.Dimension.End.Row; //获取“提取”工作表的最后一个已使用行的索引号
+                        extractedWorksheet.Cells[lastRowIndex + 1, 1].Value = headingsWorksheet.Cells[i, 1].Text;  // 将当前行的小标题级别赋值给“提取”工作表第一个空白行的小标题级别单元格
+                        extractedWorksheet.Cells[lastRowIndex + 1, 3].Value = headingsWorksheet.Cells[i, 3].Text;  // 将当前行的小标题文字赋值给“提取”工作表第一个空白行的文字单元格
+                        extractedWorksheet.Cells[lastRowIndex + 1, 7].Value = 2;  // 将“提取”工作表第一个空白行的相关度单元格赋值为2（不可能被后期提取文字与小标题的相关度超越，确定会被保留）
+
+                        bool extractBodyText = false; // “提取Word正文”变量赋值为false
+
+                        if (headingsWorksheet.Cells[i, 1].Text.EndsWith("级") && headingsWorksheet.Cells[i, 3].Text.Length < 50)  //如果当前行含小标题且文字字数少于50字（纯小标题）
+                        {
+                            extractBodyText = true; // “提取Word正文”变量赋值为true
+                            if (i < headingsWorksheet.Dimension.End.Row) //如果当前行不是最后一行
+                            {
+                                //如果下一行文字也是小标题，且当前行小标题的级别数字小于下一行小标题（级别更高），则“提取Word正文”变量赋值为false
+                                if (headingsWorksheet.Cells[i + 1, 1].Text.EndsWith("级") && Val(headingsWorksheet.Cells[i, 1].Text) < Val(headingsWorksheet.Cells[i + 1, 1].Text))
+                                {
+                                    extractBodyText = false;
+                                }
+                            }
+                        }
+
+                        if (extractBodyText)  //如果需要提取Word正文文字
+                        {
+                            for (int k = 0; k < lstWordTexts.Count; k++)  //遍历Word正文列表
+                            {
+                                //如果总基准小标题被“未来”小标题正则表达式匹配的成功性与Word正文列表当前元素列表的原文来源（含总小标题）被匹配的成功性不同（即上下文背景不同），则直接跳过进入下一个循环
+                                if (regExFutureHeading.IsMatch(totalBasedHeading) != regExFutureHeading.IsMatch(lstWordTexts[k][1]))
+                                {
+                                    continue;
+                                }
+
+                                double headingAndContentRelevance = GetTextRelevance(headingsWorksheet.Cells[i, 3].Text, lstWordTexts[k][0]);  // 计算当前小标题与Word正文列表当前元素列表的正文文字的相关度
+                                if (headingAndContentRelevance >= 0.3)  // 如果小标题与Word正文列表当前元素列表的正文文字的相关度大于设定值
+                                {
+                                    lastRowIndex = extractedWorksheet.Dimension.End.Row; //获取“提取”工作表的最后一个已使用行的索引号
+                                    Regex regExHeadingSentence = new Regex(headingsWorksheet.Cells[i, 3].Text + @"[。：:]"); // 定义小标题句正则表达式，匹配模式为：当前小标题文字，“。：:”
+                                    // 将Word正文列表当前元素列表的正文文字中被小标题句正则表达式匹配到的文字替换为空（避免与现存小标题重复），赋值给“提取”工作表第一个空白行的“文字”单元格
+                                    extractedWorksheet.Cells[lastRowIndex + 1, 3].Value = regExHeadingSentence.Replace(lstWordTexts[k][0], "");
+                                    // 将当前小标题与Word正文列表当前元素列表的正文文字的相关度保留4位小数，赋值给“提取”工作表第一个空白行的“相关度”单元格
+                                    extractedWorksheet.Cells[lastRowIndex + 1, 7].Value = Math.Round(headingAndContentRelevance, 4);
+                                    //将总基准小标题赋值给“提取”工作表第一个空白行的“基准小标题”单元格
+                                    extractedWorksheet.Cells[lastRowIndex + 1, 8].Value = totalBasedHeading;
+                                    // 将Word正文列表当前元素列表的原文来源赋值给“提取”工作表第一个空白行的“原文来源”单元格
+                                    extractedWorksheet.Cells[lastRowIndex + 1, 9].Value = lstWordTexts[k][1];
+                                    extractedWorksheet.Cells[lastRowIndex + 1, 3].Style.Font.Color.SetColor(Color.Red);  // 将“提取”工作表第一个空白行第3列单元格文字标红
+                                }
+                            }
+                        }
+                    }
+
+                    // 删除重复的正文
+                    if (extractedWorksheet.Dimension.Rows >= 3) // 如果“提取”工作表的已使用行大于3行（去除表头，至少有2行可比较）
+                    {
+                        for (int i = 2; i <= extractedWorksheet.Dimension.End.Row - 1; i++)  // 遍历“提取”工作表从第2行开始到倒数第2行的所有行（基准行）
+                        {
+                            if ((!extractedWorksheet.Cells[i, 1].Text.EndsWith("级") || extractedWorksheet.Cells[i, 3].Text.Length >= 50)
+                                && Convert.ToDouble(extractedWorksheet.Cells[i, 7].Value) > -1) //如果当前基准行的文字不含小标题或者文字字数大于等于50字（为正文）且当前文字与小标题的相关度大于-1（未被判定为重复行）
+                            {
+                                for (int k = i + 1; k <= extractedWorksheet.Dimension.End.Row; k++)   //遍历基准行的下一行开始到最末行的所有行（比较行）
+                                {
+                                    if ((!extractedWorksheet.Cells[k, 1].Text.EndsWith("级") || extractedWorksheet.Cells[k, 3].Text.Length >= 50)
+                                        && Convert.ToDouble(extractedWorksheet.Cells[k, 7].Value) > -1)  //如果比较行的文字不含小标题或者文字字数大于等于50字（为正文）且当前文字与小标题的相关度大于-1（未被判定为重复行）
+                                    {
+                                        //如果比较行正文文字与基准行文字的前50个字的相关度大于0.8（重复正文）
+                                        if (GetTextRelevance(extractedWorksheet.Cells[i, 3].Text[..50], extractedWorksheet.Cells[k, 3].Text[..50]) >= 0.8)
+                                        //&& regExFutureHeading.IsMatch(extractedWorksheet.Cells[i, 8].Text) == regExFutureHeading.IsMatch(extractedWorksheet.Cells[k, 8].Text))
+                                        {
+                                            //如果基准行正文文字与小标题的相关度小于比较行，将基准行的相关度设为-1（标记为重复行）
+                                            if (Convert.ToDouble(extractedWorksheet.Cells[i, 7].Value) < Convert.ToDouble(extractedWorksheet.Cells[k, 7].Value))
+                                            {
+                                                extractedWorksheet.Cells[i, 7].Value = -1;
+                                            }
+                                            else  //否则，将比较行的相关度设为-1（标记为重复行）
+                                            {
+                                                extractedWorksheet.Cells[k, 7].Value = -1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 删除相关度被标为-1的重复行
+                    for (int i = extractedWorksheet.Dimension.End.Row; i >= 2; i--) // 遍历“提取”工作表的所有行
+                    {
+                        if (Convert.ToDouble(extractedWorksheet.Cells[i, 7].Value) == -1) //如果当前行正文文字与小标题的相关度为-1（重复行），则删除当前行
+                        {
+                            extractedWorksheet.DeleteRow(i);
+                        }
+                    }
+
+                    FormatDocumentTable(excelPackage.Workbook); //格式化结构化文档表工作簿
+                    excelPackage.Save(); //保存结构化文档表工作簿
+
+                }
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+
+        private void MergeDocumentsAndTables()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "选择Word文档或Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, "合并文本"); //获取目标文件夹路径
+
+                List<string> lstFullText = new List<string> { }; //建立全文本列表
+
+                foreach (string filePath in filePaths) //遍历所有列表中的文件
+                {
+                    if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
+                    {
+                        continue;
+                    }
+
+                    string fileMainName = Path.GetFileNameWithoutExtension(filePath); // 获取当前文件的主名
+                    string fileExtension = Path.GetExtension(filePath); // 获取当前文件的扩展名
+
+                    if (fileExtension.ToLower().Contains("xlsx")) // 如果当前文件扩展名转换为小写后含有“xlsx”（Excel文件）
+                    {
+                        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
+                        {
+                            foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) // 遍历所有Excel工作表
+                            {
+                                TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
+                                if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
+                                {
+                                    continue;
+                                }
+
+                                lstFullText.Add($"{fileMainName} {excelWorksheet.Name}"); //全文本列表中追加当前Excel文件主名和当前工作表名
+                                for (int i = 1; i <= excelWorksheet.Dimension.End.Row; i++) // 遍历Excel工作表所有行
+                                {
+                                    StringBuilder tableRowStringBuilder = new StringBuilder(); //定义表格行数据字符串构建器
+                                    for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) // 遍历Excel工作表所有列
+                                    {
+                                        tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text); // 将当前单元格文字追加到字符串构建器中
+                                        tableRowStringBuilder.Append('\t'); //追加制表符到字符串构建器中
+                                    }
+                                    lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd()); //将字符串构建器中当前行数据转换成字符串，移除尾部的空白字符，并追加到全文本列表中
+                                }
+                                lstFullText.AddRange(new string[] { "（本表完）", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"本表完"元素和一个空字符串元素
+                            }
+                        }
+                    }
+
+                    else if (fileExtension.ToLower().Contains("docx")) // 如果当前文件扩展名转换为小写后含有“docx”（Word文件）
+                    {
+                        using (DocX wordDocument = DocX.Load(filePath)) // 打开Word文档，赋值给Word文档变量
+                        {
+                            //将Word文档中的所有表格转换为制表符分隔的文本形式
+                            for (int i = wordDocument.Tables.Count - 1; i >= 0; i--)
+                            {
+                                Table table = wordDocument.Tables[i];
+                                List<string> lstTableRows = new List<string> { }; //建立表格行数据列表
+
+                                foreach (TableRow tableRow in table.Rows) // 遍历表格中的所有行
+                                {
+                                    StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
+                                    foreach (TableCell cell in tableRow.Cells) // 遍历行中的所有单元格
+                                    {
+                                        tableRowStringBuilder.Append(string.Join(" ", cell.Paragraphs.Select(p => p.Text))); // 将当前单元格的每个段落文本合并，中间用空格分隔，然后添加到字符串构建器中
+                                        tableRowStringBuilder.Append("\t"); //追加制表符到字符串构建器中
+                                    }
+                                    lstTableRows.Add(tableRowStringBuilder.ToString().TrimEnd()); //将字符串构建器中当前行数据转换成字符串，移除尾部的空白字符，并追加到表格行数据列表中
+                                }
+
+                                foreach (string tableRows in lstTableRows) //遍历表格行数据列表
+                                {
+                                    table.InsertParagraphBeforeSelf(tableRows); //将当前表格行文本插入到当前表格的前方
+                                }
+
+                                table.Remove(); // 移除当前表格
+                            }
+
+                            //将文本添加到全文本列表
+                            foreach (Paragraph paragraph in wordDocument.Paragraphs) // 遍历所有段落
+                            {
+                                string paragraphText = paragraph.Text; //将当前段落文字赋值给段落文字变量
+                                if (!string.IsNullOrWhiteSpace(paragraphText)) // 如果段落文字不为null或全空白字符，则将段落文字追加到全文本列表中
+                                {
+                                    lstFullText.Add(paragraphText);
+                                }
+                            }
+                            lstFullText.AddRange(new string[] { "（本文完）", "" }); //当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个"本文完"元素和一个空字符串元素
+                        }
+                    }
+                }
+
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径
+                {
+                    Directory.CreateDirectory(targetFolderPath);
+                }
+
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"合并文本_{targetFileMainName}.docx"); //获取目标Word文件的路径全名
+                using DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
+                {
+                    foreach (string paragraphText in lstFullText) //遍历全文本列表的所有元素
+                    {
+                        targetWordDocument.InsertParagraph(paragraphText); //将当前元素的段落文字插入目标Word文档
+                    }
+                    targetWordDocument.Save(); //保存目标Word文档
+                }
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        private void MakeFileList()
+        {
+            try
+            {
+                string initialDirectory = Properties.Settings.Default.latestFolderPath; //读取设置中保存的文件夹路径
+                //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
+                initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : @"C:\";
+                OpenFolderDialog openFolderDialog = new OpenFolderDialog() //定义文件夹选择对话框
+                {
+                    Multiselect = false,
+                    Title = "选择文件夹",
+                    RootDirectory = initialDirectory //根文件夹路径设为设置中保存的文件夹路径
+                };
+                if (openFolderDialog.ShowDialog() == false) //如果对话框返回值为false（点击Cancel），则结束本过程
+                {
+                    return;
+                }
+                string folderPath = openFolderDialog.FolderName; //将选择的文件夹路径赋值给第一级文件夹路径变量
+                Properties.Settings.Default.latestFolderPath = folderPath; //将第一级文件夹路径存入设置
+                Properties.Settings.Default.Save();
+
+                InputDialog inputDialog = new InputDialog("输入子路径级数", "1"); //弹出功能选择对话框
+                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                int subPathDepth = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的子路径深度
+
+                DataTable dataTable = new DataTable(); //定义DataTable，赋值给DataTable变量
+
+                dataTable.Columns.AddRange(new DataColumn[]
+                    {new DataColumn("序号"), new DataColumn("路径"), new DataColumn("子路径"),
+                    new DataColumn("名称"), new DataColumn("类型"), new DataColumn("日期", typeof(DateTime)) }); //向DataTable添加列
+
+                //计算指定级数文件夹路径的总分隔符数：将第一级文件夹路径中的'\'计数加上子路径的'\'计数（总分隔符计数等于文件夹路径的级数）
+                //（逐一比较每个字符是否为'\'，如果是则"c=>"Lambda表达式返回true，用Count方法计数true的数量，即得到当前字符串中一共包含多少个'\'）
+                int separatorsCount = folderPath.Count(c => c == '\\') + subPathDepth;
+
+                GetFolderFiles(folderPath, separatorsCount, dataTable); //获取文件夹内的文件和下级文件夹信息，并存入DataTable
+
+                void GetFolderFiles(string folderPath, int separatorsCount, DataTable dataTable) 
+                {
+                    //如果输入文件夹路径所包含的分隔符数大于指定总分隔符数（文件夹路径级数大于指定级数），则结束本过程
+                    if (folderPath.Count(c => c == '\\') > separatorsCount)
+                    {
+                        return;
+                    }
+
+                    DirectoryInfo directories = new DirectoryInfo(folderPath); //将第一级文件夹路径内的目录信息赋值给目录信息变量
+
+                    FileInfo[] files = directories.GetFiles(); //将第一级文件夹路径的目录信息中的所有文件信息赋值给文件信息集合变量
+                    foreach (FileInfo file in files) //遍历文件信息集合中的所有文件
+                    {
+                        FileAttributes attributes = File.GetAttributes(file.FullName); //获取当前文件的属性
+                        if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
+                            (attributes & FileAttributes.Temporary) != FileAttributes.Temporary) //如果当前文件的属性不为隐藏也不为临时
+                        {
+                            DataRow dataRow = dataTable.NewRow(); //定义DataTable新数据行
+
+                            //获取当前文件实际年份
+                            string actualYear = GetArabicYear(file.FullName!);
+                            //获取当前文件系统日期：如果文件创建时间小于最后修改时间，则得到创建日期；否则得到最后修改日期
+                            DateTime fileSystemDate = file.CreationTime < file.LastWriteTime ? file.CreationTime.Date : file.LastWriteTime.Date;
+                            //获取当前文件日期：如果当前文件实际年份不为null或全空白字符，则得到文件系统日期加上文件实际年份和系统年份的差
+                            //（如果差大于0则限定为0，确保将文件系统日期中的年份替换为实际年份后只减不增）；否则得到文件系统日期
+                            DateTime fileDate = !string.IsNullOrWhiteSpace(actualYear) ?
+                                fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
+
+                            dataRow["路径"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
+                            dataRow["名称"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
+                            dataRow["类型"] = file.Extension; //将当前文件扩展名赋值给DataTable的新数据行的"类型"列
+                            dataRow["日期"] = fileDate; //将当前文件日期赋值给DataTable的新数据行的"日期"列
+                            dataTable.Rows.Add(dataRow); //向DataTable中添加新数据行
+                        }
+                    }
+
+                    DirectoryInfo[] subdirectories = directories.GetDirectories(); //将第一级文件夹路径的目录信息中的所有子文件夹信息赋值给子文件夹信息集合变量
+                    foreach (DirectoryInfo subdirectory in subdirectories) //遍历子文件夹信息集合中所有的子路径
+                    {
+                        FileAttributes attributes = File.GetAttributes(subdirectory.FullName); //获取当前子文件夹的属性
+                        if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
+                            (attributes & FileAttributes.Temporary) != FileAttributes.Temporary) //如果当前子文件夹的属性不为隐藏也不为临时
+                        {
+                            DataRow dataRow = dataTable.NewRow();
+
+                            //获取当前子文件夹实际年份
+                            string actualYear = GetArabicYear(subdirectory.FullName!);
+                            //获取当前子文件夹系统日期：如果子文件夹创建时间小于最后修改时间，则得到创建日期；否则得到最后修改日期
+                            DateTime subdirectorySystemDate = subdirectory.CreationTime < subdirectory.LastWriteTime ? subdirectory.CreationTime.Date : subdirectory.LastWriteTime.Date;
+                            //获取当前子文件夹日期：如果当前子文件夹实际年份不为null或全空白字符，则得到子文件夹系统日期加上子文件夹实际年份和系统年份的差
+                            //（如果差大于0则限定为0，确保将子文件夹系统日期中的年份替换为实际年份后只减不增）；否则得到子文件夹系统日期
+                            DateTime subdirectoryDate = !string.IsNullOrWhiteSpace(actualYear) ?
+                                subdirectorySystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - subdirectorySystemDate.Year)) : subdirectorySystemDate;
+
+                            dataRow["路径"] = subdirectory.FullName; //将当前子文件夹路径赋值给DataTable的新数据行的"路径"列
+                            dataRow["名称"] = subdirectory.Name; //将当前子文件夹名赋值给DataTable的新数据行的"名称"列
+                            dataRow["类型"] = "文件夹"; //将"文件夹"字符串赋值给DataTable的新数据行的"类型"列
+                            dataRow["日期"] = subdirectoryDate; //将当前子文件夹日期赋值给DataTable的新数据行的"日期"列
+                            dataTable.Rows.Add(dataRow);
+
+                            GetFolderFiles(subdirectory.FullName, separatorsCount, dataTable); //迭代调用自身过程，将当前子路径作为参数传入
+                        }
+                    }
+                }
+
+                if (dataTable.Rows.Count * dataTable.Columns.Count == 0) //如果DataTable的行数或列数有一个为0，则弹出提示框并结束本过程
+                {
+                    MessageBox.Show("未找到文件或文件夹，将不输出结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
+                {
+                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("文件列表"); //新建“文件列表”Excel工作表，赋值给目标工作表变量
+                    targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true); //将DataTable数据导入目标工作表（true代表将表头赋给第一行）
+                    int endRowIndex = targetExcelWorksheet.Dimension.End.Row; //获取目标Excel工作表最末行的行索引号
+                    int dateColumnIndex = dataTable.Columns["日期"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
+                    //将Excel工作表最末列（时间列）的数据格式设为“年-月-日”
+                    targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
+
+                    for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
+                    {
+                        targetExcelWorksheet.Cells[i, 1].Formula = "= ROW() - 1"; //将当前行的序号（第1）列单元格的公式设置为行索引号减1
+
+                        ExcelRange pathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行路径（第2）列单元格赋值给路径单元格变量
+                        pathCell.Hyperlink = new Uri($"file:///{pathCell.Text}"); //将当前行路径单元格的超链接设定为单元格内的路径（使用file://协议）
+                        pathCell.Style.Font.UnderLine = true; //将当前行路径单元格文字加下划线
+                        pathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行路径单元格文字颜色设为蓝色
+
+                        //将当前行路径单元格中第一级文件夹路径替换为空，去除首尾'\'，以中间'\'为分隔符拆分成数组，转换成列表，赋值给子路径列表
+                        List<string> lstSubPath = pathCell.Text.Replace(folderPath, "").Trim('\\').Split('\\').ToList();
+                        lstSubPath.RemoveAt(lstSubPath.Count - 1); //删去子路径列表中最末一个元素（最末级文件夹名或文件名）
+                        targetExcelWorksheet.Cells[i, 3].Value = string.Join('\\', lstSubPath); //将子路径列表所有元素合并成字符串，赋值给当前行的子路径（第3）列单元格
+
+                    }
+
+                    FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
+                    FileInfo targetExcelFile = new FileInfo(Path.Combine(folderPath, $"文件列表_{CleanName(folderPath, 40)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                    targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
+                }
+
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        private void ScreenStocks()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择股票数据Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
+                InputDialog inputDialog = new InputDialog("输入所属行业、现价、市净率、市盈率所在列名称（用英文逗号隔开）", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
+                Properties.Settings.Default.latestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串存入设置
+                Properties.Settings.Default.Save();
+
+                //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
+                List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
+                //将各指标的列名称赋值给数据列名变量
+                string sectorDataColumnName = lstDataColumnNamesStr[0];
+                string prDataColumnName = lstDataColumnNamesStr[1];
+                string pbDataColumnName = lstDataColumnNamesStr[2];
+                string peDataColumnName = lstDataColumnNamesStr[3];
+
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                if (dataTable == null) //如果DataTable变量为null，则抛出异常
+                {
+                    throw new Exception("无有效数据！");
+                }
+
+                int maxDataColumnIndex = new[] { dataTable!.Columns[sectorDataColumnName]!.Ordinal, dataTable!.Columns[prDataColumnName]!.Ordinal,
+                    dataTable!.Columns[pbDataColumnName]!.Ordinal, dataTable!.Columns[peDataColumnName]!.Ordinal }.Max(); //获取4个数据列索引号的最大值
+
+                while (dataTable.Columns.Count - 1 > maxDataColumnIndex) //当DataTable最末数据列的索引号大于4个数据列索引号的最大值，则继续循环，删除最末数据列
+                {
+                    dataTable.Columns.RemoveAt(dataTable.Columns.Count - 1);
+                }
+
+                dataTable.Columns.Add("PE冗余比", typeof(double)); //在DataTable中增加“PE冗余比”数据列
+                foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
+                {
+                    double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
+                    double.TryParse((string?)dataRow[pbDataColumnName], out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
+                    //pb = double.Clamp(pb, 2.7183, double.MaxValue); //将市净率限定为不小于2.7183
+                    pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
+                    double.TryParse((string?)dataRow[peDataColumnName], out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
+                    double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
+                    dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
+                }
+
+                DataTable? sectorsDataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Sectors"); //读取数据库Excel工作簿的“行业”工作表，赋值给行业DataTable变量
+                StringBuilder sectorsStrBu = new StringBuilder(); //定义行业字符串构建器
+                if (sectorsDataTable != null) //如果行业DataTable变量不为null
+                {
+                    foreach (DataRow dataRow in sectorsDataTable.Rows) //遍历行业DataTable所有数据行
+                    {
+                        sectorsStrBu.Append(Convert.ToString(dataRow["Sector"]) + '|');  //将每个数据行的"Sector"数据字段数据末尾添加分隔符'|'后再追加到字符串构建器中
+                    }
+                }
+                string sectorsRegEx = sectorsStrBu.ToString().Trim('|'); //将字符串构建器的内容转换成字符串，并删除首尾的'|'字符
+                Regex regExSectors = new Regex(sectorsRegEx); //定义行业正则表达式变量，匹配模式为指定的行业
+
+                DataTable targetDataTable = dataTable.AsEnumerable().Where(
+                    dataRow =>
+                    {
+                        string sector = Convert.ToString(dataRow[sectorDataColumnName])!; //将当前数据行的行业数据列数据赋值给行业变量
+                        double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
+                        double.TryParse((string?)dataRow[prDataColumnName], out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
+                        double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
+                        //筛选PE冗余比大于0小于100，现价大于等于10，行业被行业正则表达式匹配成功的记录（此时"dataRow =>"lambda表达式函数返回true）
+                        //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
+                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10 && regExSectors.IsMatch(sector);
+                    }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
+
+                if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
+                {
+                    MessageBox.Show("未筛选出符合条件的股票，将不输出结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE冗余比 DESC"; //按行业升序、PE冗余比降序对数据排序
+                targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
+
+                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
+                {
+                    while (excelPackage.Workbook.Worksheets.Count > 1) //当Excel工作簿中的工作表大于1张，则继续循环，删除最后一张
+                    {
+                        excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
+                    }
+
+                    ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"筛选结果{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
+                    targetWorksheet.Cells["A1"].LoadFromDataTable(targetDataTable, true); //将目标DataTable的数据导入目标Excel工作表（true代表将表头赋给第一行，或使用“c => c.PrintHeaders = true”）
+
+                    foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
+                    {
+                        //重新赋值给当前单元格：将单元格文本值转换成数值，如果成功则赋值给单元格数值变量，然后单元格将得到该数值；否则，得到单元格原值
+                        cell.Value = double.TryParse(cell.Text, out double cellNumVal) ? cellNumVal : cell.Value;
+                    }
+
+                    //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
+                    targetWorksheet.Cells[2, 1, targetWorksheet.Dimension.End.Row, targetWorksheet.Dimension.End.Column].Style.Numberformat.Format = "0.00";
+
+                    FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
+                    excelPackage.Save(); //保存目标Excel工作簿文件
+                }
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        public void SplitExcelWorksheet()
+        {
+            try
+            {
+                InputDialog inputDialog;
+                string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-拆分为Excel工作簿", "2-拆分为Excel工作表" });
+                inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+                {
+                    return;
+                }
+
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择待拆分的Excel工作簿"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                GetHeaderAndFooterCount(out int headerCount, out int footerCount); //获取表头、表尾行数
+
+                string? columnLetter = GetKeyColumnLetter(); //获取主键列符
+                if (columnLetter == null) //如果主键列符为null，则结束本过程
+                {
+                    return;
+                }
+
+                inputDialog = new InputDialog("输入拆分后文件名", Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                string targetFileMainName = CleanName(inputDialog.Answer, 40); //获取对话框返回的目标Excel工作簿文件主名
+
+                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) // 打开Excel工作簿，赋值给Excel包变量
+                {
+                    ExcelWorksheet excelWorksheet = excelPackage.Workbook.Worksheets.First(); // 将第一张Excel工作表赋值给Excel工作表变量
+
+                    TrimCellsStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
+                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
+                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerCount + footerCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则抛出异常
+                    {
+                        throw new Exception("无有效数据！");
+                    }
+
+                    Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义一个字典来保存拆分的数据
+
+                    for (int i = headerCount + 1; i <= excelWorksheet.Dimension!.End.Row - footerCount; i++) // 遍历Excel工作表除去表头、表尾的每一行
+                    {
+                        string key = excelWorksheet.Cells[columnLetter + i.ToString()].Text != "" ?
+                            excelWorksheet.Cells[columnLetter + i.ToString()].Text : "-Blank-"; //将当前行拆分基准列的值赋值给键值变量：如果当前行单元格文字不为空，则得到得到单元格文字，否则得到"-Blank-"
+                        if (dataDict.ContainsKey(key)) // 如果字典中已经有这个键，就将当前行添加到对应的列表中
+                        {
+                            dataDict[key].Add(excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]);
+                        }
+                        else // 否则，定义一个列表并向其中添加当前行，而后将列表并添加到字典中
+                        {
+                            dataDict[key] = new List<ExcelRangeBase> { excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column] };
+                        }
+                    }
+
+                    // 创建目标文件夹
+                    string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"拆分_{Path.GetFileNameWithoutExtension(filePaths[0])}");
+                    if (!Directory.Exists(targetFolderPath))
+                    {
+                        Directory.CreateDirectory(targetFolderPath);
+                    }
+
+                    switch (functionNum) //根据功能序号进入相应的分支
+                    {
+                        case 1: //拆分为Excel工作簿
+                            foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
+                            {
+                                using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
+                                {
+                                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); // 新建Excel工作表，赋值给目标工作表变量
+
+                                    // 将表头复制到目标Excel工作表
+                                    if (headerCount >= 1) //如果表头行数大于等于1，复制表头
+                                    {
+                                        excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
+                                        excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
+                                    }
+
+                                    // 将字典中的每一行复制到目标Excel工作表
+                                    foreach (ExcelRangeBase dictRow in pair.Value) //遍历所有字典数据
+                                    {
+                                        //获取目标Excel工作表最末行索引号（如果工作表为空， 则为0）
+                                        int lastRowIndex = targetExcelWorksheet.Dimension?.End.Row ?? 0;
+                                        dictRow.CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的样式复制到目标Excel工作表的第一个非空白行
+                                        dictRow.Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的数据复制到目标Excel工作表的第一个非空白行
+                                    }
+
+                                    FormatExcelWorksheet(targetExcelWorksheet, headerCount, 0); //设置目标Excel工作表格式
+
+                                    // 保存目标Excel工作簿文件
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"拆分_{targetFileMainName}_{pair.Key}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                    targetExcelPackage.SaveAs(targetExcelFile);
+                                }
+                            }
+                            break;
+
+                        case 2:  //拆分为Excel工作表
+                            using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量
+                            {
+                                ExcelWorkbook targetExcelWorkbook = targetExcelPackage.Workbook; // 将Excel工作簿赋值给目标Excel工作簿变量
+                                foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) //遍历所有字典数据
+                                {
+                                    // 新建Excel工作表，表名为键名去掉不能作为工作表名的字符并截取指定数量字符后的字符串，赋值给目标工作表变量
+                                    ExcelWorksheet targetExcelWorksheet = targetExcelWorkbook.Worksheets.Add(CleanName(pair.Key, 40));
+
+                                    // 将表头复制到目标Excel工作表
+                                    if (headerCount >= 1) //如果表头行数大于等于1，复制表头
+                                    {
+                                        excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
+                                        excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
+                                    }
+
+                                    // 将字典中的每一行复制到目标Excel工作表
+                                    foreach (ExcelRangeBase dictRow in pair.Value) //遍历所有字典数据
+                                    {
+                                        //获取目标Excel工作表最末行索引号（如果工作表为空， 则为0）
+                                        int lastRowIndex = targetExcelWorksheet.Dimension?.End.Row ?? 0;
+                                        dictRow.CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的样式复制到目标Excel工作表的第一个非空白行
+                                        dictRow.Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的数据复制到目标Excel工作表的第一个非空白行
+                                    }
+
+                                    FormatExcelWorksheet(targetExcelWorksheet, headerCount, 0); //设置目标Excel工作表格式
+
+                                }
+                                // 保存目标Excel工作簿文件
+                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"拆分_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                targetExcelPackage.SaveAs(targetExcelFile);
+
+                            }
+                            break;
+                    }
+                }
+                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Top = 50.0;
+            this.Left = SystemParameters.WorkArea.Width - this.Width - 150.0;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void MnuTest_Click(object sender, RoutedEventArgs e)
+        {
+
+            //InputDialog inputDialog = new InputDialog("字符串1", "我是谁"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //string str1 = inputDialog.Answer;
+            //inputDialog = new InputDialog("字符串2", "我是谁"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //string str2 = inputDialog.Answer;
+            //double result = GetTextRelevance(str1, str2);
+            //MessageBox.Show("字符串相关度为：" + result.ToString());
+
+            //InputDialog inputDialog = new InputDialog("数字", "1000"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //int numbers = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+            //string result = ConvertArabicNumberIntoChinese(numbers);
+            //MessageBox.Show("转换后的中文数字为：" + result);
+
+            //MessageBox.Show(txtbxInText.Text.RemoveFormatMarksAndEmptyLines());
+
+            //InputDialog inputDialog = new InputDialog("年份", "2024"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
+            //string result = GetArabicYear(yearStr);
+            //MessageBox.Show("年份为：" + result);
+
+            //InputDialog inputDialog = new InputDialog("原文", ""); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //string inText = inputDialog.Answer; //获取对话框返回的功能选项
+            //string result = inText.PutHeadingSentenceFirst();
+            //MessageBox.Show("标题提前后：" + result);
+
+        }
+
+
+    }
+}

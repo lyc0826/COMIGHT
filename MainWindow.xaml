@@ -1,0 +1,77 @@
+﻿<Window x:Class="COMIGHT.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:COMIGHT"
+        mc:Ignorable="d"
+        Title="COMIGHT助手" Width="480" Height="720" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded" >
+    
+    <Grid Margin="3,0,3,3">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" >
+            <Menu DockPanel.Dock="Top" Height="30" UseLayoutRounding="True" FontSize="14" VerticalContentAlignment="Center" >
+                <MenuItem Header="文档处理">
+                    <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="结构化文档表导出为Word文档" Click="MnuExportDocumentTableIntoWord_Click"  />
+                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="文本框文字导入结构化文档表和Word文档" Click="MnuImportTextboxIntoDocumentTableAndWord_Click"  />
+                    <MenuItem x:Name="mnuExtractFromWordIntoDocumentTable" Header="提取Word文档内容至结构化文档表" Click="MnuExtractFromWordIntoDocumentTable_Click"   /> 
+                    <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "合并文档和表格" Click="MnuMergeDocumentsAndTables_Click" />
+                    <MenuItem x:Name="mnuBatchAdjustWordDocument" Header="批量调整Word文档格式" Click="MnuBatchAdjustWordDocuments_Click" />
+                </MenuItem>
+                <MenuItem Header="表格处理">
+                    <MenuItem x:Name="mnuBatchAdjustExcelWorkbooks" Header= "批量调整Excel工作簿格式" Click="MnuBatchAdjustExcelWorkbooks_Click" />
+                    <MenuItem x:Name="mnuBatchProcessExcelWorkbooks" Header= "批处理Excel工作簿" Click="MnuBatchProcessExcelWorkbooks_Click" />
+                    <MenuItem x:Name="mnuSplitExcelWorksheet" Header= "拆分Excel工作表" Click="MnuSplitExcelWorksheet_Click" />
+                    <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "比较Excel工作表" Click="MnuCompareExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuScreenStocks" Header= "筛选股票" Click="MnuScreenStocks_Click" />
+                </MenuItem>
+                <MenuItem Header="文件工具"> 
+                    <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "批量转换Office文件类型" Click="MnuBatchConvertOfficeFilesTypes_Click" />
+                    <MenuItem x:Name="mnuMakeFileList" Header= "生成文件列表" Click="MnuMakeFileList_Click" />
+                    <MenuItem x:Name="mnuMakeFolders" Header= "创建文件夹" Click="MnuMakeFolders_Click" />
+                    <MenuItem x:Name="mnuCreateSeatPlates" Header= "创建座位牌" Click="MnuCreateSeatPlates_Click" />
+                </MenuItem>
+                <MenuItem x:Name="mnuBrowser" Header="浏览器" Click="MnuBrowser_Click">
+                </MenuItem>
+                <MenuItem Header="设置">
+                    <MenuItem x:Name="mnuSetPandocPath" Header="设置Pandoc程序文件路径" Click="MnuSetPandocPath_Click"/>
+                </MenuItem>
+                <MenuItem x:Name="mnuExit" Header="退出" Click="MnuExit_Click" >
+                </MenuItem>
+                <MenuItem x:Name="mnuTest" Header="测试" Click="MnuTest_Click"  >
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        
+        <Grid Grid.Row="1" Grid.Column="0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="文字预处理  输入原文↓  目标字数→" Height="30" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"  >
+                <TextBox x:Name="txtbxTargetLength" Height="30" Width="50" TextWrapping="Wrap" Text ="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button x:Name="btnShortenText" Content="提取" Height="30" Width="50" HorizontalContentAlignment="Center" Click="BtnExtractText_Click" />
+            </StackPanel>
+        </Grid>
+        <TextBox x:Name="txtbxInText" Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxInText_MouseDoubleClick" TextChanged="txtbxInText_TextChanged" />
+        <Label Content="可导出文字↓" Height="30" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBox x:Name="txtbxExportableText" Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" />
+        <Label x:Name="lblStatus" Height="30" Grid.Row="5" Grid.Column="0" FontSize="14" VerticalContentAlignment="Center" />
+ 
+    </Grid>
+
+</Window>
