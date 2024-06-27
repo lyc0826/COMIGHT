@@ -19,8 +19,8 @@ using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-// Test
 
+//Remark
 
 
 namespace COMIGHT
