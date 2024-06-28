@@ -42,7 +42,7 @@ namespace COMIGHT
             InitializeComponent();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
-            lblStatus.Content = $"© {DateTime.Now:yyyy} Yuechen Lou。保留所有权利。";
+            mainWindow.Title = $"COMIGHT办公助手 © {DateTime.Now:yyyy} Yuechen Lou";
         }
 
         private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
