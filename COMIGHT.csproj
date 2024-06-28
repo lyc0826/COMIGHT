@@ -88,7 +88,7 @@
     <None Update="使用说明和模板\COMIGHT助手使用说明.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="使用说明和模板\COMIGHT助手使用说明.md">
+    <None Update="使用说明和模板\使用说明.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="使用说明和模板\创建文件夹模板.xlsx">
