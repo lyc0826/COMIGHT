@@ -381,7 +381,7 @@ namespace COMIGHT
                     case 3:
                     case 4:
                     case 5:
-                    case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作簿, 6-提取单元格数据给文件名加前缀
+                    case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表, 6-提取单元格数据给工作簿文件名加前缀
                         string latestOperatingRangeAddresses = Properties.Settings.Default.latestOperatingRangeAddresses; //读取设置中保存的操作区域
                         inputDialog = new InputDialog("输入操作区域（用英文逗号隔开，如：“B2:C3,B4:C5”）", latestOperatingRangeAddresses); //弹出对话框，输入操作区域
                         if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
@@ -462,48 +462,34 @@ namespace COMIGHT
 
                             switch (functionNum) //根据功能序号进入相应的分支
                             {
+
                                 case 1: //记录合并
 
                                     TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
-                                    if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
+                                    //如果当前被处理Excel工作表的已使用行数（如果工作表为空，则为0）小于等于表头表尾行数之和，只有表头表尾无有效数据，则直接跳过当前循环并进入下一个循环
+                                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerCount + footerCount) 
                                     {
                                         continue;
                                     }
+                                                                        
+                                    int sourceStartRowIndex = fileNum == 1 && i == excelWorksheetIndexLower ? 1 : headerCount + 1; //获取被处理工作表起始行索引号：如果当前是第一个Excel工作簿的第一个工作表，则得到1；否则得到表头行数+1
+                                    int sourceEndRowIndex = excelWorksheet.Dimension!.End.Row - footerCount; //获取被处理工作表末尾行索引号：已使用区域最末行的索引号-表尾行数
+                                    int targetStartRowIndex = (targetExcelWorksheet.Dimension?.End.Row ?? 0) + 1; //获取目标工作表起始行索引号：已使用区域最末行的索引号（如果工作表为空，则为0）+1
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件和第一个Excel工作表
+                                    //将当前被处理Excel工作表从指定起始行到指定末尾行的区域的格式，复制到目标工作表从指定起始行第3列开始的区域
+                                    excelWorksheet.Cells[sourceStartRowIndex, 1, sourceEndRowIndex, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells[targetStartRowIndex, 3]);
+                                    //将当前被处理Excel工作表从指定起始行到指定末尾行的区域的数据，复制到目标工作表从指定起始行第3列开始的区域
+                                    excelWorksheet.Cells[sourceStartRowIndex, 1, sourceEndRowIndex, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells[targetStartRowIndex, 3]);
+                                    //将当前被处理Excel工作簿文件名赋值给目标工作表从指定起始行到已使用区域最末行的工作簿文件名（第1列）的单元格
+                                    targetExcelWorksheet.Cells[targetStartRowIndex, 1, targetExcelWorksheet.Dimension!.End.Row, 1].Value = excelFileName;
+                                    //将当前被处理Excel工作表名赋值给目标工作表从指定起始行到已使用区域最末行的工作表名（第2列）的单元格
+                                    targetExcelWorksheet.Cells[targetStartRowIndex, 2, targetExcelWorksheet.Dimension.End.Row, 2].Value = excelWorksheet.Name;
+                                    if (headerCount >= 1) //如果表头大于等于1行
                                     {
-                                        if (excelWorksheet.Dimension.Rows >= footerCount + 1) //如果源区域的行数大于等于表尾行数+1（去除表尾后，还有数据）
-                                        {
-                                            //将当前被处理Excel工作表除去表尾部分的格式复制到目标工作表（从第1行第3列开始）
-                                            excelWorksheet.Cells[1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells[1, 3]);
-                                            //将被处理Excel工作表除去表尾部分的数据复制到目标工作表（从第1行第3列开始）
-                                            excelWorksheet.Cells[1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells[1, 3]);
-                                            //将当前被处理Excel工作簿文件名赋值给目标工作表从表头下方第1行到最末行的工作簿文件名单元格
-                                            targetExcelWorksheet.Cells[headerCount + 1, 1, targetExcelWorksheet.Dimension.End.Row, 1].Value = excelFileName;
-                                            //将当前被处理Excel工作表名赋值给目标工作表从表头下方第1行到最末行的工作表名单元格
-                                            targetExcelWorksheet.Cells[headerCount + 1, 2, targetExcelWorksheet.Dimension.End.Row, 2].Value = excelWorksheet.Name;
-                                            if (headerCount >= 1) //如果表头大于等于1行，则在目标工作表的表头最末行的第1、2列单元格分别添加"工作簿文件名", "工作表名"的列名
-                                            {
-                                                targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "工作簿文件名", "工作表名" } });
-                                            }
-                                        }
-                                    }
-
-                                    else //否则
-                                    {
-                                        if (excelWorksheet.Dimension.Rows >= headerCount + footerCount + 1) // 如果复制区域行数大于等于表头行加表尾行加1（有数据内容）
-                                        {
-                                            int lastRowIndex = targetExcelWorksheet.Dimension.End.Row; // 获取目标Excel工作表最后一个不为空的行号
-                                            //将当前被处理Excel工作表除去表头表尾部分的格式复制到目标工作表（从第1个空白行第3列开始）
-                                            excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 3]);
-                                            //将当前被处理Excel工作表除去表头表尾部分的数据复制到目标工作表（从第1个空白行第3列开始）
-                                            excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 3]);
-                                            //将当前被处理Excel工作簿文件名赋值给目标工作表从第1个空白行到最末行的工作簿文件名单元格
-                                            targetExcelWorksheet.Cells[lastRowIndex + 1, 1, targetExcelWorksheet.Dimension.End.Row, 1].Value = excelFileName;
-                                            //将当前被处理Excel工作表名赋值给目标工作表从第1个空白行到最末行的工作表名单元格
-                                            targetExcelWorksheet.Cells[lastRowIndex + 1, 2, targetExcelWorksheet.Dimension.End.Row, 2].Value = excelWorksheet.Name;
-                                        }
+                                        targetExcelWorksheet.Cells[1, 1, headerCount, 2].Value = string.Empty; //将目标工作表的表头第1、2列的数据清空
+                                        //在目标工作表的表头最末行的第1、2列单元格分别添加"工作簿文件名", "工作表名"的列名
+                                        targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "工作簿文件名", "工作表名" } });
                                     }
 
                                     break;
@@ -535,7 +521,7 @@ namespace COMIGHT
                                                 double cellNumVal1 = 0, cellNumVal2 = 0;
                                                 double.TryParse(cellStr1, out cellNumVal1); //将单元格字符串1转换成数值，如果成功则将转换后的数值赋值给单元格数值1变量
                                                 double.TryParse(cellStr2, out cellNumVal2); //将单元格字符串2转换成数值，如果成功则将转换后的数值赋值给单元格数值2变量
-                                                //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
+                                                                                            //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
                                                 targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Value = cellNumVal1 + cellNumVal2;
                                             }
                                         }
@@ -583,7 +569,7 @@ namespace COMIGHT
 
                                     //如果当前文件是文件列表中的最后一个，且当前Excel工作表也是最后一个，且DataTable的行数和列数均不为0，则将DataTable写入目标工作表
                                     if (fileNum == filePaths.Count && i == excelWorksheetIndexUpper
-                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0) 
+                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0)
                                     {
                                         targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
                                     }
@@ -591,15 +577,15 @@ namespace COMIGHT
 
                                 case 4: //文本型数字转数值型
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // '如果是第一个文件的第一个Excel工作表
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
                                         dataTable = new DataTable(); //定义DataTable
                                         dataTable.Columns.AddRange(new DataColumn[]
                                             {
-                                                new DataColumn("文件名"),
-                                                new DataColumn("工作表"),
-                                                new DataColumn("未转换单元格地址"),
-                                                new DataColumn("未转换单元格值")
+                                        new DataColumn("文件名"),
+                                        new DataColumn("工作表"),
+                                        new DataColumn("未转换单元格地址"),
+                                        new DataColumn("未转换单元格值")
                                             }); //向DataTable添加列
 
                                     }
@@ -621,7 +607,7 @@ namespace COMIGHT
                                                 else //否则
                                                 {
                                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
-                                                    //将相关数据填入字段列
+                                                                                   //将相关数据填入字段列
                                                     dataRow["文件名"] = excelFileName;
                                                     dataRow["工作表"] = excelWorksheet.Name;
                                                     dataRow["未转换单元格地址"] = cell.Address;
@@ -638,7 +624,7 @@ namespace COMIGHT
 
                                     //如果当前文件是文件列表中的最后一个，且当前Excel工作表也是最后一个，且DataTable的行数和列数均不为0，则将DataTable写入目标工作表
                                     if (fileNum == filePaths.Count && i == excelWorksheetIndexUpper
-                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0) 
+                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0)
                                     {
                                         targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
                                     }
@@ -647,7 +633,7 @@ namespace COMIGHT
 
                                 case 5: //复制公式到多Excel工作表
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // '如果是第一个文件的第一个Excel工作表
+                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
                                         MessageBox.Show("即将打开模板Excel工作簿选择对话框。模板不能与任一待处理Excel工作簿同名，且只能复制第1张工作表内的公式",
                                             "提示", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -660,7 +646,7 @@ namespace COMIGHT
                                         templateExcelWorksheet = templateExcelPackage.Workbook.Worksheets[0]; //将模板Excel工作簿第一个（0号）工作表赋值给模板工作表变量
                                     }
 
-                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // '遍历所有操作区域
+                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
                                     {
                                         templateExcelWorksheet?.Cells[anOperatingRange].Copy(excelWorksheet.Cells[anOperatingRange]); //将模板Excel工作表指定区域的公式复制到当前工作表中
                                     }
@@ -689,7 +675,7 @@ namespace COMIGHT
                                     {
                                         string prefixes = string.Join(' ', lstPrefixes); //合并前缀列表中的字符串，当中用空格分隔
                                         excelPackage.Dispose(); //关闭当前被处理Excel工作簿
-                                        //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
+                                                                //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
                                         string renamedExcelFileName = CleanName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
                                         string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
                                         File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
@@ -698,6 +684,7 @@ namespace COMIGHT
                                     break;
                             }
                         }
+                    
                     }
                     fileNum++; //文件计数器加1
                 }
@@ -2104,7 +2091,7 @@ namespace COMIGHT
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {
-            
+
 
             //InputDialog inputDialog = new InputDialog("字符串1", "我是谁"); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
@@ -2132,14 +2119,14 @@ namespace COMIGHT
 
             //MessageBox.Show(txtbxInText.Text.RemoveFormatMarksAndEmptyLines());
 
-            //InputDialog inputDialog = new InputDialog("年份", "2024"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            //string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
-            //string result = GetArabicYear(yearStr);
-            //MessageBox.Show("年份为：" + result);
+            InputDialog inputDialog = new InputDialog("年份", "二零二五"); //弹出功能选择对话框
+            if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            {
+                return;
+            }
+            string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
+            string result = GetArabicYear(yearStr);
+            MessageBox.Show("年份为：" + result);
 
             //InputDialog inputDialog = new InputDialog("原文", ""); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程

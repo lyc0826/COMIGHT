@@ -5,6 +5,7 @@ using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Export.ToDataTable;
 using OfficeOpenXml.Style;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -484,7 +485,7 @@ namespace COMIGHT
         }
 
         // 定义年份正则表达式变量，匹配模式为：前方不能出现“至到-~”，空格制表符任意多个；“20”，阿拉伯数字2个/或“二[〇零]”，中文数字2个
-        public static Regex regExYear = new Regex(@"(?<![至到\-~][ |\t]*)(?:20\d{2}|二[〇零][一二三四五六七八九〇零]{2})");
+        public static Regex regExYear = new Regex(@"(?<![至到\-~][ |\t]*)(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})");
 
         public static string GetArabicYear(string inText)
         {
@@ -492,7 +493,7 @@ namespace COMIGHT
             //获取年份字符串：如果输入文字经过年份正则表达式匹配的结果集合元素数大于0，则得到最后一个匹配结果；否则得到空字符串
             string yearStr = matchesYears.Count > 0 ? matchesYears[matchesYears.Count - 1].Value : "";
             //将年份字符串中的中文数字替换为阿拉伯数字，移除首尾空白字符，赋值给阿拉伯数字年份变量
-            var map = new Dictionary<char, char> //定义字符字典，将中文数字与阿拉伯数字对应
+            Dictionary<char, char> map = new Dictionary<char, char> //定义字符字典，将中文数字与阿拉伯数字对应
                 {
                     {'一', '1'}, {'二', '2'}, {'三', '3'}, {'四', '4'}, {'五', '5'},
                     {'六', '6'}, {'七', '7'}, {'八', '8'}, {'九', '9'}, {'〇', '0'}, {'零', '0'}
@@ -1392,10 +1393,8 @@ namespace COMIGHT
                         selection.HomeKey(WdUnits.wdStory);
 
                         // 定义单位和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），单位字符串1个及以上，最后为日期（如果日期都有明确数字，则可以用非中文符号分隔，否则只能用“年月日”标明）
-                        Regex regExInscriptions = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4E00-\u9FA5\w、：:（）\(\)| |\t]{2,}[\n\r])+(?:(?:(?:20\d{2}|二[〇零][一二三四五六七八九〇零]{2})[ |\t]*[年\.．\-/][ |\t]*"
+                        Regex regExInscriptions = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4E00-\u9FA5\w、：:（）\(\)| |\t]{2,}[\n\r])+(?:(?:(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})[ |\t]*[年\.．\-/][ |\t]*"
                               + @"[\d一二三四五六七八九十元]{1,2}[\.．\-/\u4E00-\u9FA5\w（）\(\)| |\t]*)|(?:[ |\t]*年[ |\t]*月[ |\t]*日?))[\n\r]", RegexOptions.Multiline);
-                        //Regex regExInscriptions = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4E00-\u9FA5\w、：:（）\(\)| |\t]{2,}[\n\r])+(?:(?:20|二[〇零])[\d一二三四五六七八九〇零]{2}[ |\t]*[年\.．\-/][ |\t]*"
-                        //      + @"[\d一二三四五六七八九十元]{1,2}[\.．\-/\u4E00-\u9FA5\w（）\(\)| |\t]*|[ |\t]*年[ |\t]*月[ |\t]*日?)[\n\r]", RegexOptions.Multiline);
                         MatchCollection matchesInscriptions = regExInscriptions.Matches(documentText); // 获取全文文字经过单位和日期落款正则表达式匹配的结果
 
                         foreach (Match matchInscription in matchesInscriptions)
