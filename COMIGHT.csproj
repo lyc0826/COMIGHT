@@ -11,13 +11,13 @@
 
   <ItemGroup>
     <Compile Remove="bak\**" />
-    <Compile Remove="使用说明和模板\导出文档\**" />
+    <Compile Remove="模板\导出文档\**" />
     <EmbeddedResource Remove="bak\**" />
-    <EmbeddedResource Remove="使用说明和模板\导出文档\**" />
+    <EmbeddedResource Remove="模板\导出文档\**" />
     <None Remove="bak\**" />
-    <None Remove="使用说明和模板\导出文档\**" />
+    <None Remove="模板\导出文档\**" />
     <Page Remove="bak\**" />
-    <Page Remove="使用说明和模板\导出文档\**" />
+    <Page Remove="模板\导出文档\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -88,10 +88,10 @@
     <None Update="使用说明和模板\COMIGHT助手使用说明.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="使用说明和模板\创建文件夹模板.xlsx">
+    <None Update="模板\创建文件夹模板.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="使用说明和模板\结构化文档表模板.xlsx">
+    <None Update="模板\结构化文档表模板.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="模板文件\COMIGHT Assistant使用说明.docx">
