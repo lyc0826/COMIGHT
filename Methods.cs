@@ -645,6 +645,7 @@ namespace COMIGHT
         {
             string outText = inText;
             // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
+                //[^\S\n]+与(?:(?!\n)\s)+等同
             outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
 
             // 文档分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
@@ -942,7 +943,9 @@ namespace COMIGHT
             void process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
-                try
+                msWordApp.ScreenUpdating = false;
+                msWordApp.Visible = false;
+                //try
                 {
                     foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
                     {
@@ -1006,12 +1009,15 @@ namespace COMIGHT
                         for (int i = msWordDocument.Paragraphs.Count; i >= 1; i--) // 从末尾往开头遍历所有段落
                         {
                             MSWord.Paragraph paragraph = msWordDocument.Paragraphs[i];
-                            while (paragraph.Range.Text.StartsWith(" ") || paragraph.Range.Text.StartsWith("\t")) // 如果段落开头文字为空格或制表符开头，则继续循环
+
+                            //正则表达式匹配模式设为：前方出现开头标记、换行符回车符，空格或制表符；如果段落文字被匹配成功，则继续循环
+                            while (Regex.IsMatch(paragraph.Range.Text, @"(?<=^|\n|\r)[ |\t]"))
                             {
                                 paragraph.Range.Characters[1].Delete(); // 删除开头第一个字符
                             }
 
-                            while (paragraph.Range.Text.EndsWith(" \r") || paragraph.Range.Text.EndsWith("\t\r")) // 如果段落末尾文字为空格+换行符，或制表符+换行符，则继续循环
+                            //正则表达式匹配模式设为：空格或制表符，后方出现换行符回车符、结尾标记；如果段落文字被匹配成功，则继续循环
+                            while (Regex.IsMatch(paragraph.Range.Text, @"[ |\t](?=\n|\r|$)"))
                             {
                                 paragraph.Range.Select();
                                 selection.EndKey(WdUnits.wdLine); // 光标移动到段落结尾换行符之前
@@ -1184,7 +1190,7 @@ namespace COMIGHT
 
                             if (paragraphs[1].Range.Sentences.Count == 1)
                             {
-                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1 + outlineLevelOffset;
+                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1 + outlineLevelOffset; // 将当前小标题的大纲级别设为1级加大纲级别偏移量
                             }
                             font.Name = "黑体";
                             font.Size = heading1FontSize;
@@ -1228,7 +1234,8 @@ namespace COMIGHT
                             find.Execute();
                             if (selection.Paragraphs[1].Range.Sentences.Count == 1)
                             {
-                                if (!selection.Range.Text.StartsWith("[（(]*"))
+                                //正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上；如果选区文字匹配成功（为三级小标题），则将当前小标题的大纲级别设为3级加大纲级别偏移量
+                                if (Regex.IsMatch(selection.Range.Text, @"(?<=^|\n|\r)\d+")) 
                                 {
                                     selection.Paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3 + outlineLevelOffset;
                                 }
@@ -1438,18 +1445,21 @@ namespace COMIGHT
 
                         msWordDocument.Save(); // 保存Word文档
                         msWordDocument.Close(); // 关闭Word文档
+                          
                     }
+
                 }
 
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                //}
 
-                finally
-                {
-                    KillOfficeApps(new object[] { msWordApp });
-                }
+                //finally
+                //{
+                //    msWordApp.ScreenUpdating = true;
+                //    KillOfficeApps(new object[] { msWordApp });
+                //}
 
             }
             await task;
@@ -1474,6 +1484,7 @@ namespace COMIGHT
                         //将拆分后文字列表当前元素的文字按修订标记字符拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
                         List<string> lstRevisedTexts = lstSplittedTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
+                        
                         //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
                         lstSplittedTexts[i] = MergeRevision(lstRevisedTexts);
 
