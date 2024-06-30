@@ -457,7 +457,7 @@ namespace COMIGHT
             InputDialog inputDialog = new InputDialog("输入表头、表尾行数（用英文逗号隔开，如：“2,1”代表表头为2行、表尾为1行）", lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
             {
-                headerCount = 1;
+                headerCount = 0;
                 footerCount = 0;
                 return;
             }
@@ -466,9 +466,9 @@ namespace COMIGHT
             Properties.Settings.Default.Save();
             //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
             List<int> lstHeaderFooterCount = headerFooterCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
-            //将表头表尾行数列表0号、1号元素分别赋值给表头、表尾行数变量（引用型）
-            headerCount = lstHeaderFooterCount[0];
-            footerCount = lstHeaderFooterCount[1];
+            //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
+            headerCount = Math.Max(0, lstHeaderFooterCount[0]);
+            footerCount = Math.Max(0, lstHeaderFooterCount[1]);
         }
 
         public static int GetInstanceCountByHandle<T>() where T : Window //泛型参数T，T必须是Window的实例
