@@ -951,7 +951,7 @@ namespace COMIGHT
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
                 msWordApp.ScreenUpdating = false;
                 msWordApp.Visible = false;
-                //try
+                try
                 {
                     foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
                     {
@@ -1456,16 +1456,16 @@ namespace COMIGHT
 
                 }
 
-                //catch (Exception ex)
-                //{
-                //    MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-                //}
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
 
-                //finally
-                //{
-                //    msWordApp.ScreenUpdating = true;
-                //    KillOfficeApps(new object[] { msWordApp });
-                //}
+                finally
+                {
+                    msWordApp.ScreenUpdating = true;
+                    KillOfficeApps(new object[] { msWordApp });
+                }
 
             }
             await task;

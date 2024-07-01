@@ -67,9 +67,9 @@ namespace COMIGHT
             await BatchAdjustWordDocumentsAsync();
         }
 
-        private void MnuBatchAdjustExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
         {
-            BatchAdjustExcelWorksheets();
+            BatchUnhideExcelWorksheets();
         }
 
         private void MnuBatchProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
@@ -229,22 +229,10 @@ namespace COMIGHT
 
         }
 
-        private void BatchAdjustExcelWorksheets()
+        private void BatchUnhideExcelWorksheets()
         {
             try
             {
-                string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-调整Excel工作表打印版式；", "2-撤销Excel工作表隐藏状态；" });
-                InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
-                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
-                {
-                    return;
-                }
-
                 List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
@@ -254,47 +242,23 @@ namespace COMIGHT
                 int fileNum = 0;
                 foreach (string filePath in filePaths) //遍历所有文件
                 {
-                    switch (functionNum) //根据功能序号进入相应的分支
+                                
+                    int hiddenExcelWorksheetCount = 0;
+                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
-                        case 1: //调整Excel工作表打印版式
-                            GetHeaderAndFooterCount(out int headerCount, out int footerCount); //获取表头、表尾行数
-                            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
+                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
+                        {
+                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible) //如果当前Excel工作表不可见，则将其设为可见，隐藏工作表计数器加一
                             {
-                                foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
-                                {
-                                    TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
-                                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
-                                    FormatExcelWorksheet(excelWorksheet, headerCount, footerCount); //设置当前Excel工作表格式
-                                    if (excelWorksheet.Index == excelPackage.Workbook.Worksheets.Count - 1) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
-                                    {
-                                        excelPackage.Save();
-                                    }
-                                }
+                                excelWorksheet.Hidden = eWorkSheetHidden.Visible;
+                                hiddenExcelWorksheetCount++;
                             }
-                            fileNum++; //文件计数器加1
-
-                            break;
-
-                        case 2:  //撤销Excel工作表隐藏状态             
-                            int hiddenExcelWorksheetCount = 0;
-                            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
-                            {
-                                foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
-                                {
-                                    if (excelWorksheet.Hidden != eWorkSheetHidden.Visible) //如果当前Excel工作表不可见，则将其设为可见，隐藏工作表计数器加一
-                                    {
-                                        excelWorksheet.Hidden = eWorkSheetHidden.Visible;
-                                        hiddenExcelWorksheetCount++;
-                                    }
-                                }
-                                if (hiddenExcelWorksheetCount > 0) //如果隐藏Excel工作表数量大于0
-                                {
-                                    fileNum++;  //文件计数器加一
-                                }
-                                excelPackage.Save(); //保存Excel工作簿
-                            }
-
-                            break;
+                        }
+                        if (hiddenExcelWorksheetCount > 0) //如果隐藏Excel工作表数量大于0
+                        {
+                            fileNum++;  //文件计数器加一
+                        }
+                        excelPackage.Save(); //保存Excel工作簿
                     }
                 }
                 MessageBox.Show($"{fileNum}个文件操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -306,20 +270,97 @@ namespace COMIGHT
             }
         }
 
+        //private void BatchAdjustExcelWorksheets()
+        //{
+        //    try
+        //    {
+        //        string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-调整Excel工作表打印版式；", "2-撤销Excel工作表隐藏状态；" });
+        //        InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
+        //        if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+        //        {
+        //            return;
+        //        }
+        //        int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+        //        if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
+        //        if (filePaths == null) //如果文件列表为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        int fileNum = 0;
+        //        foreach (string filePath in filePaths) //遍历所有文件
+        //        {
+        //            switch (functionNum) //根据功能序号进入相应的分支
+        //            {
+        //                case 1: //调整Excel工作表打印版式
+        //                    GetHeaderAndFooterCount(out int headerCount, out int footerCount); //获取表头、表尾行数
+        //                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
+        //                    {
+        //                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
+        //                        {
+        //                            TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+        //                            RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
+        //                            FormatExcelWorksheet(excelWorksheet, headerCount, footerCount); //设置当前Excel工作表格式
+        //                            if (excelWorksheet.Index == excelPackage.Workbook.Worksheets.Count - 1) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+        //                            {
+        //                                excelPackage.Save();
+        //                            }
+        //                        }
+        //                    }
+        //                    fileNum++; //文件计数器加1
+
+        //                    break;
+
+        //                case 2:  //撤销Excel工作表隐藏状态             
+        //                    int hiddenExcelWorksheetCount = 0;
+        //                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
+        //                    {
+        //                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
+        //                        {
+        //                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible) //如果当前Excel工作表不可见，则将其设为可见，隐藏工作表计数器加一
+        //                            {
+        //                                excelWorksheet.Hidden = eWorkSheetHidden.Visible;
+        //                                hiddenExcelWorksheetCount++;
+        //                            }
+        //                        }
+        //                        if (hiddenExcelWorksheetCount > 0) //如果隐藏Excel工作表数量大于0
+        //                        {
+        //                            fileNum++;  //文件计数器加一
+        //                        }
+        //                        excelPackage.Save(); //保存Excel工作簿
+        //                    }
+
+        //                    break;
+        //            }
+        //        }
+        //        MessageBox.Show($"{fileNum}个文件操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //}
+
         private void BatchProcessExcelWorksheets()
         {
             string currentFilePath = "";
             try
             {
                 string functionOptions = string.Join('\n', new string[] {"输入功能选项：", "1-记录合并；", "2-数值累加；", "3-提取单元格数据；", "4-文本型数字转数值型；",
-                    "5-复制公式到多Excel工作表；", "6-提取单元格数据给工作簿文件名加前缀；"});
+                    "5-复制公式到多Excel工作表；", "6-提取单元格数据给工作簿文件名加前缀；", "7-调整工作表打印版式；"});
                 InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
                 int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-                if (functionNum < 1 || functionNum > 6) //如果功能选项不在设定范围，则结束本过程
+                if (functionNum < 1 || functionNum > 7) //如果功能选项不在设定范围，则结束本过程
                 {
                     return;
                 }
@@ -374,6 +415,7 @@ namespace COMIGHT
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
+                    case 7: //调整工作表打印版式
                         GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
                         break;
 
@@ -444,12 +486,13 @@ namespace COMIGHT
                         else //否则（使用Excel工作表名称）
                         {
                             //如果当前Excel工作簿没有指定名称的工作表，则直接跳过当前循环进入下一个循环
-                            if (!excelWorkbook.Worksheets.Any(sheet => sheet.Name == excelWorksheetName)) 
+                            if (!excelWorkbook.Worksheets.Any(sheet => sheet.Name.Trim() == excelWorksheetName)) 
                             {
                                 continue;
                             }
-                            //获取被处理Excel工作表索引号上下限：下限为指定名称的工作表的索引号，上限与下限相同
-                            excelWorksheetIndexLower = excelWorkbook.Worksheets[excelWorksheetName].Index;
+                            //获取被处理Excel工作表索引号上下限：筛选出工作表名称移除首尾空白字符后与指定名称相同的工作表，将其中第一个的索引号作为下限；上限与下限相同
+                            excelWorksheetIndexLower = excelWorkbook.Worksheets.Where(sheet => sheet.Name.Trim() == excelWorksheetName)
+                                .FirstOrDefault()!.Index;
                             excelWorksheetIndexUpper = excelWorksheetIndexLower;
                         }
 
@@ -467,7 +510,6 @@ namespace COMIGHT
                             {
                                 continue;
                             }
-
 
                             switch (functionNum) //根据功能序号进入相应的分支
                             {
@@ -688,6 +730,17 @@ namespace COMIGHT
                                         string renamedExcelFileName = CleanName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
                                         string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
                                         File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
+                                    }
+
+                                    break;
+                                
+                                case 7: //调整工作表打印版式
+                                    TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
+                                    FormatExcelWorksheet(excelWorksheet, headerCount, footerCount); //设置当前Excel工作表格式
+                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    {
+                                        excelPackage.Save();
                                     }
 
                                     break;
