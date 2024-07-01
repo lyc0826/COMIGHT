@@ -624,20 +624,20 @@ namespace COMIGHT
 
         public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable)
         {
-            //清除空白行
-            for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有行
+            //清除空白数据行
+            for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
             {
-                //如果当前行所有列字段的值均为数据库空值，或为null或全空白字符，则删除当前行
+                //如果当前数据行所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
                 if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
                 {
                     dataTable.Rows[i].Delete();
                 }
             }
 
-            //清除空白列
-            for (int j = dataTable.Columns.Count - 1; j >= 0; j--) // 遍历DataTable所有列
+            //清除空白数据列
+            for (int j = dataTable.Columns.Count - 1; j >= 0; j--) // 遍历DataTable所有数据列
             {
-                //如果所有行的当前列字段的值均为数据库空值，或为null或全空白字符，则删除当前列
+                //如果所有数据行的当前数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据列
                 if (dataTable.AsEnumerable().All(dataRow => dataRow[j] == DBNull.Value || string.IsNullOrWhiteSpace(dataRow[j].ToString())))
                 {
                     dataTable.Columns.RemoveAt(j);
@@ -730,18 +730,18 @@ namespace COMIGHT
 
 
         //定义小标题句正则表达式变量，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
-        public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
+        //public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
 
-        public static string PutHeadingSentenceFirst(this string inText)
-        {
-            if (string.IsNullOrWhiteSpace(inText)) //如果输入文字为null或全空白字符，则将空字符串赋值给函数返回值
-            {
-                return string.Empty;
-            }
+        //public static string PutHeadingSentenceFirst(this string inText)
+        //{
+        //    if (string.IsNullOrWhiteSpace(inText)) //如果输入文字为null或全空白字符，则将空字符串赋值给函数返回值
+        //    {
+        //        return string.Empty;
+        //    }
 
-            //将输入文本中被小标题句正则表达式匹配到的字符串替换为捕获组2、1、3合并后的字符串（即将小标题句提到最前方），赋值给函数返回值
-            return regExHeadingSentence.Replace(inText, "$2$1$3");
-        }
+        //    //将输入文本中被小标题句正则表达式匹配到的字符串替换为捕获组2、1、3合并后的字符串（即将小标题句提到最前方），赋值给函数返回值
+        //    return regExHeadingSentence.Replace(inText, "$2$1$3");
+        //}
 
         public static async Task RepairWordDocumentsAsync(List<string> filePaths)
         {

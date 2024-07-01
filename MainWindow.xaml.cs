@@ -242,7 +242,6 @@ namespace COMIGHT
                 int fileNum = 0;
                 foreach (string filePath in filePaths) //遍历所有文件
                 {
-                                
                     int hiddenExcelWorksheetCount = 0;
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -594,7 +593,7 @@ namespace COMIGHT
                                             {
                                                 for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
                                                 {
-                                                    dataTable.Columns.Add(excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Address.ToString()); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格地址加入DataTable列字段
+                                                    dataTable.Columns.Add(excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Address.ToString()); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格地址作为数据列加入DataTable
                                                 }
                                             }
                                         }
@@ -609,7 +608,7 @@ namespace COMIGHT
                                         {
                                             for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
                                             {
-                                                //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值赋值给DataTable行中对应单元格地址的列字段
+                                                //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值赋值给DataTable数据行中对应单元格地址数据列的元素中
                                                 ExcelRangeBase cell = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1);
                                                 dataRow[cell.Address.ToString()] = cell?.Value;
                                             }
@@ -633,10 +632,10 @@ namespace COMIGHT
                                         dataTable = new DataTable(); //定义DataTable
                                         dataTable.Columns.AddRange(new DataColumn[]
                                             {
-                                        new DataColumn("文件名"),
-                                        new DataColumn("工作表"),
-                                        new DataColumn("未转换单元格地址"),
-                                        new DataColumn("未转换单元格值")
+                                                new DataColumn("文件名"),
+                                                new DataColumn("工作表"),
+                                                new DataColumn("未转换单元格地址"),
+                                                new DataColumn("未转换单元格值")
                                             }); //向DataTable添加列
 
                                     }
@@ -658,7 +657,7 @@ namespace COMIGHT
                                                 else //否则
                                                 {
                                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
-                                                                                   //将相关数据填入字段列
+                                                    //将相关数据填入对应的数据列
                                                     dataRow["文件名"] = excelFileName;
                                                     dataRow["工作表"] = excelWorksheet.Name;
                                                     dataRow["未转换单元格地址"] = cell.Address;
@@ -818,16 +817,16 @@ namespace COMIGHT
                 string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
 
                 List<string> lstRecordKeys = new List<string> { }; //定义记录主键列表
-                List<string> lstComparedFields = new List<string> { }; //定义被比较字段列表
+                List<string> lstComparedDataColumnNames = new List<string> { }; //定义被比较数据列表
 
-                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和被比较字段列表中
+                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和被比较数据列表中
                 foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
                 {
                     lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
                 }
                 foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
                 {
-                    lstComparedFields.Add(endDataColumn.ColumnName); //将当前数据列名称添加到被比较字段列表中
+                    lstComparedDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到被比较数据列表中
                 }
                 foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
                 {
@@ -839,16 +838,16 @@ namespace COMIGHT
                 }
                 foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历终点DataTable的每一数据列
                 {
-                    if (!lstComparedFields.Contains(startDataColumn.ColumnName))  //如果被比较字段列表不含当前数据列名称，则将该数据列名称添加到被比较字段列表中
+                    if (!lstComparedDataColumnNames.Contains(startDataColumn.ColumnName))  //如果被比较数据列表不含当前数据列名称，则将该数据列名称添加到被比较数据列表中
                     {
-                        lstComparedFields.Add(startDataColumn.ColumnName);
+                        lstComparedDataColumnNames.Add(startDataColumn.ColumnName);
                     }
                 }
 
                 DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
-                foreach (string comparedField in lstComparedFields) //遍历被比较字段列表的所有元素
+                foreach (string comparedDataColumnName in lstComparedDataColumnNames) //遍历被比较数据列表的所有元素
                 {
-                    differenceDataTable.Columns.Add(comparedField, typeof(string)); //将当前被比较字段名称作为新数据列添加到差异DataTable中，数据类型为string
+                    differenceDataTable.Columns.Add(comparedDataColumnName, typeof(string)); //将当前被比较数据列名称作为新数据列添加到差异DataTable中，数据类型为string
                 }
 
                 foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
@@ -861,18 +860,18 @@ namespace COMIGHT
                     DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
                     DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
 
-                    foreach (string comparedField in lstComparedFields) //遍历所有被比较字段
+                    foreach (string comparedDataColumnName in lstComparedDataColumnNames) //遍历所有被比较数据列名称
                     {
-                        if (comparedField == keyDataColumnName) //如果当前被比较字段等于主键列名称，则直接跳过进入下一个循环
+                        if (comparedDataColumnName == keyDataColumnName) //如果当前被比较数据列名称等于主键列名称，则直接跳过进入下一个循环
                         {
                             continue;
                         }
 
-                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有被比较字段，则得到起始（终点）数据行被比较字段列的数据字符串；否则得到空字符串
-                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(comparedField) ?
-                                Convert.ToString(startDataRow[comparedField])! : "";
-                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(comparedField) ?
-                                Convert.ToString(endDataRow[comparedField])! : "";
+                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有被比较数据列，则得到起始（终点）数据行被比较数据列的数据字符串；否则得到空字符串
+                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(comparedDataColumnName) ?
+                                Convert.ToString(startDataRow[comparedDataColumnName])! : "";
+                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(comparedDataColumnName) ?
+                                Convert.ToString(endDataRow[comparedDataColumnName])! : "";
                         string result;
                         if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为“一致”
                         {
@@ -897,14 +896,14 @@ namespace COMIGHT
                                 result = $"原{startDataValue}，现{endDataValue}\n差{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
                             }
                         }
-                        differenceDataRow[comparedField] = result; //将结果赋值给差异DataTable当前新数据行的被比较字段列
+                        differenceDataRow[comparedDataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的被比较数据列
                     }
                 }
 
                 // 清除全部为“一致”的数据行
                 for (int i = differenceDataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
                 {
-                    //如果当前数据行所有数据列字段（不包括主键列）数据的值均为“一致”，则删除当前数据行
+                    //如果当前数据行所有数据列（不包括主键列）数据的值均为“一致”，则删除当前数据行
                     if (differenceDataTable.Rows[i].ItemArray.Where((value, index) => differenceDataTable.Columns[index].ColumnName != keyDataColumnName)
                         .All(value => Convert.ToString(value) == "一致"))
                     {
@@ -915,13 +914,14 @@ namespace COMIGHT
                 //清除全部为“一致”的数据列
                 for (int j = differenceDataTable.Columns.Count - 1; j >= 0; j--) // 遍历DataTable所有数据列
                 {
-                    //如果所有数据行的当前数据列字段数据均为 "一致"，则删除当前数据列
+                    //如果所有数据行的当前数据列数据均为 "一致"，则删除当前数据列
                     if (differenceDataTable.AsEnumerable().All(dataRow => Convert.ToString(dataRow[j]) == "一致"))
                     {
                         differenceDataTable.Columns.RemoveAt(j);
                     }
                 }
                 differenceDataTable.AcceptChanges(); //接受上述更改
+
                 if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
                 {
                     MessageBox.Show("两表数据完全相同，将不输出比较结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -942,8 +942,8 @@ namespace COMIGHT
                     ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"数据比较"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
                     targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
 
-                    //将目标工作表从第2行第2列单元格开始到末尾的区域赋值给记录区域变量
-                    ExcelRange recordRange = targetExcelWorksheet.Cells[2, 2, targetExcelWorksheet.Dimension.End.Row, targetExcelWorksheet.Dimension.End.Column];
+                    //将目标工作表从第2行第1列单元格开始到末尾的区域赋值给记录区域变量
+                    ExcelRange recordRange = targetExcelWorksheet.Cells[2, 1, targetExcelWorksheet.Dimension.End.Row, targetExcelWorksheet.Dimension.End.Column];
                     foreach (ExcelRangeBase cell in recordRange) //遍历记录区域的所有单元格
                     {
                         if (cell.Text != "一致") //如果单元格的文字不为“一致”，则将字体颜色设为红色
@@ -1929,7 +1929,7 @@ namespace COMIGHT
                 {
                     foreach (DataRow dataRow in sectorsDataTable.Rows) //遍历行业DataTable所有数据行
                     {
-                        sectorsStrBu.Append(Convert.ToString(dataRow["Sector"]) + '|');  //将每个数据行的"Sector"数据字段数据末尾添加分隔符'|'后再追加到字符串构建器中
+                        sectorsStrBu.Append(Convert.ToString(dataRow["Sector"]) + '|');  //将每个数据行的"Sector"数据列数据末尾添加分隔符'|'后再追加到字符串构建器中
                     }
                 }
                 string sectorsRegEx = sectorsStrBu.ToString().Trim('|'); //将字符串构建器的内容转换成字符串，并删除首尾的'|'字符

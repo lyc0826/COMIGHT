@@ -30,6 +30,8 @@ namespace COMIGHT
                 await webView2.EnsureCoreWebView2Async(null); //在UI线程上调用，显式初始化WebView控件
             });
 
+            //浏览器控件初始化完成后，触发WebView_CoreWebView2InitializationCompleted过程
+            webView2.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted!;
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -98,7 +100,7 @@ namespace COMIGHT
             {
                 foreach (DataRow dataRow in dataTable.Rows) //遍历所有数据行
                 {
-                    cmbURL.Items.Add(Convert.ToString(dataRow["Website"]));  //将每个数据行的"Website"字段的数据添加到网址组合框
+                    cmbURL.Items.Add(Convert.ToString(dataRow["Website"]));  //将当前数据行的"Website"数据列的数据添加到网址组合框
                 }
             }
 
