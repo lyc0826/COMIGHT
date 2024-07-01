@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Name="txtblkQuestion" Grid.Row ="0" Grid.Column="0" TextWrapping="Wrap" />
-        <TextBox x:Name="txtbxAnswer" Grid.Row ="1" Grid.Column="0" Margin="0,10,0,10" VerticalContentAlignment="Center" TextWrapping="Wrap" />
+        <TextBox x:Name="txtbxAnswer" Grid.Row ="1" Grid.Column="0" Margin="0,10,0,10"  TextWrapping="Wrap" VerticalContentAlignment="Center" />
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOk" Content="OK" Width="50" Height="30" Click="btnDialogOk_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30" Click="btnDialogCancel_Click" />

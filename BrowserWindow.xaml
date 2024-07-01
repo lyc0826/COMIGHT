@@ -28,7 +28,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <WrapPanel Width="100" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+            <WrapPanel Width="100" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" >
                 <Button x:Name="btnBack" Content="后退" Width="50" Height="30" Click="BtnBack_Click" />
                 <Button x:Name="btnForward" Content="前进" Width="50" Height="30" Click="BtnForward_Click"/>
                 <Button x:Name="btnReload" Content="刷新" Width="50" Height="30" Click="BtnReload_Click"/>

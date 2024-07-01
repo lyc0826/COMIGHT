@@ -48,8 +48,7 @@
                     <MenuItem x:Name="mnuMakeFolders" Header= "创建文件夹" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateSeatPlates" Header= "创建座位牌" Click="MnuCreateSeatPlates_Click" />
                 </MenuItem>
-                <MenuItem x:Name="mnuBrowser" Header="浏览器" Click="MnuBrowser_Click">
-                </MenuItem>
+                <!-- <MenuItem x:Name="mnuBrowser" Header="浏览器" Click="MnuBrowser_Click" /> -->
             </Menu>
         </DockPanel>
         
@@ -65,6 +64,7 @@
                 <Button x:Name="btnShortenText" Content="提取" Height="30" Width="50" HorizontalContentAlignment="Center" Click="BtnExtractText_Click" />
             </StackPanel>
         </Grid>
+        
         <TextBox x:Name="txtbxInText" Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxInText_MouseDoubleClick" TextChanged="TxtbxInText_TextChanged" />
         <Label Content="可导出文字↓" Height="30" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <TextBox x:Name="txtbxExportableText" Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" />

@@ -2181,14 +2181,14 @@ namespace COMIGHT
 
             //MessageBox.Show(txtbxInText.Text.RemoveFormatMarksAndEmptyLines());
 
-            InputDialog inputDialog = new InputDialog("年份", "二零二五"); //弹出功能选择对话框
-            if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            {
-                return;
-            }
-            string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
-            string result = GetArabicYear(yearStr);
-            MessageBox.Show("年份为：" + result);
+            //InputDialog inputDialog = new InputDialog("年份", "二零二五"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
+            //string result = GetArabicYear(yearStr);
+            //MessageBox.Show("年份为：" + result);
 
             //InputDialog inputDialog = new InputDialog("原文", ""); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
