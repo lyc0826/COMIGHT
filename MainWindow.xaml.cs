@@ -434,22 +434,30 @@ namespace COMIGHT
                             }
                         }
 
+                        //获取被处理Excel工作表索引号范围
                         if (useExcelWorksheetIndex) //如果使用Excel工作表索引号
                         {
-                            //如果指定的Excel工作表索引号大于工作表数量-1，将索引号限制为工作表数量-1
+                            //获取被处理Excel工作表索引号上下限，如果大于工作表数量-1，则限定为工作表数量-1
                             excelWorksheetIndexLower = Math.Min(excelWorksheetIndexLower, excelWorkbook.Worksheets.Count - 1);
                             excelWorksheetIndexUpper = Math.Min(excelWorksheetIndexUpper, excelWorkbook.Worksheets.Count - 1);
                         }
-                        else //否则
+                        else //否则（使用Excel工作表名称）
                         {
-                            excelWorksheetIndexLower = excelWorkbook.Worksheets[excelWorksheetName].Index; //获取指定名称Excel工作表的索引号
+                            //如果当前Excel工作簿没有指定名称的工作表，则直接跳过当前循环进入下一个循环
+                            if (!excelWorkbook.Worksheets.Any(sheet => sheet.Name == excelWorksheetName)) 
+                            {
+                                continue;
+                            }
+                            //获取被处理Excel工作表索引号上下限：下限为指定名称的工作表的索引号，上限与下限相同
+                            excelWorksheetIndexLower = excelWorkbook.Worksheets[excelWorksheetName].Index;
                             excelWorksheetIndexUpper = excelWorksheetIndexLower;
                         }
 
                         for (int i = excelWorksheetIndexLower; i <= excelWorksheetIndexUpper; i++) //遍历指定范围内的所有Excel工作表
                         {
                             ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i];
-                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex) //如果当前Excel工作表为隐藏，弹出提示框并结束本过程
+                            //如果当前Excel工作表为隐藏且使用工作表索引号，弹出提示框并结束本过程
+                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex) 
                             {
                                 MessageBox.Show("部分文件存在隐藏Excel工作表。先撤销工作表隐藏状态，然后重新确定工作表索引号范围。", "警告", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
@@ -459,6 +467,7 @@ namespace COMIGHT
                             {
                                 continue;
                             }
+
 
                             switch (functionNum) //根据功能序号进入相应的分支
                             {

@@ -154,8 +154,6 @@ namespace COMIGHT
             }
         }
 
-
-
         public static void FormatExcelWorksheet(ExcelWorksheet excelWorksheet, int headerCount = 0, int footerCount = 0)
         {
             if (excelWorksheet.Dimension == null) //如果Excel工作表为空，则结束本过程
@@ -183,10 +181,9 @@ namespace COMIGHT
                 headerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                 headerRange.Style.WrapText = true; //设置文字自动换行
 
-                if (excelWorksheet.AutoFilter.Address == null) // 如果自动筛选区域为null（未开启），则将表头最后一行的自动筛选设为true
+                if (excelWorksheet.AutoFilter.Address == null) // 如果自动筛选区域为null（未开启自动筛选），则将表头最后一行的自动筛选设为true
                 {
                     excelWorksheet.Cells[headerCount, 1, headerCount, excelWorksheet.Dimension.End.Column].AutoFilter = true;
-                    //excelWorksheet.Cells["1:1"].AutoFilter = true;
                 }
 
                 for (int i = 1; i <= headerCount; i++) //遍历表头所有行
@@ -211,21 +208,21 @@ namespace COMIGHT
             }
 
             // 将Excel工作表除去表头、表尾的区域赋值给记录区域变量
-            ExcelRange RecordRange = excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column];
+            ExcelRange recordRange = excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column];
 
             // 记录区域设置字体、对齐
-            RecordRange.Style.Font.Name = "等线";
-            RecordRange.Style.Font.Size = 11;
-            RecordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
-            RecordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
-            RecordRange.Style.WrapText = true; //设置文字自动换行
+            recordRange.Style.Font.Name = "等线";
+            recordRange.Style.Font.Size = 11;
+            recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
+            recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
+            recordRange.Style.WrapText = true; //设置文字自动换行
 
             // 设置记录区域边框、内部单元格边框为单细线
-            RecordRange.Style.Border.BorderAround(ExcelBorderStyle.Thin); //设置整个区域最外侧的边框
-            RecordRange.Style.Border.Top.Style = ExcelBorderStyle.Thin; //设置区域内部所有单元格的边框
-            RecordRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            RecordRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            RecordRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            recordRange.Style.Border.BorderAround(ExcelBorderStyle.Thin); //设置整个区域最外侧的边框
+            recordRange.Style.Border.Top.Style = ExcelBorderStyle.Thin; //设置区域内部所有单元格的边框
+            recordRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            recordRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            recordRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
 
             //设置列宽
             double fullWidth = 0; //全表格宽度赋值为0
@@ -279,7 +276,7 @@ namespace COMIGHT
             printerSettings.HeaderMargin = (decimal)(0.8 / 2.54);
             printerSettings.FooterMargin = (decimal)(0.8 / 2.54);
 
-            //设定打印顶端标题行：如果顶端标题行行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
+            //设定打印顶端标题行：如果表头行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
             printerSettings.RepeatRows = headerCount >= 1 ? new ExcelAddress($"$1:${headerCount}") : new ExcelAddress("");
             //设定打印左侧重复列为A列
             printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
@@ -292,7 +289,7 @@ namespace COMIGHT
             // 设置视图和打印版式
             ExcelWorksheetView view = excelWorksheet.View; //将Excel工作表视图设置赋值给视图设置变量
             view.UnFreezePanes(); //取消冻结窗格
-            view.FreezePanes(headerCount + 1, 2); // 冻结最上部的行（参数指定第一个不要冻结的单元格）
+            view.FreezePanes(headerCount + 1, 2); // 冻结最上方的行和最左侧的列（参数指定第一个不要冻结的单元格）
             view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
             printerSettings.FitToPage = true; // 启用适应页面的打印设置
             int printPagesCount = Math.Max(1, (int)Math.Round(fullWidth / 120, 0)); //计算打印页面数：将全表格宽度除以指定最大宽度的商四舍五入取整，如果小于1，则限定为1
@@ -453,22 +450,31 @@ namespace COMIGHT
 
         public static void GetHeaderAndFooterCount(out int headerCount, out int footerCount)
         {
-            string lastestHeaderFooterCountStr = Properties.Settings.Default.lastestHeaderFooterCountStr; //读取设置中保存的表头表尾行数字符串
-            InputDialog inputDialog = new InputDialog("输入表头、表尾行数（用英文逗号隔开，如：“2,1”代表表头为2行、表尾为1行）", lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
-            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
+            try
             {
-                headerCount = 0;
-                footerCount = 0;
-                return;
+                string lastestHeaderFooterCountStr = Properties.Settings.Default.lastestHeaderFooterCountStr; //读取设置中保存的表头表尾行数字符串
+                InputDialog inputDialog = new InputDialog("输入表头、表尾行数（用英文逗号隔开，如：“2,1”代表表头为2行、表尾为1行）", lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
+                {
+                    headerCount = 0;
+                    footerCount = 0;
+                    return;
+                }
+                string headerFooterCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
+                Properties.Settings.Default.lastestHeaderFooterCountStr = headerFooterCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+                Properties.Settings.Default.Save();
+                //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
+                List<int> lstHeaderFooterCount = headerFooterCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
+                //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
+                headerCount = Math.Max(0, lstHeaderFooterCount[0]);
+                footerCount = Math.Max(0, lstHeaderFooterCount[1]);
             }
-            string headerFooterCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-            Properties.Settings.Default.lastestHeaderFooterCountStr = headerFooterCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
-            Properties.Settings.Default.Save();
-            //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
-            List<int> lstHeaderFooterCount = headerFooterCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
-            //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
-            headerCount = Math.Max(0, lstHeaderFooterCount[0]);
-            footerCount = Math.Max(0, lstHeaderFooterCount[1]);
+
+            catch (Exception ex) // 捕获错误
+            {
+                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                headerCount = 0; footerCount = 0; //表头、表尾行数变量赋值为0
+            }
         }
 
         public static int GetInstanceCountByHandle<T>() where T : Window //泛型参数T，T必须是Window的实例
