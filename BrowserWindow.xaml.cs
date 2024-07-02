@@ -118,6 +118,55 @@ namespace COMIGHT
               向网页添加鼠标移出事件响应，如果鼠标移出处的标签为div标记，将该处的阴影取消；
               向网页添加鼠标双击事件响应，如果鼠标双击处的标签为div标记，复制该处文字，在该处加上红色阴影，0.5秒后复原；
             */
+            //await webView2.ExecuteScriptAsync(@"
+
+            //    document.body.addEventListener('mouseover', 
+            //        function(event) 
+            //        {
+            //            if (event.target.tagName.toLowerCase() === 'div') 
+            //            {
+            //                //如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；阴影参数：向内（省略代表向外）、水平偏移（正右负左）、垂直偏移（正下负上）、模糊距离、扩散距离、颜色
+            //                event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; 
+            //            }  
+            //        });
+
+            //    document.body.addEventListener('mouseout', 
+            //        function(event) 
+            //        {
+            //            if (event.target.tagName.toLowerCase() === 'div') 
+            //            {
+            //                event.target.style.boxShadow = '' //如果鼠标移出处的标签为div标记，将该处的阴影取消；
+            //            }
+            //        });
+
+            //    document.body.addEventListener('dblclick', 
+            //        function(event) 
+            //        {
+            //            if (event.target.tagName.toLowerCase() === 'div') 
+            //            {
+            //                var originalBoxShadow = event.target.style.boxShadow;
+            //                var textToCopy = event.target.innerText;
+            //                //正则表达式匹配模式为：从开头开始，半角空格、全角空格、制表符一个及以上/或前述字符一个及以上，结尾标记（全局+多行模式）；将匹配到的字符串替换为空
+            //                //textToCopy = textToCopy.replace(/^[ |\u3000\t]+|[ |\u3000\t]+$/gm, ''); 
+            //                navigator.clipboard.writeText(textToCopy).then(
+            //                    function() 
+            //                    {
+            //                        event.target.style.boxShadow = 'inset 0 0 0 3px rgba(255, 80, 80, 0.8)' // 复制成功后，加上浅红色阴影
+            //                        setTimeout(
+            //                            function() 
+            //                            {
+            //                                event.target.style.boxShadow = originalBoxShadow // 0.5秒后，恢复原来的阴影
+            //                            }
+            //                            , 500);    
+            //                    }, 
+            //                    function() 
+            //                    {
+            //                        alert('复制失败！');
+            //                    });
+            //            }
+            //        });
+            //    ");
+
             await webView2.ExecuteScriptAsync(@"
 
                 document.body.addEventListener('mouseover', 
@@ -125,7 +174,6 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            //如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；阴影参数：向内（省略代表向外）、水平偏移（正右负左）、垂直偏移（正下负上）、模糊距离、扩散距离、颜色
                             event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; 
                         }  
                     });
@@ -135,7 +183,7 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            event.target.style.boxShadow = '' //如果鼠标移出处的标签为div标记，将该处的阴影取消；
+                            event.target.style.boxShadow = '' 
                         }
                     });
 
@@ -144,33 +192,34 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            //var range = document.createRange();
-                            //range.selectNodeContents(event.target);
-                            //window.getSelection().removeAllRanges();
-                            //window.getSelection().addRange(range);
-
                             var originalBoxShadow = event.target.style.boxShadow;
                             var textToCopy = event.target.innerText;
-                            //正则表达式匹配模式为：从开头开始，半角空格、全角空格、制表符一个及以上/或前述字符一个及以上，结尾标记（全局+多行模式）；将匹配到的字符串替换为空
-                            textToCopy = textToCopy.replace(/^[ |\u3000\t]+|[ |\u3000\t]+$/gm, ''); 
-                            navigator.clipboard.writeText(textToCopy).then(
-                                function() 
-                                {
-                                    event.target.style.boxShadow = 'inset 0 0 0 3px rgba(255, 80, 80, 0.8)' // 复制成功后，加上浅红色阴影
-                                    setTimeout(
-                                        function() 
-                                        {
-                                            event.target.style.boxShadow = originalBoxShadow // 0.5秒后，恢复原来的阴影
-                                        }
-                                        , 500);    
-                                }, 
-                                function() 
-                                {
-                                    alert('复制失败！');
-                                });
+
+                            var textArea = document.createElement('textarea');
+                            textArea.value = textToCopy;
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            var successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+
+                            if(successful)
+                            {
+                                event.target.style.boxShadow = 'inset 0 0 0 3px rgba(255, 80, 80, 0.8)' 
+                                setTimeout(
+                                    function() 
+                                    {
+                                        event.target.style.boxShadow = originalBoxShadow 
+                                    }
+                                    , 500);    
+                            } 
+                            else 
+                            {
+                                alert('复制失败！');
+                            }
                         }
                     });
                 ");
+
         }
 
         private void WebView_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)

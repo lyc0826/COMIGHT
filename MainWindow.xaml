@@ -48,7 +48,7 @@
                     <MenuItem x:Name="mnuMakeFolders" Header= "创建文件夹" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateSeatPlates" Header= "创建座位牌" Click="MnuCreateSeatPlates_Click" />
                 </MenuItem>
-                <!-- <MenuItem x:Name="mnuBrowser" Header="浏览器" Click="MnuBrowser_Click" /> -->
+                <MenuItem x:Name="mnuBrowser" Header="浏览器" Click="MnuBrowser_Click" />
             </Menu>
         </DockPanel>
         
