@@ -35,7 +35,7 @@ namespace COMIGHT
 
         public string Answer
         {
-            get { return txtbxAnswer.Text.Trim(); } //将答案文本框的文字移除首尾空白字符，返回给答案属性
+            get { return txtbxAnswer.Text.Trim(); } //移除答案文本框的文字的首尾空白字符，赋值给答案属性
         }
 
     }
