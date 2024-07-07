@@ -163,7 +163,7 @@ namespace COMIGHT
 
             foreach (ExcelRangeBase cell in excelWorksheet.Cells[excelWorksheet.Dimension.Address]) //遍历所有已使用的单元格
             {
-                //如果当前单元格是合并单元格、值是字符串且不含公式，则将文字中的换行符替换为空格后，重新赋值给单元格
+                //如果当前单元格是合并单元格、值是字符串且不含公式，则将文字中的换行符替换为空格后，重新赋值给单元格（避免自动调整行高时文字显示不全）
                 if (cell.Merge && cell.Value is string && string.IsNullOrWhiteSpace(cell.Formula))
                 {
                     cell.Value = cell.Text.Replace('\n', ' ');
@@ -188,19 +188,27 @@ namespace COMIGHT
 
                 for (int i = 1; i <= headerCount; i++) //遍历表头所有行
                 {
-                    excelWorksheet.Rows[i].Height = 36; //设置当前行的行高为指定值
+                    excelWorksheet.Rows[i].Height = 30; //设置当前行的行高为指定值
                     ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
+                    
                     int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
-                    //获取边框样式：如果被合并的单元格数量占当前行所有单元格的75%以上（判定为表格大标题行），则得到无边框样式；否则得到细线表框样式
-                    ExcelBorderStyle borderStyle = mergedCellsCount >= headerRowCells.Count() * 0.75 ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
-                    //获取“是否手动调整行高”值：如果被合并的单元格数量占当前行所有单元格的75%以上（判定为表格大标题行），则得到true；否则得到false
-                    bool customHeight = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
-                    //将当前行所有单元格的边框
+                    //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
+                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false; 
+                    //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
+                    ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
+                    //获取“是否手动调整行高”值：如果行单元格被合并，则得到true；否则得到false
+                    bool customHeight = isRowMerged ? true : false;
+                    //获取表格标题字体大小：如果行单元格被合并且当前行为第一行（表格标题行），则得到14；否则得到12
+                    int titleFontSize = (isRowMerged && i == 1) ? 14 : 12;
+                    
+                    //设置当前行所有单元格的边框
                     headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
                     headerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
                     headerRowCells.Style.Border.Left.Style = borderStyle;
                     headerRowCells.Style.Border.Right.Style = borderStyle;
                     headerRowCells.Style.Border.Bottom.Style = borderStyle;
+
+                    headerRowCells.Style.Font.Size = titleFontSize; //设置当前单元格字体大小为之前获取的值
                     excelWorksheet.Rows[i].CustomHeight = customHeight; //设置当前行“是否手动调整行高”为之前获取的值
 
                 }
