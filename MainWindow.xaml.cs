@@ -62,9 +62,9 @@ namespace COMIGHT
             ExtractFromWordIntoDocumentTable();
         }
 
-        private async void MnuBatchAdjustWordDocuments_Click(object sender, RoutedEventArgs e)
+        private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
         {
-            await BatchAdjustWordDocumentsAsync();
+            await BatchFormatWordDocumentsAsync();
         }
 
         private void MnuBatchUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
@@ -187,38 +187,18 @@ namespace COMIGHT
             txtbxTargetLength.Text = Convert.ToString(txtbxInText.Text.Length); //将输入文本框文字的字数赋值给目标字数文本框
         }
 
-        private async Task BatchAdjustWordDocumentsAsync()
+
+        private async Task BatchFormatWordDocumentsAsync()
         {
             try
             {
-                string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-排版", "2-修复混乱格式" });
-                InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
-                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
-                {
-                    return;
-                }
-
                 List<string>? filePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
-                switch (functionNum) //根据功能序号进入相应的分支
-                {
-                    case 1: //排版
-                        await FormatWordDocumentsAsync(filePaths);
-                        break;
-                    case 2: //修复混乱格式
-                        await RepairWordDocumentsAsync(filePaths);
-                        break;
-                }
-
+                await FormatWordDocumentsAsync(filePaths);
                 MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
@@ -228,6 +208,48 @@ namespace COMIGHT
             }
 
         }
+
+        //private async Task BatchAdjustWordDocumentsAsync()
+        //{
+        //    try
+        //    {
+        //        string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-排版", "2-修复混乱格式" });
+        //        InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
+        //        if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+        //        {
+        //            return;
+        //        }
+        //        int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+        //        if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        List<string>? filePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选文件列表
+        //        if (filePaths == null) //如果文件列表为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        switch (functionNum) //根据功能序号进入相应的分支
+        //        {
+        //            case 1: //排版
+        //                await FormatWordDocumentsAsync(filePaths);
+        //                break;
+        //            case 2: //修复混乱格式
+        //                await RepairWordDocumentsAsync(filePaths);
+        //                break;
+        //        }
+
+        //        MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //}
 
         private void BatchUnhideExcelWorksheets()
         {
