@@ -209,48 +209,6 @@ namespace COMIGHT
 
         }
 
-        //private async Task BatchAdjustWordDocumentsAsync()
-        //{
-        //    try
-        //    {
-        //        string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-排版", "2-修复混乱格式" });
-        //        InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-        //        if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        List<string>? filePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        switch (functionNum) //根据功能序号进入相应的分支
-        //        {
-        //            case 1: //排版
-        //                await FormatWordDocumentsAsync(filePaths);
-        //                break;
-        //            case 2: //修复混乱格式
-        //                await RepairWordDocumentsAsync(filePaths);
-        //                break;
-        //        }
-
-        //        MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
         private void BatchUnhideExcelWorksheets()
         {
             try
@@ -290,83 +248,6 @@ namespace COMIGHT
                 MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
-        //private void BatchAdjustExcelWorksheets()
-        //{
-        //    try
-        //    {
-        //        string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-调整Excel工作表打印版式；", "2-撤销Excel工作表隐藏状态；" });
-        //        InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-        //        if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        int fileNum = 0;
-        //        foreach (string filePath in filePaths) //遍历所有文件
-        //        {
-        //            switch (functionNum) //根据功能序号进入相应的分支
-        //            {
-        //                case 1: //调整Excel工作表打印版式
-        //                    GetHeaderAndFooterCount(out int headerCount, out int footerCount); //获取表头、表尾行数
-        //                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
-        //                    {
-        //                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
-        //                        {
-        //                            TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
-        //                            RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
-        //                            FormatExcelWorksheet(excelWorksheet, headerCount, footerCount); //设置当前Excel工作表格式
-        //                            if (excelWorksheet.Index == excelPackage.Workbook.Worksheets.Count - 1) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
-        //                            {
-        //                                excelPackage.Save();
-        //                            }
-        //                        }
-        //                    }
-        //                    fileNum++; //文件计数器加1
-
-        //                    break;
-
-        //                case 2:  //撤销Excel工作表隐藏状态             
-        //                    int hiddenExcelWorksheetCount = 0;
-        //                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
-        //                    {
-        //                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历所有Excel工作表
-        //                        {
-        //                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible) //如果当前Excel工作表不可见，则将其设为可见，隐藏工作表计数器加一
-        //                            {
-        //                                excelWorksheet.Hidden = eWorkSheetHidden.Visible;
-        //                                hiddenExcelWorksheetCount++;
-        //                            }
-        //                        }
-        //                        if (hiddenExcelWorksheetCount > 0) //如果隐藏Excel工作表数量大于0
-        //                        {
-        //                            fileNum++;  //文件计数器加一
-        //                        }
-        //                        excelPackage.Save(); //保存Excel工作簿
-        //                    }
-
-        //                    break;
-        //            }
-        //        }
-        //        MessageBox.Show($"{fileNum}个文件操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-        //}
 
         private void BatchProcessExcelWorksheets()
         {
@@ -1945,28 +1826,15 @@ namespace COMIGHT
                     dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
                 }
 
-                DataTable? sectorsDataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Sectors"); //读取数据库Excel工作簿的“行业”工作表，赋值给行业DataTable变量
-                StringBuilder sectorsStrBu = new StringBuilder(); //定义行业字符串构建器
-                if (sectorsDataTable != null) //如果行业DataTable变量不为null
-                {
-                    foreach (DataRow dataRow in sectorsDataTable.Rows) //遍历行业DataTable所有数据行
-                    {
-                        sectorsStrBu.Append(Convert.ToString(dataRow["Sector"]) + '|');  //将每个数据行的"Sector"数据列数据末尾添加分隔符'|'后再追加到字符串构建器中
-                    }
-                }
-                string sectorsRegEx = sectorsStrBu.ToString().Trim('|'); //将字符串构建器的内容转换成字符串，并删除首尾的'|'字符
-                Regex regExSectors = new Regex(sectorsRegEx); //定义行业正则表达式变量，匹配模式为指定的行业
-
                 DataTable targetDataTable = dataTable.AsEnumerable().Where(
                     dataRow =>
                     {
-                        string sector = Convert.ToString(dataRow[sectorDataColumnName])!; //将当前数据行的行业数据列数据赋值给行业变量
                         double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
                         double.TryParse((string?)dataRow[prDataColumnName], out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
                         double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
-                        //筛选PE冗余比大于0小于100，现价大于等于10，行业被行业正则表达式匹配成功的记录（此时"dataRow =>"lambda表达式函数返回true）
+                        //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
                         //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
-                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10 && regExSectors.IsMatch(sector);
+                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10; 
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
                 if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
@@ -2175,8 +2043,6 @@ namespace COMIGHT
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {
-
-
             //InputDialog inputDialog = new InputDialog("字符串1", "我是谁"); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
             //{
@@ -2210,7 +2076,7 @@ namespace COMIGHT
             //}
             //string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
             //string result = GetArabicYear(yearStr);
-            //MessageBox.Show("年份为：" + result);
+            //MessageBox.Show("数字年份为：" + result);
 
             //InputDialog inputDialog = new InputDialog("原文", ""); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
@@ -2220,9 +2086,7 @@ namespace COMIGHT
             //string inText = inputDialog.Answer; //获取对话框返回的功能选项
             //string result = inText.PutHeadingSentenceFirst();
             //MessageBox.Show("标题提前后：" + result);
-
         }
-
         
     }
 }
