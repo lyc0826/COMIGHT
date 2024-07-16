@@ -1725,10 +1725,14 @@ namespace COMIGHT
 
                                 // 更新“小标题”工作表内容
                                 int lastRowIndex = headingsWorksheet.Dimension?.End.Row ?? 0; //获取“小标题”工作表最末行的索引号（如果工作表为空，则为0）
-                                headingsWorksheet.Cells[lastRowIndex + 1, 1, lastRowIndex + 1, 3].Style.Numberformat.Format = "@"; // 将“小标题”工作表第一个空白行第1至3列的单元格的格式设为文本
-                                headingsWorksheet.Cells[lastRowIndex + 1, 1].Value = bodyTextsWorksheet.Cells[i, 1].Text; // 将当前行的小标题级别赋值给“小标题”工作表第一个空白行的小标题级别单元格
-                                headingsWorksheet.Cells[lastRowIndex + 1, 2].Value = bodyTextsWorksheet.Cells[i, 2].Text; // 将当前行的小标题编号赋值给“小标题”工作表第一个空白行的小标题编号单元格
-                                headingsWorksheet.Cells[lastRowIndex + 1, 3].Value = headingText; // 将小标题文字赋值给“小标题”工作表第一个空白行的小标题文字单元格   
+                                //将“小标题”工作表第一个空白行第1至6列的单元格赋值给小标题单元格组变量
+                                ExcelRange headingsCells = headingsWorksheet.Cells[lastRowIndex + 1, 1, lastRowIndex + 1, 6];
+                                headingsCells.Style.Numberformat.Format = "@"; // 将小标题单元格组的格式设为文本
+                                //将当前行的小标题级别、编号、正文、完成时限、责任部门、分类赋值给小标题单元格组
+                                headingsCells.LoadFromArrays(new List<object[]> { new object[]
+                                    {bodyTextsWorksheet.Cells[i, 1].Text, bodyTextsWorksheet.Cells[i, 2].Text, headingText,
+                                     bodyTextsWorksheet.Cells[i, 4].Text, bodyTextsWorksheet.Cells[i, 5].Text, bodyTextsWorksheet.Cells[i, 6].Text} });
+
                             }
 
                             //将当前行的小标题编号和小标题正文文字添加到完整文章列表
