@@ -237,7 +237,7 @@ namespace COMIGHT
             if (url != null && url.Length > 0)  //如果网址变量不为null且字数大于0
             {
                 //正则表达式匹配模式设为：开头标记，“http”，“s”至多一个，“://”，如果输入网址匹配失败，则在输入网址前加上"http://"
-                if (!Regex.IsMatch(url, @"^http[s]?://")) 
+                if (!Regex.IsMatch(url, @"^http[s]?://"))
                 {
                     url = "http://" + url;
                 }

@@ -5,7 +5,6 @@ using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Export.ToDataTable;
 using OfficeOpenXml.Style;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -190,17 +189,17 @@ namespace COMIGHT
                 {
                     excelWorksheet.Rows[i].Height = 30; //设置当前行的行高为指定值
                     ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
-                    
+
                     int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
                     //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false; 
+                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
                     //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
                     //获取“是否手动调整行高”值：如果行单元格被合并，则得到true；否则得到false
                     bool customHeight = isRowMerged ? true : false;
                     //获取表格标题字体大小：如果行单元格被合并且当前行为第一行（表格标题行），则得到14；否则得到12
                     int titleFontSize = (isRowMerged && i == 1) ? 14 : 12;
-                    
+
                     //设置当前行所有单元格的边框
                     headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
                     headerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
@@ -659,7 +658,7 @@ namespace COMIGHT
         {
             string outText = inText;
             // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
-                //[^\S\n]+与(?:(?!\n)\s)+等同
+            //[^\S\n]+与(?:(?!\n)\s)+等同
             outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
 
             // 文档分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
@@ -798,7 +797,7 @@ namespace COMIGHT
             int bodyParagraphCount = Math.Max(1, lstParagraphs.Count(p => p.Length >= 50)); //计算字数大于等于50字的段落数量（正文段落），如果结果小于1则限定为1
 
             //定义冗余文字正则表达式变量，匹配模式为：前方出现“。；;”，任意字符任意多个（尽可能少），阿拉伯数字至少一个、小数点至多一个、阿拉伯数字任意多个（数字捕获组），任意字符任意多个（尽可能少），“。；;”
-            Regex regExRedundantTexts = new Regex(@"(?<=[。；;]).*?(\d+\.?\d*)?.*?[。；;]"); 
+            Regex regExRedundantTexts = new Regex(@"(?<=[。；;]).*?(\d+\.?\d*)?.*?[。；;]");
 
             for (int i = lstParagraphs.Count - 1; i >= 0; i--)  //遍历段落列表元素
             {
@@ -1215,7 +1214,7 @@ namespace COMIGHT
                             if (selection.Paragraphs[1].Range.Sentences.Count == 1)
                             {
                                 //正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上；如果选区文字匹配成功（为三级小标题），则将当前小标题的大纲级别设为3级加大纲级别偏移量
-                                if (Regex.IsMatch(selection.Range.Text, @"(?<=^|\n|\r)\d+")) 
+                                if (Regex.IsMatch(selection.Range.Text, @"(?<=^|\n|\r)\d+"))
                                 {
                                     selection.Paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3 + outlineLevelOffset;
                                 }
@@ -1425,7 +1424,7 @@ namespace COMIGHT
 
                         msWordDocument.Save(); // 保存Word文档
                         msWordDocument.Close(); // 关闭Word文档
-                          
+
                     }
 
                 }
@@ -1464,7 +1463,7 @@ namespace COMIGHT
                         //将拆分后文字列表当前元素的文字按修订标记字符拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
                         List<string> lstRevisedTexts = lstSplittedTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
-                        
+
                         //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
                         lstSplittedTexts[i] = MergeRevision(lstRevisedTexts);
 
@@ -1534,7 +1533,7 @@ namespace COMIGHT
                     {
                         return;
                     }
-                    
+
                     ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets[0]; // 将“小标题”（第1张，0号）工作表赋值给“小标题”工作表变量
                     // 删除工作表中的所有行
                     for (int i = headingsWorksheet.Dimension.End.Row; i >= 2; i--)
@@ -1784,7 +1783,7 @@ namespace COMIGHT
 
         public static void SetPandocPath()
         {
-            try 
+            try
             {
                 string currentPandocPath = Properties.Settings.Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给当前Pandoc程序文件路径全名变量
                 InputDialog inputDialog = new InputDialog("输入Pandoc.exe程序文件路径", currentPandocPath); //弹出对话框，输入Pandoc程序文件路径全名
