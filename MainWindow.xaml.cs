@@ -1826,28 +1826,15 @@ namespace COMIGHT
                     dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
                 }
 
-                DataTable? sectorsDataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Sectors"); //读取数据库Excel工作簿的“行业”工作表，赋值给行业DataTable变量
-                StringBuilder sectorsStrBu = new StringBuilder(); //定义行业字符串构建器
-                if (sectorsDataTable != null) //如果行业DataTable变量不为null
-                {
-                    foreach (DataRow dataRow in sectorsDataTable.Rows) //遍历行业DataTable所有数据行
-                    {
-                        sectorsStrBu.Append(Convert.ToString(dataRow["Sector"]) + '|');  //将每个数据行的"Sector"数据列数据末尾添加分隔符'|'后再追加到字符串构建器中
-                    }
-                }
-                string sectorsRegEx = sectorsStrBu.ToString().Trim('|'); //将字符串构建器的内容转换成字符串，并删除首尾的'|'字符
-                Regex regExSectors = new Regex(sectorsRegEx); //定义行业正则表达式变量，匹配模式为指定的行业
-
                 DataTable targetDataTable = dataTable.AsEnumerable().Where(
                     dataRow =>
                     {
-                        string sector = Convert.ToString(dataRow[sectorDataColumnName])!; //将当前数据行的行业数据列数据赋值给行业变量
                         double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
                         double.TryParse((string?)dataRow[prDataColumnName], out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
                         double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
-                        //筛选PE冗余比大于0小于100，现价大于等于10，行业被行业正则表达式匹配成功的记录（此时"dataRow =>"lambda表达式函数返回true）
+                        //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
                         //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
-                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10 && regExSectors.IsMatch(sector);
+                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10; 
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
                 if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
