@@ -1549,11 +1549,11 @@ namespace COMIGHT
                     excelPackage.Workbook.Worksheets.Copy(bodyTextsWorksheet.Name, $"备份{new Random().Next(1000, 10000)}"); //将“主体”Excel工作表复制为“备份”工作表
                     bodyTextsWorksheet.Select();
 
-                    //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，将小标题句提到最前方，最后将各段分置于单独的行中
+                    //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中
                     PreprocessDocumentTexts(bodyTextsWorksheet.Cells[2, 3, (bodyTextsWorksheet.Dimension?.End.Row ?? 2), 3]);
 
                     //将下方无正文的小标题行设为隐藏：
-                    for (int i = 2; i <= bodyTextsWorksheet.Dimension!.End.Row; i++)
+                    for (int i = 2; i <= bodyTextsWorksheet.Dimension!.End.Row; i++) //遍历“主体”工作表从第2行到最末行的所有行
                     {
                         if (!bodyTextsWorksheet.Rows[i].Hidden) //如果当前行不是隐藏行
                         {
@@ -1692,6 +1692,7 @@ namespace COMIGHT
                                 {
                                     bodyTextsWorksheet.Cells[i, 2].Value = "";
                                 }
+                                
                                 // 如果基准行小标题编号单元格为空，且文字字数少于50字（视为多余的纯小标题）
                                 if (bodyTextsWorksheet.Cells[i, 2].Text == "" && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50)
                                 {
