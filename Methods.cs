@@ -1560,7 +1560,11 @@ namespace COMIGHT
                             int paragraphsCount = 0;
                             if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级") && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50) //如果当前行文字含小标题且字数小于50字（纯小标题行，基准小标题行）
                             {
-                                if (i < bodyTextsWorksheet.Dimension.Rows)  //如果基准小标题行不为最后一行
+                                if (i == bodyTextsWorksheet.Dimension.Rows)  //如果当前行（基准小标题行）为最后一行
+                                {
+                                    bodyTextsWorksheet.Rows[i].Hidden = true; //将当前行（基准小标题行）隐藏
+                                }
+                                else //否则
                                 {
                                     for (int k = i + 1; k <= bodyTextsWorksheet.Dimension.End.Row; k++)  //遍历从基准小标题行的下一行开始直到最后一行的所有行（比较行）
                                     {
@@ -1578,12 +1582,12 @@ namespace COMIGHT
                                             }
                                         }
                                     }
-                                    if (paragraphsCount == 0) bodyTextsWorksheet.Rows[i].Hidden = true; //如果累计的正文段落数为零（基准小标题下方无正文），则将基准小标题行隐藏
+                                    if (paragraphsCount == 0)
+                                    {
+                                        bodyTextsWorksheet.Rows[i].Hidden = true; //如果累计的正文段落数为零（基准小标题下方无正文），则将基准小标题行隐藏
+                                    }
                                 }
-                                else //否则，则将当前行（基准小标题行）隐藏
-                                {
-                                    bodyTextsWorksheet.Rows[i].Hidden = true;
-                                }
+                                  
                             }
                         }
                     }
@@ -1603,7 +1607,7 @@ namespace COMIGHT
                     {
                         if (bodyTextsWorksheet.Rows[i].Hidden) //如果当前行是隐藏行
                         {
-                            bodyTextsWorksheet.Cells[i, 2].Value = "X"; //将小标题编号单元格赋值为“X”（忽略行）
+                            bodyTextsWorksheet.Cells[i, 2].Value = "X"; //将当前行小标题编号单元格赋值为“X”（忽略行）
                         }
                         else //否则
                         {
