@@ -803,8 +803,8 @@ namespace COMIGHT
             {
                 bool paragraphIsShortened = false; //“段落是否缩短”变量赋值为false
                 MatchCollection matchesRedundantTexts = regExRedundantTexts.Matches(lstParagraphs[i]); //获取当前元素（段落）经过冗余文字正则表达式匹配的结果集合
-                //将匹配结果集合转换为单个匹配的枚举集合，颠倒元素顺序，再按捕获组数量从多到少排序，转换成列表，赋值给冗余文字匹配结果列表
-                List<Match> lstMatchesRedundantTexts = matchesRedundantTexts.Cast<Match>().Reverse().OrderByDescending(m => m.Groups.Count).ToList();
+                //将匹配结果集合转换为单个匹配的枚举集合，颠倒元素顺序，再按捕获组数量从少到多排序，转换成列表，赋值给冗余文字匹配结果列表（段落中最靠尾部的句子、含数字最少的句子排在前）
+                List<Match> lstMatchesRedundantTexts = matchesRedundantTexts.Cast<Match>().Reverse().OrderBy(m => m.Groups.Count).ToList();
 
                 //如果当前元素（段落）的字数大于限定至目标字数后平均每个正文段落的字数（正文段落总字数约等于全文总字数的95%），则继续循环
                 while (lstParagraphs[i].Length > targetLength * 0.95 / bodyParagraphCount)
@@ -931,7 +931,7 @@ namespace COMIGHT
                         MSWordDocument msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给初始Word文档变量
 
                         // 判断是否为空文档
-                        if (msWordDocument.Content.Text.Trim().Length <= 1) // 如果将 Word 换行符全部删除后，剩下的字符数小于等于1，则结束本过程
+                        if (msWordDocument.Content.Text.Trim().Length <= 1) // 如果将Word换行符全部删除后，剩下的字符数小于等于1，则结束本过程
                         {
                             return;
                         }
@@ -1644,7 +1644,7 @@ namespace COMIGHT
                                     break;
                                 case "4级":
                                     bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "（" + heading4Num + "）";
+                                    bodyTextsWorksheet.Cells[i, 2].Value = "(" + heading4Num + ")";
                                     checkHeadingNecessity = heading4Num == 1 ? true : false;
                                     heading4Num++;
                                     headingShiNum = 1;
