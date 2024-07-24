@@ -94,7 +94,7 @@ namespace COMIGHT
             string latestURL = Properties.Settings.Default.latestURL; //读取设置中保存的网址
             WebView_OpenNewUrl(latestURL); //打开网址
 
-            DataTable? dataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
+            DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
 
             if (dataTable != null) //如果DataTable变量不为null
             {

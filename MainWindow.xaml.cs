@@ -706,8 +706,8 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], 1, headerCount, footerCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
-                DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], 1, headerCount, footerCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+                DataTable? startDataTable = ReadExcelWorksheetIntoDataTableAsString(startFilePaths[0], 1, headerCount, footerCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+                DataTable? endDataTable = ReadExcelWorksheetIntoDataTableAsString(endFilePaths[0], 1, headerCount, footerCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
 
                 if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则结束本过程
                 {
@@ -1142,7 +1142,7 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"文件夹_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
@@ -1798,7 +1798,7 @@ namespace COMIGHT
                 string pbDataColumnName = lstDataColumnNamesStr[2];
                 string peDataColumnName = lstDataColumnNamesStr[3];
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
                 {
                     throw new Exception("无有效数据！");

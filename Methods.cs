@@ -371,7 +371,7 @@ namespace COMIGHT
         {
             if (regExStopWords == null) //如果停止词正则表达式变量为null
             {
-                DataTable? stopWordsDataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Stop Words"); //读取数据库Excel工作簿的“停止词”工作表，赋值给停止词DataTable变量
+                DataTable? stopWordsDataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Stop Words"); //读取数据库Excel工作簿的“停止词”工作表，赋值给停止词DataTable变量
                 StringBuilder stopWordsStrBu = new StringBuilder(); //定义停止词字符串构建器
                 if (stopWordsDataTable != null) //如果停止词DataTable变量不为null
                 {
@@ -573,7 +573,7 @@ namespace COMIGHT
 
         }
 
-        public static DataTable? ReadExcelWorksheetIntoDataTable(string filePath, object worksheetID, int headerCount = 1, int footerCount = 0)
+        public static DataTable? ReadExcelWorksheetIntoDataTableAsString(string filePath, object worksheetID, int headerCount = 1, int footerCount = 0)
         {
             try
             {
@@ -1601,7 +1601,11 @@ namespace COMIGHT
 
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++) //遍历“主体”工作表第2行开始到最末行的所有行
                     {
-                        if (!bodyTextsWorksheet.Rows[i].Hidden) // 如果当前行不是隐藏行
+                        if (bodyTextsWorksheet.Rows[i].Hidden) //如果当前行是隐藏行
+                        {
+                            bodyTextsWorksheet.Cells[i, 2].Value = "X"; //将小标题编号单元格赋值为“X”（忽略行）
+                        }
+                        else //否则
                         {
                             // 给小标题编号
                             bool checkHeadingNecessity = false; // “检查小标题编号必要性”变量初始赋值为False
@@ -1664,9 +1668,13 @@ namespace COMIGHT
                             //删除多余的小标题编号（如果同级小标题编号只有1没有2，则将编号1删去）
                             if (checkHeadingNecessity) // 如果需要检查小标题编号的必要性（当前小标题的编号为1）
                             {
-                                int headingsCount = 1;
-                                if (i < bodyTextsWorksheet.Dimension.End.Row)  // 如果当前行（基准小标题行）不为最后一行
+                                if (i == bodyTextsWorksheet.Dimension.End.Row)  // 如果当前行（基准小标题行）为最后一行
                                 {
+                                    bodyTextsWorksheet.Cells[i, 2].Value = ""; //将当前行（基准小标题行）的小标题编号单元格清空
+                                }
+                                else //否则
+                                {
+                                    int headingsCount = 1;
                                     for (int k = i + 1; k <= bodyTextsWorksheet.Dimension.End.Row; k++)  // 遍历从基准行的下一行开始直到最后一行的所有行（比较行）
                                     {
                                         if (!bodyTextsWorksheet.Rows[k].Hidden)  // 如果当前比较行不是隐藏行
@@ -1688,11 +1696,7 @@ namespace COMIGHT
                                         bodyTextsWorksheet.Cells[i, 2].Value = "";
                                     }
                                 }
-                                else // 否则，将当前行（基准小标题行）的小标题编号单元格清空
-                                {
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "";
-                                }
-                                
+
                                 // 如果基准行小标题编号单元格为空，且文字字数少于50字（视为多余的纯小标题）
                                 if (bodyTextsWorksheet.Cells[i, 2].Text == "" && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50)
                                 {
@@ -1700,10 +1704,7 @@ namespace COMIGHT
                                 }
                             }
                         }
-                        else // 否则，则将小标题编号单元格赋值为“X”（忽略行）
-                        {
-                            bodyTextsWorksheet.Cells[i, 2].Value = "X";
-                        }
+  
                     }
 
                     ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题首尾”工作表（第2张，1号）赋值给大标题首尾工作表变量
