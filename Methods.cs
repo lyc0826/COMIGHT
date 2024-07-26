@@ -122,7 +122,7 @@ namespace COMIGHT
                     //第一个Address表示数据验证规则所应用的单元格区域地址，第二个Address表示前述单元格区域地址的字符串表达形式，如“A2:Axx”
                     ExcelDataValidationList? existingValidation = excelWorksheet.DataValidations.OfType<ExcelDataValidationList>()
                         .FirstOrDefault(v => v.Address.Address == rangeStr);
-                    string[] arrValidations = new string[] { "0级", "1级", "2级", "3级", "4级", "条", "是" }; //将数据验证项赋值给数据验证数组
+                    string[] arrValidations = new string[] { "0级", "1级", "2级", "3级", "4级", "条", "是", "接上段" }; //将数据验证项赋值给数据验证数组
 
                     if (existingValidation == null) // 如果不存在数据验证，则添加新的数据验证
                     {
@@ -1742,7 +1742,14 @@ namespace COMIGHT
 
                             //将当前行的小标题编号和小标题正文文字添加到完整文章列表
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
-                            lstFullTexts.Add(paragraphText); //将段落文字添加到完整文章列表
+                            if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表
+                            {
+                                lstFullTexts.Add(paragraphText); 
+                            }
+                            else  //否则，将段落文字累加到完整文章列表最后一个元素
+                            {
+                                lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
+                            }
                         }
                     }
 
