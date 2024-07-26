@@ -1746,7 +1746,7 @@ namespace COMIGHT
                             {
                                 lstFullTexts.Add(paragraphText); 
                             }
-                            else  //否则，将段落文字累加到完整文章列表最后一个元素
+                            else  //否则，将段落文字累加到完整文章列表最后一个元素的文字末尾
                             {
                                 lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
                             }
