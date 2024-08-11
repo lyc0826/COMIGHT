@@ -726,29 +726,14 @@ namespace COMIGHT
 
         public static string RemoveHeadingNum(string inText, bool keepLeadingNum = false)
         {
-            //定义小标题编号正则表达式字符串：“#*_->~”至少一个，空格至多一个（MD标记捕获组，至多一个），空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分|篇|章|节” “：:”空格至少一个/或“）)、\.．，,是”，空格制表符任意多个
-            string headingNumRegEx = @"([#\*_\->~]+[ ]?)?[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节)[：:| ]+|[）\)、\.．，,是])[ |\t]*";
+            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分|篇|章|节” “：:”空格至少一个/或“）)、\.．，,是”，空格制表符任意多个
+            string headingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节)[：:| ]+|[）\)、\.．，,是])[ |\t]*";
             //定义开头标记正则表达式字符串：如果“保留开头小标题编号”为false，则为：前方出现开头标记或“。：:；;”；否则为：前方出现“。：:；;”
             string leadingMarksRegEx = !keepLeadingNum ? @"(?<=^|[。：:；;])" : @"(?<=[。：:；;])";
             //定义小标题编号正则表达式变量，匹配模式为：开头标记和小标题编号两个正则表达式字符串的合并字符串
             Regex regExHeadingNum = new Regex(leadingMarksRegEx + headingNumRegEx, RegexOptions.Multiline);
-            return regExHeadingNum.Replace(inText, "$1"); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为捕获组字符串（如有MD标记则替换为之，否则替换为空），赋值给函数返回值
+            return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
-
-
-        //定义小标题句正则表达式变量，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
-        //public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
-
-        //public static string PutHeadingSentenceFirst(this string inText)
-        //{
-        //    if (string.IsNullOrWhiteSpace(inText)) //如果输入文字为null或全空白字符，则将空字符串赋值给函数返回值
-        //    {
-        //        return string.Empty;
-        //    }
-
-        //    //将输入文本中被小标题句正则表达式匹配到的字符串替换为捕获组2、1、3合并后的字符串（即将小标题句提到最前方），赋值给函数返回值
-        //    return regExHeadingSentence.Replace(inText, "$2$1$3");
-        //}
 
         public enum FileType { Excel, Word, WordAndExcel, Convertible } //定义文件类型枚举
 
@@ -1763,22 +1748,15 @@ namespace COMIGHT
                     excelPackage.Save(); //保存Excel工作簿
                 }
 
-                //获取目标缩短版Word文档文件全名路径
-                string targetShortWordFilePath = Path.Combine(Path.GetDirectoryName(targetWordFilePath)!, $"摘要_{Path.GetFileName(targetWordFilePath)}");
-
                 DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
-                DocX targetShortWordDocument = DocX.Create(targetShortWordFilePath); //新建缩短版Word文档，赋值给目标缩短版Word文档变量
 
                 for (int i = 0; i < lstFullTexts.Count; i++)  //遍历完整文章列表中的所有元素
                 {
                     targetWordDocument.InsertParagraph(lstFullTexts[i]); //将当前元素的段落文字插入目标Word文档
-                    targetShortWordDocument.InsertParagraph(ProceedToExtractText(lstFullTexts[i], '\0', 100)); //将当前元素的段落文字缩短至目标字数，插入目标缩短版Word文档
                 }
 
                 targetWordDocument.Save(); //保存目标Word文档
-                targetShortWordDocument.Save(); //保存目标缩短版Word文档
                 targetWordDocument.Dispose(); //关闭目标Word文档
-                targetShortWordDocument.Dispose(); //关闭目标缩短版Word文档
 
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
                 if (MessageBox.Show("是否需要排版？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)

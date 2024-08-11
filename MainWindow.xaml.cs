@@ -157,11 +157,6 @@ namespace COMIGHT
             this.Close();
         }
 
-        private void BtnExtractText_Click(object sender, RoutedEventArgs e)
-        {
-            ExtractText();
-        }
-
         private void TxtbxExportableText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
@@ -169,20 +164,6 @@ namespace COMIGHT
             {
                 txtbxExportableText.Text = "";
             }
-        }
-
-        private void TxtbxInText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
-            if (MessageBox.Show("是否清除内容？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            {
-                txtbxInText.Text = "";
-            }
-        }
-
-        private void TxtbxInText_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            txtbxTargetLength.Text = Convert.ToString(txtbxInText.Text.Length); //将输入文本框文字的字数赋值给目标字数文本框
         }
 
 
@@ -1226,25 +1207,25 @@ namespace COMIGHT
             }
         }
 
-        private void ExtractText()
-        {
-            try
-            {
-                int targetLength = Convert.ToInt32(txtbxTargetLength.Text); //获取目标字数
-                string extractedText = ProceedToExtractText(txtbxInText.Text, '\n', targetLength); //将输入文字的总字数缩减到目标字数
+        //private void ExtractText()
+        //{
+        //    try
+        //    {
+        //        int targetLength = Convert.ToInt32(txtbxTargetLength.Text); //获取目标字数
+        //        string extractedText = ProceedToExtractText(txtbxInText.Text, '\n', targetLength); //将输入文字的总字数缩减到目标字数
 
-                txtbxExportableText.Text = extractedText; //将缩短文字赋值给缩短文字文本框
-                txtbxExportableText.Focus(); // 确保文本框获取焦点
-                txtbxExportableText.SelectAll(); //全选文字
-                txtbxExportableText.Copy(); //复制到剪贴板
-                txtbxExportableText.Select(0, 0); //取消全选
-            }
+        //        txtbxExportableText.Text = extractedText; //将缩短文字赋值给缩短文字文本框
+        //        txtbxExportableText.Focus(); // 确保文本框获取焦点
+        //        txtbxExportableText.SelectAll(); //全选文字
+        //        txtbxExportableText.Copy(); //复制到剪贴板
+        //        txtbxExportableText.Select(0, 0); //取消全选
+        //    }
 
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //}
 
         private void ExtractFromWordIntoDocumentTable()
         {
