@@ -3,12 +3,10 @@ using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -159,11 +157,6 @@ namespace COMIGHT
             this.Close();
         }
 
-        private void BtnExtractText_Click(object sender, RoutedEventArgs e)
-        {
-            ExtractText();
-        }
-
         private void TxtbxExportableText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
@@ -171,20 +164,6 @@ namespace COMIGHT
             {
                 txtbxExportableText.Text = "";
             }
-        }
-
-        private void TxtbxInText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
-            if (MessageBox.Show("是否清除内容？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            {
-                txtbxInText.Text = "";
-            }
-        }
-
-        private void TxtbxInText_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            txtbxTargetLength.Text = Convert.ToString(txtbxInText.Text.Length); //将输入文本框文字的字数赋值给目标字数文本框
         }
 
 
@@ -388,7 +367,7 @@ namespace COMIGHT
                         else //否则（使用Excel工作表名称）
                         {
                             //如果当前Excel工作簿没有指定名称的工作表，则直接跳过当前循环进入下一个循环
-                            if (!excelWorkbook.Worksheets.Any(sheet => sheet.Name.Trim() == excelWorksheetName)) 
+                            if (!excelWorkbook.Worksheets.Any(sheet => sheet.Name.Trim() == excelWorksheetName))
                             {
                                 continue;
                             }
@@ -402,7 +381,7 @@ namespace COMIGHT
                         {
                             ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i];
                             //如果当前Excel工作表为隐藏且使用工作表索引号，弹出提示框并结束本过程
-                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex) 
+                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex)
                             {
                                 MessageBox.Show("部分文件存在隐藏Excel工作表。先撤销工作表隐藏状态，然后重新确定工作表索引号范围。", "警告", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
@@ -421,11 +400,11 @@ namespace COMIGHT
                                     TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     //如果当前被处理Excel工作表的已使用行数（如果工作表为空，则为0）小于等于表头表尾行数之和，只有表头表尾无有效数据，则直接跳过当前循环并进入下一个循环
-                                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerCount + footerCount) 
+                                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerCount + footerCount)
                                     {
                                         continue;
                                     }
-                                                                        
+
                                     int sourceStartRowIndex = fileNum == 1 && i == excelWorksheetIndexLower ? 1 : headerCount + 1; //获取被处理工作表起始行索引号：如果当前是第一个Excel工作簿的第一个工作表，则得到1；否则得到表头行数+1
                                     int sourceEndRowIndex = excelWorksheet.Dimension!.End.Row - footerCount; //获取被处理工作表末尾行索引号：已使用区域最末行的索引号-表尾行数
                                     int targetStartRowIndex = (targetExcelWorksheet.Dimension?.End.Row ?? 0) + 1; //获取目标工作表起始行索引号：已使用区域最末行的索引号（如果工作表为空，则为0）+1
@@ -635,7 +614,7 @@ namespace COMIGHT
                                     }
 
                                     break;
-                                
+
                                 case 7: //调整工作表打印版式
                                     TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
@@ -648,7 +627,7 @@ namespace COMIGHT
                                     break;
                             }
                         }
-                    
+
                     }
                     fileNum++; //文件计数器加1
                 }
@@ -663,14 +642,14 @@ namespace COMIGHT
 
                     //获取目标工作表表头行数
                     //根据功能序号返回相应的目标工作表表头行数
-                    int targetheaderCount = functionNum switch 
+                    int targetheaderCount = functionNum switch
                     {
                         1 => headerCount,  //记录合并，输出记录合并后的汇总表，表头行数为源数据表格的表头行数
                         3 => 1,  //提取单元格数据，输出提取单元格值后的汇总表，表头行数为1
                         4 => 1,  //文本型数字转数值型，输出未能转换为数值的单元格地址和值的汇总表，表头行数为1
                         _ => 0  //其余情况，表头行数为0
                     };
-                    
+
                     FormatExcelWorksheet(targetExcelWorksheet, targetheaderCount, 0); //设置目标Excel工作表格式
                     FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"{targetExcelWorkbookPrefix}_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                     targetExcelPackage.SaveAs(targetExcelFile);
@@ -708,8 +687,8 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], 1, headerCount, footerCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
-                DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], 1, headerCount, footerCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+                DataTable? startDataTable = ReadExcelWorksheetIntoDataTableAsString(startFilePaths[0], 1, headerCount, footerCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+                DataTable? endDataTable = ReadExcelWorksheetIntoDataTableAsString(endFilePaths[0], 1, headerCount, footerCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
 
                 if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则结束本过程
                 {
@@ -1144,7 +1123,7 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"文件夹_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
@@ -1228,25 +1207,25 @@ namespace COMIGHT
             }
         }
 
-        private void ExtractText()
-        {
-            try
-            {
-                int targetLength = Convert.ToInt32(txtbxTargetLength.Text); //获取目标字数
-                string extractedText = ProceedToExtractText(txtbxInText.Text, '\n', targetLength); //将输入文字的总字数缩减到目标字数
+        //private void ExtractText()
+        //{
+        //    try
+        //    {
+        //        int targetLength = Convert.ToInt32(txtbxTargetLength.Text); //获取目标字数
+        //        string extractedText = ProceedToExtractText(txtbxInText.Text, '\n', targetLength); //将输入文字的总字数缩减到目标字数
 
-                txtbxExportableText.Text = extractedText; //将缩短文字赋值给缩短文字文本框
-                txtbxExportableText.Focus(); // 确保文本框获取焦点
-                txtbxExportableText.SelectAll(); //全选文字
-                txtbxExportableText.Copy(); //复制到剪贴板
-                txtbxExportableText.Select(0, 0); //取消全选
-            }
+        //        txtbxExportableText.Text = extractedText; //将缩短文字赋值给缩短文字文本框
+        //        txtbxExportableText.Focus(); // 确保文本框获取焦点
+        //        txtbxExportableText.SelectAll(); //全选文字
+        //        txtbxExportableText.Copy(); //复制到剪贴板
+        //        txtbxExportableText.Select(0, 0); //取消全选
+        //    }
 
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //}
 
         private void ExtractFromWordIntoDocumentTable()
         {
@@ -1661,7 +1640,7 @@ namespace COMIGHT
 
                 GetFolderFiles(folderPath, separatorsCount, dataTable); //获取文件夹内的文件和下级文件夹信息，并存入DataTable
 
-                void GetFolderFiles(string folderPath, int separatorsCount, DataTable dataTable) 
+                void GetFolderFiles(string folderPath, int separatorsCount, DataTable dataTable)
                 {
                     //如果输入文件夹路径所包含的分隔符数大于指定总分隔符数（文件夹路径级数大于指定级数），则结束本过程
                     if (folderPath.Count(c => c == '\\') > separatorsCount)
@@ -1800,7 +1779,7 @@ namespace COMIGHT
                 string pbDataColumnName = lstDataColumnNamesStr[2];
                 string peDataColumnName = lstDataColumnNamesStr[3];
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
                 {
                     throw new Exception("无有效数据！");
@@ -1834,7 +1813,7 @@ namespace COMIGHT
                         double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
                         //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
                         //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
-                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10; 
+                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10;
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
                 if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
@@ -2087,6 +2066,6 @@ namespace COMIGHT
             //string result = inText.PutHeadingSentenceFirst();
             //MessageBox.Show("标题提前后：" + result);
         }
-        
+
     }
 }

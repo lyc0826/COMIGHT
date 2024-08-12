@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="COMIGHT助手" Width="480" Height="720" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded" >
+        Title="COMIGHT助手" Width="480" Height="360" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded" >
     
     <Grid Margin="3,0,3,3">
         <Grid.ColumnDefinitions>
@@ -14,10 +14,7 @@
         
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" >
@@ -51,23 +48,8 @@
                 <MenuItem x:Name="mnuBrowser" Header="浏览器" Click="MnuBrowser_Click" />
             </Menu>
         </DockPanel>
-        
-        <Grid Grid.Row="1" Grid.Column="0" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Label Content="文字预处理  输入原文↓  目标字数→" Height="30" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"  >
-                <TextBox x:Name="txtbxTargetLength" Height="30" Width="50" TextWrapping="Wrap" Text ="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Button x:Name="btnShortenText" Content="提取" Height="30" Width="50" HorizontalContentAlignment="Center" Click="BtnExtractText_Click" />
-            </StackPanel>
-        </Grid>
-        
-        <TextBox x:Name="txtbxInText" Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxInText_MouseDoubleClick" TextChanged="TxtbxInText_TextChanged" />
-        <Label Content="可导出文字↓" Height="30" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <TextBox x:Name="txtbxExportableText" Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" />
+               
+        <TextBox x:Name="txtbxExportableText" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" />
  
     </Grid>
 

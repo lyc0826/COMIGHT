@@ -5,7 +5,6 @@ using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Export.ToDataTable;
 using OfficeOpenXml.Style;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -123,7 +122,7 @@ namespace COMIGHT
                     //第一个Address表示数据验证规则所应用的单元格区域地址，第二个Address表示前述单元格区域地址的字符串表达形式，如“A2:Axx”
                     ExcelDataValidationList? existingValidation = excelWorksheet.DataValidations.OfType<ExcelDataValidationList>()
                         .FirstOrDefault(v => v.Address.Address == rangeStr);
-                    string[] arrValidations = new string[] { "0级", "1级", "2级", "3级", "4级", "条", "是" }; //将数据验证项赋值给数据验证数组
+                    string[] arrValidations = new string[] { "0级", "1级", "2级", "3级", "4级", "条", "是", "接上段" }; //将数据验证项赋值给数据验证数组
 
                     if (existingValidation == null) // 如果不存在数据验证，则添加新的数据验证
                     {
@@ -190,17 +189,17 @@ namespace COMIGHT
                 {
                     excelWorksheet.Rows[i].Height = 30; //设置当前行的行高为指定值
                     ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
-                    
+
                     int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
                     //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false; 
+                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
                     //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
                     //获取“是否手动调整行高”值：如果行单元格被合并，则得到true；否则得到false
                     bool customHeight = isRowMerged ? true : false;
                     //获取表格标题字体大小：如果行单元格被合并且当前行为第一行（表格标题行），则得到14；否则得到12
                     int titleFontSize = (isRowMerged && i == 1) ? 14 : 12;
-                    
+
                     //设置当前行所有单元格的边框
                     headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
                     headerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
@@ -372,7 +371,7 @@ namespace COMIGHT
         {
             if (regExStopWords == null) //如果停止词正则表达式变量为null
             {
-                DataTable? stopWordsDataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Stop Words"); //读取数据库Excel工作簿的“停止词”工作表，赋值给停止词DataTable变量
+                DataTable? stopWordsDataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Stop Words"); //读取数据库Excel工作簿的“停止词”工作表，赋值给停止词DataTable变量
                 StringBuilder stopWordsStrBu = new StringBuilder(); //定义停止词字符串构建器
                 if (stopWordsDataTable != null) //如果停止词DataTable变量不为null
                 {
@@ -574,7 +573,7 @@ namespace COMIGHT
 
         }
 
-        public static DataTable? ReadExcelWorksheetIntoDataTable(string filePath, object worksheetID, int headerCount = 1, int footerCount = 0)
+        public static DataTable? ReadExcelWorksheetIntoDataTableAsString(string filePath, object worksheetID, int headerCount = 1, int footerCount = 0)
         {
             try
             {
@@ -659,7 +658,7 @@ namespace COMIGHT
         {
             string outText = inText;
             // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
-                //[^\S\n]+与(?:(?!\n)\s)+等同
+            //[^\S\n]+与(?:(?!\n)\s)+等同
             outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
 
             // 文档分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
@@ -727,29 +726,14 @@ namespace COMIGHT
 
         public static string RemoveHeadingNum(string inText, bool keepLeadingNum = false)
         {
-            //定义小标题编号正则表达式字符串：“#*_->~”至少一个，空格至多一个（MD标记捕获组，至多一个），空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分|篇|章|节” “：:”空格至少一个/或“）)、\.．，,是”，空格制表符任意多个
-            string headingNumRegEx = @"([#\*_\->~]+[ ]?)?[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节)[：:| ]+|[）\)、\.．，,是])[ |\t]*";
+            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分|篇|章|节” “：:”空格至少一个/或“）)、\.．，,是”，空格制表符任意多个
+            string headingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节)[：:| ]+|[）\)、\.．，,是])[ |\t]*";
             //定义开头标记正则表达式字符串：如果“保留开头小标题编号”为false，则为：前方出现开头标记或“。：:；;”；否则为：前方出现“。：:；;”
             string leadingMarksRegEx = !keepLeadingNum ? @"(?<=^|[。：:；;])" : @"(?<=[。：:；;])";
             //定义小标题编号正则表达式变量，匹配模式为：开头标记和小标题编号两个正则表达式字符串的合并字符串
             Regex regExHeadingNum = new Regex(leadingMarksRegEx + headingNumRegEx, RegexOptions.Multiline);
-            return regExHeadingNum.Replace(inText, "$1"); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为捕获组字符串（如有MD标记则替换为之，否则替换为空），赋值给函数返回值
+            return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
-
-
-        //定义小标题句正则表达式变量，匹配模式为：开头标记，任意字符0-50个（尽可能少）（捕获组1），非“。：:；;，,”字符任意多个，“。：:”（捕获组2，即小标题句），任意字符任意多个（捕获组3），结尾标记
-        //public static Regex regExHeadingSentence = new Regex(@"^(.{0,50}?)([^。：:；;，,]*[。：:])(.*)$", RegexOptions.Multiline);
-
-        //public static string PutHeadingSentenceFirst(this string inText)
-        //{
-        //    if (string.IsNullOrWhiteSpace(inText)) //如果输入文字为null或全空白字符，则将空字符串赋值给函数返回值
-        //    {
-        //        return string.Empty;
-        //    }
-
-        //    //将输入文本中被小标题句正则表达式匹配到的字符串替换为捕获组2、1、3合并后的字符串（即将小标题句提到最前方），赋值给函数返回值
-        //    return regExHeadingSentence.Replace(inText, "$2$1$3");
-        //}
 
         public enum FileType { Excel, Word, WordAndExcel, Convertible } //定义文件类型枚举
 
@@ -798,14 +782,14 @@ namespace COMIGHT
             int bodyParagraphCount = Math.Max(1, lstParagraphs.Count(p => p.Length >= 50)); //计算字数大于等于50字的段落数量（正文段落），如果结果小于1则限定为1
 
             //定义冗余文字正则表达式变量，匹配模式为：前方出现“。；;”，任意字符任意多个（尽可能少），阿拉伯数字至少一个、小数点至多一个、阿拉伯数字任意多个（数字捕获组），任意字符任意多个（尽可能少），“。；;”
-            Regex regExRedundantTexts = new Regex(@"(?<=[。；;]).*?(\d+\.?\d*)?.*?[。；;]"); 
+            Regex regExRedundantTexts = new Regex(@"(?<=[。；;]).*?(\d+\.?\d*)?.*?[。；;]");
 
             for (int i = lstParagraphs.Count - 1; i >= 0; i--)  //遍历段落列表元素
             {
                 bool paragraphIsShortened = false; //“段落是否缩短”变量赋值为false
                 MatchCollection matchesRedundantTexts = regExRedundantTexts.Matches(lstParagraphs[i]); //获取当前元素（段落）经过冗余文字正则表达式匹配的结果集合
-                //将匹配结果集合转换为单个匹配的枚举集合，颠倒元素顺序，再按捕获组数量从多到少排序，转换成列表，赋值给冗余文字匹配结果列表
-                List<Match> lstMatchesRedundantTexts = matchesRedundantTexts.Cast<Match>().Reverse().OrderByDescending(m => m.Groups.Count).ToList();
+                //将匹配结果集合转换为单个匹配的枚举集合，颠倒元素顺序，再按捕获组数量从少到多排序，转换成列表，赋值给冗余文字匹配结果列表（段落中最靠尾部的句子、含数字最少的句子排在前）
+                List<Match> lstMatchesRedundantTexts = matchesRedundantTexts.Cast<Match>().Reverse().OrderBy(m => m.Groups.Count).ToList();
 
                 //如果当前元素（段落）的字数大于限定至目标字数后平均每个正文段落的字数（正文段落总字数约等于全文总字数的95%），则继续循环
                 while (lstParagraphs[i].Length > targetLength * 0.95 / bodyParagraphCount)
@@ -932,7 +916,7 @@ namespace COMIGHT
                         MSWordDocument msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给初始Word文档变量
 
                         // 判断是否为空文档
-                        if (msWordDocument.Content.Text.Trim().Length <= 1) // 如果将 Word 换行符全部删除后，剩下的字符数小于等于1，则结束本过程
+                        if (msWordDocument.Content.Text.Trim().Length <= 1) // 如果将Word换行符全部删除后，剩下的字符数小于等于1，则结束本过程
                         {
                             return;
                         }
@@ -1215,7 +1199,7 @@ namespace COMIGHT
                             if (selection.Paragraphs[1].Range.Sentences.Count == 1)
                             {
                                 //正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上；如果选区文字匹配成功（为三级小标题），则将当前小标题的大纲级别设为3级加大纲级别偏移量
-                                if (Regex.IsMatch(selection.Range.Text, @"(?<=^|\n|\r)\d+")) 
+                                if (Regex.IsMatch(selection.Range.Text, @"(?<=^|\n|\r)\d+"))
                                 {
                                     selection.Paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3 + outlineLevelOffset;
                                 }
@@ -1425,7 +1409,7 @@ namespace COMIGHT
 
                         msWordDocument.Save(); // 保存Word文档
                         msWordDocument.Close(); // 关闭Word文档
-                          
+
                     }
 
                 }
@@ -1464,7 +1448,7 @@ namespace COMIGHT
                         //将拆分后文字列表当前元素的文字按修订标记字符拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
                         List<string> lstRevisedTexts = lstSplittedTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
-                        
+
                         //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
                         lstSplittedTexts[i] = MergeRevision(lstRevisedTexts);
 
@@ -1534,7 +1518,7 @@ namespace COMIGHT
                     {
                         return;
                     }
-                    
+
                     ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets[0]; // 将“小标题”（第1张，0号）工作表赋值给“小标题”工作表变量
                     // 删除工作表中的所有行
                     for (int i = headingsWorksheet.Dimension.End.Row; i >= 2; i--)
@@ -1550,18 +1534,22 @@ namespace COMIGHT
                     excelPackage.Workbook.Worksheets.Copy(bodyTextsWorksheet.Name, $"备份{new Random().Next(1000, 10000)}"); //将“主体”Excel工作表复制为“备份”工作表
                     bodyTextsWorksheet.Select();
 
-                    //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，将小标题句提到最前方，最后将各段分置于单独的行中
+                    //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中
                     PreprocessDocumentTexts(bodyTextsWorksheet.Cells[2, 3, (bodyTextsWorksheet.Dimension?.End.Row ?? 2), 3]);
 
                     //将下方无正文的小标题行设为隐藏：
-                    for (int i = 2; i <= bodyTextsWorksheet.Dimension!.End.Row; i++)
+                    for (int i = 2; i <= bodyTextsWorksheet.Dimension!.End.Row; i++) //遍历“主体”工作表从第2行到最末行的所有行
                     {
                         if (!bodyTextsWorksheet.Rows[i].Hidden) //如果当前行不是隐藏行
                         {
                             int paragraphsCount = 0;
                             if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级") && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50) //如果当前行文字含小标题且字数小于50字（纯小标题行，基准小标题行）
                             {
-                                if (i < bodyTextsWorksheet.Dimension.Rows)  //如果基准小标题行不为最后一行
+                                if (i == bodyTextsWorksheet.Dimension.Rows)  //如果当前行（基准小标题行）为最后一行
+                                {
+                                    bodyTextsWorksheet.Rows[i].Hidden = true; //将当前行（基准小标题行）隐藏
+                                }
+                                else //否则
                                 {
                                     for (int k = i + 1; k <= bodyTextsWorksheet.Dimension.End.Row; k++)  //遍历从基准小标题行的下一行开始直到最后一行的所有行（比较行）
                                     {
@@ -1579,12 +1567,12 @@ namespace COMIGHT
                                             }
                                         }
                                     }
-                                    if (paragraphsCount == 0) bodyTextsWorksheet.Rows[i].Hidden = true; //如果累计的正文段落数为零（基准小标题下方无正文），则将基准小标题行隐藏
+                                    if (paragraphsCount == 0)
+                                    {
+                                        bodyTextsWorksheet.Rows[i].Hidden = true; //如果累计的正文段落数为零（基准小标题下方无正文），则将基准小标题行隐藏
+                                    }
                                 }
-                                else //否则，则将当前行（基准小标题行）隐藏
-                                {
-                                    bodyTextsWorksheet.Rows[i].Hidden = true;
-                                }
+                                  
                             }
                         }
                     }
@@ -1602,7 +1590,11 @@ namespace COMIGHT
 
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++) //遍历“主体”工作表第2行开始到最末行的所有行
                     {
-                        if (!bodyTextsWorksheet.Rows[i].Hidden) // 如果当前行不是隐藏行
+                        if (bodyTextsWorksheet.Rows[i].Hidden) //如果当前行是隐藏行
+                        {
+                            bodyTextsWorksheet.Cells[i, 2].Value = "X"; //将当前行小标题编号单元格赋值为“X”（忽略行）
+                        }
+                        else //否则
                         {
                             // 给小标题编号
                             bool checkHeadingNecessity = false; // “检查小标题编号必要性”变量初始赋值为False
@@ -1645,7 +1637,7 @@ namespace COMIGHT
                                     break;
                                 case "4级":
                                     bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "（" + heading4Num + "）";
+                                    bodyTextsWorksheet.Cells[i, 2].Value = "(" + heading4Num + ")";
                                     checkHeadingNecessity = heading4Num == 1 ? true : false;
                                     heading4Num++;
                                     headingShiNum = 1;
@@ -1665,9 +1657,13 @@ namespace COMIGHT
                             //删除多余的小标题编号（如果同级小标题编号只有1没有2，则将编号1删去）
                             if (checkHeadingNecessity) // 如果需要检查小标题编号的必要性（当前小标题的编号为1）
                             {
-                                int headingsCount = 1;
-                                if (i < bodyTextsWorksheet.Dimension.End.Row)  // 如果当前行（基准小标题行）不为最后一行
+                                if (i == bodyTextsWorksheet.Dimension.End.Row)  // 如果当前行（基准小标题行）为最后一行
                                 {
+                                    bodyTextsWorksheet.Cells[i, 2].Value = ""; //将当前行（基准小标题行）的小标题编号单元格清空
+                                }
+                                else //否则
+                                {
+                                    int headingsCount = 1;
                                     for (int k = i + 1; k <= bodyTextsWorksheet.Dimension.End.Row; k++)  // 遍历从基准行的下一行开始直到最后一行的所有行（比较行）
                                     {
                                         if (!bodyTextsWorksheet.Rows[k].Hidden)  // 如果当前比较行不是隐藏行
@@ -1689,10 +1685,7 @@ namespace COMIGHT
                                         bodyTextsWorksheet.Cells[i, 2].Value = "";
                                     }
                                 }
-                                else // 否则，将当前行（基准小标题行）的小标题编号单元格清空
-                                {
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "";
-                                }
+
                                 // 如果基准行小标题编号单元格为空，且文字字数少于50字（视为多余的纯小标题）
                                 if (bodyTextsWorksheet.Cells[i, 2].Text == "" && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50)
                                 {
@@ -1700,10 +1693,7 @@ namespace COMIGHT
                                 }
                             }
                         }
-                        else // 否则，则将小标题编号单元格赋值为“X”（忽略行）
-                        {
-                            bodyTextsWorksheet.Cells[i, 2].Value = "X";
-                        }
+  
                     }
 
                     ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题首尾”工作表（第2张，1号）赋值给大标题首尾工作表变量
@@ -1737,7 +1727,14 @@ namespace COMIGHT
 
                             //将当前行的小标题编号和小标题正文文字添加到完整文章列表
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
-                            lstFullTexts.Add(paragraphText); //将段落文字添加到完整文章列表
+                            if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表
+                            {
+                                lstFullTexts.Add(paragraphText); 
+                            }
+                            else  //否则，将段落文字累加到完整文章列表最后一个元素的文字末尾
+                            {
+                                lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
+                            }
                         }
                     }
 
@@ -1751,22 +1748,15 @@ namespace COMIGHT
                     excelPackage.Save(); //保存Excel工作簿
                 }
 
-                //获取目标缩短版Word文档文件全名路径
-                string targetShortWordFilePath = Path.Combine(Path.GetDirectoryName(targetWordFilePath)!, $"摘要_{Path.GetFileName(targetWordFilePath)}");
-
                 DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
-                DocX targetShortWordDocument = DocX.Create(targetShortWordFilePath); //新建缩短版Word文档，赋值给目标缩短版Word文档变量
 
                 for (int i = 0; i < lstFullTexts.Count; i++)  //遍历完整文章列表中的所有元素
                 {
                     targetWordDocument.InsertParagraph(lstFullTexts[i]); //将当前元素的段落文字插入目标Word文档
-                    targetShortWordDocument.InsertParagraph(ProceedToExtractText(lstFullTexts[i], '\0', 100)); //将当前元素的段落文字缩短至目标字数，插入目标缩短版Word文档
                 }
 
                 targetWordDocument.Save(); //保存目标Word文档
-                targetShortWordDocument.Save(); //保存目标缩短版Word文档
                 targetWordDocument.Dispose(); //关闭目标Word文档
-                targetShortWordDocument.Dispose(); //关闭目标缩短版Word文档
 
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
                 if (MessageBox.Show("是否需要排版？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
@@ -1784,7 +1774,7 @@ namespace COMIGHT
 
         public static void SetPandocPath()
         {
-            try 
+            try
             {
                 string currentPandocPath = Properties.Settings.Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给当前Pandoc程序文件路径全名变量
                 InputDialog inputDialog = new InputDialog("输入Pandoc.exe程序文件路径", currentPandocPath); //弹出对话框，输入Pandoc程序文件路径全名
