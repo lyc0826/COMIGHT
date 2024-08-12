@@ -6,6 +6,7 @@ using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Export.ToDataTable;
 using OfficeOpenXml.Style;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1837,7 +1838,7 @@ namespace COMIGHT
             if (matchNumVal.Success) //如果被正则表达式匹配成功
             {
                 //如果将匹配结果转换为double类型成功，则将转换结果赋值给number变量，然后再将number变量值赋值给函数返回值
-                if (double.TryParse(matchNumVal.Value, out double number))
+                if (double.TryParse(matchNumVal.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
                 {
                     return number;
                 }

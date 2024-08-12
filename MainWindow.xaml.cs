@@ -25,7 +25,7 @@ using TableCell = Xceed.Document.NET.Cell;
 using TableRow = Xceed.Document.NET.Row;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-
+using System.Globalization;
 
 
 
@@ -451,8 +451,8 @@ namespace COMIGHT
                                                 string cellStr1 = targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text; //将目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
                                                 string cellStr2 = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text; //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
                                                 double cellNumVal1 = 0, cellNumVal2 = 0;
-                                                double.TryParse(cellStr1, out cellNumVal1); //将单元格字符串1转换成数值，如果成功则将转换后的数值赋值给单元格数值1变量
-                                                double.TryParse(cellStr2, out cellNumVal2); //将单元格字符串2转换成数值，如果成功则将转换后的数值赋值给单元格数值2变量
+                                                double.TryParse(cellStr1, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal1); //将单元格字符串1转换成数值，如果成功则将转换后的数值赋值给单元格数值1变量
+                                                double.TryParse(cellStr2, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal2); //将单元格字符串2转换成数值，如果成功则将转换后的数值赋值给单元格数值2变量
                                                                                             //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
                                                 targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Value = cellNumVal1 + cellNumVal2;
                                             }
@@ -531,7 +531,7 @@ namespace COMIGHT
                                                 //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格数据转换成数值型
                                                 double cellNumVal;
                                                 ExcelRangeBase cell = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1);
-                                                if (double.TryParse(cell.Text, out cellNumVal)) //将当前单元格转换为数值，如果成功则将转换得到的数值赋值给单元格数值变量
+                                                if (double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal)) //将当前单元格转换为数值，如果成功则将转换得到的数值赋值给单元格数值变量
                                                 {
                                                     cell.Style.Numberformat.Format = ""; //将当前单元格的格式设为常规
                                                     cell.Value = cellNumVal; //将转换得到的数值赋值给当前单元格
@@ -767,8 +767,8 @@ namespace COMIGHT
                         {
                             double startDataValue, endDataValue;
                             //将起始和终点数据字符串转换成数值，如果成功则将转换结果赋值给各自的数据数值变量并将true赋值给各自的“数据为数值”变量；否则将false赋值给各自的“数据为数值”变量
-                            bool startDataIsNumeric = double.TryParse(startDataStr, out startDataValue);
-                            bool endDataIsNumeric = double.TryParse(endDataStr, out endDataValue);
+                            bool startDataIsNumeric = double.TryParse(startDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out startDataValue);
+                            bool endDataIsNumeric = double.TryParse(endDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out endDataValue);
 
                             //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
                             if (!startDataIsNumeric || !endDataIsNumeric)
@@ -1801,10 +1801,10 @@ namespace COMIGHT
                 foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
                 {
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
-                    double.TryParse((string?)dataRow[pbDataColumnName], out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
+                    double.TryParse((string?)dataRow[pbDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
                     //pb = double.Clamp(pb, 2.7183, double.MaxValue); //将市净率限定为不小于2.7183
                     pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-                    double.TryParse((string?)dataRow[peDataColumnName], out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
+                    double.TryParse((string?)dataRow[peDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
                     double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
                     dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
                 }
@@ -1813,7 +1813,7 @@ namespace COMIGHT
                     dataRow =>
                     {
                         double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
-                        double.TryParse((string?)dataRow[prDataColumnName], out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
+                        double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
                         double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
                         //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
                         //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
@@ -1842,7 +1842,7 @@ namespace COMIGHT
                     foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
                     {
                         //重新赋值给当前单元格：将单元格文本值转换成数值，如果成功则赋值给单元格数值变量，然后单元格将得到该数值；否则，得到单元格原值
-                        cell.Value = double.TryParse(cell.Text, out double cellNumVal) ? cellNumVal : cell.Value;
+                        cell.Value = double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double cellNumVal) ? cellNumVal : cell.Value;
                     }
 
                     //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
