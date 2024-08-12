@@ -699,17 +699,19 @@ namespace COMIGHT
                 string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
 
                 List<string> lstRecordKeys = new List<string> { }; //定义记录主键列表
-                List<string> lstComparedDataColumnNames = new List<string> { }; //定义被比较数据列名称列表
+                List<string> lstDataColumnNames = new List<string> { }; //定义数据列名称列表
 
-                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和被比较数据列名称列表中
+                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
                 foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
                 {
                     lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
                 }
+
                 foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
                 {
-                    lstComparedDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到被比较数据列名称列表中
+                    lstDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到数据列名称列表中
                 }
+
                 foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
                 {
                     string key = Convert.ToString(startDataRow[keyDataColumnName])!; //获取当前数据行主键数据列的值
@@ -718,18 +720,19 @@ namespace COMIGHT
                         lstRecordKeys.Add(key);
                     }
                 }
-                foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历终点DataTable的每一数据列
+
+                foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历起点DataTable的每一数据列
                 {
-                    if (!lstComparedDataColumnNames.Contains(startDataColumn.ColumnName))  //如果被比较数据列名称列表不含当前数据列名称，则将该数据列名称添加到被比较数据列名称列表中
+                    if (!lstDataColumnNames.Contains(startDataColumn.ColumnName))  //如果数据列名称列表不含当前数据列名称，则将该数据列名称添加到数据列名称列表中
                     {
-                        lstComparedDataColumnNames.Add(startDataColumn.ColumnName);
+                        lstDataColumnNames.Add(startDataColumn.ColumnName);
                     }
                 }
 
                 DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
-                foreach (string comparedDataColumnName in lstComparedDataColumnNames) //遍历被比较数据列名称列表的所有元素
+                foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
                 {
-                    differenceDataTable.Columns.Add(comparedDataColumnName, typeof(string)); //将当前被比较数据列名称作为新数据列添加到差异DataTable中，数据类型为string
+                    differenceDataTable.Columns.Add(dataColumnName, typeof(string)); //将当前数据列名称作为新数据列添加到差异DataTable中，数据类型为string
                 }
 
                 foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
@@ -742,18 +745,19 @@ namespace COMIGHT
                     DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
                     DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
 
-                    foreach (string comparedDataColumnName in lstComparedDataColumnNames) //遍历所有被比较数据列名称
+                    foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
                     {
-                        if (comparedDataColumnName == keyDataColumnName) //如果当前被比较数据列名称等于主键列名称，则直接跳过进入下一个循环
+                        if (dataColumnName == keyDataColumnName) //如果当前数据列名称等于主键列名称，则直接跳过进入下一个循环
                         {
                             continue;
                         }
 
-                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有被比较数据列，则得到起始（终点）数据行被比较数据列的数据字符串；否则得到空字符串
-                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(comparedDataColumnName) ?
-                                Convert.ToString(startDataRow[comparedDataColumnName])! : "";
-                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(comparedDataColumnName) ?
-                                Convert.ToString(endDataRow[comparedDataColumnName])! : "";
+                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有当前数据列，则得到起始（终点）数据行当前数据列的数据字符串；否则得到空字符串
+                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(dataColumnName) ?
+                                Convert.ToString(startDataRow[dataColumnName])! : "";
+                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(dataColumnName) ?
+                                Convert.ToString(endDataRow[dataColumnName])! : "";
+                        
                         string result;
                         if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为“一致”
                         {
@@ -778,7 +782,7 @@ namespace COMIGHT
                                 result = $"原{startDataValue}，现{endDataValue}\n差{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
                             }
                         }
-                        differenceDataRow[comparedDataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的被比较数据列
+                        differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
                     }
                 }
 
@@ -862,9 +866,9 @@ namespace COMIGHT
                 string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
 
                 //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
-                Regex regExExcelFile = new Regex(@"(?:(?:xls)|(?:et))$", RegexOptions.IgnoreCase);
+                Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
                 //可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
-                Regex regExWordFile = new Regex(@"(?:(?:doc)|(?:wps))$", RegexOptions.IgnoreCase);
+                Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
 
                 Task task = Task.Run(() => process());
                 void process()
