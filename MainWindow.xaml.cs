@@ -699,16 +699,16 @@ namespace COMIGHT
                 string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
 
                 List<string> lstRecordKeys = new List<string> { }; //定义记录主键列表
-                List<string> lstComparedDataColumnNames = new List<string> { }; //定义被比较数据列表
+                List<string> lstComparedDataColumnNames = new List<string> { }; //定义被比较数据列名称列表
 
-                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和被比较数据列表中
+                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和被比较数据列名称列表中
                 foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
                 {
                     lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
                 }
                 foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
                 {
-                    lstComparedDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到被比较数据列表中
+                    lstComparedDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到被比较数据列名称列表中
                 }
                 foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
                 {
@@ -720,14 +720,14 @@ namespace COMIGHT
                 }
                 foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历终点DataTable的每一数据列
                 {
-                    if (!lstComparedDataColumnNames.Contains(startDataColumn.ColumnName))  //如果被比较数据列表不含当前数据列名称，则将该数据列名称添加到被比较数据列表中
+                    if (!lstComparedDataColumnNames.Contains(startDataColumn.ColumnName))  //如果被比较数据列名称列表不含当前数据列名称，则将该数据列名称添加到被比较数据列名称列表中
                     {
                         lstComparedDataColumnNames.Add(startDataColumn.ColumnName);
                     }
                 }
 
                 DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
-                foreach (string comparedDataColumnName in lstComparedDataColumnNames) //遍历被比较数据列表的所有元素
+                foreach (string comparedDataColumnName in lstComparedDataColumnNames) //遍历被比较数据列名称列表的所有元素
                 {
                     differenceDataTable.Columns.Add(comparedDataColumnName, typeof(string)); //将当前被比较数据列名称作为新数据列添加到差异DataTable中，数据类型为string
                 }
