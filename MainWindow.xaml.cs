@@ -6,11 +6,11 @@ using OfficeOpenXml.Style;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Xceed.Words.NET;
 using static COMIGHT.Methods;
@@ -25,7 +25,6 @@ using TableCell = Xceed.Document.NET.Cell;
 using TableRow = Xceed.Document.NET.Row;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using System.Globalization;
 
 
 
@@ -53,11 +52,6 @@ namespace COMIGHT
         private void MnuImportTextboxIntoDocumentTableAndWord_Click(object sender, RoutedEventArgs e)
         {
             ImportTextboxIntoDocumentTableAndWord();
-        }
-
-        private void MnuExtractFromWordIntoDocumentTable_Click(object sender, RoutedEventArgs e)
-        {
-            ExtractFromWordIntoDocumentTable();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -453,7 +447,7 @@ namespace COMIGHT
                                                 double cellNumVal1 = 0, cellNumVal2 = 0;
                                                 double.TryParse(cellStr1, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal1); //将单元格字符串1转换成数值，如果成功则将转换后的数值赋值给单元格数值1变量
                                                 double.TryParse(cellStr2, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal2); //将单元格字符串2转换成数值，如果成功则将转换后的数值赋值给单元格数值2变量
-                                                                                            //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
+                                                                                                                                            //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
                                                 targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Value = cellNumVal1 + cellNumVal2;
                                             }
                                         }
@@ -757,7 +751,7 @@ namespace COMIGHT
                                 Convert.ToString(startDataRow[dataColumnName])! : "";
                         string endDataStr = endDataRow != null && endDataTable.Columns.Contains(dataColumnName) ?
                                 Convert.ToString(endDataRow[dataColumnName])! : "";
-                        
+
                         string result;
                         if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为“一致”
                         {
@@ -1209,276 +1203,6 @@ namespace COMIGHT
             {
                 MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-        }
-
-        //private void ExtractText()
-        //{
-        //    try
-        //    {
-        //        int targetLength = Convert.ToInt32(txtbxTargetLength.Text); //获取目标字数
-        //        string extractedText = ProceedToExtractText(txtbxInText.Text, '\n', targetLength); //将输入文字的总字数缩减到目标字数
-
-        //        txtbxExportableText.Text = extractedText; //将缩短文字赋值给缩短文字文本框
-        //        txtbxExportableText.Focus(); // 确保文本框获取焦点
-        //        txtbxExportableText.SelectAll(); //全选文字
-        //        txtbxExportableText.Copy(); //复制到剪贴板
-        //        txtbxExportableText.Select(0, 0); //取消全选
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-        //}
-
-        private void ExtractFromWordIntoDocumentTable()
-        {
-            try
-            {
-                List<string>? excelFilePaths = SelectFiles(FileType.Excel, false, "选择结构化文档表Excel工作簿"); //获取所选Excel文件列表
-                if (excelFilePaths == null) //如果文件列表为null，则结束本过程
-                {
-                    return;
-                }
-
-                // 打开专用模板，确认“小标题”工作表内含有效数据
-                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePaths[0]))) //打开结构化文档表Excel工作簿，赋值给excel包变量
-                {
-                    ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets[0]; //将“小标题”工作表（第1张，0号）赋值给“小标题”工作表变量
-
-                    TrimCellsStrings(headingsWorksheet); //删除“小标题”Excel工作表内所有文本型单元格值的首尾空格
-                    RemoveWorksheetEmptyRowsAndColumns(headingsWorksheet); //移除“小标题”工作表空白行
-                    if ((headingsWorksheet.Dimension?.Rows ?? 0) <= 1) // 如果“小标题”工作表已使用行数（如果工作表为空， 则为0）小于等于1，只有表头无有效数据，则抛出异常
-                    {
-                        throw new Exception("无有效数据。");
-                    }
-
-                    while (excelPackage.Workbook.Worksheets.Count > 3) //当Excel工作簿中的工作表大于3张，则继续循环，删除最后一张
-                    {
-                        excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
-                    }
-
-                    // 新增“提取”工作表并初始化表头
-                    ExcelWorksheet extractedWorksheet = excelPackage.Workbook.Worksheets.Add($"提取{new Random().Next(1000, 10000)}");
-                    extractedWorksheet.Cells["A1:I1"].LoadFromArrays(new List<object[]> { new object[]
-                        { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类", "相关度", "基准小标题", "原文来源" } });  // 对应1-9列
-
-                    // 选择并读取文档
-                    List<string>? wordFilePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选Word文件列表
-                    if (wordFilePaths == null) //如果文件列表为null，则结束本过程
-                    {
-                        return;
-                    }
-
-                    List<List<string>> lstWordTexts = new List<List<string>>();  // 定义Word文本列表
-
-                    Regex regExParagraphText = new Regex(@".{100,300}(?:。|$)");  // 定义段落文字正则表达式变量，匹配模式为：任意字符100-300字，句号或结尾标志（限定每段正文字数）
-                    // 定义“未来”小标题正则表达式变量，匹配模式为：不含“总|小 结”、不含“。；;”的任意字符2-50个，“计划|要点|展望|设想|打算|思路|方向”，“。：:”至多一个，结尾符号
-                    Regex regExFutureHeading = new Regex(@"^(?:(?![总小]结)[^。；;]){2,50}(?:计划|打算|要点|展望|设想|思路|方向)[。：:]?$", RegexOptions.Multiline);
-
-                    foreach (string wordFile in wordFilePaths) // 遍历Word文件列表的所有文件
-                    {
-                        if (new FileInfo(wordFile).Length == 0) //如果当前文件大小为0，直接跳过进入下一个循环
-                        {
-                            continue;
-                        }
-                        string wordFileName = Path.GetFileName(wordFile); //获取当前Word文件名
-                        string totalWordTextHeading = "";
-                        string wordTextHeading0 = "", wordTextHeading1 = "", wordTextHeading2 = "", wordTextHeading3 = "", wordTextHeading4 = "",
-                            wordTextHeadingUnNumbered = "";
-                        using (DocX wordDocument = DocX.Load(wordFile)) //打开当前Word文件，赋值给Word文档变量
-                        {
-                            foreach (Paragraph paragraph in wordDocument.Paragraphs) //遍历所有段落
-                            {
-                                if (string.IsNullOrWhiteSpace(paragraph.Text)) //如果当前段落为null或全空白字符，则直接跳过进入下一个循环
-                                {
-                                    continue;
-                                }
-
-                                string paragraphText = paragraph.Text.Trim(); //移除当前段落文字首尾空白字符，赋值给段落文字变量
-
-                                //获取当前总Word正文标题
-                                if (paragraphText.Length < 50) //如果当前段落字数少于50字
-                                {
-                                    switch (GetTitleLevel(paragraphText)) //根据当前段落的小标题级别进入相应的分支，将小标题分别赋值给对应级别的Word正文小标题变量
-                                    {
-                                        case "": //如果未标注编号
-                                            wordTextHeadingUnNumbered = paragraphText;
-                                            wordTextHeading0 = ""; wordTextHeading1 = ""; wordTextHeading2 = ""; wordTextHeading3 = ""; wordTextHeading4 = "";
-                                            break;
-                                        case "0级": //如果为0级
-                                            wordTextHeading0 = paragraphText;
-                                            wordTextHeading1 = ""; wordTextHeading2 = ""; wordTextHeading3 = ""; wordTextHeading4 = "";
-                                            break;
-                                        case "1级":
-                                            wordTextHeading1 = paragraphText;
-                                            wordTextHeading2 = ""; wordTextHeading3 = ""; wordTextHeading4 = "";
-                                            break;
-                                        case "2级":
-                                            wordTextHeading2 = paragraphText;
-                                            wordTextHeading3 = ""; wordTextHeading4 = "";
-                                            break;
-                                        case "3级":
-                                            wordTextHeading3 = paragraphText;
-                                            wordTextHeading4 = "";
-                                            break;
-                                        case "4级":
-                                            wordTextHeading4 = paragraphText;
-                                            break;
-                                    }
-                                }
-                                //将各级Word正文小标题中不为null或全空白字符的元素合并后，去除首尾的空白字符，赋值给总Word正文小标题变量
-                                totalWordTextHeading = string.Join('\n', new string[] { wordTextHeadingUnNumbered, wordTextHeading0, wordTextHeading1, wordTextHeading2, wordTextHeading3, wordTextHeading4 }
-                                    .Where(s => !string.IsNullOrWhiteSpace(s))).Trim();
-
-                                paragraphText = RemoveHeadingNum(paragraphText); //移除段落文字的小标题编号，重新赋值给自身
-                                //获取段落文字经过段落文字正则表达式匹配后的结果
-                                MatchCollection matchesParagraphTexts = regExParagraphText.Matches(paragraphText);
-                                //重新赋值给段落文字变量：如果正则表达式匹配结果集合元素数大于0，则得到第一个结果的字符串，否则得到空字符串
-                                paragraphText = matchesParagraphTexts.Count > 0 ? matchesParagraphTexts[0].Value : "";
-                                //将当前段落文字、当前Word文件名加小标题结构分别赋值给新列表的0号（正文文字）、1号元素（原文来源），而后将新列表追加到全文本列表中
-                                lstWordTexts.Add(new List<string> { paragraphText, (wordFileName + '\n' + totalWordTextHeading) });
-
-                            }
-                        }
-                    }
-
-                    string baseHeading0 = "", baseHeading1 = "", baseHeading2 = "", baseHeading3 = "", baseHeading4 = "";
-
-                    // 判断Word正文与小标题的关系，提取相关性高的正文
-                    for (int i = 2; i <= headingsWorksheet.Dimension!.End.Row; i++)  // 遍历“小标题”工作表第2行开始到末尾的所有行
-                    {
-                        //获取当前总基准小标题
-                        string baseHeading = headingsWorksheet.Cells[i, 3].Text; //将当前行的小标题文字赋值给基准小标题变量
-                        switch (headingsWorksheet.Cells[i, 1].Text) //根据当前行的小标题级别进入相应的分支，将小标题赋值给对应级别的基准小标题变量
-                        {
-                            case "0级": //如果为0级
-                                baseHeading0 = baseHeading;
-                                baseHeading1 = ""; baseHeading2 = ""; baseHeading3 = ""; baseHeading4 = "";
-                                break;
-                            case "1级":
-                                baseHeading1 = baseHeading;
-                                baseHeading2 = ""; baseHeading3 = ""; baseHeading4 = "";
-                                break;
-                            case "2级":
-                                baseHeading2 = baseHeading;
-                                baseHeading3 = ""; baseHeading4 = "";
-                                break;
-                            case "3级":
-                                baseHeading3 = baseHeading;
-                                baseHeading4 = "";
-                                break;
-                            case "4级":
-                                baseHeading4 = baseHeading;
-                                break;
-                        }
-                        //将各级基准小标题中不为null或全空白字符的部分合并后，去除首尾的空白字符，赋值给总基准小标题变量
-                        string totalBasedHeading = string.Join('\n', new string[] { baseHeading0, baseHeading1, baseHeading2, baseHeading3, baseHeading4 }.Where(s => !string.IsNullOrWhiteSpace(s))).Trim();
-
-                        //将当前行的小标题级别和文字赋值给“提取”工作表的相应单元格
-                        int lastRowIndex = extractedWorksheet.Dimension.End.Row; //获取“提取”工作表的最后一个已使用行的索引号
-                        extractedWorksheet.Cells[lastRowIndex + 1, 1].Value = headingsWorksheet.Cells[i, 1].Text;  // 将当前行的小标题级别赋值给“提取”工作表第一个空白行的小标题级别单元格
-                        extractedWorksheet.Cells[lastRowIndex + 1, 3].Value = headingsWorksheet.Cells[i, 3].Text;  // 将当前行的小标题文字赋值给“提取”工作表第一个空白行的文字单元格
-                        extractedWorksheet.Cells[lastRowIndex + 1, 7].Value = 2;  // 将“提取”工作表第一个空白行的相关度单元格赋值为2（不可能被后期提取文字与小标题的相关度超越，确定会被保留）
-
-                        bool extractBodyText = false; // “提取Word正文”变量赋值为false
-
-                        if (headingsWorksheet.Cells[i, 1].Text.EndsWith("级") && headingsWorksheet.Cells[i, 3].Text.Length < 50)  //如果当前行含小标题且文字字数少于50字（纯小标题）
-                        {
-                            extractBodyText = true; // “提取Word正文”变量赋值为true
-                            if (i < headingsWorksheet.Dimension.End.Row) //如果当前行不是最后一行
-                            {
-                                //如果下一行文字也是小标题，且当前行小标题的级别数字小于下一行小标题（级别更高），则“提取Word正文”变量赋值为false
-                                if (headingsWorksheet.Cells[i + 1, 1].Text.EndsWith("级") && Val(headingsWorksheet.Cells[i, 1].Text) < Val(headingsWorksheet.Cells[i + 1, 1].Text))
-                                {
-                                    extractBodyText = false;
-                                }
-                            }
-                        }
-
-                        if (extractBodyText)  //如果需要提取Word正文文字
-                        {
-                            for (int k = 0; k < lstWordTexts.Count; k++)  //遍历Word正文列表
-                            {
-                                //如果总基准小标题被“未来”小标题正则表达式匹配的成功性与Word正文列表当前元素列表的原文来源（含总小标题）被匹配的成功性不同（即上下文背景不同），则直接跳过进入下一个循环
-                                if (regExFutureHeading.IsMatch(totalBasedHeading) != regExFutureHeading.IsMatch(lstWordTexts[k][1]))
-                                {
-                                    continue;
-                                }
-
-                                double headingAndContentRelevance = GetTextRelevance(headingsWorksheet.Cells[i, 3].Text, lstWordTexts[k][0]);  // 计算当前小标题与Word正文列表当前元素列表的正文文字的相关度
-                                if (headingAndContentRelevance >= 0.3)  // 如果小标题与Word正文列表当前元素列表的正文文字的相关度大于设定值
-                                {
-                                    lastRowIndex = extractedWorksheet.Dimension.End.Row; //获取“提取”工作表的最后一个已使用行的索引号
-                                    Regex regExHeadingSentence = new Regex(headingsWorksheet.Cells[i, 3].Text + @"[。：:]"); // 定义小标题句正则表达式变量，匹配模式为：当前小标题文字，“。：:”
-                                    // 将Word正文列表当前元素列表的正文文字中被小标题句正则表达式匹配到的文字替换为空（避免与现存小标题重复），赋值给“提取”工作表第一个空白行的“文字”单元格
-                                    extractedWorksheet.Cells[lastRowIndex + 1, 3].Value = regExHeadingSentence.Replace(lstWordTexts[k][0], "");
-                                    // 将当前小标题与Word正文列表当前元素列表的正文文字的相关度保留4位小数，赋值给“提取”工作表第一个空白行的“相关度”单元格
-                                    extractedWorksheet.Cells[lastRowIndex + 1, 7].Value = Math.Round(headingAndContentRelevance, 4);
-                                    //将总基准小标题赋值给“提取”工作表第一个空白行的“基准小标题”单元格
-                                    extractedWorksheet.Cells[lastRowIndex + 1, 8].Value = totalBasedHeading;
-                                    // 将Word正文列表当前元素列表的原文来源赋值给“提取”工作表第一个空白行的“原文来源”单元格
-                                    extractedWorksheet.Cells[lastRowIndex + 1, 9].Value = lstWordTexts[k][1];
-                                    extractedWorksheet.Cells[lastRowIndex + 1, 3].Style.Font.Color.SetColor(Color.Red);  // 将“提取”工作表第一个空白行第3列单元格文字标红
-                                }
-                            }
-                        }
-                    }
-
-                    // 删除重复的正文
-                    if (extractedWorksheet.Dimension.Rows >= 3) // 如果“提取”工作表的已使用行大于3行（去除表头，至少有2行可比较）
-                    {
-                        for (int i = 2; i <= extractedWorksheet.Dimension.End.Row - 1; i++)  // 遍历“提取”工作表从第2行开始到倒数第2行的所有行（基准行）
-                        {
-                            if ((!extractedWorksheet.Cells[i, 1].Text.EndsWith("级") || extractedWorksheet.Cells[i, 3].Text.Length >= 50)
-                                && Convert.ToDouble(extractedWorksheet.Cells[i, 7].Value) > -1) //如果当前基准行的文字不含小标题或者文字字数大于等于50字（为正文）且当前文字与小标题的相关度大于-1（未被判定为重复行）
-                            {
-                                for (int k = i + 1; k <= extractedWorksheet.Dimension.End.Row; k++)   //遍历基准行的下一行开始到最末行的所有行（比较行）
-                                {
-                                    if ((!extractedWorksheet.Cells[k, 1].Text.EndsWith("级") || extractedWorksheet.Cells[k, 3].Text.Length >= 50)
-                                        && Convert.ToDouble(extractedWorksheet.Cells[k, 7].Value) > -1)  //如果比较行的文字不含小标题或者文字字数大于等于50字（为正文）且当前文字与小标题的相关度大于-1（未被判定为重复行）
-                                    {
-                                        //如果比较行正文文字与基准行文字的前50个字的相关度大于0.8（重复正文）
-                                        if (GetTextRelevance(extractedWorksheet.Cells[i, 3].Text[..50], extractedWorksheet.Cells[k, 3].Text[..50]) >= 0.8)
-                                        //&& regExFutureHeading.IsMatch(extractedWorksheet.Cells[i, 8].Text) == regExFutureHeading.IsMatch(extractedWorksheet.Cells[k, 8].Text))
-                                        {
-                                            //如果基准行正文文字与小标题的相关度小于比较行，将基准行的相关度设为-1（标记为重复行）
-                                            if (Convert.ToDouble(extractedWorksheet.Cells[i, 7].Value) < Convert.ToDouble(extractedWorksheet.Cells[k, 7].Value))
-                                            {
-                                                extractedWorksheet.Cells[i, 7].Value = -1;
-                                            }
-                                            else  //否则，将比较行的相关度设为-1（标记为重复行）
-                                            {
-                                                extractedWorksheet.Cells[k, 7].Value = -1;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // 删除相关度被标为-1的重复行
-                    for (int i = extractedWorksheet.Dimension.End.Row; i >= 2; i--) // 遍历“提取”工作表的所有行
-                    {
-                        if (Convert.ToDouble(extractedWorksheet.Cells[i, 7].Value) == -1) //如果当前行正文文字与小标题的相关度为-1（重复行），则删除当前行
-                        {
-                            extractedWorksheet.DeleteRow(i);
-                        }
-                    }
-
-                    FormatDocumentTable(excelPackage.Workbook); //格式化结构化文档表工作簿
-                    excelPackage.Save(); //保存结构化文档表工作簿
-
-                }
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
         }
 
 

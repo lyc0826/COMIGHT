@@ -236,8 +236,8 @@ namespace COMIGHT
             double fullWidth = 0; //全表格宽度赋值为0
 
             int firstRefRowIndex = Math.Max(1, headerCount); //获取起始参考行的索引号：等于表头最末行索引号，如果小于1，则限定为1
-            //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果超过指定值（起始参考行至其后30行的索引号范围），则将其限定到指定范围
-            int lastRefRowIndex = int.Clamp(excelWorksheet.Dimension.End.Row - footerCount, firstRefRowIndex, firstRefRowIndex + 30 - 1);
+            //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
+            int lastRefRowIndex = Math.Max(firstRefRowIndex, excelWorksheet.Dimension.End.Row - footerCount);
 
             for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历所有列
             {
