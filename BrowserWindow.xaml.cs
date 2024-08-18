@@ -91,8 +91,8 @@ namespace COMIGHT
 
         private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e) //WebView初始化完成后，执行此过程
         {
-            string latestURL = Properties.Settings.Default.latestURL; //读取设置中保存的网址
-            WebView_OpenNewUrl(latestURL); //打开网址
+            //string latestURL = Properties.Settings.Default.latestURL; //读取设置中保存的网址
+            //WebView_OpenNewUrl(latestURL); //打开网址
 
             DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
 
@@ -103,6 +103,9 @@ namespace COMIGHT
                     cmbURL.Items.Add(Convert.ToString(dataRow["Website"]));  //将当前数据行的"Website"数据列的数据添加到网址组合框
                 }
             }
+
+            string startupURL = Convert.ToString(dataTable!.Rows[0]["Website"])!; //将DataTable第0行的"Website"数据赋值给起始URL变量
+            WebView_OpenNewUrl(startupURL); //打开起始URL
 
             //添加webView事件响应过程
             webView2.NavigationCompleted += WebView_NavigationCompleted; //打开网站完成后，触发WebView_NavigationCompleted过程
@@ -243,8 +246,8 @@ namespace COMIGHT
                 }
                 webView2.CoreWebView2.Navigate(url); //打开网址，WebView.Source = new Uri(url) 
                 txtbxURL.Text = url; //将正打开的网址赋值给网址文本框 
-                Properties.Settings.Default.latestURL = url; //将本次打开网址存入设置中
-                Properties.Settings.Default.Save(); //保存设置
+                //Properties.Settings.Default.latestURL = url; //将本次打开网址存入设置中
+                //Properties.Settings.Default.Save(); //保存设置
             }
         }
 
