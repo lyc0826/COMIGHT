@@ -91,8 +91,6 @@ namespace COMIGHT
 
         private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e) //WebView初始化完成后，执行此过程
         {
-            //string latestURL = Properties.Settings.Default.latestURL; //读取设置中保存的网址
-            //WebView_OpenNewUrl(latestURL); //打开网址
 
             DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
 
@@ -121,54 +119,6 @@ namespace COMIGHT
               向网页添加鼠标移出事件响应，如果鼠标移出处的标签为div标记，将该处的阴影取消；
               向网页添加鼠标双击事件响应，如果鼠标双击处的标签为div标记，复制该处文字，在该处加上红色阴影，0.5秒后复原；
             */
-            //await webView2.ExecuteScriptAsync(@"
-
-            //    document.body.addEventListener('mouseover', 
-            //        function(event) 
-            //        {
-            //            if (event.target.tagName.toLowerCase() === 'div') 
-            //            {
-            //                //如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；阴影参数：向内（省略代表向外）、水平偏移（正右负左）、垂直偏移（正下负上）、模糊距离、扩散距离、颜色
-            //                event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; 
-            //            }  
-            //        });
-
-            //    document.body.addEventListener('mouseout', 
-            //        function(event) 
-            //        {
-            //            if (event.target.tagName.toLowerCase() === 'div') 
-            //            {
-            //                event.target.style.boxShadow = '' //如果鼠标移出处的标签为div标记，将该处的阴影取消；
-            //            }
-            //        });
-
-            //    document.body.addEventListener('dblclick', 
-            //        function(event) 
-            //        {
-            //            if (event.target.tagName.toLowerCase() === 'div') 
-            //            {
-            //                var originalBoxShadow = event.target.style.boxShadow;
-            //                var textToCopy = event.target.innerText;
-            //                //正则表达式匹配模式为：从开头开始，半角空格、全角空格、制表符一个及以上/或前述字符一个及以上，结尾标记（全局+多行模式）；将匹配到的字符串替换为空
-            //                //textToCopy = textToCopy.replace(/^[ |\u3000\t]+|[ |\u3000\t]+$/gm, ''); 
-            //                navigator.clipboard.writeText(textToCopy).then(
-            //                    function() 
-            //                    {
-            //                        event.target.style.boxShadow = 'inset 0 0 0 3px rgba(255, 80, 80, 0.8)' // 复制成功后，加上浅红色阴影
-            //                        setTimeout(
-            //                            function() 
-            //                            {
-            //                                event.target.style.boxShadow = originalBoxShadow // 0.5秒后，恢复原来的阴影
-            //                            }
-            //                            , 500);    
-            //                    }, 
-            //                    function() 
-            //                    {
-            //                        alert('复制失败！');
-            //                    });
-            //            }
-            //        });
-            //    ");
 
             await webView2.ExecuteScriptAsync(@"
 
@@ -246,8 +196,7 @@ namespace COMIGHT
                 }
                 webView2.CoreWebView2.Navigate(url); //打开网址，WebView.Source = new Uri(url) 
                 txtbxURL.Text = url; //将正打开的网址赋值给网址文本框 
-                //Properties.Settings.Default.latestURL = url; //将本次打开网址存入设置中
-                //Properties.Settings.Default.Save(); //保存设置
+
             }
         }
 
