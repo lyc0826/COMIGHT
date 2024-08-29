@@ -28,7 +28,7 @@ namespace COMIGHT
 {
     public static partial class Methods
     {
-        public static string dataBaseFilePath = Path.Combine(Environment.CurrentDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
+        public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
 
         //定义小标题文字正则表达式变量，匹配模式为：从开头开始，非“。：:；;分页符换行符回车符”的字符2-40个；后方出现：“。：:”换行符回车符或结尾标记
         public static Regex regExHeadingText = new Regex(@"^[^。：:；;\f\n\r]{2,40}(?=。|：|:|\n|\r|$)", RegexOptions.Multiline);

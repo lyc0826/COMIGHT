@@ -32,6 +32,7 @@ namespace COMIGHT
 
             //浏览器控件初始化完成后，触发WebView_CoreWebView2InitializationCompleted过程
             webView2.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted!;
+
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -102,6 +103,7 @@ namespace COMIGHT
                 }
             }
 
+            cmbURL.SelectedIndex = 0; //网址列表组合框选择0号（第1）项
             string startupURL = Convert.ToString(dataTable!.Rows[0]["Website"])!; //将DataTable第0行的"Website"数据赋值给起始URL变量
             WebView_OpenNewUrl(startupURL); //打开起始URL
 
