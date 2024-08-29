@@ -1393,9 +1393,11 @@ namespace COMIGHT
                             DateTime fileSystemDate = file.CreationTime < file.LastWriteTime ? file.CreationTime.Date : file.LastWriteTime.Date;
                             //获取当前文件日期：如果当前文件实际年份不为null或全空白字符，则得到文件系统日期加上文件实际年份和系统年份的差
                             //（如果差大于0则限定为0，确保将文件系统日期中的年份替换为实际年份后只减不增）；否则得到文件系统日期
+                            //DateTime fileDate = !string.IsNullOrWhiteSpace(actualYear) ?
+                                //fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
                             DateTime fileDate = !string.IsNullOrWhiteSpace(actualYear) ?
-                                fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
-
+                                fileSystemDate.AddYears((Convert.ToInt32(actualYear) - fileSystemDate.Year).Clamp<int>(-10,0)) : fileSystemDate;
+                            
                             dataRow["路径"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
                             dataRow["名称"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
                             dataRow["类型"] = file.Extension; //将当前文件扩展名赋值给DataTable的新数据行的"类型"列
@@ -1420,7 +1422,7 @@ namespace COMIGHT
                             //获取当前子文件夹日期：如果当前子文件夹实际年份不为null或全空白字符，则得到子文件夹系统日期加上子文件夹实际年份和系统年份的差
                             //（如果差大于0则限定为0，确保将子文件夹系统日期中的年份替换为实际年份后只减不增）；否则得到子文件夹系统日期
                             DateTime subdirectoryDate = !string.IsNullOrWhiteSpace(actualYear) ?
-                                subdirectorySystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - subdirectorySystemDate.Year)) : subdirectorySystemDate;
+                                subdirectorySystemDate.AddYears((Convert.ToInt32(actualYear) - subdirectorySystemDate.Year).Clamp<int>(-10,0)) : subdirectorySystemDate;
 
                             dataRow["路径"] = subdirectory.FullName; //将当前子文件夹路径赋值给DataTable的新数据行的"路径"列
                             dataRow["名称"] = subdirectory.Name; //将当前子文件夹名赋值给DataTable的新数据行的"名称"列

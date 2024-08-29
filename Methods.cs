@@ -498,8 +498,8 @@ namespace COMIGHT
             return count; //计数器值赋给函数返回值
         }
 
-        // 定义年份正则表达式变量，匹配模式为：前方不能出现“至到-~”，空格制表符任意多个；“20”，阿拉伯数字2个/或“二[〇零]”，中文数字2个
-        public static Regex regExYear = new Regex(@"(?<![至到\-~][ |\t]*)(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})");
+        // 定义年份正则表达式变量，匹配模式为：前方不能出现“至到-~”阿拉伯数字，空格制表符任意多个；“20”，阿拉伯数字2个/或“二[〇零]”，中文数字2个，后方不能出现阿拉伯数字
+        public static Regex regExYear = new Regex(@"(?<![至到\d\-~][ |\t]*)(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})(?!\d)");
 
         public static string GetArabicYear(string inText)
         {
