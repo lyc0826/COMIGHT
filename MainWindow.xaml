@@ -20,7 +20,6 @@
         <DockPanel Grid.Row="0" Grid.Column="0" >
             <Menu DockPanel.Dock="Top" Height="30" UseLayoutRounding="True" FontSize="14" VerticalContentAlignment="Center" >
                 <MenuItem Header="开始">
-                    <MenuItem x:Name="mnuSetPandocPath" Header="设置Pandoc程序文件路径" Click="MnuSetPandocPath_Click"/>
                     <MenuItem x:Name="mnuHelp" Header="帮助" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="退出" Click="MnuExit_Click" />
                     <MenuItem x:Name="mnuTest" Header="测试" Click="MnuTest_Click" />

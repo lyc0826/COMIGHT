@@ -118,11 +118,6 @@ namespace COMIGHT
             }
         }
 
-        private void MnuSetPandocPath_Click(object sender, RoutedEventArgs e)
-        {
-            SetPandocPath();
-        }
-
         private void MnuHelp_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1010,20 +1005,20 @@ namespace COMIGHT
             {
                 InputDialog inputDialog;
                 string functionOptions = string.Join('\n', new string[]
-                    { "输入功能选项：", "1-导入结构化文档表", "2-导入纯文本Word文档", "3-导入带格式Word文档（仅限MarkDown文本）" });
+                    { "输入功能选项：", "1-导入结构化文档表", "2-导入纯文本Word文档" });
                 inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
                 int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-                if (functionNum < 1 || functionNum > 3) //如果功能选项不在设定范围，则结束本过程
+                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
                 {
                     return;
                 }
 
-                //移除导出文本框文字的Markdown符号，按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-                List<string> lstParagraphs = txtbxExportableText.Text.RemoveMarkDownMarks()
+                //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+                List<string> lstParagraphs = txtbxExportableText.Text
                     .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
@@ -1060,42 +1055,6 @@ namespace COMIGHT
                             }
                             targetWordDocument.Save(); //保存目标Word文档
                         }
-
-                        break;
-
-                    case 3: //导入带格式Word文档
-                        //导入目标Markdown文档
-                        string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
-                        File.WriteAllText(targetMDFilePath, txtbxExportableText.Text); //将导出文本框内的markdown文字导入目标Markdown文档
-
-                        //将目标Markdown文档转换为目标Markdown Word文档
-                        string targetMDWordFilePath = Path.Combine(targetFolderPath, $"MD{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-
-                        string? pandocPath = Properties.Settings.Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
-                        if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，则抛出异常
-                        {
-                            throw new Exception("Pandoc程序设置错误！");
-                        }
-
-                        ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                        {
-                            FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
-                            //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
-                            Arguments = $"-f markdown -t docx \"{targetMDFilePath}\" -o \"{targetMDWordFilePath}\"",
-                            RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
-                            UseShellExecute = false, //设定使用操作系统shell执行程序为false
-                            CreateNoWindow = true, //设定不创建窗口
-                        };
-                        //启动新进程
-                        using (Process process = Process.Start(startInfo)!)
-                        {
-                            process.WaitForExit(); //等待进程结束
-                            if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
-                            {
-                                throw new Exception("Markdown至Docx转换失败！");
-                            }
-                        }
-                        File.Delete(targetMDFilePath); //删除目标Markdown文件
 
                         break;
 
