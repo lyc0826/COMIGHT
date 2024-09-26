@@ -1223,8 +1223,10 @@ namespace COMIGHT
                     {
                         using (DocX wordDocument = DocX.Load(filePath)) // 打开Word文档，赋值给Word文档变量
                         {
+                            lstFullText.Add(fileMainName); //全文本列表中追加当前Word文件主名
+                            
                             //将Word文档中的所有表格转换为制表符分隔的文本形式
-                            for (int i = wordDocument.Tables.Count - 1; i >= 0; i--)
+                            for (int i = wordDocument.Tables.Count - 1; i >= 0; i--) //遍历文档中所有表格
                             {
                                 Table table = wordDocument.Tables[i];
                                 List<string> lstTableRows = new List<string> { }; //建立表格行数据列表
