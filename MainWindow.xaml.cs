@@ -324,7 +324,7 @@ namespace COMIGHT
                 foreach (string excelFilePath in filePaths) //遍历所有文件
                 {
                     currentFilePath = excelFilePath; //将当前Excel文件路径全名赋值给当前文件路径全名变量
-                    List<string> lstPrefixes = new List<string> { }; //定义文件名前缀列表（给Excel文件名加前缀用）
+                    List<string> lstPrefixes = new List<string> (); //定义文件名前缀列表（给Excel文件名加前缀用）
 
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -687,8 +687,8 @@ namespace COMIGHT
                 //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
                 string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
 
-                List<string> lstRecordKeys = new List<string> { }; //定义记录主键列表
-                List<string> lstDataColumnNames = new List<string> { }; //定义数据列名称列表
+                List<string> lstRecordKeys = new List<string> (); //定义记录主键列表
+                List<string> lstDataColumnNames = new List<string> (); //定义数据列名称列表
 
                 //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
                 foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
@@ -1178,7 +1178,7 @@ namespace COMIGHT
                 string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
                 string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, "合并文本"); //获取目标文件夹路径
 
-                List<string> lstFullText = new List<string> { }; //建立全文本列表
+                List<string> lstFullText = new List<string> (); //建立全文本列表
 
                 foreach (string filePath in filePaths) //遍历所有列表中的文件
                 {
@@ -1229,7 +1229,7 @@ namespace COMIGHT
                             for (int i = wordDocument.Tables.Count - 1; i >= 0; i--) //遍历文档中所有表格
                             {
                                 Table table = wordDocument.Tables[i];
-                                List<string> lstTableRows = new List<string> { }; //建立表格行数据列表
+                                List<string> lstTableRows = new List<string> (); //建立表格行数据列表
 
                                 foreach (TableRow tableRow in table.Rows) // 遍历表格中的所有行
                                 {

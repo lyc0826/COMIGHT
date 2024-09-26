@@ -546,7 +546,7 @@ namespace COMIGHT
 
             for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历工作表所有列
             {
-                List<string> lstFullColumnName = new List<string> { }; //定义完整列名称列表
+                List<string> lstFullColumnName = new List<string> (); //定义完整列名称列表
                 for (int i = 1; i <= headerCount; i++) //遍历工作表所有行
                 {
                     bool copyLeftCell = false; //“是否复制左侧单元格”赋值为false
@@ -1467,7 +1467,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string> lstFullTexts = new List<string> { }; //定义完整文章列表变量
+                List<string> lstFullTexts = new List<string> (); //定义完整文章列表变量
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(documentTableFilePath))) //打开结构化文档表Excel工作簿，赋值给Excel包变量
                 {
