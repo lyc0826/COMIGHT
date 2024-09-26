@@ -1405,7 +1405,7 @@ namespace COMIGHT
 
                     for (int i = 0; i < lstSplittedTextsCount; i++) //遍历拆分后文字列表的所有元素
                     {
-                        //将拆分后文字列表当前元素的文字按修订标记字符拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
+                        //将拆分后文字列表当前元素的文字按修订标记字符'^'拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
                         List<string> lstRevisedTexts = lstSplittedTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
 
