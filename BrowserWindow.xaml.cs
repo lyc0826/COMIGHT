@@ -26,9 +26,9 @@ namespace COMIGHT
             //}
 
             Dispatcher.Invoke(async () =>
-            {
-                await webView2.EnsureCoreWebView2Async(null); //在UI线程上调用，显式初始化WebView控件
-            });
+                {
+                    await webView2.EnsureCoreWebView2Async(null); //在UI线程上调用，显式初始化WebView控件
+                });
 
             //浏览器控件初始化完成后，触发WebView_CoreWebView2InitializationCompleted过程
             webView2.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted!;

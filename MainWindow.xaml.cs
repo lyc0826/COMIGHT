@@ -285,10 +285,7 @@ namespace COMIGHT
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
-                    case 7: //调整工作表打印版式
-                        GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
-                        break;
-
+                    
                     case 2:
                     case 3:
                     case 4:
@@ -306,6 +303,11 @@ namespace COMIGHT
                         //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
                         lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
                         break;
+                    
+                    case 7: //调整工作表打印版式
+                        GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
+                        break;
+                
                 }
 
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量

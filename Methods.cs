@@ -198,8 +198,6 @@ namespace COMIGHT
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
                     //获取“是否手动调整行高”值：如果行单元格被合并，则得到true；否则得到false
                     bool customHeight = isRowMerged ? true : false;
-                    //获取表格标题字体大小：如果行单元格被合并且当前行为第一行（表格标题行），则得到14；否则得到12
-                    int titleFontSize = (isRowMerged && i == 1) ? 14 : 12;
 
                     //设置当前行所有单元格的边框
                     headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
@@ -208,7 +206,7 @@ namespace COMIGHT
                     headerRowCells.Style.Border.Right.Style = borderStyle;
                     headerRowCells.Style.Border.Bottom.Style = borderStyle;
 
-                    headerRowCells.Style.Font.Size = titleFontSize; //设置当前单元格字体大小为之前获取的值
+                    headerRowCells.Style.Font.Size = 12; //设置当前单元格字体大小
                     excelWorksheet.Rows[i].CustomHeight = customHeight; //设置当前行“是否手动调整行高”为之前获取的值
 
                 }
@@ -218,7 +216,7 @@ namespace COMIGHT
             // 将Excel工作表除去表头、表尾的区域赋值给记录区域变量
             ExcelRange recordRange = excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column];
 
-            // 记录区域设置字体、对齐
+            // 设置记录区域字体、对齐
             recordRange.Style.Font.Name = "等线";
             recordRange.Style.Font.Size = 11;
             recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
