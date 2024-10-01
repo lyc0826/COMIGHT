@@ -1029,7 +1029,7 @@ namespace COMIGHT
                 }
 
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-                string targetFolderPath = Path.Combine(desktopPath, "导入文档表"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
                 //移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，赋值给目标文件主名变量
                 string targetFileMainName = CleanName(lstParagraphs[0], 40);
 
@@ -1048,7 +1048,7 @@ namespace COMIGHT
                         break;
 
                     case 2: //导入纯文本Word文档
-                        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
+                        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文件路径全名
                         using (DocX targetWordDocument = DocX.Create(targetWordFilePath)) //新建目标Word文档，赋值给目标Word文档变量
                         {
                             foreach (string paragraphText in lstParagraphs) //遍历段落列表所有元素
@@ -1154,7 +1154,7 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath);
                 }
 
-                string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文档文件路径全名
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
                 await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
 
                 MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1176,10 +1176,7 @@ namespace COMIGHT
                 {
                     return;
                 }
-
-                string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
-                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, "合并文本"); //获取目标文件夹路径
-
+                
                 List<string> lstFullText = new List<string> (); //建立全文本列表
 
                 foreach (string filePath in filePaths) //遍历所有列表中的文件
@@ -1189,7 +1186,7 @@ namespace COMIGHT
                         continue;
                     }
 
-                    string fileMainName = Path.GetFileNameWithoutExtension(filePath); // 获取当前文件的主名
+                    string fileName = Path.GetFileName(filePath); // 获取当前文件的主名
                     string fileExtension = Path.GetExtension(filePath); // 获取当前文件的扩展名
 
                     if (fileExtension.ToLower().Contains("xlsx")) // 如果当前文件扩展名转换为小写后含有“xlsx”（Excel文件）
@@ -1205,7 +1202,7 @@ namespace COMIGHT
                                     continue;
                                 }
 
-                                lstFullText.Add($"{fileMainName} {excelWorksheet.Name}"); //全文本列表中追加当前Excel文件主名和当前工作表名
+                                lstFullText.Add($"{fileName}: {excelWorksheet.Name}"); //全文本列表中追加当前Excel文件主名和当前工作表名
                                 for (int i = 1; i <= excelWorksheet.Dimension.End.Row; i++) // 遍历Excel工作表所有行
                                 {
                                     StringBuilder tableRowStringBuilder = new StringBuilder(); //定义表格行数据字符串构建器
@@ -1225,7 +1222,7 @@ namespace COMIGHT
                     {
                         using (DocX wordDocument = DocX.Load(filePath)) // 打开Word文档，赋值给Word文档变量
                         {
-                            lstFullText.Add(fileMainName); //全文本列表中追加当前Word文件主名
+                            lstFullText.Add(fileName); //全文本列表中追加当前Word文件主名
                             
                             //将Word文档中的所有表格转换为制表符分隔的文本形式
                             for (int i = wordDocument.Tables.Count - 1; i >= 0; i--) //遍历文档中所有表格
@@ -1265,6 +1262,9 @@ namespace COMIGHT
                         }
                     }
                 }
+                
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径
@@ -1272,7 +1272,7 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath);
                 }
 
-                string targetWordFilePath = Path.Combine(targetFolderPath, $"合并文本_{targetFileMainName}.docx"); //获取目标Word文件的路径全名
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"合并文本_{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件的路径全名
                 using DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
                 {
                     foreach (string paragraphText in lstFullText) //遍历全文本列表的所有元素
