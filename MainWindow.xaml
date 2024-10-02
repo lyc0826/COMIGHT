@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="COMIGHT助手" Width="480" Height="360" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded" >
+        Title="COMIGHT助手" Width="480" Height="360" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" >
     
     <Grid Margin="3,0,3,3">
         <Grid.ColumnDefinitions>
@@ -27,7 +27,7 @@
                 <MenuItem Header="文档处理">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="批量设置Word文档格式" Click="MnuBatchFormatWordDocuments_Click" />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="结构化文档表导出为Word文档" Click="MnuExportDocumentTableIntoWord_Click"  />
-                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="文本框文字导入结构化文档表和Word文档" Click="MnuImportTextboxIntoDocumentTableAndWord_Click"  />
+                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="文本框文字导入结构化文档表" Click="MnuImportTextboxIntoDocumentTable_Click"  />
                     <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "合并文档和表格" Click="MnuMergeDocumentsAndTables_Click" />
                 </MenuItem>
                 <MenuItem Header="表格处理">
