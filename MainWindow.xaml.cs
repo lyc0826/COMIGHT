@@ -49,9 +49,9 @@ namespace COMIGHT
             await ExportDocumentTableIntoWordAsync();
         }
 
-        private void MnuImportTextboxIntoDocumentTableAndWord_Click(object sender, RoutedEventArgs e)
+        private void MnuImportTextboxIntoDocumentTable_Click(object sender, RoutedEventArgs e)
         {
-            ImportTextboxIntoDocumentTableAndWord();
+            ImportTextboxIntoDocumentTable();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -1001,24 +1001,11 @@ namespace COMIGHT
             }
         }
 
-        private void ImportTextboxIntoDocumentTableAndWord()
+
+        private void ImportTextboxIntoDocumentTable()
         {
             try
             {
-                InputDialog inputDialog;
-                string functionOptions = string.Join('\n', new string[]
-                    { "输入功能选项：", "1-导入结构化文档表", "2-导入纯文本Word文档" });
-                inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
-                {
-                    return;
-                }
-
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = txtbxExportableText.Text
                     .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -1030,8 +1017,6 @@ namespace COMIGHT
 
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
                 string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
-                //移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，赋值给目标文件主名变量
-                string targetFileMainName = CleanName(lstParagraphs[0], 40);
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
@@ -1039,28 +1024,9 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath);
                 }
 
-                switch (functionNum)  //根据功能序号进入相应的分支
-                {
-                    case 1: //导入结构化文档表
-                        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.xlsx"); //获取目标结构化文档表文件路径全名
-                        ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
-
-                        break;
-
-                    case 2: //导入纯文本Word文档
-                        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文件路径全名
-                        using (DocX targetWordDocument = DocX.Create(targetWordFilePath)) //新建目标Word文档，赋值给目标Word文档变量
-                        {
-                            foreach (string paragraphText in lstParagraphs) //遍历段落列表所有元素
-                            {
-                                targetWordDocument.InsertParagraph(paragraphText); //将当前元素的段落文字插入目标Word文档
-                            }
-                            targetWordDocument.Save(); //保存目标Word文档
-                        }
-
-                        break;
-
-                }
+                //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
+                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx"); 
+                ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
                 MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -1071,6 +1037,77 @@ namespace COMIGHT
             }
 
         }
+
+        //private void ImportTextboxIntoDocumentTableAndWord()
+        //{
+        //    try
+        //    {
+        //        InputDialog inputDialog;
+        //        string functionOptions = string.Join('\n', new string[]
+        //            { "输入功能选项：", "1-导入结构化文档表", "2-导入纯文本Word文档" });
+        //        inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
+        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+        //        {
+        //            return;
+        //        }
+        //        int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+        //        if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+        //        List<string> lstParagraphs = txtbxExportableText.Text
+        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
+        //        {
+        //            throw new Exception("无有效数据！");
+        //        }
+
+        //        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
+        //        string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
+        //        //移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，赋值给目标文件主名变量
+        //        string targetFileMainName = CleanName(lstParagraphs[0], 40);
+
+        //        //创建目标文件夹
+        //        if (!Directory.Exists(targetFolderPath))
+        //        {
+        //            Directory.CreateDirectory(targetFolderPath);
+        //        }
+
+        //        switch (functionNum)  //根据功能序号进入相应的分支
+        //        {
+        //            case 1: //导入结构化文档表
+        //                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.xlsx"); //获取目标结构化文档表文件路径全名
+        //                ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
+
+        //                break;
+
+        //            case 2: //导入纯文本Word文档
+        //                string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文件路径全名
+        //                using (DocX targetWordDocument = DocX.Create(targetWordFilePath)) //新建目标Word文档，赋值给目标Word文档变量
+        //                {
+        //                    foreach (string paragraphText in lstParagraphs) //遍历段落列表所有元素
+        //                    {
+        //                        targetWordDocument.InsertParagraph(paragraphText); //将当前元素的段落文字插入目标Word文档
+        //                    }
+        //                    targetWordDocument.Save(); //保存目标Word文档
+        //                }
+
+        //                break;
+
+        //        }
+
+        //        MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //}
 
         private void MakeFolders()
         {
@@ -1700,13 +1737,13 @@ namespace COMIGHT
 
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             this.Top = 50.0;
             this.Left = SystemParameters.WorkArea.Width - this.Width - 150.0;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Environment.Exit(0);
         }
