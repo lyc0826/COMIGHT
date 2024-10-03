@@ -1479,6 +1479,7 @@ namespace COMIGHT
 
         }
 
+
         private void ScreenStocks()
         {
             try
@@ -1490,7 +1491,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog("输入所属行业、现价、市净率、市盈率所在列名称（用英文逗号隔开）", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog("输入代码、名称、所属行业、现价、市净率、市盈率所在列名称（用英文逗号隔开）", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1502,10 +1503,12 @@ namespace COMIGHT
                 //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
                 List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
                 //将各指标的列名称赋值给数据列名变量
-                string sectorDataColumnName = lstDataColumnNamesStr[0];
-                string prDataColumnName = lstDataColumnNamesStr[1];
-                string pbDataColumnName = lstDataColumnNamesStr[2];
-                string peDataColumnName = lstDataColumnNamesStr[3];
+                string codeDataColumnName = lstDataColumnNamesStr[0];
+                string nameDataColumnName = lstDataColumnNamesStr[1];
+                string sectorDataColumnName = lstDataColumnNamesStr[2];
+                string prDataColumnName = lstDataColumnNamesStr[3];
+                string pbDataColumnName = lstDataColumnNamesStr[4];
+                string peDataColumnName = lstDataColumnNamesStr[5];
 
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
@@ -1513,12 +1516,16 @@ namespace COMIGHT
                     throw new Exception("无有效数据！");
                 }
 
-                int maxDataColumnIndex = new[] { dataTable!.Columns[sectorDataColumnName]!.Ordinal, dataTable!.Columns[prDataColumnName]!.Ordinal,
-                    dataTable!.Columns[pbDataColumnName]!.Ordinal, dataTable!.Columns[peDataColumnName]!.Ordinal }.Max(); //获取4个数据列索引号的最大值
+                List<string> lstDataColumnNames = new List<string>
+                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
 
-                while (dataTable.Columns.Count - 1 > maxDataColumnIndex) //当DataTable最末数据列的索引号大于4个数据列索引号的最大值，则继续循环，删除最末数据列
+                for (int i = dataTable.Columns.Count - 1; i >= 0; i--) // 遍历DataTable的所有数据列
                 {
-                    dataTable.Columns.RemoveAt(dataTable.Columns.Count - 1);
+                    // 如果当前数据列的列名不在需要保留的数据列名列表中，则删除该列
+                    if (!lstDataColumnNames.Contains(dataTable.Columns[i].ColumnName))
+                    {
+                        dataTable.Columns.RemoveAt(i);
+                    }
                 }
 
                 dataTable.Columns.Add("PE冗余比", typeof(double)); //在DataTable中增加“PE冗余比”数据列
@@ -1540,8 +1547,8 @@ namespace COMIGHT
                         double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
                         double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
                         //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-                        //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
-                        return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10;
+                        //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值（为留有余量，这里将PE冗余比限定在10-100之间）
+                        return (peRedundancyRatio >= 10 && peRedundancyRatio < 100) && pr >= 10;
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
                 if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
@@ -1584,6 +1591,112 @@ namespace COMIGHT
             }
 
         }
+
+        //private void ScreenStocks()
+        //{
+        //    try
+        //    {
+        //        List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择股票数据Excel工作簿"); //获取所选文件列表
+        //        if (filePaths == null) //如果文件列表为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
+        //        InputDialog inputDialog = new InputDialog("输入所属行业、现价、市净率、市盈率所在列名称（用英文逗号隔开）", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+        //        {
+        //            return;
+        //        }
+        //        string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
+        //        Properties.Settings.Default.latestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串存入设置
+        //        Properties.Settings.Default.Save();
+
+        //        //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
+        //        List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
+        //        //将各指标的列名称赋值给数据列名变量
+        //        string sectorDataColumnName = lstDataColumnNamesStr[0];
+        //        string prDataColumnName = lstDataColumnNamesStr[1];
+        //        string pbDataColumnName = lstDataColumnNamesStr[2];
+        //        string peDataColumnName = lstDataColumnNamesStr[3];
+
+        //        DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+        //        if (dataTable == null) //如果DataTable变量为null，则抛出异常
+        //        {
+        //            throw new Exception("无有效数据！");
+        //        }
+
+        //        int maxDataColumnIndex = new[] { dataTable!.Columns[sectorDataColumnName]!.Ordinal, dataTable!.Columns[prDataColumnName]!.Ordinal,
+        //            dataTable!.Columns[pbDataColumnName]!.Ordinal, dataTable!.Columns[peDataColumnName]!.Ordinal }.Max(); //获取4个数据列索引号的最大值
+
+        //        while (dataTable.Columns.Count - 1 > maxDataColumnIndex) //当DataTable最末数据列的索引号大于4个数据列索引号的最大值，则继续循环，删除最末数据列
+        //        {
+        //            dataTable.Columns.RemoveAt(dataTable.Columns.Count - 1);
+        //        }
+
+        //        dataTable.Columns.Add("PE冗余比", typeof(double)); //在DataTable中增加“PE冗余比”数据列
+        //        foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
+        //        {
+        //            double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
+        //            double.TryParse((string?)dataRow[pbDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
+        //            //pb = double.Clamp(pb, 2.7183, double.MaxValue); //将市净率限定为不小于2.7183
+        //            pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
+        //            double.TryParse((string?)dataRow[peDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
+        //            double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
+        //            dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
+        //        }
+
+        //        DataTable targetDataTable = dataTable.AsEnumerable().Where(
+        //            dataRow =>
+        //            {
+        //                double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
+        //                double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
+        //                double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
+        //                //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
+        //                //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
+        //                return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10;
+        //            }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
+
+        //        if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
+        //        {
+        //            MessageBox.Show("未筛选出符合条件的股票，将不输出结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+        //            return;
+        //        }
+
+        //        targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE冗余比 DESC"; //按行业升序、PE冗余比降序对数据排序
+        //        targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
+
+        //        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
+        //        {
+        //            while (excelPackage.Workbook.Worksheets.Count > 1) //当Excel工作簿中的工作表大于1张，则继续循环，删除最后一张
+        //            {
+        //                excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
+        //            }
+
+        //            ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"筛选结果{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
+        //            targetWorksheet.Cells["A1"].LoadFromDataTable(targetDataTable, true); //将目标DataTable的数据导入目标Excel工作表（true代表将表头赋给第一行，或使用“c => c.PrintHeaders = true”）
+
+        //            foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
+        //            {
+        //                //重新赋值给当前单元格：将单元格文本值转换成数值，如果成功则赋值给单元格数值变量，然后单元格将得到该数值；否则，得到单元格原值
+        //                cell.Value = double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double cellNumVal) ? cellNumVal : cell.Value;
+        //            }
+
+        //            //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
+        //            targetWorksheet.Cells[2, 1, targetWorksheet.Dimension.End.Row, targetWorksheet.Dimension.End.Column].Style.Numberformat.Format = "0.00";
+
+        //            FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
+        //            excelPackage.Save(); //保存目标Excel工作簿文件
+        //        }
+        //        MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //}
 
         public void SplitExcelWorksheet()
         {
