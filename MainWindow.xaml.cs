@@ -41,7 +41,7 @@ namespace COMIGHT
             InitializeComponent();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
-            this.Title = $"COMIGHT办公助手 © {DateTime.Now:yyyy} Yuechen Lou";
+            this.Title = $"COMIGHT Assistant © {DateTime.Now:yyyy} Yuechen Lou";
         }
 
         private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
@@ -137,7 +137,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -149,7 +149,7 @@ namespace COMIGHT
         private void TxtbxExportableText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
-            if (MessageBox.Show("是否清除内容？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Do you want to clear the content?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 txtbxExportableText.Text = "";
             }
@@ -160,19 +160,19 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Word, true, "选择Word文档"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Word, true, "Select Word Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
                 await FormatWordDocumentsAsync(filePaths);
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -181,7 +181,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -208,12 +208,12 @@ namespace COMIGHT
                         excelPackage.Save(); //保存Excel工作簿
                     }
                 }
-                MessageBox.Show($"{fileNum}个文件操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"{fileNum} files processed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -222,8 +222,8 @@ namespace COMIGHT
             string currentFilePath = "";
             try
             {
-                string functionOptions = string.Join('\n', new string[] {"输入功能选项：", "1-记录合并；", "2-数值累加；", "3-提取单元格数据；", "4-文本型数字转数值型；",
-                    "5-复制公式到多Excel工作表；", "6-提取单元格数据给工作簿文件名加前缀；", "7-调整工作表打印版式；"});
+                string functionOptions = string.Join('\n', new string[] {"Input the function number:", "1-Append Record", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
+                    "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cells Data", "7-Adjust Worksheet Format for Printing"});
                 InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
@@ -235,7 +235,7 @@ namespace COMIGHT
                     return;
                 }
 
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "选择待处理的Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -251,7 +251,7 @@ namespace COMIGHT
                 List<string>? lstOperatingRangeAddresses = null;
 
                 string latestExcelWorksheetIndexesStr = Properties.Settings.Default.latestExcelWorksheetIndexesStr; //读取设置中保存的Excel工作表索引号范围字符串
-                inputDialog = new InputDialog("输入要处理的Excel工作表索引号起止范围（用英文连字号隔开，如：“1-1”代表第1张工作表，“1-3”代表第1至第3张工作表）；输入空白值则按工作表名指定", latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
+                inputDialog = new InputDialog("Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -271,7 +271,7 @@ namespace COMIGHT
                 else
                 {
                     string latestExcelWorksheetName = Properties.Settings.Default.latestExcelWorksheetName; //读取设置中保存的Excel工作表名称
-                    inputDialog = new InputDialog("输入要处理的Excel工作表名称（如：“Sheet1”，每次只能处理一张工作表）", latestExcelWorksheetName); //弹出对话框，输入工作表名称
+                    inputDialog = new InputDialog("Input the worksheet name (one worksheet per operation)", latestExcelWorksheetName); //弹出对话框，输入工作表名称
                     if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                     {
                         return;
@@ -292,7 +292,7 @@ namespace COMIGHT
                     case 5:
                     case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表, 6-提取单元格数据给工作簿文件名加前缀
                         string latestOperatingRangeAddresses = Properties.Settings.Default.latestOperatingRangeAddresses; //读取设置中保存的操作区域
-                        inputDialog = new InputDialog("输入操作区域（用英文逗号隔开，如：“B2:C3,B4:C5”）", latestOperatingRangeAddresses); //弹出对话框，输入操作区域
+                        inputDialog = new InputDialog("Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", latestOperatingRangeAddresses); //弹出对话框，输入操作区域
                         if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                         {
                             return;
@@ -342,8 +342,8 @@ namespace COMIGHT
                                 case 2:
                                 case 3:
                                 case 4:  // 1-记录合并; 2-数值累加; 3-提取单元格数据; 4-文本型数字转数值型
-                                    targetFolderPath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, "汇总表格"); //获取目标文件的文件夹路径
-                                    targetExcelWorkbookPrefix = $"{functionNum}汇总"; //获取目标Excel工作簿类型
+                                    targetFolderPath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, "Consolidated Tables"); //获取目标文件的文件夹路径
+                                    targetExcelWorkbookPrefix = $"{functionNum}_Consol"; //获取目标Excel工作簿类型
                                     break;
                             }
                         }
@@ -374,7 +374,7 @@ namespace COMIGHT
                             //如果当前Excel工作表为隐藏且使用工作表索引号，弹出提示框并结束本过程
                             if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex)
                             {
-                                MessageBox.Show("部分文件存在隐藏Excel工作表。先撤销工作表隐藏状态，然后重新确定工作表索引号范围。", "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                                MessageBox.Show("Hidden Worksheets Found! Operation Aborted!", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -457,8 +457,8 @@ namespace COMIGHT
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件的第一个Excel工作表
                                     {
                                         dataTable = new DataTable(); //定义DataTable
-                                        dataTable.Columns.Add("文件名"); //添加列
-                                        dataTable.Columns.Add("工作表");
+                                        dataTable.Columns.Add("Filename"); //添加列
+                                        dataTable.Columns.Add("Worksheet");
 
                                         foreach (string anOperatingRange in lstOperatingRangeAddresses!)
                                         {
@@ -473,8 +473,8 @@ namespace COMIGHT
                                     }
 
                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
-                                    dataRow["文件名"] = excelFileName;
-                                    dataRow["工作表"] = excelWorksheet.Name;
+                                    dataRow["Filename"] = excelFileName;
+                                    dataRow["Worksheet"] = excelWorksheet.Name;
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
                                     {
                                         for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
@@ -505,10 +505,10 @@ namespace COMIGHT
                                         dataTable = new DataTable(); //定义DataTable
                                         dataTable.Columns.AddRange(new DataColumn[]
                                             {
-                                                new DataColumn("文件名"),
-                                                new DataColumn("工作表"),
-                                                new DataColumn("未转换单元格地址"),
-                                                new DataColumn("未转换单元格值")
+                                                new DataColumn("Filename"),
+                                                new DataColumn("Worksheet"),
+                                                new DataColumn("Unconverted Address"),
+                                                new DataColumn("Unconverted Value")
                                             }); //向DataTable添加列
 
                                     }
@@ -531,10 +531,10 @@ namespace COMIGHT
                                                 {
                                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
                                                     //将相关数据填入对应的数据列
-                                                    dataRow["文件名"] = excelFileName;
-                                                    dataRow["工作表"] = excelWorksheet.Name;
-                                                    dataRow["未转换单元格地址"] = cell.Address;
-                                                    dataRow["未转换单元格值"] = cell.Value;
+                                                    dataRow["Filename"] = excelFileName;
+                                                    dataRow["Worksheet"] = excelWorksheet.Name;
+                                                    dataRow["Unconverted Address"] = cell.Address;
+                                                    dataRow["Unconverted Value"] = cell.Value;
                                                     dataTable.Rows.Add(dataRow); //向DataTable添加数据行
                                                 }
                                             }
@@ -558,9 +558,7 @@ namespace COMIGHT
 
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
-                                        MessageBox.Show("即将打开模板Excel工作簿选择对话框。模板不能与任一待处理Excel工作簿同名，且只能复制第1张工作表内的公式",
-                                            "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-                                        templateExcelFilePaths = SelectFiles(FileType.Excel, false, "选择公式模板Excel工作簿"); //选择模板文件
+                                        templateExcelFilePaths = SelectFiles(FileType.Excel, false, "Select the Template Excel File"); //选择模板文件
                                         if (templateExcelFilePaths == null) //如果文件为null，结束本过程
                                         {
                                             return;
@@ -599,7 +597,7 @@ namespace COMIGHT
                                         string prefixes = string.Join(' ', lstPrefixes); //合并前缀列表中的字符串，当中用空格分隔
                                         excelPackage.Dispose(); //关闭当前被处理Excel工作簿
                                                                 //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
-                                        string renamedExcelFileName = CleanName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
+                                        string renamedExcelFileName = CleanName($"{prefixes}{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
                                         string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
                                         File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
                                     }
@@ -633,7 +631,7 @@ namespace COMIGHT
 
                     //获取目标工作表表头行数
                     //根据功能序号返回相应的目标工作表表头行数
-                    int targetheaderCount = functionNum switch
+                    int targetHeaderCount = functionNum switch
                     {
                         1 => headerCount,  //记录合并，输出记录合并后的汇总表，表头行数为源数据表格的表头行数
                         3 => 1,  //提取单元格数据，输出提取单元格值后的汇总表，表头行数为1
@@ -641,18 +639,18 @@ namespace COMIGHT
                         _ => 0  //其余情况，表头行数为0
                     };
 
-                    FormatExcelWorksheet(targetExcelWorksheet, targetheaderCount, 0); //设置目标Excel工作表格式
+                    FormatExcelWorksheet(targetExcelWorksheet, targetHeaderCount, 0); //设置目标Excel工作表格式
                     FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"{targetExcelWorkbookPrefix}_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                     targetExcelPackage.SaveAs(targetExcelFile);
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
                 }
                 templateExcelPackage?.Dispose(); //关闭模板Excel工作簿（仅在模板工作簿已打开的情况下）
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message} at {currentFilePath}。", "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"{ex.Message} at {currentFilePath}。", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -662,8 +660,8 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "选择起始数据的Excel工作簿"); //获取所选起始数据文件列表
-                List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "选择终点数据的Excel工作簿"); //获取所选终点数据文件列表
+                List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel Files Containing the Start Data"); //获取所选起始数据文件列表
+                List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel Files Containing the End Data"); //获取所选终点数据文件列表
 
                 if (startFilePaths == null || endFilePaths == null) //如果起始数据或终点数据文件列表有一个为null，则结束本过程
                 {
@@ -752,7 +750,7 @@ namespace COMIGHT
                         string result;
                         if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为“一致”
                         {
-                            result = "一致";
+                            result = "Identical";
                         }
                         else //否则
                         {
@@ -764,35 +762,35 @@ namespace COMIGHT
                             //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
                             if (!startDataIsNumeric || !endDataIsNumeric)
                             {
-                                result = $"原：{startDataStr}\n现：{endDataStr}";
+                                result = $"Start:{startDataStr}\nEnd:{endDataStr}";
                             }
                             else //否则
                             {
                                 double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
                                 double percent = startDataValue != 0 ? Math.Round((difference / startDataValue) * 100, 2) : double.NaN; //获取终点和起始数据的变化率百分比：如果起始数值不为零，得到变化率百分比；否则得到NaN
-                                result = $"原{startDataValue}，现{endDataValue}\n差{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+                                result = $"Start{startDataValue}, End{endDataValue}\nDiff{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
                             }
                         }
                         differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
                     }
                 }
 
-                // 清除全部为“一致”的数据行
+                // 清除全部为“Identical”的数据行
                 for (int i = differenceDataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
                 {
-                    //如果当前数据行所有数据列（不包括主键列）数据的值均为“一致”，则删除当前数据行
+                    //如果当前数据行所有数据列（不包括主键列）数据的值均为“Identical”，则删除当前数据行
                     if (differenceDataTable.Rows[i].ItemArray.Where((value, index) => differenceDataTable.Columns[index].ColumnName != keyDataColumnName)
-                        .All(value => Convert.ToString(value) == "一致"))
+                        .All(value => Convert.ToString(value) == "Identical"))
                     {
                         differenceDataTable.Rows[i].Delete();
                     }
                 }
 
-                //清除全部为“一致”的数据列
+                //清除全部为“Identical”的数据列
                 for (int j = differenceDataTable.Columns.Count - 1; j >= 0; j--) // 遍历DataTable所有数据列
                 {
-                    //如果所有数据行的当前数据列数据均为 "一致"，则删除当前数据列
-                    if (differenceDataTable.AsEnumerable().All(dataRow => Convert.ToString(dataRow[j]) == "一致"))
+                    //如果所有数据行的当前数据列数据均为 "Identical"，则删除当前数据列
+                    if (differenceDataTable.AsEnumerable().All(dataRow => Convert.ToString(dataRow[j]) == "Identical"))
                     {
                         differenceDataTable.Columns.RemoveAt(j);
                     }
@@ -801,29 +799,29 @@ namespace COMIGHT
 
                 if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
                 {
-                    MessageBox.Show("两表数据完全相同，将不输出比较结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("No difference detected.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                string targetFolderPath = Path.Combine(Path.GetDirectoryName(endFilePaths[0])!, "比较结果"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(endFilePaths[0])!, "Comparison Results"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
                 {
                     Directory.CreateDirectory(targetFolderPath!);
                 }
-                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"比较结果_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"Comp_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
 
                 using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
                 {
-                    ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"数据比较"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
+                    ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"Sheet1"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
                     targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
 
                     //将目标工作表从第2行第1列单元格开始到末尾的区域赋值给记录区域变量
                     ExcelRange recordRange = targetExcelWorksheet.Cells[2, 1, targetExcelWorksheet.Dimension.End.Row, targetExcelWorksheet.Dimension.End.Column];
                     foreach (ExcelRangeBase cell in recordRange) //遍历记录区域的所有单元格
                     {
-                        if (cell.Text != "一致") //如果单元格的文字不为“一致”，则将字体颜色设为红色
+                        if (cell.Text != "Identical") //如果单元格的文字不为“一致”，则将字体颜色设为红色
                         {
                             cell.Style.Font.Color.SetColor(Color.Red);
                         }
@@ -831,12 +829,12 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.SaveAs(targetExcelFile);
                 }
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
 
@@ -848,7 +846,7 @@ namespace COMIGHT
             MSWord.Application? msWordApp = null;
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "选择旧版Office或WPS文件"); //打开文件选择对话框，选择文件
+                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //打开文件选择对话框，选择文件
                 if (filePaths == null) // 如果文件列表为null，则结束本过程
                 {
                     return;
@@ -906,12 +904,12 @@ namespace COMIGHT
                 }
                 await task;
 
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             finally
@@ -925,7 +923,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择名册Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File of Name List"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -940,7 +938,7 @@ namespace COMIGHT
                     RemoveWorksheetEmptyRowsAndColumns(sourceExcelWorksheet); //删除源数据Excel工作表内所有空白行和空白列
                     if (sourceExcelWorksheet.Dimension == null) //如果工作表为空，则抛出异常
                     {
-                        throw new Exception("无有效数据！");
+                        throw new Exception("No Valid Data Found!");
                     }
 
                     for (int i = 1; i <= sourceExcelWorksheet.Dimension.End.Row; i++) //遍历源数据工作表所有行
@@ -988,16 +986,16 @@ namespace COMIGHT
                     }
 
                     // 保存目标工作簿
-                    string targetFilePath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"座位牌_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
+                    string targetFilePath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Plates_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
-                    MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -1012,11 +1010,11 @@ namespace COMIGHT
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
                 {
-                    throw new Exception("无有效数据！");
+                    throw new Exception("No Valid Data Found!");
                 }
 
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Generated Files"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
@@ -1028,12 +1026,12 @@ namespace COMIGHT
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx"); 
                 ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -1099,12 +1097,12 @@ namespace COMIGHT
 
         //        }
 
-        //        MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         //    }
 
         //    catch (Exception ex)
         //    {
-        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
         //    }
 
         //}
@@ -1113,18 +1111,18 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择创建文件夹数据Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing Directory Tree Data"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
-                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"文件夹_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
                 {
-                    throw new Exception("无有效数据！");
+                    throw new Exception("No Valid Data Found!");
                 }
 
                 // 创建目标文件夹路径
@@ -1164,12 +1162,12 @@ namespace COMIGHT
                         }
                     }
                 }
-                MessageBox.Show("文件夹已建立完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -1178,12 +1176,12 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择结构化文档表Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Document Table File"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
-                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, "导出文档"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, "Output Documents"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径
@@ -1194,12 +1192,12 @@ namespace COMIGHT
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
                 await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
 
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -1208,7 +1206,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "选择Word文档或Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "Select Word and Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1250,7 +1248,7 @@ namespace COMIGHT
                                     }
                                     lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd()); //将字符串构建器中当前行数据转换成字符串，移除尾部的空白字符，并追加到全文本列表中
                                 }
-                                lstFullText.AddRange(new string[] { "（本表完）", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"本表完"元素和一个空字符串元素
+                                lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"The End"元素和一个空字符串元素
                             }
                         }
                     }
@@ -1295,13 +1293,13 @@ namespace COMIGHT
                                     lstFullText.Add(paragraphText);
                                 }
                             }
-                            lstFullText.AddRange(new string[] { "（本文完）", "" }); //当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个"本文完"元素和一个空字符串元素
+                            lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个"The End"元素和一个空字符串元素
                         }
                     }
                 }
                 
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Generated Files"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径
@@ -1309,7 +1307,7 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath);
                 }
 
-                string targetWordFilePath = Path.Combine(targetFolderPath, $"合并文本_{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件的路径全名
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"Merged_{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件的路径全名
                 using DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
                 {
                     foreach (string paragraphText in lstFullText) //遍历全文本列表的所有元素
@@ -1318,12 +1316,12 @@ namespace COMIGHT
                     }
                     targetWordDocument.Save(); //保存目标Word文档
                 }
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -1338,7 +1336,7 @@ namespace COMIGHT
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog() //定义文件夹选择对话框
                 {
                     Multiselect = false,
-                    Title = "选择文件夹",
+                    Title = "Select the Directory",
                     RootDirectory = initialDirectory //根文件夹路径设为设置中保存的文件夹路径
                 };
                 if (openFolderDialog.ShowDialog() == false) //如果对话框返回值为false（点击Cancel），则结束本过程
@@ -1349,7 +1347,7 @@ namespace COMIGHT
                 Properties.Settings.Default.latestFolderPath = folderPath; //将第一级文件夹路径存入设置
                 Properties.Settings.Default.Save();
 
-                InputDialog inputDialog = new InputDialog("输入子路径级数", "1"); //弹出功能选择对话框
+                InputDialog inputDialog = new InputDialog("Input the level of subdirectories", "1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1359,8 +1357,8 @@ namespace COMIGHT
                 DataTable dataTable = new DataTable(); //定义DataTable，赋值给DataTable变量
 
                 dataTable.Columns.AddRange(new DataColumn[]
-                    {new DataColumn("序号"), new DataColumn("路径"), new DataColumn("子路径"),
-                    new DataColumn("名称"), new DataColumn("类型"), new DataColumn("日期", typeof(DateTime)) }); //向DataTable添加列
+                    {new DataColumn("Index"), new DataColumn("Path"), new DataColumn("Subpath"),
+                    new DataColumn("Item"), new DataColumn("Type"), new DataColumn("Date", typeof(DateTime)) }); //向DataTable添加列
 
                 //计算指定级数文件夹路径的总分隔符数：将第一级文件夹路径中的'\'计数加上子路径的'\'计数（总分隔符计数等于文件夹路径的级数）
                 //（逐一比较每个字符是否为'\'，如果是则"c=>"Lambda表达式返回true，用Count方法计数true的数量，即得到当前字符串中一共包含多少个'\'）
@@ -1396,10 +1394,10 @@ namespace COMIGHT
                             //DateTime fileDate = !string.IsNullOrWhiteSpace(actualYear) ?
                                 //fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
                             
-                            dataRow["路径"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
-                            dataRow["名称"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
-                            dataRow["类型"] = file.Extension; //将当前文件扩展名赋值给DataTable的新数据行的"类型"列
-                            dataRow["日期"] = fileSystemDate; //将当前文件系统日期赋值给DataTable的新数据行的"日期"列
+                            dataRow["Path"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
+                            dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
+                            dataRow["Type"] = file.Extension; //将当前文件扩展名赋值给DataTable的新数据行的"类型"列
+                            dataRow["Date"] = fileSystemDate; //将当前文件系统日期赋值给DataTable的新数据行的"日期"列
                             dataTable.Rows.Add(dataRow); //向DataTable中添加新数据行
                         }
                     }
@@ -1422,10 +1420,10 @@ namespace COMIGHT
                             //DateTime subdirectoryDate = !string.IsNullOrWhiteSpace(actualYear) ?
                             //    subdirectorySystemDate.AddYears((Convert.ToInt32(actualYear) - subdirectorySystemDate.Year).Clamp<int>(-10,0)) : subdirectorySystemDate;
 
-                            dataRow["路径"] = subdirectory.FullName; //将当前子文件夹路径赋值给DataTable的新数据行的"路径"列
-                            dataRow["名称"] = subdirectory.Name; //将当前子文件夹名赋值给DataTable的新数据行的"名称"列
-                            dataRow["类型"] = "文件夹"; //将"文件夹"字符串赋值给DataTable的新数据行的"类型"列
-                            dataRow["日期"] = subdirectorySystemDate; //将当前子文件夹系统日期赋值给DataTable的新数据行的"日期"列
+                            dataRow["Path"] = subdirectory.FullName; //将当前子文件夹路径赋值给DataTable的新数据行的"路径"列
+                            dataRow["Item"] = subdirectory.Name; //将当前子文件夹名赋值给DataTable的新数据行的"名称"列
+                            dataRow["Type"] = "Directory"; //将"文件夹"字符串赋值给DataTable的新数据行的"类型"列
+                            dataRow["Date"] = subdirectorySystemDate; //将当前子文件夹系统日期赋值给DataTable的新数据行的"日期"列
                             dataTable.Rows.Add(dataRow);
 
                             GetFolderFiles(subdirectory.FullName, separatorsCount, dataTable); //迭代调用自身过程，将当前子路径作为参数传入
@@ -1435,16 +1433,16 @@ namespace COMIGHT
 
                 if (dataTable.Rows.Count * dataTable.Columns.Count == 0) //如果DataTable的行数或列数有一个为0，则弹出提示框并结束本过程
                 {
-                    MessageBox.Show("未找到文件或文件夹，将不输出结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Files or Directories Not Found!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
                 {
-                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("文件列表"); //新建“文件列表”Excel工作表，赋值给目标工作表变量
+                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //新建“文件列表”Excel工作表，赋值给目标工作表变量
                     targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true); //将DataTable数据导入目标工作表（true代表将表头赋给第一行）
                     int endRowIndex = targetExcelWorksheet.Dimension.End.Row; //获取目标Excel工作表最末行的行索引号
-                    int dateColumnIndex = dataTable.Columns["日期"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
+                    int dateColumnIndex = dataTable.Columns["Date"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
                     //将Excel工作表最末列（时间列）的数据格式设为“年-月-日”
                     targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
 
@@ -1465,16 +1463,16 @@ namespace COMIGHT
                     }
 
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
-                    FileInfo targetExcelFile = new FileInfo(Path.Combine(folderPath, $"文件列表_{CleanName(folderPath, 40)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                    FileInfo targetExcelFile = new FileInfo(Path.Combine(folderPath, $"List_{CleanName(folderPath, 40)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                     targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
                 }
 
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -1484,14 +1482,14 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择股票数据Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing Stocks Data"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
                 string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog("输入代码、名称、所属行业、现价、市净率、市盈率所在列名称（用英文逗号隔开）", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog("Input the column name of stock code, name, sector, price, PB, and PE (separated by commas)", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1513,7 +1511,7 @@ namespace COMIGHT
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
                 {
-                    throw new Exception("无有效数据！");
+                    throw new Exception("No Valid Data Found!");
                 }
 
                 List<string> lstDataColumnNames = new List<string>
@@ -1528,7 +1526,7 @@ namespace COMIGHT
                     }
                 }
 
-                dataTable.Columns.Add("PE冗余比", typeof(double)); //在DataTable中增加“PE冗余比”数据列
+                dataTable.Columns.Add("PE Rdn", typeof(double)); //在DataTable中增加“PE冗余比”数据列
                 foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
                 {
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
@@ -1537,7 +1535,7 @@ namespace COMIGHT
                     pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
                     double.TryParse((string?)dataRow[peDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
                     double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
-                    dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
+                    dataRow["PE Rdn"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
                 }
 
                 DataTable targetDataTable = dataTable.AsEnumerable().Where(
@@ -1545,7 +1543,7 @@ namespace COMIGHT
                     {
                         double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
                         double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
-                        double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
+                        double peRedundancyRatio = Convert.ToDouble(dataRow["PE Rdn"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
                         //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
                         //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值（为留有余量，这里将PE冗余比限定在10-100之间）
                         return (peRedundancyRatio >= 10 && peRedundancyRatio < 100) && pr >= 10;
@@ -1553,11 +1551,11 @@ namespace COMIGHT
 
                 if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
                 {
-                    MessageBox.Show("未筛选出符合条件的股票，将不输出结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("No Qualified Stocks Found!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE冗余比 DESC"; //按行业升序、PE冗余比降序对数据排序
+                targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE Rdn DESC"; //按行业升序、PE冗余比降序对数据排序
                 targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
@@ -1567,7 +1565,7 @@ namespace COMIGHT
                         excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
                     }
 
-                    ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"筛选结果{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
+                    ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"Results{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
                     targetWorksheet.Cells["A1"].LoadFromDataTable(targetDataTable, true); //将目标DataTable的数据导入目标Excel工作表（true代表将表头赋给第一行，或使用“c => c.PrintHeaders = true”）
 
                     foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
@@ -1582,128 +1580,23 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.Save(); //保存目标Excel工作簿文件
                 }
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
 
-        //private void ScreenStocks()
-        //{
-        //    try
-        //    {
-        //        List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择股票数据Excel工作簿"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-        //        InputDialog inputDialog = new InputDialog("输入所属行业、现价、市净率、市盈率所在列名称（用英文逗号隔开）", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
-        //        Properties.Settings.Default.latestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串存入设置
-        //        Properties.Settings.Default.Save();
-
-        //        //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
-        //        List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
-        //        //将各指标的列名称赋值给数据列名变量
-        //        string sectorDataColumnName = lstDataColumnNamesStr[0];
-        //        string prDataColumnName = lstDataColumnNamesStr[1];
-        //        string pbDataColumnName = lstDataColumnNamesStr[2];
-        //        string peDataColumnName = lstDataColumnNamesStr[3];
-
-        //        DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
-        //        if (dataTable == null) //如果DataTable变量为null，则抛出异常
-        //        {
-        //            throw new Exception("无有效数据！");
-        //        }
-
-        //        int maxDataColumnIndex = new[] { dataTable!.Columns[sectorDataColumnName]!.Ordinal, dataTable!.Columns[prDataColumnName]!.Ordinal,
-        //            dataTable!.Columns[pbDataColumnName]!.Ordinal, dataTable!.Columns[peDataColumnName]!.Ordinal }.Max(); //获取4个数据列索引号的最大值
-
-        //        while (dataTable.Columns.Count - 1 > maxDataColumnIndex) //当DataTable最末数据列的索引号大于4个数据列索引号的最大值，则继续循环，删除最末数据列
-        //        {
-        //            dataTable.Columns.RemoveAt(dataTable.Columns.Count - 1);
-        //        }
-
-        //        dataTable.Columns.Add("PE冗余比", typeof(double)); //在DataTable中增加“PE冗余比”数据列
-        //        foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
-        //        {
-        //            double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
-        //            double.TryParse((string?)dataRow[pbDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
-        //            //pb = double.Clamp(pb, 2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-        //            pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-        //            double.TryParse((string?)dataRow[peDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
-        //            double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
-        //            dataRow["PE冗余比"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
-        //        }
-
-        //        DataTable targetDataTable = dataTable.AsEnumerable().Where(
-        //            dataRow =>
-        //            {
-        //                double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
-        //                double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
-        //                double peRedundancyRatio = Convert.ToDouble(dataRow["PE冗余比"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
-        //                //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-        //                //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值
-        //                return (peRedundancyRatio > 0 && peRedundancyRatio < 100) && pr >= 10;
-        //            }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
-
-        //        if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
-        //        {
-        //            MessageBox.Show("未筛选出符合条件的股票，将不输出结果。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
-        //            return;
-        //        }
-
-        //        targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE冗余比 DESC"; //按行业升序、PE冗余比降序对数据排序
-        //        targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
-
-        //        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
-        //        {
-        //            while (excelPackage.Workbook.Worksheets.Count > 1) //当Excel工作簿中的工作表大于1张，则继续循环，删除最后一张
-        //            {
-        //                excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
-        //            }
-
-        //            ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"筛选结果{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
-        //            targetWorksheet.Cells["A1"].LoadFromDataTable(targetDataTable, true); //将目标DataTable的数据导入目标Excel工作表（true代表将表头赋给第一行，或使用“c => c.PrintHeaders = true”）
-
-        //            foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
-        //            {
-        //                //重新赋值给当前单元格：将单元格文本值转换成数值，如果成功则赋值给单元格数值变量，然后单元格将得到该数值；否则，得到单元格原值
-        //                cell.Value = double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double cellNumVal) ? cellNumVal : cell.Value;
-        //            }
-
-        //            //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
-        //            targetWorksheet.Cells[2, 1, targetWorksheet.Dimension.End.Row, targetWorksheet.Dimension.End.Column].Style.Numberformat.Format = "0.00";
-
-        //            FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
-        //            excelPackage.Save(); //保存目标Excel工作簿文件
-        //        }
-        //        MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
+        
         public void SplitExcelWorksheet()
         {
             try
             {
                 InputDialog inputDialog;
-                string functionOptions = string.Join('\n', new string[] { "输入功能选项：", "1-拆分为Excel工作簿", "2-拆分为Excel工作表" });
+                string functionOptions = string.Join('\n', new string[] { "Input the function number:", "1-Split into Workbooks", "2-Split into Worksheets" });
                 inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
@@ -1715,7 +1608,7 @@ namespace COMIGHT
                     return;
                 }
 
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "选择待拆分的Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1729,7 +1622,7 @@ namespace COMIGHT
                     return;
                 }
 
-                inputDialog = new InputDialog("输入拆分后文件名", Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
+                inputDialog = new InputDialog("Input the filename of target workbooks", Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1744,7 +1637,7 @@ namespace COMIGHT
                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
                     if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerCount + footerCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则抛出异常
                     {
-                        throw new Exception("无有效数据！");
+                        throw new Exception("No Valid Data Found!");
                     }
 
                     Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义一个字典来保存拆分的数据
@@ -1764,7 +1657,7 @@ namespace COMIGHT
                     }
 
                     // 创建目标文件夹
-                    string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"拆分_{Path.GetFileNameWithoutExtension(filePaths[0])}");
+                    string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Spltd_{Path.GetFileNameWithoutExtension(filePaths[0])}");
                     if (!Directory.Exists(targetFolderPath))
                     {
                         Directory.CreateDirectory(targetFolderPath);
@@ -1798,7 +1691,7 @@ namespace COMIGHT
                                     FormatExcelWorksheet(targetExcelWorksheet, headerCount, 0); //设置目标Excel工作表格式
 
                                     // 保存目标Excel工作簿文件
-                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"拆分_{targetFileMainName}_{pair.Key}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"Spltd_{targetFileMainName}_{pair.Key}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
                                 }
                             }
@@ -1833,19 +1726,19 @@ namespace COMIGHT
 
                                 }
                                 // 保存目标Excel工作簿文件
-                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"拆分_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"Spltd_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                 targetExcelPackage.SaveAs(targetExcelFile);
 
                             }
                             break;
                     }
                 }
-                MessageBox.Show("操作已完成。", "结果", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }

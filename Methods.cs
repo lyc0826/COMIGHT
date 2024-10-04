@@ -288,7 +288,7 @@ namespace COMIGHT
             printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
 
             // 设置页脚
-            string footerText = "第 &P 页，共 &N 页";
+            string footerText = "P&P / &N"; //设置页码
             excelWorksheet.HeaderFooter.OddFooter.CenteredText = footerText; // 设置奇数页页脚
             excelWorksheet.HeaderFooter.EvenFooter.CenteredText = footerText; // 设置偶数页页脚
 
@@ -442,7 +442,7 @@ namespace COMIGHT
         public static string? GetKeyColumnLetter()
         {
             string latestColumnLetter = Properties.Settings.Default.latestSplittingColumnLetter; //读取设置中保存的主键列符
-            InputDialog inputDialog = new InputDialog("输入主键列符（如：“A”）", latestColumnLetter); //弹出对话框，输入主键列符
+            InputDialog inputDialog = new InputDialog("Input the key column letter (e.g. \"A\"）", latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
@@ -459,7 +459,7 @@ namespace COMIGHT
             try
             {
                 string lastestHeaderFooterCountStr = Properties.Settings.Default.lastestHeaderFooterCountStr; //读取设置中保存的表头表尾行数字符串
-                InputDialog inputDialog = new InputDialog("输入表头、表尾行数（用英文逗号隔开，如：“2,1”代表表头为2行、表尾为1行）", lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
+                InputDialog inputDialog = new InputDialog("Input the line count of the table header and footer (separated by a comma, e.g. \"2,0\")", lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
                     headerCount = 0;
@@ -478,7 +478,7 @@ namespace COMIGHT
 
             catch (Exception ex) // 捕获错误
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
                 headerCount = 0; footerCount = 0; //表头、表尾行数变量赋值为0
             }
         }
@@ -554,7 +554,7 @@ namespace COMIGHT
                         {
                             copyLeftCell = true;
                         }
-                        //否则，如果比当前列索引号小1、行索引号相同（上方）的单元格的值和比当前列索引号小1、比当前行索引号小1（左上方）的单元格相同，则“是否复制左侧单元格”赋值为true
+                        //否则，如果比当前行索引号小1、列索引号相同（上方）的单元格的值和比当前行索引号小1、比当前列索引号小1（左上方）的单元格相同，则“是否复制左侧单元格”赋值为true
                         else if (excelWorksheet.Cells[i - 1, j].Value == excelWorksheet.Cells[i - 1, j - 1].Value)
                         {
                             copyLeftCell = true;
@@ -622,7 +622,7 @@ namespace COMIGHT
 
             catch (Exception ex) // 捕获错误
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
                 return null; //函数返回值赋值为null
             }
 
@@ -699,11 +699,11 @@ namespace COMIGHT
         {
             string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
             {
-                FileType.Excel => "Excel文件(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|所有文件(*.*)|*.*",
-                FileType.Word => "Word文件(*.docx;*.docm)|*.docx;*.docm|所有文件(*.*)|*.*",
-                FileType.WordAndExcel => "Word或Excel文件(*.docx;*.docm;*.xlsx;*.xlsm)|*.docx;*.docm;*.xlsx;*.xlsm|所有文件(*.*)|*.*",
-                FileType.Convertible => "可转换文件(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|所有文件(*.*)|*.*",
-                _ => "所有文件(*.*)|*.*"
+                FileType.Excel => "Excel Files(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|All Files(*.*)|*.*",
+                FileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
+                FileType.WordAndExcel => "Word or Excel Files(*.docx;*.docm;*.xlsx;*.xlsm)|*.docx;*.docm;*.xlsx;*.xlsm|All Files(*.*)|*.*",
+                FileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
+                _ => "All Files(*.*)|*.*"
             };
 
             string initialDirectory = Properties.Settings.Default.latestFolderPath; //获取保存在设置中的文件夹路径
@@ -855,7 +855,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -1321,7 +1321,7 @@ namespace COMIGHT
                         // 单位和日期落款设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义单位和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），单位字符串1个及以上，最后为日期（如果日期都有明确数字，则可以用非中文符号分隔，否则只能用“年月日”标明）
+                        // 定义单位和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），单位名称字符串1个及以上，最后为日期（如果日期都有明确数字，则可以用非中文符号分隔，否则只能用“年月日”标明）
                         Regex regExInscriptions = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4E00-\u9FA5\w、：:（）\(\)| |\t]{2,}[\n\r])+(?:(?:(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})[ |\t]*[年\.．\-/][ |\t]*"
                               + @"[\d一二三四五六七八九十元]{1,2}[\.．\-/\u4E00-\u9FA5\w（）\(\)| |\t]*)|(?:[ |\t]*年[ |\t]*月[ |\t]*日?))[\n\r]", RegexOptions.Multiline);
                         MatchCollection matchesInscriptions = regExInscriptions.Matches(documentText); // 获取全文文字经过单位和日期落款正则表达式匹配的结果
@@ -1374,7 +1374,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 finally
@@ -1489,7 +1489,7 @@ namespace COMIGHT
                         excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
                     }
 
-                    excelPackage.Workbook.Worksheets.Copy(bodyTextsWorksheet.Name, $"备份{new Random().Next(1000, 10000)}"); //将“主体”Excel工作表复制为“备份”工作表
+                    excelPackage.Workbook.Worksheets.Copy(bodyTextsWorksheet.Name, $"Backup{new Random().Next(1000, 10000)}"); //将“主体”Excel工作表复制为“备份”工作表
                     bodyTextsWorksheet.Select();
 
                     //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中
@@ -1717,7 +1717,7 @@ namespace COMIGHT
                 targetWordDocument.Dispose(); //关闭目标Word文档
 
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
-                if (MessageBox.Show("是否需要排版？", "询问", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Do you want to format the document?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     await FormatWordDocumentsAsync(new List<string> { targetWordFilePath });
                 }
@@ -1726,7 +1726,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

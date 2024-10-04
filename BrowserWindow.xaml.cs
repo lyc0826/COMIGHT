@@ -77,7 +77,7 @@ namespace COMIGHT
 
         private async Task CleanCache()
         {
-            MessageBoxResult result = MessageBox.Show("确定要清理所有浏览数据和cookie吗?", "确认", MessageBoxButton.YesNo); //弹出对话框，询问是否确定清理
+            MessageBoxResult result = MessageBox.Show("Are you sure to clear all the browsing history and cookies?", "Inquiry", MessageBoxButton.YesNo); //弹出对话框，询问是否确定清理
             if (result == MessageBoxResult.Yes) //如果对话框返回Yes（选择了“是”）
             {
                 //清理的数据类型赋值为所有网站和所有Cookies
@@ -169,7 +169,7 @@ namespace COMIGHT
                             } 
                             else 
                             {
-                                alert('复制失败！');
+                                alert('Copying Failed!');
                             }
                         }
                     });

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="COMIGHT助手" Width="480" Height="360" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" >
+        Title="COMIGHT Assistant" Width="480" Height="360" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" >
     
     <Grid Margin="3,0,3,3">
         <Grid.ColumnDefinitions>
@@ -19,31 +19,31 @@
 
         <DockPanel Grid.Row="0" Grid.Column="0" >
             <Menu DockPanel.Dock="Top" Height="30" UseLayoutRounding="True" FontSize="14" VerticalContentAlignment="Center" >
-                <MenuItem Header="开始">
-                    <MenuItem x:Name="mnuHelp" Header="帮助" Click="MnuHelp_Click" />
-                    <MenuItem x:Name="mnuExit" Header="退出" Click="MnuExit_Click" />
-                    <MenuItem x:Name="mnuTest" Header="测试" Click="MnuTest_Click" />
+                <MenuItem Header="Start">
+                    <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
+                    <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
+                    <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" />
                 </MenuItem>
-                <MenuItem Header="文档处理">
-                    <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="批量设置Word文档格式" Click="MnuBatchFormatWordDocuments_Click" />
-                    <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="结构化文档表导出为Word文档" Click="MnuExportDocumentTableIntoWord_Click"  />
-                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="文本框文字导入结构化文档表" Click="MnuImportTextboxIntoDocumentTable_Click"  />
-                    <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "合并文档和表格" Click="MnuMergeDocumentsAndTables_Click" />
+                <MenuItem Header="Table">
+                    <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuSplitExcelWorksheet" Header= "Split Excel Worksheet" Click="MnuSplitExcelWorksheet_Click" />
+                    <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuScreenStocks" Header= "Screen Stocks" Click="MnuScreenStocks_Click" />
                 </MenuItem>
-                <MenuItem Header="表格处理">
-                    <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "批量取消Excel工作表隐藏" Click="MnuBatchUnhideExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "批处理Excel工作表" Click="MnuBatchProcessExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuSplitExcelWorksheet" Header= "拆分Excel工作表" Click="MnuSplitExcelWorksheet_Click" />
-                    <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "比较Excel工作表" Click="MnuCompareExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuScreenStocks" Header= "筛选股票" Click="MnuScreenStocks_Click" />
+                <MenuItem Header="Tools">
+                    <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "Merge Documents and Tables" Click="MnuMergeDocumentsAndTables_Click" />
+                    <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFilesTypes_Click" />
+                    <MenuItem x:Name="mnuMakeFileList" Header= "Make File List" Click="MnuMakeFileList_Click" />
+                    <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
+                    <MenuItem x:Name="mnuCreateSeatPlates" Header= "Create Seat Plates" Click="MnuCreateSeatPlates_Click" />
                 </MenuItem>
-                <MenuItem Header="文件工具"> 
-                    <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "批量转换Office文件类型" Click="MnuBatchConvertOfficeFilesTypes_Click" />
-                    <MenuItem x:Name="mnuMakeFileList" Header= "生成文件列表" Click="MnuMakeFileList_Click" />
-                    <MenuItem x:Name="mnuMakeFolders" Header= "创建文件夹" Click="MnuMakeFolders_Click" />
-                    <MenuItem x:Name="mnuCreateSeatPlates" Header= "创建座位牌" Click="MnuCreateSeatPlates_Click" />
+                <MenuItem Header="Document(CN)">
+                    <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
+                    <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
+                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="Import Textbox into Document Table" Click="MnuImportTextboxIntoDocumentTable_Click"  />
                 </MenuItem>
-                <MenuItem x:Name="mnuBrowser" Header="AI浏览器" Click="MnuBrowser_Click" />
+                <MenuItem x:Name="mnuBrowser" Header="AI Browser" Click="MnuBrowser_Click" />
             </Menu>
         </DockPanel>
                

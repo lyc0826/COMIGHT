@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="AI浏览器" Width="1200" Height="800" Loaded="BrowserWindow_Loaded">
+        Title="AI Browser" Width="1200" Height="800" Loaded="BrowserWindow_Loaded">
 
     <Grid Margin="3,0,3,3" >
         <Grid.ColumnDefinitions>
@@ -29,10 +29,10 @@
             </Grid.RowDefinitions>
 
             <WrapPanel Width="100" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" >
-                <Button x:Name="btnBack" Content="后退" Width="50" Height="30" Click="BtnBack_Click" />
-                <Button x:Name="btnForward" Content="前进" Width="50" Height="30" Click="BtnForward_Click"/>
-                <Button x:Name="btnReload" Content="刷新" Width="50" Height="30" Click="BtnReload_Click"/>
-                <Button x:Name="btnClean" Content="清理" Width="50" Height="30" Click="BtnClean_Click" />
+                <Button x:Name="btnBack" Content="Back" Width="50" Height="30" Click="BtnBack_Click" />
+                <Button x:Name="btnForward" Content="Forward" Width="50" Height="30" Click="BtnForward_Click"/>
+                <Button x:Name="btnReload" Content="Reload" Width="50" Height="30" Click="BtnReload_Click"/>
+                <Button x:Name="btnClean" Content="Clean" Width="50" Height="30" Click="BtnClean_Click" />
             </WrapPanel>
 
             <TextBox x:Name="txtbxURL" Text="Starting Page" Height="30" Grid.Row ="0" Grid.Column="1" VerticalContentAlignment="Center" KeyDown="TxtbxURL_KeyDown" MouseDoubleClick="TxtbxURL_MouseDoubleClick" />
