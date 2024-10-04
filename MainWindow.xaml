@@ -24,6 +24,7 @@
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
                     <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" />
                 </MenuItem>
+                
                 <MenuItem Header="Table">
                     <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
@@ -31,6 +32,13 @@
                     <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuScreenStocks" Header= "Screen Stocks" Click="MnuScreenStocks_Click" />
                 </MenuItem>
+                
+                <MenuItem Header="Document">
+                    <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
+                    <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
+                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="Import Textbox into Document Table" Click="MnuImportTextboxIntoDocumentTable_Click"  />
+                </MenuItem>
+                
                 <MenuItem Header="Tools">
                     <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "Merge Documents and Tables" Click="MnuMergeDocumentsAndTables_Click" />
                     <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFilesTypes_Click" />
@@ -38,12 +46,8 @@
                     <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateSeatPlates" Header= "Create Seat Plates" Click="MnuCreateSeatPlates_Click" />
                 </MenuItem>
-                <MenuItem Header="Document(CN)">
-                    <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
-                    <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
-                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="Import Textbox into Document Table" Click="MnuImportTextboxIntoDocumentTable_Click"  />
-                </MenuItem>
-                <MenuItem x:Name="mnuBrowser" Header="AI Browser" Click="MnuBrowser_Click" />
+                
+                <MenuItem x:Name="mnuBrowser" Header="AI-Browser" Click="MnuBrowser_Click" />
             </Menu>
         </DockPanel>
                
