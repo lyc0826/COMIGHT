@@ -31,7 +31,7 @@ namespace COMIGHT
         public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
 
         //定义小标题文字正则表达式变量，匹配模式为：从开头开始，非“。：:；;分页符换行符回车符”的字符2-40个；后方出现：“。：:”换行符回车符或结尾标记
-        public static Regex regExHeadingText = new Regex(@"^[^。：:；;\f\n\r]{2,40}(?=。|：|:|\n|\r|$)", RegexOptions.Multiline);
+        public static Regex regExHeadingText = new Regex(@"^[^。：:；;\f\n\r]{2,50}(?=。|：|:|\n|\r|$)", RegexOptions.Multiline);
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
@@ -791,27 +791,25 @@ namespace COMIGHT
                 {
                     // 建立目标工作簿和工作表，初始化表头
                     ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets.Add("小标题");
-                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets.Add("大标题首尾");
+                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets.Add("大标题落款");
                     ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets.Add("主体");
 
                     titleWorksheet.Cells["A1:C1"].LoadFromArrays(new List<object[]> { new object[] { "项目", "编号", "文字" } });
-                    titleWorksheet.Cells["A2:A6"].LoadFromArrays(new List<object[]>
+                    titleWorksheet.Cells["A2:A4"].LoadFromArrays(new List<object[]>
                         {
                             new object[] { "大标题" },
-                            new object[] { "首段" },
-                            new object[] { "尾段" },
                             new object[] { "落款" },
                             new object[] { "日期" }
                         }); // 初始化表头
-                    titleWorksheet.Cells["C5"].Value = "单位名称"; // 将“单位名称”赋值给落款单元格
-                    titleWorksheet.Cells["C6"].Value = DateTime.Now.ToString("yyyy年M月d日"); // 将当前日期赋值给日期单元格
+
+                    // 初始化“主体”工作表表头
                     bodyTextsWorksheet.Cells["A1:F1"].LoadFromArrays(new List<object[]> { new object[] { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类" } });
                     bodyTextsWorksheet.Cells["A1:F1"].Copy(headingsWorksheet.Cells["A1"]); //将“主体”工作表的表头复制到“小标题”工作表
 
-                    // 将Word文档数组内容赋值给“主体”工作表内容列的单元格
-                    for (int i = 0; i < lstParagraphs!.Count; i++) //遍历数组所有元素
+                    // 将Word文档数组内容从1号（第2个）元素即正文第一段开始，赋值给“主体”工作表内容列的单元格
+                    for (int i = 1; i < lstParagraphs!.Count; i++) //遍历数组所有元素
                     {
-                        bodyTextsWorksheet.Cells[i + 2, 3].Value = lstParagraphs[i]; //将当前数组元素赋值给第3列的第i+2行的单元格
+                        bodyTextsWorksheet.Cells[i + 1, 3].Value = lstParagraphs[i]; //将当前数组元素赋值给第3列的第i+1行的单元格
                     }
 
                     // 在“主体”工作表中，判断小标题正文文字的编号级别，赋值给小标题级别单元格，并将小标题正文文字的小标题编号清除，同时更新“小标题”工作表
@@ -836,14 +834,10 @@ namespace COMIGHT
 
                     }
 
-                    // 在“大标题首尾”工作表中，给大标题和首段单元格赋值
-                    titleWorksheet.Cells["C2"].Value = bodyTextsWorksheet.Cells["C2"].Value; // 将“主体”工作表第2行“文字”单元格值赋值给“大标题首尾”工作表的“大标题”单元格
-                    if (!bodyTextsWorksheet.Cells["A3"].Text.Contains("级")) // 如果“主体”工作表第3行不含小标题（为普通正文）
-                    {
-                        titleWorksheet.Cells["C3"].Value = bodyTextsWorksheet.Cells["C3"].Value; // 将“主体”工作表第3行“文字”单元格值赋值给“大标题首尾”工作表的“首段”单元格
-                        bodyTextsWorksheet.DeleteRow(3); // 删除“主体”工作表第3行（已经被转移的首段）
-                    }
-                    bodyTextsWorksheet.DeleteRow(2); // 删除“主体”工作表第2行（已经被转移的大标题）
+                    // 在“大标题落款”工作表中，给大标题、落款、日期单元格赋值
+                    titleWorksheet.Cells["C2"].Value = lstParagraphs[0]; // 将Word文档数组0号（第1个）元素即大标题值赋值给“大标题落款”工作表的“大标题”单元格
+                    titleWorksheet.Cells["C3"].Value = "单位名称"; // 将“单位名称”赋值给落款单元格
+                    titleWorksheet.Cells["C4"].Value = DateTime.Now.ToString("yyyy年M月d日"); // 将当前日期赋值给日期单元格
 
                     TrimCellsStrings(bodyTextsWorksheet); //删除“主体”Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(bodyTextsWorksheet); //删除“主体”Excel工作表内所有空白行和空白列
@@ -1654,10 +1648,10 @@ namespace COMIGHT
   
                     }
 
-                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题首尾”工作表（第2张，1号）赋值给大标题首尾工作表变量
-                    ExcelRange titleCells = titleWorksheet.Cells; //将“大标题首尾”工作表单元格赋值给大标题首尾工作表单元格变量
+                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题落款”工作表（第2张，1号）赋值给大标题首尾工作表变量
+                    ExcelRange titleCells = titleWorksheet.Cells; //将“大标题落款”工作表单元格赋值给大标题首尾工作表单元格变量
 
-                    lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "", titleCells["C3"].Text }); //将大标题、空行、首段添加到完整文章列表中
+                    lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "" }); //将大标题、空行添加到完整文章列表中
 
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++)  // 遍历“主体”工作表第2行到最末行的所有行
                     {
@@ -1697,10 +1691,10 @@ namespace COMIGHT
                     }
 
                     // 获取日期单元格的日期值并转换为字符串
-                    string dateStr = titleCells["C6"].GetValue<DateTime>().ToString("yyyy年M月d日"); // 将日期值转换为字符串
+                    string dateStr = titleCells["C4"].GetValue<DateTime>().ToString("yyyy年M月d日"); 
 
-                    //将尾段、空行、落款单位、日期依次添加到完整文章列表中
-                    lstFullTexts.AddRange(new string[] { titleCells["C4"].Text, "", titleCells["C5"].Text, dateStr });
+                    //将空行、落款方、日期依次添加到完整文章列表中
+                    lstFullTexts.AddRange(new string[] { "", titleCells["C3"].Text, dateStr });
 
                     FormatDocumentTable(excelPackage.Workbook); // 格式化结构化文档表中的所有工作表
                     excelPackage.Save(); //保存Excel工作簿
