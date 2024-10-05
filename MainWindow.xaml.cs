@@ -41,7 +41,8 @@ namespace COMIGHT
             InitializeComponent();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
-            this.Title = $"COMIGHT Assistant © {DateTime.Now:yyyy} Yuechen Lou";
+            this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
+            lblIntro.Content = $"An AI-Powered Multi-Tool. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
 
         private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
@@ -49,9 +50,9 @@ namespace COMIGHT
             await ExportDocumentTableIntoWordAsync();
         }
 
-        private void MnuImportTextboxIntoDocumentTable_Click(object sender, RoutedEventArgs e)
+        private void MnuImportTextIntoDocumentTable_Click(object sender, RoutedEventArgs e)
         {
-            ImportTextboxIntoDocumentTable();
+            ImportTextIntoDocumentTable();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -144,15 +145,6 @@ namespace COMIGHT
         private void MnuExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-        }
-
-        private void TxtbxExportableText_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
-            if (MessageBox.Show("Do you want to clear the content?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            {
-                txtbxExportableText.Text = "";
-            }
         }
 
 
@@ -962,8 +954,10 @@ namespace COMIGHT
                         cellB.Style.TextRotation = 90; //设定单元格B文字角度：从X轴开始逆时针旋转，旋转角度为正值，设定值等于旋转角度（最多不超过90°）
 
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
-                        cellABStyle.Font.Name = "华文行楷"; //设置字体
-                        cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
+                        cellABStyle.Font.Name = "Microsoft YaHei"; //设置字体
+                        //cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
+                        cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100) 
+                            * Math.Min(1,1-(cellA.Text.Length - 10) * 0.02)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
@@ -999,13 +993,18 @@ namespace COMIGHT
             }
         }
 
-
-        private void ImportTextboxIntoDocumentTable()
+        private void ImportTextIntoDocumentTable()
         {
             try
             {
+                InputDialog inputDialog = new InputDialog("Input the text to be imported", "", 300, true); //弹出对话框，输入功能选项
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-                List<string> lstParagraphs = txtbxExportableText.Text
+                List<string> lstParagraphs = inputDialog.Answer
                     .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
@@ -1014,7 +1013,7 @@ namespace COMIGHT
                 }
 
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Generated Files"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
@@ -1023,7 +1022,7 @@ namespace COMIGHT
                 }
 
                 //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
-                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx"); 
+                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx");
                 ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
                 MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1035,6 +1034,42 @@ namespace COMIGHT
             }
 
         }
+
+        //private void ImportTextboxIntoDocumentTable()
+        //{
+        //    try
+        //    {
+        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+        //        List<string> lstParagraphs = txtbxExportableText.Text
+        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
+        //        {
+        //            throw new Exception("No Valid Data Found!");
+        //        }
+
+        //        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
+        //        string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标文件夹路径
+
+        //        //创建目标文件夹
+        //        if (!Directory.Exists(targetFolderPath))
+        //        {
+        //            Directory.CreateDirectory(targetFolderPath);
+        //        }
+
+        //        //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
+        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx"); 
+        //        ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
+
+        //        MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+
+        //}
 
         //private void ImportTextboxIntoDocumentTableAndWord()
         //{
@@ -1299,7 +1334,7 @@ namespace COMIGHT
                 }
                 
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Generated Files"); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标文件夹路径
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径

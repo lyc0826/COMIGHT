@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="COMIGHT Assistant" Width="480" Height="360" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" >
-    
+        Title="COMIGHT Assistant" Width="480" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" SizeToContent="Height" >
+
     <Grid Margin="3,0,3,3">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" >
@@ -24,7 +24,7 @@
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
                     <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" />
                 </MenuItem>
-                
+
                 <MenuItem Header="Table">
                     <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
@@ -32,13 +32,13 @@
                     <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuScreenStocks" Header= "Screen Stocks" Click="MnuScreenStocks_Click" />
                 </MenuItem>
-                
-                <MenuItem Header="Document">
+
+                <MenuItem Header="Document" ToolTip="This set of functions is exclusively designed for Chinese Documents.">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
-                    <MenuItem x:Name="mnuImportTextboxIntoDocumentTableAndWord" Header="Import Textbox into Document Table" Click="MnuImportTextboxIntoDocumentTable_Click"  />
+                    <MenuItem x:Name="mnuImportTextIntoDocumentTableAndWord" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
                 </MenuItem>
-                
+
                 <MenuItem Header="Tools">
                     <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "Merge Documents and Tables" Click="MnuMergeDocumentsAndTables_Click" />
                     <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFilesTypes_Click" />
@@ -46,13 +46,14 @@
                     <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateSeatPlates" Header= "Create Seat Plates" Click="MnuCreateSeatPlates_Click" />
                 </MenuItem>
-                
+
                 <MenuItem x:Name="mnuBrowser" Header="AI-Browser" Click="MnuBrowser_Click" />
             </Menu>
         </DockPanel>
-               
-        <TextBox x:Name="txtbxExportableText" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" />
- 
+
+        <Label x:Name="lblIntro" Height="30" Grid.Row="1" Grid.Column="0" FontSize="14" />
+        <!-- <TextBox x:Name="txtbxExportableText" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" /> -->
+
     </Grid>
 
 </Window>

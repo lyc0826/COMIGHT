@@ -174,7 +174,7 @@ namespace COMIGHT
             if (headerCount >= 1) //如果表头行数大于等于1
             {
                 ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
-                headerRange.Style.Font.Name = "等线";
+                headerRange.Style.Font.Name = "Microsoft YaHei";
                 headerRange.Style.Font.Size = 12;
                 headerRange.Style.Font.Bold = true; //表头区域字体加粗
                 headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
@@ -217,7 +217,7 @@ namespace COMIGHT
             ExcelRange recordRange = excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column];
 
             // 设置记录区域字体、对齐
-            recordRange.Style.Font.Name = "等线";
+            recordRange.Style.Font.Name = "Microsoft YaHei";
             recordRange.Style.Font.Size = 11;
             recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
             recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
@@ -1316,13 +1316,13 @@ namespace COMIGHT
                         selection.HomeKey(WdUnits.wdStory);
 
                         // 定义单位和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），单位名称字符串1个及以上，最后为日期（如果日期都有明确数字，则可以用非中文符号分隔，否则只能用“年月日”标明）
-                        Regex regExInscriptions = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4E00-\u9FA5\w、：:（）\(\)| |\t]{2,}[\n\r])+(?:(?:(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})[ |\t]*[年\.．\-/][ |\t]*"
+                        Regex regExSignatures = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4E00-\u9FA5\w、：:（）\(\)| |\t]{2,}[\n\r])+(?:(?:(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})[ |\t]*[年\.．\-/][ |\t]*"
                               + @"[\d一二三四五六七八九十元]{1,2}[\.．\-/\u4E00-\u9FA5\w（）\(\)| |\t]*)|(?:[ |\t]*年[ |\t]*月[ |\t]*日?))[\n\r]", RegexOptions.Multiline);
-                        MatchCollection matchesInscriptions = regExInscriptions.Matches(documentText); // 获取全文文字经过单位和日期落款正则表达式匹配的结果
+                        MatchCollection matchesSignatures = regExSignatures.Matches(documentText); // 获取全文文字经过单位和日期落款正则表达式匹配的结果
 
-                        foreach (Match matchInscription in matchesInscriptions)
+                        foreach (Match matchSignature in matchesSignatures)
                         {
-                            find.Text = matchInscription.Value;
+                            find.Text = matchSignature.Value;
                             find.Execute();
                             if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
                             {
