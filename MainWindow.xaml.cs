@@ -159,7 +159,7 @@ namespace COMIGHT
                 }
 
                 await FormatWordDocumentsAsync(filePaths);
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -637,7 +637,7 @@ namespace COMIGHT
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
                 }
                 templateExcelPackage?.Dispose(); //关闭模板Excel工作簿（仅在模板工作簿已打开的情况下）
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -821,7 +821,7 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.SaveAs(targetExcelFile);
                 }
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -896,7 +896,7 @@ namespace COMIGHT
                 }
                 await task;
 
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -982,7 +982,7 @@ namespace COMIGHT
                     // 保存目标工作簿
                     string targetFilePath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Plates_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
-                    MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
             }
@@ -1025,7 +1025,7 @@ namespace COMIGHT
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx");
                 ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1061,7 +1061,7 @@ namespace COMIGHT
         //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx"); 
         //        ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
-        //        MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         //    }
 
         //    catch (Exception ex)
@@ -1132,7 +1132,7 @@ namespace COMIGHT
 
         //        }
 
-        //        MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         //    }
 
         //    catch (Exception ex)
@@ -1227,7 +1227,7 @@ namespace COMIGHT
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
                 await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
 
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1351,7 +1351,7 @@ namespace COMIGHT
                     }
                     targetWordDocument.Save(); //保存目标Word文档
                 }
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1502,7 +1502,7 @@ namespace COMIGHT
                     targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
                 }
 
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1523,7 +1523,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog("Input the column name of Stock Code, Name, Sector, Price, PB, PE, and Market Cap (separated by commas)", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog("Input the column name of Stock Code, Name, Sector, Price, PB, and PE (separated by commas)", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1541,7 +1541,6 @@ namespace COMIGHT
                 string prDataColumnName = lstDataColumnNamesStr[3];
                 string pbDataColumnName = lstDataColumnNamesStr[4];
                 string peDataColumnName = lstDataColumnNamesStr[5];
-                string mCapDataColumnName = lstDataColumnNamesStr[6];
 
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
@@ -1550,7 +1549,7 @@ namespace COMIGHT
                 }
 
                 List<string> lstDataColumnNames = new List<string>
-                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName, mCapDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
+                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
 
                 for (int i = dataTable.Columns.Count - 1; i >= 0; i--) // 遍历DataTable的所有数据列
                 {
@@ -1562,25 +1561,32 @@ namespace COMIGHT
                 }
 
                 dataTable.Columns.Add("PE_Rel%", typeof(double)); //在DataTable中增加“PE相对百分比”数据列
-                dataTable.Columns.Add("PE_Rel%_Smp", typeof(double)); //在DataTable中增加“PE相对百分比样本”数据列（此样本为“乐观值”，用于计算市场PE相对百分比）
 
+                //计算每个股票的PE相对百分比
                 foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
                 {
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
                     pb = Val((string?)dataRow[pbDataColumnName]).Clamp<double>(2.7183, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
                     pe = Val((string?)dataRow[peDataColumnName]); //将当前数据行的PE数据列数据转换成数值型，赋值给PE变量
                     double peThreshold = pb / (Math.Log(pb) / 5.3158); //计算PE阈值
-                    double peThresholdSample = pb / (Math.Log(pb) / 8.6012); //计算PE阈值样本
                     dataRow["PE_Rel%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算PE相对百分比，保留2位小数，赋值给当前行的“PE相对百分比”数据列
-                    dataRow["PE_Rel%_Smp"] = Math.Round((pe - peThresholdSample) / peThresholdSample * 100, 2);  //计算PE相对百分比样本，保留2位小数，赋值给当前行的“PE相对百分比样本”数据列
                 }
 
-                //计算市场PE相对百分比（以个股PE相对百分比样本为数值，流通市值为权重，计算加权平均数）, 保留2位小数
-                double marketPERelPct = Math.Round(ComputeWeightedAverage(dataTable, "PE_Rel%_Smp", mCapDataColumnName), 2); 
-                MessageBox.Show("The PE Relative Percentage of the stock market is " + marketPERelPct + ".", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                //获取低估值股票数量并计算占总数的百分比
+                double lowValStocksCount = dataTable.AsEnumerable().Count(
+                    dataRow =>
+                    {
+                        double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
+                        pr = Val((string?)dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
+                        double peRelativePercentage = Convert.ToDouble(dataRow["PE_Rel%"]);  //将当前数据行的PE相对百分比数据列数据赋值给PE相对百分比变量 
+                        //获取PE相对百分比大于-100小于0的记录数量（此时"dataRow =>"lambda表达式函数返回true）
+                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时估值较合理
+                        return (peRelativePercentage > -100 && peRelativePercentage < 0);
+                    }); 
+                double lowValStocksPercentage = Math.Round(lowValStocksCount / dataTable.Rows.Count * 100, 2); //计算低估值股票数量占总数的百分比，保留2位小数
+                MessageBox.Show("The low-valuation stocks percentage is " + lowValStocksPercentage + "%.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                dataTable.Columns.Remove(dataTable.Columns["PE_Rel%_Smp"]!); //删除“PE相对百分比样本”数据列
-
+                //筛选低估值股票
                 DataTable targetDataTable = dataTable.AsEnumerable().Where(
                     dataRow =>
                     {
@@ -1588,7 +1594,7 @@ namespace COMIGHT
                         pr = Val((string?)dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
                         double peRelativePercentage = Convert.ToDouble(dataRow["PE_Rel%"]);  //将当前数据行的PE相对百分比数据列数据赋值给PE相对百分比变量
                         //筛选PE相对百分比大于-100小于-10，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时才有投资价值（为留有余量，这里将PE相对百分比限定在-100~-10之间）
+                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时估值较合理（为留有余量，这里将PE相对百分比限定在-100~-10之间）
                         return (peRelativePercentage > -100 && peRelativePercentage < -10) && pr >= 10;
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
@@ -1623,7 +1629,7 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.Save(); //保存目标Excel工作簿文件
                 }
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1736,7 +1742,7 @@ namespace COMIGHT
         //            FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
         //            excelPackage.Save(); //保存目标Excel工作簿文件
         //        }
-        //        MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         //    }
 
         //    catch (Exception ex)
@@ -1848,7 +1854,7 @@ namespace COMIGHT
         //            FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
         //            excelPackage.Save(); //保存目标Excel工作簿文件
         //        }
-        //        MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         //    }
 
         //    catch (Exception ex)
@@ -2001,7 +2007,7 @@ namespace COMIGHT
                             break;
                     }
                 }
-                MessageBox.Show("Operation Finished.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
