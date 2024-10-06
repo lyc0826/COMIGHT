@@ -51,6 +51,38 @@ namespace COMIGHT
             return cleanedName;
         }
 
+        public static double ComputeWeightedAverage(DataTable dataTable, string valueDataColumnName, string weightDataColumnName)
+        {
+            try
+            {
+                //如果数据表为空，或数据表列名不存在，抛出异常
+                if (dataTable == null || dataTable.Columns.Contains(valueDataColumnName) == false || dataTable.Columns.Contains(weightDataColumnName) == false)
+                {
+                    throw new ArgumentException("Invalid DataTable or Column Names!");
+                }
+
+                double sumOfProducts = 0;
+                double sumOfWeights = 0;
+
+                foreach (DataRow row in dataTable.Rows) //遍历数据行
+                {
+                    double value = Val(row[valueDataColumnName]);
+                    double weight = Val(row[weightDataColumnName]);
+
+                    sumOfProducts += value * weight; //将数值和权重的积累加到乘积和变量
+                    sumOfWeights += weight; //将权重累加到权重和变量
+                }
+
+                return sumOfWeights != 0 ? sumOfProducts / sumOfWeights : 0; //计算加权平均值：如果权重和不为0，则返回加权平均值；否则返回0
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                return 0;
+            }
+        }
+
         public static int ConvertColumnLettersIntoIndex(string columnLetters)
         {
             //将输入列符转换为大写，从左到右逐字与字符"A"的ASCII编码取差值，并以26进制的方式累加，赋值给函数返回值
@@ -1746,8 +1778,6 @@ namespace COMIGHT
 
         }
 
-        public static Regex regExNumber = new Regex(@"\d+\.?\d*"); //定义数字正则表达式变量，匹配模式为：阿拉伯数字一个及以上，小数点至多一个，阿拉伯数字任意多个
-
         public static double Val(object? cellValue)
         {
             if (cellValue == null) //如果参数为null，将0赋值给函数返回值
@@ -1756,18 +1786,39 @@ namespace COMIGHT
             }
 
             string cellStr = Convert.ToString(cellValue)!;
-            Match matchNumVal = regExNumber.Match(cellStr); //获取字符串经过数字正则表达式匹配的第一个结果
+            cellStr = Regex.Replace(cellStr, @"[^\d\.+\-]", ""); //移除单元格值中的非数字、小数点或正负号的字符
 
-            if (matchNumVal.Success) //如果被正则表达式匹配成功
+            //如果将匹配结果转换为double类型成功，则将转换结果赋值给number变量，然后再将number变量值赋值给函数返回值
+            if (double.TryParse(cellStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
             {
-                //如果将匹配结果转换为double类型成功，则将转换结果赋值给number变量，然后再将number变量值赋值给函数返回值
-                if (double.TryParse(matchNumVal.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
-                {
-                    return number;
-                }
+                return number;
             }
+
             return 0; //如果以上过程均没有赋值给函数返回值，此处将0赋值给函数返回值
         }
+
+        //public static Regex regExNumber = new Regex(@"\d+\.?\d*"); //定义数字正则表达式变量，匹配模式为：阿拉伯数字一个及以上，小数点至多一个，阿拉伯数字任意多个
+
+        //public static double Val(object? cellValue)
+        //{
+        //    if (cellValue == null) //如果参数为null，将0赋值给函数返回值
+        //    {
+        //        return 0;
+        //    }
+
+        //    string cellStr = Convert.ToString(cellValue)!;
+        //    Match matchNumVal = regExNumber.Match(cellStr); //获取字符串经过数字正则表达式匹配的第一个结果
+
+        //    if (matchNumVal.Success) //如果被正则表达式匹配成功
+        //    {
+        //        //如果将匹配结果转换为double类型成功，则将转换结果赋值给number变量，然后再将number变量值赋值给函数返回值
+        //        if (double.TryParse(matchNumVal.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
+        //        {
+        //            return number;
+        //        }
+        //    }
+        //    return 0; //如果以上过程均没有赋值给函数返回值，此处将0赋值给函数返回值
+        //}
 
     }
 }
