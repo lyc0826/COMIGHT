@@ -652,8 +652,8 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel Files Containing the Start Data"); //获取所选起始数据文件列表
-                List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel Files Containing the End Data"); //获取所选终点数据文件列表
+                List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Start Data"); //获取所选起始数据文件列表
+                List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the End Data"); //获取所选终点数据文件列表
 
                 if (startFilePaths == null || endFilePaths == null) //如果起始数据或终点数据文件列表有一个为null，则结束本过程
                 {
@@ -760,7 +760,7 @@ namespace COMIGHT
                             {
                                 double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
                                 double percent = startDataValue != 0 ? Math.Round((difference / startDataValue) * 100, 2) : double.NaN; //获取终点和起始数据的变化率百分比：如果起始数值不为零，得到变化率百分比；否则得到NaN
-                                result = $"Start{startDataValue}, End{endDataValue}\nDiff{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+                                result = $"Start:{startDataValue}\nEnd:{endDataValue}\nDiff:{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
                             }
                         }
                         differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
@@ -813,7 +813,7 @@ namespace COMIGHT
                     ExcelRange recordRange = targetExcelWorksheet.Cells[2, 1, targetExcelWorksheet.Dimension.End.Row, targetExcelWorksheet.Dimension.End.Column];
                     foreach (ExcelRangeBase cell in recordRange) //遍历记录区域的所有单元格
                     {
-                        if (cell.Text != "Identical") //如果单元格的文字不为“一致”，则将字体颜色设为红色
+                        if (cell.Text != "Identical") //如果单元格的文字不为“Identical”，则将字体颜色设为红色
                         {
                             cell.Style.Font.Color.SetColor(Color.Red);
                         }
@@ -1571,20 +1571,6 @@ namespace COMIGHT
                     double peThreshold = pb / (Math.Log(pb) / 5.3158); //计算PE阈值
                     dataRow["PE_Rel%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算PE相对百分比，保留2位小数，赋值给当前行的“PE相对百分比”数据列
                 }
-
-                //获取低估值股票数量并计算占总数的百分比
-                double lowValStocksCount = dataTable.AsEnumerable().Count(
-                    dataRow =>
-                    {
-                        double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
-                        pr = Val((string?)dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
-                        double peRelativePercentage = Convert.ToDouble(dataRow["PE_Rel%"]);  //将当前数据行的PE相对百分比数据列数据赋值给PE相对百分比变量 
-                        //获取PE相对百分比大于-100小于0的记录数量（此时"dataRow =>"lambda表达式函数返回true）
-                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时估值较合理
-                        return (peRelativePercentage > -100 && peRelativePercentage < 0);
-                    }); 
-                double lowValStocksPercentage = Math.Round(lowValStocksCount / dataTable.Rows.Count * 100, 2); //计算低估值股票数量占总数的百分比，保留2位小数
-                MessageBox.Show("The low-valuation stocks percentage is " + lowValStocksPercentage + "%.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 //筛选低估值股票
                 DataTable targetDataTable = dataTable.AsEnumerable().Where(
