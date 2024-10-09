@@ -123,7 +123,7 @@ namespace COMIGHT
         {
             try
             {
-                string manualUrl = @"https://github.com/lyc0826/COMIGHT_Manual/wiki/COMIGHT-Manual";
+                string manualUrl = @"https://gitee.com/yuechen-lou/COMIGHT_Manual/wikis/";
 
                 //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
                 ProcessStartInfo startInfo = new ProcessStartInfo
@@ -214,7 +214,7 @@ namespace COMIGHT
             string currentFilePath = "";
             try
             {
-                string functionOptions = string.Join('\n', new string[] {"Input the function number:", "1-Append Record", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
+                string functionOptions = string.Join('\n', new string[] {"Input the function number:", "1-Merge Records", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
                     "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cells Data", "7-Adjust Worksheet Format for Printing"});
                 InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
