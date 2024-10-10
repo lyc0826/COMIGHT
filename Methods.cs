@@ -822,9 +822,9 @@ namespace COMIGHT
                 using (ExcelPackage excelPackage = new ExcelPackage())
                 {
                     // 建立目标工作簿和工作表，初始化表头
-                    ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets.Add("小标题");
-                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets.Add("大标题落款");
-                    ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets.Add("主体");
+                    ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets.Add("Headings");
+                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets.Add("Title");
+                    ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets.Add("Body");
 
                     titleWorksheet.Cells["A1:C1"].LoadFromArrays(new List<object[]> { new object[] { "项目", "编号", "文字" } });
                     titleWorksheet.Cells["A2:A4"].LoadFromArrays(new List<object[]>

@@ -105,9 +105,9 @@ namespace COMIGHT
             MakeFolders();
         }
 
-        private void MnuCreateSeatPlates_Click(object sender, RoutedEventArgs e)
+        private void MnuCreateNameCards_Click(object sender, RoutedEventArgs e)
         {
-            CreateSeatPlates();
+            CreateNameCards();
         }
 
         private void MnuBrowser_Click(object sender, RoutedEventArgs e)
@@ -911,7 +911,7 @@ namespace COMIGHT
 
         }
 
-        public void CreateSeatPlates()
+        public void CreateNameCards()
         {
             try
             {
@@ -920,6 +920,16 @@ namespace COMIGHT
                 {
                     return;
                 }
+
+                string latestFontName = Properties.Settings.Default.latestFontName; //读取设置中保存的字体名称
+                InputDialog inputDialog = new InputDialog("Input the font name", latestFontName); //弹出对话框，输入字体名称
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+                string fontName = inputDialog.Answer;
+                Properties.Settings.Default.latestFontName = fontName; // 将对话框返回的字体名称存入设置
+                Properties.Settings.Default.Save();
 
                 using (ExcelPackage sourceExcelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开源数据Excel工作簿，赋值给源数据Excel包变量（源数据Excel工作簿）
                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量（目标Excel工作簿）
@@ -954,7 +964,7 @@ namespace COMIGHT
                         cellB.Style.TextRotation = 90; //设定单元格B文字角度：从X轴开始逆时针旋转，旋转角度为正值，设定值等于旋转角度（最多不超过90°）
 
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
-                        cellABStyle.Font.Name = "Microsoft YaHei"; //设置字体
+                        cellABStyle.Font.Name = fontName; //设置字体
                         //cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
                         cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100) 
                             * Math.Min(1,1-(cellA.Text.Length - 10) * 0.02)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
@@ -1625,232 +1635,7 @@ namespace COMIGHT
 
         }
 
-        //private void ScreenStocks()
-        //{
-        //    try
-        //    {
-        //        List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing Stocks Data"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-        //        InputDialog inputDialog = new InputDialog("Input the column name of stock code, name, sector, price, PB, and PE (separated by commas)", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
-        //        Properties.Settings.Default.latestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串存入设置
-        //        Properties.Settings.Default.Save();
-
-        //        //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
-        //        List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
-        //        //将各指标的列名称赋值给数据列名变量
-        //        string codeDataColumnName = lstDataColumnNamesStr[0];
-        //        string nameDataColumnName = lstDataColumnNamesStr[1];
-        //        string sectorDataColumnName = lstDataColumnNamesStr[2];
-        //        string prDataColumnName = lstDataColumnNamesStr[3];
-        //        string pbDataColumnName = lstDataColumnNamesStr[4];
-        //        string peDataColumnName = lstDataColumnNamesStr[5];
-        //        string mCapDataColumnName = lstDataColumnNamesStr[6];
-
-        //        DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
-        //        if (dataTable == null) //如果DataTable变量为null，则抛出异常
-        //        {
-        //            throw new Exception("No Valid Data Found!");
-        //        }
-
-        //        List<string> lstDataColumnNames = new List<string>
-        //            { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
-
-        //        for (int i = dataTable.Columns.Count - 1; i >= 0; i--) // 遍历DataTable的所有数据列
-        //        {
-        //            // 如果当前数据列的列名不在需要保留的数据列名列表中，则删除该列
-        //            if (!lstDataColumnNames.Contains(dataTable.Columns[i].ColumnName))
-        //            {
-        //                dataTable.Columns.RemoveAt(i);
-        //            }
-        //        }
-
-        //        dataTable.Columns.Add("PE_Rel_Pct", typeof(double)); //在DataTable中增加“PE相对百分比”数据列
-        //        foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
-        //        {
-        //            double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
-        //            double.TryParse((string?)dataRow[pbDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
-        //            //pb = double.Clamp(pb, 2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-        //            pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-        //            double.TryParse((string?)dataRow[peDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
-        //            double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
-        //            dataRow["PE_Rel_Pct"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算PE相对百分比，保留2位小数，赋值给当前行的“PE相对百分比”数据列
-        //        }
-
-        //        DataTable targetDataTable = dataTable.AsEnumerable().Where(
-        //            dataRow =>
-        //            {
-        //                double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
-        //                double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
-        //                double peRelativePercentage = Convert.ToDouble(dataRow["PE_Rel_Pct"]);  //将当前数据行的PE相对百分比数据列数据赋值给PE相对百分比变量
-        //                //筛选PE相对百分比大于-100小于-10，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-        //                //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时才有投资价值（为留有余量，这里将PE相对百分比限定在-100~-10之间）
-        //                return (peRelativePercentage > -100 && peRelativePercentage < -10) && pr >= 10;
-        //            }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
-
-        //        if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
-        //        {
-        //            MessageBox.Show("No Qualified Stocks Found!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //            return;
-        //        }
-
-        //        targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE_Rel_Pct ASC"; //按行业升序、PE相对百分比升序对数据排序
-        //        targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
-
-        //        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
-        //        {
-        //            while (excelPackage.Workbook.Worksheets.Count > 1) //当Excel工作簿中的工作表大于1张，则继续循环，删除最后一张
-        //            {
-        //                excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
-        //            }
-
-        //            ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"Results{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
-        //            targetWorksheet.Cells["A1"].LoadFromDataTable(targetDataTable, true); //将目标DataTable的数据导入目标Excel工作表（true代表将表头赋给第一行，或使用“c => c.PrintHeaders = true”）
-
-        //            foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
-        //            {
-        //                //重新赋值给当前单元格：将单元格文本值转换成数值，如果成功则赋值给单元格数值变量，然后单元格将得到该数值；否则，得到单元格原值
-        //                cell.Value = double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double cellNumVal) ? cellNumVal : cell.Value;
-        //            }
-
-        //            //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
-        //            targetWorksheet.Cells[2, 1, targetWorksheet.Dimension.End.Row, targetWorksheet.Dimension.End.Column].Style.Numberformat.Format = "0.00";
-
-        //            FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
-        //            excelPackage.Save(); //保存目标Excel工作簿文件
-        //        }
-        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
-        //private void ScreenStocks()
-        //{
-        //    try
-        //    {
-        //        List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing Stocks Data"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-        //        InputDialog inputDialog = new InputDialog("Input the column name of stock code, name, sector, price, PB, and PE (separated by commas)", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
-        //        Properties.Settings.Default.latestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串存入设置
-        //        Properties.Settings.Default.Save();
-
-        //        //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
-        //        List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
-        //        //将各指标的列名称赋值给数据列名变量
-        //        string codeDataColumnName = lstDataColumnNamesStr[0];
-        //        string nameDataColumnName = lstDataColumnNamesStr[1];
-        //        string sectorDataColumnName = lstDataColumnNamesStr[2];
-        //        string prDataColumnName = lstDataColumnNamesStr[3];
-        //        string pbDataColumnName = lstDataColumnNamesStr[4];
-        //        string peDataColumnName = lstDataColumnNamesStr[5];
-
-        //        DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
-        //        if (dataTable == null) //如果DataTable变量为null，则抛出异常
-        //        {
-        //            throw new Exception("No Valid Data Found!");
-        //        }
-
-        //        List<string> lstDataColumnNames = new List<string>
-        //            { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
-
-        //        for (int i = dataTable.Columns.Count - 1; i >= 0; i--) // 遍历DataTable的所有数据列
-        //        {
-        //            // 如果当前数据列的列名不在需要保留的数据列名列表中，则删除该列
-        //            if (!lstDataColumnNames.Contains(dataTable.Columns[i].ColumnName))
-        //            {
-        //                dataTable.Columns.RemoveAt(i);
-        //            }
-        //        }
-
-        //        dataTable.Columns.Add("PE Rdn", typeof(double)); //在DataTable中增加“PE冗余比”数据列
-        //        foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
-        //        {
-        //            double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
-        //            double.TryParse((string?)dataRow[pbDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pb); //将当前数据行的PB数据列数据转换成数值型，如果成功则将转换结果赋值给PB变量
-        //            //pb = double.Clamp(pb, 2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-        //            pb = pb.Clamp<double>(2.7183, double.MaxValue); //将市净率限定为不小于2.7183
-        //            double.TryParse((string?)dataRow[peDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pe); //将当前数据行的PE数据列数据转换成数值型，如果成功则将转换结果赋值给PE变量
-        //            double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
-        //            dataRow["PE Rdn"] = Math.Round((peThreshold - pe) / peThreshold * 100, 2);  //计算PE冗余比，保留2位小数，赋值给当前行的“PE冗余比”数据列
-        //        }
-
-        //        DataTable targetDataTable = dataTable.AsEnumerable().Where(
-        //            dataRow =>
-        //            {
-        //                double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
-        //                double.TryParse((string?)dataRow[prDataColumnName], NumberStyles.Any, CultureInfo.InvariantCulture, out pr); //将当前数据行的现价数据列数据转换成数值型，如果成功则将转换结果赋值给现价变量
-        //                double peRedundancyRatio = Convert.ToDouble(dataRow["PE Rdn"]);  //将当前数据行的PE冗余比数据列数据赋值给PE冗余比变量
-        //                //筛选PE冗余比大于0小于100，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-        //                //当PE超过PE阈值（估值过高）时，PE冗余比会小于0；当PE为负（业绩亏损）时，PE冗余比会大于100；因此PE冗余比仅在0-100之间时才有投资价值（为留有余量，这里将PE冗余比限定在10-100之间）
-        //                return (peRedundancyRatio >= 10 && peRedundancyRatio < 100) && pr >= 10;
-        //            }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
-
-        //        if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
-        //        {
-        //            MessageBox.Show("No Qualified Stocks Found!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //            return;
-        //        }
-
-        //        targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE Rdn DESC"; //按行业升序、PE冗余比降序对数据排序
-        //        targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
-
-        //        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
-        //        {
-        //            while (excelPackage.Workbook.Worksheets.Count > 1) //当Excel工作簿中的工作表大于1张，则继续循环，删除最后一张
-        //            {
-        //                excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
-        //            }
-
-        //            ExcelWorksheet targetWorksheet = excelPackage.Workbook.Worksheets.Add($"Results{new Random().Next(1000, 10000)}"); //在Excel工作簿中添加一个筛选结果工作表，赋值给目标工作表变量
-        //            targetWorksheet.Cells["A1"].LoadFromDataTable(targetDataTable, true); //将目标DataTable的数据导入目标Excel工作表（true代表将表头赋给第一行，或使用“c => c.PrintHeaders = true”）
-
-        //            foreach (ExcelRangeBase cell in targetWorksheet.Cells[targetWorksheet.Dimension.Address]) //遍历目标Excel工作表已使用区域的所有单元格
-        //            {
-        //                //重新赋值给当前单元格：将单元格文本值转换成数值，如果成功则赋值给单元格数值变量，然后单元格将得到该数值；否则，得到单元格原值
-        //                cell.Value = double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double cellNumVal) ? cellNumVal : cell.Value;
-        //            }
-
-        //            //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
-        //            targetWorksheet.Cells[2, 1, targetWorksheet.Dimension.End.Row, targetWorksheet.Dimension.End.Column].Style.Numberformat.Format = "0.00";
-
-        //            FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
-        //            excelPackage.Save(); //保存目标Excel工作簿文件
-        //        }
-        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
-
+        
         public void SplitExcelWorksheet()
         {
             try
