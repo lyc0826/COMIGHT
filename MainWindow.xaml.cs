@@ -123,8 +123,6 @@ namespace COMIGHT
         {
             try
             {
-                string manualUrl = @"https://gitee.com/yuechen-lou/COMIGHT_Manual/wikis/";
-
                 //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
@@ -967,7 +965,7 @@ namespace COMIGHT
                         cellABStyle.Font.Name = fontName; //设置字体
                         //cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
                         cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100) 
-                            * Math.Min(1,1-(cellA.Text.Length - 10) * 0.02)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
+                            * Math.Min(1, 1 - (cellA.Text.Length - 10) * 0.02)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
@@ -990,7 +988,7 @@ namespace COMIGHT
                     }
 
                     // 保存目标工作簿
-                    string targetFilePath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Plates_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
+                    string targetFilePath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Cards_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
                     MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                 }

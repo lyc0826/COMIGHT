@@ -28,7 +28,9 @@ namespace COMIGHT
 {
     public static partial class Methods
     {
-        public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
+        //定义数据库文件路径全名和用户手册网址
+        public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //定义数据库Excel工作簿文件路径全名
+        public static string manualUrl = @"https://gitee.com/yuechen-lou/COMIGHT_Manual/wikis/"; //定义用户手册网址
 
         //定义小标题文字正则表达式变量，匹配模式为：从开头开始，非“。：:；;分页符换行符回车符”的字符2-40个；后方出现：“。：:”换行符回车符或结尾标记
         public static Regex regExHeadingText = new Regex(@"^[^。：:；;\f\n\r]{2,50}(?=。|：|:|\n|\r|$)", RegexOptions.Multiline);
@@ -1797,28 +1799,6 @@ namespace COMIGHT
             return 0; //如果以上过程均没有赋值给函数返回值，此处将0赋值给函数返回值
         }
 
-        //public static Regex regExNumber = new Regex(@"\d+\.?\d*"); //定义数字正则表达式变量，匹配模式为：阿拉伯数字一个及以上，小数点至多一个，阿拉伯数字任意多个
-
-        //public static double Val(object? cellValue)
-        //{
-        //    if (cellValue == null) //如果参数为null，将0赋值给函数返回值
-        //    {
-        //        return 0;
-        //    }
-
-        //    string cellStr = Convert.ToString(cellValue)!;
-        //    Match matchNumVal = regExNumber.Match(cellStr); //获取字符串经过数字正则表达式匹配的第一个结果
-
-        //    if (matchNumVal.Success) //如果被正则表达式匹配成功
-        //    {
-        //        //如果将匹配结果转换为double类型成功，则将转换结果赋值给number变量，然后再将number变量值赋值给函数返回值
-        //        if (double.TryParse(matchNumVal.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
-        //        {
-        //            return number;
-        //        }
-        //    }
-        //    return 0; //如果以上过程均没有赋值给函数返回值，此处将0赋值给函数返回值
-        //}
 
     }
 }
