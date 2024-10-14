@@ -578,7 +578,7 @@ namespace COMIGHT
 
             for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历工作表所有列
             {
-                List<string> lstFullColumnName = new List<string> (); //定义完整列名称列表
+                List<string> lstFullColumnName = new List<string>(); //定义完整列名称列表
                 for (int i = 1; i <= headerCount; i++) //遍历工作表所有行
                 {
                     bool copyLeftCell = false; //“是否复制左侧单元格”赋值为false
@@ -1493,7 +1493,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string> lstFullTexts = new List<string> (); //定义完整文章列表变量
+                List<string> lstFullTexts = new List<string>(); //定义完整文章列表变量
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(documentTableFilePath))) //打开结构化文档表Excel工作簿，赋值给Excel包变量
                 {
@@ -1558,7 +1558,7 @@ namespace COMIGHT
                                         bodyTextsWorksheet.Rows[i].Hidden = true; //如果累计的正文段落数为零（基准小标题下方无正文），则将基准小标题行隐藏
                                     }
                                 }
-                                  
+
                             }
                         }
                     }
@@ -1679,7 +1679,7 @@ namespace COMIGHT
                                 }
                             }
                         }
-  
+
                     }
 
                     ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题落款”工作表（第2张，1号）赋值给大标题首尾工作表变量
@@ -1715,7 +1715,7 @@ namespace COMIGHT
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
                             if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表
                             {
-                                lstFullTexts.Add(paragraphText); 
+                                lstFullTexts.Add(paragraphText);
                             }
                             else  //否则，将段落文字累加到完整文章列表最后一个元素的文字末尾
                             {
@@ -1725,7 +1725,7 @@ namespace COMIGHT
                     }
 
                     // 获取日期单元格的日期值并转换为字符串
-                    string dateStr = titleCells["C4"].GetValue<DateTime>().ToString("yyyy年M月d日"); 
+                    string dateStr = titleCells["C4"].GetValue<DateTime>().ToString("yyyy年M月d日");
 
                     //将空行、落款方、日期依次添加到完整文章列表中
                     lstFullTexts.AddRange(new string[] { "", titleCells["C3"].Text, dateStr });

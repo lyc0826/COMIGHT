@@ -11,7 +11,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Input;
 using Xceed.Words.NET;
 using static COMIGHT.Methods;
 using DataTable = System.Data.DataTable;
@@ -275,7 +274,7 @@ namespace COMIGHT
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
-                    
+
                     case 2:
                     case 3:
                     case 4:
@@ -293,11 +292,11 @@ namespace COMIGHT
                         //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
                         lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
                         break;
-                    
+
                     case 7: //调整工作表打印版式
                         GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
                         break;
-                
+
                 }
 
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
@@ -316,7 +315,7 @@ namespace COMIGHT
                 foreach (string excelFilePath in filePaths) //遍历所有文件
                 {
                     currentFilePath = excelFilePath; //将当前Excel文件路径全名赋值给当前文件路径全名变量
-                    List<string> lstPrefixes = new List<string> (); //定义文件名前缀列表（给Excel文件名加前缀用）
+                    List<string> lstPrefixes = new List<string>(); //定义文件名前缀列表（给Excel文件名加前缀用）
 
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -677,8 +676,8 @@ namespace COMIGHT
                 //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
                 string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
 
-                List<string> lstRecordKeys = new List<string> (); //定义记录主键列表
-                List<string> lstDataColumnNames = new List<string> (); //定义数据列名称列表
+                List<string> lstRecordKeys = new List<string>(); //定义记录主键列表
+                List<string> lstDataColumnNames = new List<string>(); //定义数据列名称列表
 
                 //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
                 foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
@@ -964,7 +963,7 @@ namespace COMIGHT
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
                         cellABStyle.Font.Name = fontName; //设置字体
                         //cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
-                        cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100) 
+                        cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100)
                             * Math.Min(1, 1 - (cellA.Text.Length - 10) * 0.02)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
@@ -1254,8 +1253,8 @@ namespace COMIGHT
                 {
                     return;
                 }
-                
-                List<string> lstFullText = new List<string> (); //建立全文本列表
+
+                List<string> lstFullText = new List<string>(); //建立全文本列表
 
                 foreach (string filePath in filePaths) //遍历所有列表中的文件
                 {
@@ -1301,12 +1300,12 @@ namespace COMIGHT
                         using (DocX wordDocument = DocX.Load(filePath)) // 打开Word文档，赋值给Word文档变量
                         {
                             lstFullText.Add(fileName); //全文本列表中追加当前Word文件主名
-                            
+
                             //将Word文档中的所有表格转换为制表符分隔的文本形式
                             for (int i = wordDocument.Tables.Count - 1; i >= 0; i--) //遍历文档中所有表格
                             {
                                 Table table = wordDocument.Tables[i];
-                                List<string> lstTableRows = new List<string> (); //建立表格行数据列表
+                                List<string> lstTableRows = new List<string>(); //建立表格行数据列表
 
                                 foreach (TableRow tableRow in table.Rows) // 遍历表格中的所有行
                                 {
@@ -1340,7 +1339,7 @@ namespace COMIGHT
                         }
                     }
                 }
-                
+
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
                 string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标文件夹路径
 
@@ -1435,8 +1434,8 @@ namespace COMIGHT
                             //获取当前文件日期：如果当前文件实际年份不为null或全空白字符，则得到文件系统日期加上文件实际年份和系统年份的差
                             //（如果差大于0则限定为0，确保将文件系统日期中的年份替换为实际年份后只减不增）；否则得到文件系统日期
                             //DateTime fileDate = !string.IsNullOrWhiteSpace(actualYear) ?
-                                //fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
-                            
+                            //fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
+
                             dataRow["Path"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
                             dataRow["Type"] = file.Extension; //将当前文件扩展名赋值给DataTable的新数据行的"类型"列
@@ -1628,12 +1627,12 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information); 
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
 
-        
+
         public void SplitExcelWorksheet()
         {
             try
