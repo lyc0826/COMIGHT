@@ -917,37 +917,37 @@ namespace COMIGHT
                         //判断是否为中文文档
                         int nonCNCharsCount = Regex.Matches(documentText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
                         double nonCNCharsRatio = nonCNCharsCount / documentText.Length; // 计算非中文字符占全文的比例
-                        bool isChineseDocument = nonCNCharsRatio < 0.5; // 获取“是否为中文文档”值：如果非中文字符比例小于0.5，得到true；否则得到false
+                        bool isCnDocument = nonCNCharsRatio < 0.5; // 获取“是否为中文文档”值：如果非中文字符比例小于0.5，得到true；否则得到false
 
                         // 设置版式、字体、字号、行距等
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
-                        int lineSpace = isChineseDocument? 28 : 24; // 行间距
+                        int lineSpace = isCnDocument? 28 : 24; // 行间距
 
-                        int titleFontSize = isChineseDocument ? 22 : 18; // 大标题字号：如果为中文文档，则字号为二号；否则为18
-                        int bodyFontSize = isChineseDocument ? 16 : 12; // 正文字号：如果为中文文档，则字号为三号；否则为12
+                        int titleFontSize = isCnDocument ? 22 : 18; // 大标题字号：如果为中文文档，则字号为二号；否则为18
+                        int bodyFontSize = isCnDocument ? 16 : 12; // 正文字号：如果为中文文档，则字号为三号；否则为12
                         int cnHeading0FontSize = 16; // 中文0级小标题
                         int cnHeading1FontSize = 16; // 中文1级小标题
                         int cnHeading2FontSize = 16; // 中文2级小标题
-                        int universalHeadingFontSize = isChineseDocument? 16 : 12; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
+                        int universalHeadingFontSize = isCnDocument? 16 : 12; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
                         int cnShiNumFontSize = 16; // 中文“是”语句
                         int cnItemNumFontSize = 16; // 中文“条”编号
-                        int tableTitleFontSize = isChineseDocument ? 16 : 12; // 表格标题字号
-                        int tableBodyFontSize = isChineseDocument ? 14 : 10; // 表格正文字号
+                        int tableTitleFontSize = isCnDocument ? 16 : 12; // 表格标题字号
+                        int tableBodyFontSize = isCnDocument ? 14 : 10; // 表格正文字号
                         int footerFontSize = 14; // 页脚字号为四号
 
-                        string titleFontName = isChineseDocument ? "华文中宋" : "Arial"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Arial
-                        string bodyFontName = isChineseDocument ? "仿宋" : "Arial"; // 正文字体：如果为中文文档，则字体为仿宋；否则为Arial
+                        string titleFontName = isCnDocument ? "华文中宋" : "Arial"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Arial
+                        string bodyFontName = isCnDocument ? "仿宋" : "Arial"; // 正文字体：如果为中文文档，则字体为仿宋；否则为Arial
                         string cnHeading0FontName = "黑体"; // 中文0级小标题
                         string cnHeading1FontName = "黑体"; // 中文1级小标题
                         string cnHeading2FontName = "楷体"; // 中文2级小标题
-                        string universalHeadingFontName = isChineseDocument ? "仿宋" : "Arial"; // 通用小标题
+                        string universalHeadingFontName = isCnDocument ? "仿宋" : "Arial"; // 通用小标题
                         string cnShiNumFontName = "仿宋"; // 中文“是”语句
                         string cnItemNumFontName = "黑体"; // 中文“条”编号
-                        string tableTitleFontName = isChineseDocument ? "黑体" : "Arial"; // 表格标题字体
-                        string tableBodyFontName = isChineseDocument ? "仿宋" : "Arial"; // 表格正文字体
+                        string tableTitleFontName = isCnDocument ? "黑体" : "Arial"; // 表格标题字体
+                        string tableBodyFontName = isCnDocument ? "仿宋" : "Arial"; // 表格正文字体
                         string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
 
                         // 设置查找模式
@@ -1010,7 +1010,7 @@ namespace COMIGHT
                         paragraphFormat.Reset(); // 段落格式清除
                         paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0
                         paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphJustify; // 对齐方式设为两端对齐
-                        paragraphFormat.IndentFirstLineCharWidth((short)(isChineseDocument? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
+                        paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
 
                         // 清除文首和文末的空白段
                         while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为换行符，则继续循环
@@ -1056,11 +1056,8 @@ namespace COMIGHT
                         selection.HomeKey(WdUnits.wdStory);
 
                         // 文档大标题设置
-                        // 定义大标题正则表达式变量，匹配模式为：
-                            // 如果为中文文档：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”注释、非“。”分页符的字符1-60个，换行符回车符，后方出现：换行符回车符
-                            // 否则：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“appendix”、非“。”分页符的字符1-180个，换行符回车符，后方出现：换行符回车符
-                        Regex regExTitle = isChineseDocument? new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])[^。\f]){1,60}[\n\r](?=[\n\r])", RegexOptions.Multiline)
-                            : new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!appendix[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,180}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                        // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-120个，换行符回车符，后方出现：换行符回车符
+                        Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,120}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
                         // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，换行符回车符
                         Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[）\)、\.．，,])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
@@ -1136,7 +1133,7 @@ namespace COMIGHT
                         {
                             find.Text = matchCnHeading0.Value;
                             find.Execute();
-                            if (isChineseDocument && paragraphs[1].Range.Sentences.Count == 1) // 如果是中文文档，且找到的中文小标题所在段落只有一句
+                            if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1) // 如果是中文文档，且找到的中文小标题所在段落只有一句
                             {
                                 paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
                                 outlineLevelOffset = 1; // 大纲级别偏移量设为1（后续1、2、3级中文小标题的大纲级别相应推后至2、3、4级）
@@ -1161,7 +1158,7 @@ namespace COMIGHT
                         {
                             find.Text = matchCnHeading1.Value;
                             find.Execute();
-                            if (isChineseDocument && paragraphs[1].Range.Sentences.Count == 1)
+                            if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1)
                             {
                                 paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1 + outlineLevelOffset; // 将当前中文小标题的大纲级别设为1级加大纲级别偏移量
                             }
@@ -1183,7 +1180,7 @@ namespace COMIGHT
                         {
                             find.Text = matchCnHeading2.Value;
                             find.Execute();
-                            if (isChineseDocument && paragraphs[1].Range.Sentences.Count == 1)
+                            if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1)
                             {
                                 paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2 + outlineLevelOffset;
                             }
@@ -1197,22 +1194,22 @@ namespace COMIGHT
                         // 通用小标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义通用小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.，,”，非“。：:；;”分页符换行符回车符的字符任意多个（尽可能少匹配），中文或英文字符一个及以上，非“。：:；;”分页符换行符回车符的字符1-120个，“。：:”换行符回车符
-                        Regex regExUniversalHeading = new Regex(@"(?<=^|\n|\r)[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,][^。：:；;\f\n\r]*?[\u4e00-\u9fa5a-zA-Z]+[^。：:；;\f\n\r]{1,120}[。：:\n\r]", RegexOptions.Multiline);  
+                        // 定义通用小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.，,”，非“。：:；;”分页符换行符回车符的字符任意多个（尽可能少匹配），中文或英文字符一个及以上，非“。：:；;”分页符换行符回车符的字符1-80个，“。：:”换行符回车符
+                        Regex regExUniversalHeading = new Regex(@"(?<=^|\n|\r)[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,][^。：:；;\f\n\r]*?[\u4e00-\u9fa5a-zA-Z]+[^。：:；;\f\n\r]{1,80}[。：:\n\r]", RegexOptions.Multiline);  
                         MatchCollection matchesUniversalHeadings = regExUniversalHeading.Matches(documentText); // 获取全文文字经过通用小标题正则表达式匹配的结果
 
                         foreach (Match matchUniversalHeading in matchesUniversalHeadings)
                         {
                             find.Text = matchUniversalHeading.Value;
                             find.Execute();
-                            if (isChineseDocument && paragraphs[1].Range.Sentences.Count == 1) 
+
+                            // 如果为中文文档，找到的通用小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上，段落文字匹配成功（为中文3级小标题），则将当前中文小标题的大纲级别设为3级加大纲级别偏移量
+                            if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1
+                                && Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
                             {
-                                //正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上；如果选区文字匹配成功（为中文3级小标题），则将当前中文小标题的大纲级别设为3级加大纲级别偏移量
-                                if (Regex.IsMatch(selection.Range.Text, @"(?<=^|\n|\r)\d+"))
-                                {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3 + outlineLevelOffset;
-                                }
+                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3 + outlineLevelOffset;
                             }
+
                             font.Name = universalHeadingFontName;
                             font.Size = universalHeadingFontSize;
                             font.ColorIndex = WdColorIndex.wdBlack;
