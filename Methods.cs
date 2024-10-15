@@ -1533,9 +1533,6 @@ namespace COMIGHT
                         excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
                     }
 
-                    excelPackage.Workbook.Worksheets.Copy(bodyTextsWorksheet.Name, $"Backup{new Random().Next(1000, 10000)}"); //将“主体”Excel工作表复制为“备份”工作表
-                    bodyTextsWorksheet.Select();
-
                     //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中
                     PreprocessDocumentTexts(bodyTextsWorksheet.Cells[2, 3, (bodyTextsWorksheet.Dimension?.End.Row ?? 2), 3]);
 
