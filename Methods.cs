@@ -208,6 +208,8 @@ namespace COMIGHT
             if (headerCount >= 1) //如果表头行数大于等于1
             {
                 ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
+
+                // 设置表头区域字体、对齐
                 headerRange.Style.Font.Name = "Microsoft YaHei";
                 headerRange.Style.Font.Size = 12;
                 headerRange.Style.Font.Bold = true; //表头区域字体加粗
@@ -222,7 +224,6 @@ namespace COMIGHT
 
                 for (int i = 1; i <= headerCount; i++) //遍历表头所有行
                 {
-                    excelWorksheet.Rows[i].Height = 30; //设置当前行的行高为指定值
                     ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
 
                     int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
@@ -230,8 +231,6 @@ namespace COMIGHT
                     bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
                     //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
-                    //获取“是否手动调整行高”值：如果行单元格被合并，则得到true；否则得到false
-                    bool customHeight = isRowMerged ? true : false;
 
                     //设置当前行所有单元格的边框
                     headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
@@ -240,8 +239,7 @@ namespace COMIGHT
                     headerRowCells.Style.Border.Right.Style = borderStyle;
                     headerRowCells.Style.Border.Bottom.Style = borderStyle;
 
-                    headerRowCells.Style.Font.Size = 12; //设置当前单元格字体大小
-                    excelWorksheet.Rows[i].CustomHeight = customHeight; //设置当前行“是否手动调整行高”为之前获取的值
+                    excelWorksheet.Rows[i].CustomHeight = false; //设置当前行“是否手动调整行高”为false（即为自动）
 
                 }
 
@@ -267,7 +265,7 @@ namespace COMIGHT
             //设置列宽
             double fullWidth = 0; //全表格宽度赋值为0
 
-            int firstRefRowIndex = Math.Max(1, headerCount); //获取起始参考行的索引号：等于表头最末行索引号，如果小于1，则限定为1
+            int firstRefRowIndex = Math.Max(1, headerCount + 1); //获取起始参考行的索引号：表头下一行的索引号，如果小于1，则限定为1
             //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
             int lastRefRowIndex = Math.Max(firstRefRowIndex, excelWorksheet.Dimension.End.Row - footerCount);
 
@@ -294,9 +292,9 @@ namespace COMIGHT
             //设置记录区域行高
             for (int i = headerCount + 1; i <= excelWorksheet.Dimension.End.Row - footerCount; i++) //遍历除去表尾的所有行
             {
-                if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏
+                if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
                 {
-                    excelWorksheet.Rows[i].CustomHeight = false; //将当前行的手动设置行高设为false（即为自动）
+                    excelWorksheet.Rows[i].CustomHeight = false; 
                 }
             }
 
