@@ -1194,8 +1194,8 @@ namespace COMIGHT
                         // 通用小标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义通用小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.，,”，非“。：:；;”分页符换行符回车符的字符任意多个（尽可能少匹配），中文或英文字符一个及以上，非“。：:；;”分页符换行符回车符的字符1-80个，“。：:”换行符回车符
-                        Regex regExUniversalHeading = new Regex(@"(?<=^|\n|\r)[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,][^。：:；;\f\n\r]*?[\u4e00-\u9fa5a-zA-Z]+[^。：:；;\f\n\r]{1,80}[。：:\n\r]", RegexOptions.Multiline);  
+                        // 定义通用小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.，,”，非“。：:；;”分页符换行符回车符的字符任意多个，中文或英文字符一个及以上，非“。：:；;”分页符换行符回车符的字符1-80个，“。：:”换行符回车符
+                        Regex regExUniversalHeading = new Regex(@"(?<=^|\n|\r)[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,][^。：:；;\f\n\r]*[\u4e00-\u9fa5a-zA-Z]+[^。：:；;\f\n\r]{1,80}[。：:\n\r]", RegexOptions.Multiline);  
                         MatchCollection matchesUniversalHeadings = regExUniversalHeading.Matches(documentText); // 获取全文文字经过通用小标题正则表达式匹配的结果
 
                         foreach (Match matchUniversalHeading in matchesUniversalHeadings)
