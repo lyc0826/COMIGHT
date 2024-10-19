@@ -1201,7 +1201,7 @@ namespace COMIGHT
                             find.Text = matchUniversalHeading.Value;
                             find.Execute();
 
-                            // 如果为中文文档，找到的通用小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上，段落文字匹配成功（为中文3级小标题），则将当前中文小标题的大纲级别设为3级加大纲级别偏移量
+                            // 如果为中文文档，找到的通用小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上，如果段落文字匹配成功（为中文3级小标题），则将当前中文小标题的大纲级别设为3级加大纲级别偏移量
                             if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1
                                 && Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
                             {
@@ -1213,6 +1213,41 @@ namespace COMIGHT
                             font.ColorIndex = WdColorIndex.wdBlack;
                             font.Bold = 1;
                             selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                        }
+
+                        //将前期被识别为小标题的数字编号清单恢复为正文文字格式
+
+                        // 定义清单数字编号正则表达式列表变量，匹配模式为中文1级、2级和通用小标题编号
+                        List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
+                            @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]" };
+                        
+                        foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
+                        {
+                            selection.HomeKey(WdUnits.wdStory);
+
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
+                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
+                            
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，中文或英文字符一个及以上，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
+                            //Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[\u4e00-\u9fa5a-zA-Z]+[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
+                            
+                            MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
+
+                            foreach (Match matchListGroup in matchesListGroups)
+                            {
+                                find.Text = matchListGroup.Value;
+                                find.Execute();
+
+                                paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单的大纲级别设为正文级别
+
+                                //将数字编号清单设为正文文字格式
+                                font.Name = bodyFontName;
+                                font.Size = bodyFontSize;
+                                font.ColorIndex = WdColorIndex.wdBlack;
+                                font.Bold = 0;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            }
+
                         }
 
                         // 中文“X是”编号设置
@@ -1329,8 +1364,8 @@ namespace COMIGHT
                         // 括号注释设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
-                        Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
+                        // 定义括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
+                        Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
                         MatchCollection matchesBrakets = regExBracket.Matches(documentText); // 获取全文文字经过括号注释正则表达式匹配的结果
 
                         foreach (Match matchBraket in matchesBrakets)
