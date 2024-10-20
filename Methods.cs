@@ -1351,6 +1351,7 @@ namespace COMIGHT
 
                             table.Range.ParagraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0);
                             table.Range.ParagraphFormat.AutoAdjustRightIndent = 0; // 自动调整右缩进为false
+                            //table.Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 单元格内容水平居中
                             table.Range.ParagraphFormat.LineSpacingRule = WdLineSpacing.wdLineSpaceSingle; // 单倍行距
 
                             table.Range.Cells.VerticalAlignment = WdCellVerticalAlignment.wdCellAlignVerticalCenter; // 单元格内容垂直居中
@@ -1403,8 +1404,8 @@ namespace COMIGHT
                         selection.HomeKey(WdUnits.wdStory);
 
                         // 定义中文单位和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），单位名称字符串1个及以上，最后为日期
-                        Regex regExCnSignature = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})[ |\t]*[年\.\-/][ |\t]*"
-                              + @"[\d一二三四五六七八九十元| |\t]{1,2}[^。：:；;，,\f\n\r]{0,5}[\n\r]", RegexOptions.Multiline);
+                        Regex regExCnSignature = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*[年\.\-/][ |\t]*"
+                              + @"[\d| |\t]{1,2}[^。：:；;，,\f\n\r]{0,5}[\n\r]", RegexOptions.Multiline);
                         MatchCollection matchesCnSignatures = regExCnSignature.Matches(documentText); // 获取全文文字经过单位和日期落款正则表达式匹配的结果
 
                         foreach (Match matchCnSignature in matchesCnSignatures)
@@ -1415,7 +1416,7 @@ namespace COMIGHT
                             {
                                 foreach (Paragraph paragraph in selection.Paragraphs) // 遍历所有落款中的段落
                                 {
-                                    float rightIndentation = Math.Max(0, 10 - paragraph.Range.Text.Length / 2); // 计算右缩进量，如果右缩进量小于0，则限定为0
+                                    float rightIndentation = Math.Max(0, 10 - paragraph.Range.Text.Length / 2); // 计算右缩进量，如果小于0，则限定为0
                                     paragraph.Format.Alignment = WdParagraphAlignment.wdAlignParagraphRight; // 右对齐
                                     paragraph.Format.CharacterUnitRightIndent = rightIndentation; // 右缩进设为之前计算值
                                 }
