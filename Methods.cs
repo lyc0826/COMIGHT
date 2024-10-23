@@ -1237,7 +1237,6 @@ namespace COMIGHT
                             {
                                 find.Text = matchListGroup.Value;
                                 find.Execute();
-                                //selection.MoveStart(WdUnits.wdCharacter, 1);
                                 paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单的大纲级别设为正文级别
 
                                 //将数字编号清单设为正文文字格式
