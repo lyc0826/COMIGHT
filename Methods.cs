@@ -53,38 +53,6 @@ namespace COMIGHT
             return cleanedName;
         }
 
-        public static double ComputeWeightedAverage(DataTable dataTable, string valueDataColumnName, string weightDataColumnName)
-        {
-            try
-            {
-                //如果数据表为空，或数据表列名不存在，抛出异常
-                if (dataTable == null || dataTable.Columns.Contains(valueDataColumnName) == false || dataTable.Columns.Contains(weightDataColumnName) == false)
-                {
-                    throw new ArgumentException("Invalid DataTable or Column Names!");
-                }
-
-                double sumOfProducts = 0;
-                double sumOfWeights = 0;
-
-                foreach (DataRow row in dataTable.Rows) //遍历数据行
-                {
-                    double value = Val(row[valueDataColumnName]);
-                    double weight = Val(row[weightDataColumnName]);
-
-                    sumOfProducts += value * weight; //将数值和权重的积累加到乘积和变量
-                    sumOfWeights += weight; //将权重累加到权重和变量
-                }
-
-                return sumOfWeights != 0 ? sumOfProducts / sumOfWeights : 0; //计算加权平均值：如果权重和不为0，则返回加权平均值；否则返回0
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-                return 0;
-            }
-        }
-
         public static int ConvertColumnLettersIntoIndex(string columnLetters)
         {
             //将输入列符转换为大写，从左到右逐字与字符"A"的ASCII编码取差值，并以26进制的方式累加，赋值给函数返回值
