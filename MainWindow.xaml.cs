@@ -1427,14 +1427,8 @@ namespace COMIGHT
                         {
                             DataRow dataRow = dataTable.NewRow(); //定义DataTable新数据行
 
-                            //获取当前文件实际年份
-                            string actualYear = GetArabicYear(file.FullName!);
                             //获取当前文件系统日期：如果文件创建时间小于最后修改时间，则得到创建日期；否则得到最后修改日期
                             DateTime fileSystemDate = file.CreationTime < file.LastWriteTime ? file.CreationTime.Date : file.LastWriteTime.Date;
-                            //获取当前文件日期：如果当前文件实际年份不为null或全空白字符，则得到文件系统日期加上文件实际年份和系统年份的差
-                            //（如果差大于0则限定为0，确保将文件系统日期中的年份替换为实际年份后只减不增）；否则得到文件系统日期
-                            //DateTime fileDate = !string.IsNullOrWhiteSpace(actualYear) ?
-                            //fileSystemDate.AddYears(Math.Min(0, Convert.ToInt32(actualYear) - fileSystemDate.Year)) : fileSystemDate;
 
                             dataRow["Path"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
@@ -1453,14 +1447,8 @@ namespace COMIGHT
                         {
                             DataRow dataRow = dataTable.NewRow();
 
-                            //获取当前子文件夹实际年份
-                            string actualYear = GetArabicYear(subdirectory.FullName!);
                             //获取当前子文件夹系统日期：如果子文件夹创建时间小于最后修改时间，则得到创建日期；否则得到最后修改日期
                             DateTime subdirectorySystemDate = subdirectory.CreationTime < subdirectory.LastWriteTime ? subdirectory.CreationTime.Date : subdirectory.LastWriteTime.Date;
-                            //获取当前子文件夹日期：如果当前子文件夹实际年份不为null或全空白字符，则得到子文件夹系统日期加上子文件夹实际年份和系统年份的差
-                            //（如果差大于0则限定为0，确保将子文件夹系统日期中的年份替换为实际年份后只减不增）；否则得到子文件夹系统日期
-                            //DateTime subdirectoryDate = !string.IsNullOrWhiteSpace(actualYear) ?
-                            //    subdirectorySystemDate.AddYears((Convert.ToInt32(actualYear) - subdirectorySystemDate.Year).Clamp<int>(-10,0)) : subdirectorySystemDate;
 
                             dataRow["Path"] = subdirectory.FullName; //将当前子文件夹路径赋值给DataTable的新数据行的"路径"列
                             dataRow["Item"] = subdirectory.Name; //将当前子文件夹名赋值给DataTable的新数据行的"名称"列

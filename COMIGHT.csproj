@@ -65,9 +65,9 @@
 
   <ItemGroup>
     <PackageReference Include="DocX" Version="3.0.1" />
-    <PackageReference Include="EPPlus" Version="7.4.0" />
+    <PackageReference Include="EPPlus" Version="7.4.1" />
     <PackageReference Include="Markdig" Version="0.37.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
   </ItemGroup>
 
   <ItemGroup>

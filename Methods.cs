@@ -128,11 +128,10 @@ namespace COMIGHT
             {
                 FormatExcelWorksheet(excelWorksheet, 1, 0); //设置Excel工作表格式
 
-                //设置A-I列列宽（小标题级别、小标题编号、文字、完成时限、责任人、分类、相关度、基准小标题、原文来源）
+                //设置A-I列列宽（小标题级别、小标题编号、文字、完成时限、责任人、分类）
                 excelWorksheet.Cells["A:B"].EntireColumn.Width = 12; //=.Columns[1,6]
                 excelWorksheet.Cells["C"].EntireColumn.Width = 80;
-                excelWorksheet.Cells["D:G"].EntireColumn.Width = 12;
-                excelWorksheet.Cells["H:I"].EntireColumn.Width = 24;
+                excelWorksheet.Cells["D:F"].EntireColumn.Width = 12;
                 excelWorksheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left; //文字水平左对齐
 
                 if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
@@ -228,7 +227,7 @@ namespace COMIGHT
 
                     int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
                     //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
+                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75? true : false;
                     //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
 
@@ -265,7 +264,7 @@ namespace COMIGHT
             //设置列宽
             double fullWidth = 0; //全表格宽度赋值为0
 
-            int firstRefRowIndex = Math.Max(1, headerCount + 1); //获取起始参考行的索引号：表头下一行的索引号，如果小于1，则限定为1
+            int firstRefRowIndex = Math.Max(1, headerCount); //获取起始参考行的索引号：表头最末行的索引号，如果小于1，则限定为1
             //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
             int lastRefRowIndex = Math.Max(firstRefRowIndex, excelWorksheet.Dimension.End.Row - footerCount);
 
@@ -393,84 +392,6 @@ namespace COMIGHT
 
         }
 
-
-        //定义不能用于判断字符串相关性的字符的正则表达式变量，匹配模式为：空白字符，非中文、英文、数字、下划线的任意字符，阿拉伯数字、小数点、下划线
-        public static Regex regExUselessChars = new Regex(@"\s|[^\u4e00-\u9fa5\w]|[\d\._]");
-        public static Regex? regExStopWords; //定义停止词正则表达式变量
-
-        public static double GetTextRelevance(string str1, string str2)
-        {
-            if (regExStopWords == null) //如果停止词正则表达式变量为null
-            {
-                DataTable? stopWordsDataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Stop Words"); //读取数据库Excel工作簿的“停止词”工作表，赋值给停止词DataTable变量
-                StringBuilder stopWordsStrBu = new StringBuilder(); //定义停止词字符串构建器
-                if (stopWordsDataTable != null) //如果停止词DataTable变量不为null
-                {
-                    for (int j = 0; j < stopWordsDataTable.Columns.Count; j++) //遍历停止词DataTable所有数据列
-                    {
-                        foreach (DataRow dataRow in stopWordsDataTable.Rows) //遍历停止词DataTable所有数据行
-                        {
-                            if (dataRow[j] != DBNull.Value) //如果当前数据行j列元素不为空，则在数据末尾添加分隔符'|'后，追加到字符串构建器末尾
-                            {
-                                stopWordsStrBu.Append(Convert.ToString(dataRow[j]) + '|');
-                            }
-                            else
-                            {
-                                break; //否则退出for循环
-                            }
-
-                        }
-                    }
-                }
-                string stopWordsRegEx = stopWordsStrBu.ToString().Trim('|'); //将字符串构建器的内容转换成字符串，并删除首尾的'|'字符，赋值给停止词正则表达式字符串变量
-                regExStopWords = new Regex(stopWordsRegEx); //定义停止词正则表达式变量，匹配模式为停止词
-            }
-
-            //从两个字符串中移除停止词
-            str1 = regExUselessChars.Replace(str1, ""); //将字符串中的被停止词正则表达式匹配到的字符串替换为空
-            str2 = regExUselessChars.Replace(str2, "");
-
-            str1 = regExStopWords.Replace(str1, "");
-            str2 = regExStopWords.Replace(str2, "");
-
-            // 检查是否有一个字符串为空或者两个字符串是否完全相同
-            if (str1.Length * str2.Length == 0) //如果两个字符串有一个为空，则将0赋值给函数返回值
-            {
-                return 0;
-            }
-            else if (str1.Equals(str2)) //如果两个字符串完全相同，则将1赋值给函数返回值
-            {
-                return 1;
-            }
-
-            // 将较长的字符串和较短的字符串分别赋值给长、短字符串变量
-            string shortStr = "", longStr = "";
-            shortStr = str1.Length < str2.Length ? str1 : str2; //获取短字符串：如果字符串1的字数小于字符串2，则得到字符串1；否则得到字符串2
-            longStr = str1.Length < str2.Length ? str2 : str1; //获取长字符串：如果字符串1的字数小于字符串2，则得到字符串2；否则得到字符串1
-
-            int shortStrLen = shortStr.Length; //获取短字符串字数
-            int longStrLen = longStr.Length; //获取长字符串字数
-            int longStrRepSum = 0;
-            int shortStrRepSum = 0;
-
-            while (shortStr.Length > 0) //当短字符串字数不为0，继续循环
-            {
-                string firstChar = shortStr[0].ToString(); // 获取短字符串的第一个字符（判断字）
-                int shortStrRepCount = shortStr.Length - shortStr.Replace(firstChar, "").Length; // 获取短字符串中判断字的出现次数
-                int longStrRepCount = longStr.Length - longStr.Replace(firstChar, "").Length; // 获取长字符串中判断字的出现次数
-                longStrRepSum += longStrRepCount; // 将长字符串中判断字的出现次数加到长字符串出现该字符的总数中
-
-                // 重新给短字符串重复字符数合计变量赋值：如果当前判断字在长字符串中出现，则得到现有短字符串重复字符数合计与当前判断字在短字符串中出现次数之和；否则得到短字符串重复字符数合计原值
-                shortStrRepSum = longStrRepCount >= 1 ? shortStrRepSum + shortStrRepCount : shortStrRepSum;
-
-                // 从短字符串中移除判断字
-                shortStr = shortStr.Replace(firstChar, "");
-            }
-
-            //计算字符串相关度：((所有共有字在短字符串中出现次数的总和*所有共有字在长字符串中出现次数的总和)/(短字符串字数*长字符串字数))的平方根，赋值给函数返回值
-            return Math.Sqrt(shortStrRepSum * longStrRepSum / (double)(shortStrLen * longStrLen));
-        }
-
         public static string? GetKeyColumnLetter()
         {
             string latestColumnLetter = Properties.Settings.Default.latestSplittingColumnLetter; //读取设置中保存的主键列符
@@ -527,27 +448,6 @@ namespace COMIGHT
             }
             return count; //计数器值赋给函数返回值
         }
-
-        // 定义年份正则表达式变量，匹配模式为：前方不能出现“至到-~”阿拉伯数字，空格制表符任意多个；“20”，阿拉伯数字2个/或“二[〇零]”，中文数字2个，后方不能出现阿拉伯数字
-        public static Regex regExYear = new Regex(@"(?<![至到\d\-~][ |\t]*)(?:[12]\d{3}|[一二][一二三四五六七八九〇零]{3})(?!\d)");
-
-        public static string GetArabicYear(string inText)
-        {
-            MatchCollection matchesYears = regExYear.Matches(inText); //获取输入文字经过年份正则表达式匹配后的结果
-            //获取年份字符串：如果输入文字经过年份正则表达式匹配的结果集合元素数大于0，则得到最后一个匹配结果；否则得到空字符串
-            string yearStr = matchesYears.Count > 0 ? matchesYears[matchesYears.Count - 1].Value : "";
-            //将年份字符串中的中文数字替换为阿拉伯数字，移除首尾空白字符，赋值给阿拉伯数字年份变量
-            Dictionary<char, char> map = new Dictionary<char, char> //定义字符字典，将中文数字与阿拉伯数字对应
-                {
-                    {'一', '1'}, {'二', '2'}, {'三', '3'}, {'四', '4'}, {'五', '5'},
-                    {'六', '6'}, {'七', '7'}, {'八', '8'}, {'九', '9'}, {'〇', '0'}, {'零', '0'}
-                };
-
-            //遍历年份字符串的每个字符，如果在字符字典中找到该字符的键，则得到对应键值；否则得到键本身。将字符组成数组，然后转为字符串，并移除首尾空白字符
-            string arabicYearStr = new string(yearStr.Select(c => map.ContainsKey(c) ? map[c] : c).ToArray()).Trim();
-            return arabicYearStr;  //将阿拉伯数字年份赋值给函数返回值
-        }
-
 
         public static void KillOfficeApps(object[] apps)
         {
