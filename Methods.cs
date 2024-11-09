@@ -257,7 +257,7 @@ namespace COMIGHT
             }
 
             //设置记录区域行高
-            for (int i = headerCount + 1; i <= excelWorksheet.Dimension.End.Row - footerCount; i++) //遍历除去表尾的所有行
+            for (int i = headerCount + 1; i <= excelWorksheet.Dimension.End.Row - footerCount; i++) //遍历除去表头、表尾的所有行
             {
                 if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
                 {
