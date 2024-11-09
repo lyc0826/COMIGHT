@@ -442,10 +442,23 @@ namespace COMIGHT
 
             excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column].Merge = false; //表头所有单元格的合并状态设为false
 
+            //删除表头行中只含一个有效数据单元格的行（该行没有任何分类意义）
+            for (int i = headerCount; i >= 1; i--) //遍历表头所有行
+            {
+                ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
+
+                int usedCellsCount = headerRowCells.Count(cell => !string.IsNullOrWhiteSpace(cell.Text)); // 计算当前表头行单元格中不为null或全空白字符的单元格数量，赋值给已使用单元格数量变量
+                if (usedCellsCount <= 1) //如果已使用单元格数量小于等于1
+                {
+                    excelWorksheet.DeleteRow(i); //删除当前行
+                    headerCount--; //表头行数减1
+                }
+            }
+
             for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历工作表所有列
             {
                 List<string> lstFullColumnName = new List<string>(); //定义完整列名称列表
-                for (int i = 1; i <= headerCount; i++) //遍历工作表所有行
+                for (int i = 1; i <= headerCount; i++) //遍历表头所有行
                 {
                     bool copyLeftCell = false; //“是否复制左侧单元格”赋值为false
                     if (j > 1 && string.IsNullOrWhiteSpace(excelWorksheet.Cells[i, j].Text)) //如果当前列索引号大于1，且当前单元格为null或全空白字符

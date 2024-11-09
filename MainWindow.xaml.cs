@@ -1575,7 +1575,7 @@ namespace COMIGHT
                         pr = Val((string?)dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
                         double peRelativePercentage = Convert.ToDouble(dataRow["PE_Rel%"]);  //将当前数据行的PE相对百分比数据列数据赋值给PE相对百分比变量
                         //筛选PE相对百分比大于-100小于-10，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时估值较合理（为留有余量，这里将PE相对百分比限定在-100~-10之间）
+                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时估值较合理（为留有余量，将PE相对百分比限定在-100~-10之间）
                         return (peRelativePercentage > -100 && peRelativePercentage < -10) && pr >= 10;
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
