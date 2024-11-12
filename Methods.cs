@@ -999,8 +999,6 @@ namespace COMIGHT
                             }
                         }
 
-                        int outlineLevelOffset = 0; // 大纲级别偏移量赋值为0
-
                         // 中文0级（部分、篇、章、节）小标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
@@ -1015,7 +1013,6 @@ namespace COMIGHT
                             if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1) // 如果是中文文档，且找到的中文小标题所在段落只有一句
                             {
                                 paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
-                                outlineLevelOffset = 1; // 大纲级别偏移量设为1（后续1、2、3级中文小标题的大纲级别相应推后至2、3、4级）
                             }
                             paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进为0
                             paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
@@ -1039,7 +1036,7 @@ namespace COMIGHT
                             find.Execute();
                             if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1)
                             {
-                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1 + outlineLevelOffset; // 将当前中文小标题的大纲级别设为1级加大纲级别偏移量
+                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
                             }
                             font.Name = cnHeading1FontName;
                             font.Size = cnHeading1FontSize;
@@ -1061,7 +1058,7 @@ namespace COMIGHT
                             find.Execute();
                             if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1)
                             {
-                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2 + outlineLevelOffset;
+                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2;
                             }
                             font.Name = cnHeading2FontName;
                             font.Size = cnHeading2FontSize;
@@ -1082,11 +1079,37 @@ namespace COMIGHT
                             find.Text = matchUniversalHeading.Value;
                             find.Execute();
 
-                            // 如果为中文文档，找到的通用小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上，如果段落文字匹配成功（为中文3级小标题），则将当前中文小标题的大纲级别设为3级加大纲级别偏移量
-                            if (isCnDocument && paragraphs[1].Range.Sentences.Count == 1
-                                && Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
+                            // 如果找到的通用小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上，如果段落文字匹配成功
+                            if (paragraphs[1].Range.Sentences.Count == 1 && Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
                             {
-                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3 + outlineLevelOffset;
+                                if (isCnDocument) // 如果为中文文档，则将当前中文小标题的大纲级别设为3级
+                                {
+                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3;
+                                }
+                                else // 否则
+                                {
+                                    Regex regExEnHeadingNum = new Regex(@"(?<=^|\n|\r)(\d+\.)+"); // 定义英文小标题编号正则表达式变量，匹配模式为：从开头开始，阿拉伯数字1个及以上，英文句号1个（捕获组重复至少1次）
+                                    Match matchEnHeadingNum = regExEnHeadingNum.Match(paragraphs[1].Range.Text); // 获取当前段落的文本经过英文小标题编号正则表达式匹配的第一个结果
+                                    if (matchEnHeadingNum.Success) // 如果被正则表达式匹配成功
+                                    {
+                                        switch (matchEnHeadingNum.Groups[1].Captures.Count) // 根据被英文小标题编号正则表达式匹配到的第一个捕获组模式的重复匹配次数（“数字加句点”出现了多少次），设置当前段落的大纲级别
+                                        {
+                                            case 1:
+                                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1;
+                                                break;
+                                            case 2:
+                                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2;
+                                                break;
+                                            case 3:
+                                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3;
+                                                break;
+                                            default:
+                                                paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText;
+                                                break;
+                                        }
+                                    }
+                                    
+                                }
                             }
 
                             font.Name = universalHeadingFontName;
