@@ -1003,7 +1003,7 @@ namespace COMIGHT
                             }
                         }
 
-                        if (isCnDocument) // 如果当前文件为中文文档
+                        if (isCnDocument) // 如果为中文文档
                         {
                             // 中文0级（部分、篇、章、节）小标题设置
                             selection.HomeKey(WdUnits.wdStory);
