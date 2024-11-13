@@ -1090,9 +1090,9 @@ namespace COMIGHT
                                 {
                                     Regex regExEnHeadingNum = new Regex(@"(?<=^|\n|\r)(\d+\.)+"); // 定义英文小标题编号正则表达式变量，匹配模式为：从开头开始，阿拉伯数字1个及以上，英文句号1个（捕获组重复至少1次）
                                     Match matchEnHeadingNum = regExEnHeadingNum.Match(paragraphs[1].Range.Text); // 获取当前段落的文本经过英文小标题编号正则表达式匹配的第一个结果
-                                    if (matchEnHeadingNum.Success) // 如果被正则表达式匹配成功
+                                    if (matchEnHeadingNum.Success) // 如果被英文小标题编号正则表达式匹配成功
                                     {
-                                        switch (matchEnHeadingNum.Groups[1].Captures.Count) // 根据被英文小标题编号正则表达式匹配到的第一个捕获组模式的重复匹配次数（“数字加句点”出现了多少次），设置当前段落的大纲级别
+                                        switch (matchEnHeadingNum.Groups[1].Captures.Count) // 根据英文小标题编号正则表达式第一个捕获组模式的匹配次数（“数字加句点”出现了多少次），设置当前段落的大纲级别
                                         {
                                             case 1:
                                                 paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1;
@@ -1123,7 +1123,8 @@ namespace COMIGHT
 
                         // 定义清单数字编号正则表达式列表变量，匹配模式为中文1级、2级和通用小标题编号
                         List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
-                            @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]" };
+                            @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]"};
+                       
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
