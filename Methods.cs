@@ -813,6 +813,7 @@ namespace COMIGHT
                         int cnHeading3_4FontSize = isCnDocument? 16 : 12; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
                         int cnShiNumFontSize = 16; // 中文“是”语句
                         int cnItemNumFontSize = 16; // 中文“条”编号
+                        int enHeading1FontSize = 13; // 英文1级小标题
                         int tableTitleFontSize = isCnDocument ? 16 : 12; // 表格标题字号
                         int tableBodyFontSize = isCnDocument ? 14 : 10; // 表格正文字号
                         int footerFontSize = 14; // 页脚字号为四号
@@ -825,6 +826,7 @@ namespace COMIGHT
                         string cnHeading3_4FontName = isCnDocument ? "仿宋" : "Arial"; // 通用小标题
                         string cnShiNumFontName = "仿宋"; // 中文“是”语句
                         string cnItemNumFontName = "黑体"; // 中文“条”编号
+                        string enHeading1FontName = "Arial"; // 英文1级小标题
                         string tableTitleFontName = isCnDocument ? "黑体" : "Arial"; // 表格标题字体
                         string tableBodyFontName = isCnDocument ? "仿宋" : "Arial"; // 表格正文字体
                         string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
@@ -973,7 +975,6 @@ namespace COMIGHT
                                     paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
                                     font.Name = titleFontName; // 设置字体为预设值
                                     font.Size = titleFontSize; // 设置字号为预设值
-                                    font.ColorIndex = WdColorIndex.wdBlack; // 颜色为黑色
                                     font.Bold = (int)WdConstants.wdToggle; // 字体加粗
                                     selection.EndKey(WdUnits.wdLine); // 光标一到选区的最后一个字（换行符之前）
 
@@ -1024,7 +1025,6 @@ namespace COMIGHT
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
                                 font.Name = cnHeading0FontName;
                                 font.Size = cnHeading0FontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1046,7 +1046,6 @@ namespace COMIGHT
                                 }
                                 font.Name = cnHeading1FontName;
                                 font.Size = cnHeading1FontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1068,7 +1067,6 @@ namespace COMIGHT
                                 }
                                 font.Name = cnHeading2FontName;
                                 font.Size = cnHeading2FontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1094,43 +1092,41 @@ namespace COMIGHT
 
                                 font.Name = cnHeading3_4FontName;
                                 font.Size = cnHeading3_4FontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 
-                            //将前期被识别为小标题的数字编号清单恢复为正文文字格式
+                            ////将前期被识别为小标题的数字编号清单恢复为正文文字格式
 
-                            // 定义清单数字编号正则表达式列表变量，匹配模式为中文1-4级小标题编号
-                            List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
-                                @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]"};
+                            //// 定义清单数字编号正则表达式列表变量，匹配模式为中文1-4级小标题编号
+                            //List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
+                            //    @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]"};
 
 
-                            foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
-                            {
-                                selection.HomeKey(WdUnits.wdStory);
+                            //foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
+                            //{
+                            //    selection.HomeKey(WdUnits.wdStory);
 
-                                // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
-                                Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
+                            //    // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
+                            //    Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
 
-                                MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
+                            //    MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
 
-                                foreach (Match matchListGroup in matchesListGroups)
-                                {
-                                    find.Text = matchListGroup.Value;
-                                    find.Execute();
+                            //    foreach (Match matchListGroup in matchesListGroups)
+                            //    {
+                            //        find.Text = matchListGroup.Value;
+                            //        find.Execute();
 
-                                    paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单的大纲级别设为正文级别
+                            //        paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单的大纲级别设为正文级别
 
-                                    //将数字编号清单设为正文文字格式
-                                    font.Name = bodyFontName;
-                                    font.Size = bodyFontSize;
-                                    font.ColorIndex = WdColorIndex.wdBlack;
-                                    font.Bold = 0;
-                                    selection.Collapse(WdCollapseDirection.wdCollapseEnd);
-                                }
+                            //        //将数字编号清单设为正文文字格式
+                            //        font.Name = bodyFontName;
+                            //        font.Size = bodyFontSize;
+                            //        font.Bold = 0;
+                            //        selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            //    }
 
-                            }
+                            //}
 
                             // 中文“X是”编号设置
                             selection.HomeKey(WdUnits.wdStory);
@@ -1146,7 +1142,6 @@ namespace COMIGHT
                                 selection.MoveStart(WdUnits.wdCharacter, 1); // 将选区的开头向后移动一个字符，避开前方的换行符回车符或标点
                                 font.Name = cnShiNumFontName;
                                 font.Size = cnShiNumFontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1164,7 +1159,6 @@ namespace COMIGHT
                                 find.Execute();
                                 font.Name = cnItemNumFontName;
                                 font.Size = cnItemNumFontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 0;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1213,6 +1207,59 @@ namespace COMIGHT
                             }
                         }
 
+                        else // 否则（为英文文档）
+                        {
+                            // 定义英文1级小标题正则表达式变量，匹配模式为：从开头开始，A-Z字母或阿拉伯数字1个及以上，空格制表符任意多个，“.”，空格制表符至少一个，非“：:；;”分页符换行符回车符的字符任意多个，大小写英文字符至少一个，非“：:；;”分页符换行符回车符的字符1-80个，“：:”换行符回车符
+                            Regex regExEnHeading1 = new Regex(@"(?<=^|\n|\r)[A-Z\d]+[ |\t]*\.[ |\t]+[^：:；;\f\n\r]*[a-zA-Z]+[^：:；;\f\n\r]{1,80}[：:\n\r]", RegexOptions.Multiline);
+                            MatchCollection matchesEnHeading1s = regExEnHeading1.Matches(documentText); // 获取全文文字经过英文1级小标题正则表达式匹配的结果
+
+                            foreach (Match matchEnHeading1 in matchesEnHeading1s)
+                            {
+                                find.Text = matchEnHeading1.Value;
+                                find.Execute();
+                                if (paragraphs[1].Range.Sentences.Count == 1)
+                                {
+                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前英文小标题的大纲级别设为1级
+                                }
+                                font.Name = enHeading1FontName;
+                                font.Size = enHeading1FontSize;
+                                font.Bold = 1;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            }
+                        }
+
+                        //将前期被识别为小标题的数字编号清单恢复为正文文字格式
+
+                        // 定义清单数字编号正则表达式列表变量，匹配模式为中文1-4级和英文1级小标题编号（中文3级小标题编号和英文1级小标题数字编号共用第3项）
+                        List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
+                                @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]", @"[A-Z]+[ |\t]*\."};
+
+
+                        foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
+                        {
+                            selection.HomeKey(WdUnits.wdStory);
+
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
+                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
+
+                            MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
+
+                            foreach (Match matchListGroup in matchesListGroups)
+                            {
+                                find.Text = matchListGroup.Value;
+                                find.Execute();
+
+                                paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单的大纲级别设为正文级别
+
+                                //将数字编号清单设为正文文字格式
+                                font.Name = bodyFontName;
+                                font.Size = bodyFontSize;
+                                font.Bold = 0;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            }
+
+                        }
+
                         // 设置表格格式
 
                         // 遍历所有表格
@@ -1237,7 +1284,6 @@ namespace COMIGHT
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                                 font.Name = tableTitleFontName;
                                 font.Size = tableTitleFontSize;
-                                font.ColorIndex = WdColorIndex.wdBlack;
                                 font.Bold = 0;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
