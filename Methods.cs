@@ -802,7 +802,7 @@ namespace COMIGHT
                         double nonCNCharsRatio = nonCNCharsCount / documentText.Length; // 计算非中文字符占全文的比例
                         bool isCnDocument = nonCNCharsRatio < 0.5; // 获取“是否为中文文档”值：如果非中文字符比例小于0.5，得到true；否则得到false
 
-                        // 设置版式、字体、字号、行距等
+                        // 定义页边距、行距、字体、字号等的值
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
@@ -814,7 +814,7 @@ namespace COMIGHT
                         int cnHeading0FontSize = 16; // 中文0级小标题
                         int cnHeading1FontSize = 16; // 中文1级小标题
                         int cnHeading2FontSize = 16; // 中文2级小标题
-                        int cnHeading3_4FontSize = isCnDocument? 16 : 12; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
+                        int cnHeading3_4FontSize = 16; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
                         int cnShiNumFontSize = 16; // 中文“是”语句
                         int cnItemNumFontSize = 16; // 中文“条”编号
                         int enHeading1FontSize = 13; // 英文1级小标题
@@ -827,7 +827,7 @@ namespace COMIGHT
                         string cnHeading0FontName = "黑体"; // 中文0级小标题
                         string cnHeading1FontName = "黑体"; // 中文1级小标题
                         string cnHeading2FontName = "楷体"; // 中文2级小标题
-                        string cnHeading3_4FontName = isCnDocument ? "仿宋" : "Arial"; // 通用小标题
+                        string cnHeading3_4FontName = "仿宋"; // 通用小标题
                         string cnShiNumFontName = "仿宋"; // 中文“是”语句
                         string cnItemNumFontName = "黑体"; // 中文“条”编号
                         string enHeading1FontName = "Arial"; // 英文1级小标题
@@ -860,9 +860,6 @@ namespace COMIGHT
                         find.Execute(Replace: WdReplace.wdReplaceAll);
 
                         // 清除段首、段尾多余空格和制表符，段落自动编号转文本
-                        selection.EndKey(WdUnits.wdStory);
-                        selection.InsertAfter("\r"); // 在文尾加“保护”换行符，以免在替换最后一段时，造成和倒数第二段错误合并。
-
                         for (int i = msWordDocument.Paragraphs.Count; i >= 1; i--) // 从末尾往开头遍历所有段落
                         {
                             MSWord.Paragraph paragraph = msWordDocument.Paragraphs[i];
@@ -898,18 +895,20 @@ namespace COMIGHT
                         paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
 
                         // 清除文首和文末的空白段
-                        while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为换行符，则继续循环
+                        while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为回车符，则继续循环
                         {
                             msWordDocument.Paragraphs[1].Range.Delete(); // 删除第1段
                         }
 
-                        while (msWordDocument.Paragraphs[msWordDocument.Paragraphs.Count].Range.Text == "\r") // 如果最后一段文字为换行符，则继续循环
+                        while (msWordDocument.Paragraphs[msWordDocument.Paragraphs.Count].Range.Text == "\r"
+                            && msWordDocument.Paragraphs[msWordDocument.Paragraphs.Count - 1].Range.Text == "\r") // 如果最后一段和倒数第二段文字均为回车符，则继续循环
                         {
                             msWordDocument.Paragraphs[msWordDocument.Paragraphs.Count].Range.Delete(); // 删除最后一段
                         }
 
                         // 全文格式初始化
                         selection.WholeStory(); // 选择word所有文档
+
                         MSWord.PageSetup pageSetup = selection.PageSetup; // 将选区页面设置赋值给页面设置变量
                         pageSetup.PageWidth = msWordApp.CentimetersToPoints((float)21); // 页面宽度设为21cm
                         pageSetup.PageHeight = msWordApp.CentimetersToPoints((float)29.7); // 页面高度设为29.7cm
@@ -919,6 +918,7 @@ namespace COMIGHT
                         pageSetup.RightMargin = (float)rightMargin; // 右边距设为预设值
 
                         selection.Range.HighlightColorIndex = WdColorIndex.wdNoHighlight; // 突出显示文本取消
+
                         MSWord.Paragraphs paragraphs = selection.Paragraphs; // 将选区段落赋值给段落变量
                                                                              // '.CharacterUnitFirstLineIndent = 2 '此参数优先级最高，一旦设定，需要再次设置一个绝对值相等的负值或者重置段落格式才能将其归零！
                         paragraphs.AutoAdjustRightIndent = 0; // 不自动调整右缩进
@@ -929,7 +929,7 @@ namespace COMIGHT
                         paragraphs.SpaceBefore = msWordApp.CentimetersToPoints(0); // 段落前间距设为0
                         paragraphs.SpaceAfter = msWordApp.CentimetersToPoints(0); // 段落后间距设为0
 
-                        // 基础字体设置
+                        // 基础正文字体设置
                         MSWord.Font font = msWordApp.Selection.Font; //将选区字体赋值给字体变量
                         font.Name = bodyFontName; // 正文字体设为预设值
                         font.Size = bodyFontSize; // 正文字号设为预设值
