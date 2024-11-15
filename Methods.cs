@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using Xceed.Words.NET;
 using Application = System.Windows.Application;
@@ -772,13 +773,16 @@ namespace COMIGHT
             void process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
-                msWordApp.ScreenUpdating = false;
-                msWordApp.Visible = false;
+                msWordApp.ScreenUpdating = false; //关闭屏幕更新
+                msWordApp.DisplayAlerts = MSWord.WdAlertLevel.wdAlertsNone; //关闭警告
+                msWordApp.Visible = false; //“程序窗口可见”设为否
+                MSWordDocument? msWordDocument = null; //定义Word文档变量
+
                 try
                 {
                     foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
                     {
-                        MSWordDocument msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给初始Word文档变量
+                        msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给Word文档变量
 
                         // 判断是否为空文档
                         if (msWordDocument.Content.Text.Trim().Length <= 1) // 如果将Word换行符全部删除后，剩下的字符数小于等于1，则结束本过程
@@ -1355,7 +1359,8 @@ namespace COMIGHT
                 finally
                 {
                     msWordApp.ScreenUpdating = true;
-                    KillOfficeApps(new object[] { msWordApp });
+                    if (msWordDocument != null) Marshal.ReleaseComObject(msWordDocument); // 释放Word文档对象
+                    KillOfficeApps(new object[] { msWordApp }); // 关闭Word应用程序进程
                 }
 
             }
