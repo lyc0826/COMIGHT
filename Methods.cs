@@ -851,9 +851,9 @@ namespace COMIGHT
                         find.Replacement.Text = " "; // 将空格替换为半角空格
                         find.Execute(Replace: WdReplace.wdReplaceAll);
 
-                        find.Text = "\t"; // 查找制表符
-                        find.Replacement.Text = "    "; // 将制表符替换为4个空格
-                        find.Execute(Replace: WdReplace.wdReplaceAll);
+                        //find.Text = "\t"; // 查找制表符
+                        //find.Replacement.Text = "    "; // 将制表符替换为4个空格
+                        //find.Execute(Replace: WdReplace.wdReplaceAll);
 
                         find.Text = "\v"; // 查找换行符（垂直制表符），^l"
                         find.Replacement.Text = "\r"; // 将换行符（垂直制表符）替换为回车符
