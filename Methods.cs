@@ -1210,7 +1210,10 @@ namespace COMIGHT
                             selection.HomeKey(WdUnits.wdStory);
 
                             // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
-                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
+                            //Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
+                            
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-80个，换行符回车符），以上字符串2个及以上
+                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^\f\n\r]{1,80}[\n\r]){2,}", RegexOptions.Multiline);
 
                             MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
 
