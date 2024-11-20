@@ -22,7 +22,7 @@
                 <MenuItem Header="Start">
                     <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
-                    <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" />
+                    <!-- <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" /> -->
                 </MenuItem>
 
                 <MenuItem Header="Table">
@@ -47,7 +47,7 @@
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
                 </MenuItem>
 
-                <MenuItem x:Name="mnuBrowser" Header="AI-Browser" Click="MnuBrowser_Click" />
+                <MenuItem x:Name="mnuBrowser" Header="Browser" Click="MnuBrowser_Click" />
             </Menu>
         </DockPanel>
 

@@ -6,9 +6,7 @@ COMIGHT Assistant is a versatile office productivity tool offering a wide range 
 
 The application is user-friendly, with clear menu options and on-screen prompts guiding users through each function. It aims to automate repetitive tasks, enhance data analysis, and improve document management, making it a valuable asset for office professionals seeking to boost their productivity and efficiency.
 
-Key features include merging and splitting Excel worksheets, comparing data, formatting Word documents to official standards, and converting file types. The tool also provides utilities like creating name cards, making file lists, and batch folder creation.
-
-A unique AI-Browser feature allows easy copying of text from web pages without manual selection. 
+Key features include merging and splitting Excel worksheets, comparing data, formatting Word documents to official standards, and converting file types. The tool also provides utilities like creating name cards, making file lists, and batch folder creation. Additionally, a unique built-in browser allows easy copying of text from web pages without manual selection. 
 
 ## System Requirements and Usage
 
@@ -141,7 +139,7 @@ A unique AI-Browser feature allows easy copying of text from web pages without m
 
 - Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the seat plates must be in column A of the first worksheet (can be split into two lines within a cell), starting from cell A1. Each name card can accommodate a maximum of 10 Chinese characters or 25 English characters.
 
-### AI-Browser
+### Browser
 
 - This browser allows you to directly copy entire paragraphs of text from most web pages without having to drag the mouse and hold the Shift key to select and copy. Copied text does not contain any markdown symbols or HTML tags.
 
