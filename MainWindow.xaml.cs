@@ -1042,113 +1042,6 @@ namespace COMIGHT
 
         }
 
-        //private void ImportTextboxIntoDocumentTable()
-        //{
-        //    try
-        //    {
-        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-        //        List<string> lstParagraphs = txtbxExportableText.Text
-        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-        //        {
-        //            throw new Exception("No Valid Data Found!");
-        //        }
-
-        //        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-        //        string targetFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标文件夹路径
-
-        //        //创建目标文件夹
-        //        if (!Directory.Exists(targetFolderPath))
-        //        {
-        //            Directory.CreateDirectory(targetFolderPath);
-        //        }
-
-        //        //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
-        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx"); 
-        //        ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
-
-        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
-        //private void ImportTextboxIntoDocumentTableAndWord()
-        //{
-        //    try
-        //    {
-        //        InputDialog inputDialog;
-        //        string functionOptions = string.Join('\n', new string[]
-        //            { "输入功能选项：", "1-导入结构化文档表", "2-导入纯文本Word文档" });
-        //        inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-        //        if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-        //        List<string> lstParagraphs = txtbxExportableText.Text
-        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-        //        {
-        //            throw new Exception("无有效数据！");
-        //        }
-
-        //        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-        //        string targetFolderPath = Path.Combine(desktopPath, "COMIGHT生成文件"); //获取目标文件夹路径
-        //        //移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，赋值给目标文件主名变量
-        //        string targetFileMainName = CleanName(lstParagraphs[0], 40);
-
-        //        //创建目标文件夹
-        //        if (!Directory.Exists(targetFolderPath))
-        //        {
-        //            Directory.CreateDirectory(targetFolderPath);
-        //        }
-
-        //        switch (functionNum)  //根据功能序号进入相应的分支
-        //        {
-        //            case 1: //导入结构化文档表
-        //                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.xlsx"); //获取目标结构化文档表文件路径全名
-        //                ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
-
-        //                break;
-
-        //            case 2: //导入纯文本Word文档
-        //                string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文件路径全名
-        //                using (DocX targetWordDocument = DocX.Create(targetWordFilePath)) //新建目标Word文档，赋值给目标Word文档变量
-        //                {
-        //                    foreach (string paragraphText in lstParagraphs) //遍历段落列表所有元素
-        //                    {
-        //                        targetWordDocument.InsertParagraph(paragraphText); //将当前元素的段落文字插入目标Word文档
-        //                    }
-        //                    targetWordDocument.Save(); //保存目标Word文档
-        //                }
-
-        //                break;
-
-        //        }
-
-        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
         private void MakeFolders()
         {
             try
@@ -1687,7 +1580,7 @@ namespace COMIGHT
                     }
 
                     // 创建目标文件夹
-                    string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Spltd_{Path.GetFileNameWithoutExtension(filePaths[0])}");
+                    string targetFolderPath = Path.Combine(Path.GetDirectoryName(filePaths[0])!, $"Splt_{Path.GetFileNameWithoutExtension(filePaths[0])}");
                     if (!Directory.Exists(targetFolderPath))
                     {
                         Directory.CreateDirectory(targetFolderPath);
@@ -1721,7 +1614,7 @@ namespace COMIGHT
                                     FormatExcelWorksheet(targetExcelWorksheet, headerCount, 0); //设置目标Excel工作表格式
 
                                     // 保存目标Excel工作簿文件
-                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"Spltd_{targetFileMainName}_{pair.Key}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"Splt_{targetFileMainName}_{pair.Key}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
                                 }
                             }
@@ -1756,7 +1649,7 @@ namespace COMIGHT
 
                                 }
                                 // 保存目标Excel工作簿文件
-                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"Spltd_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"Splt_{targetFileMainName}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                 targetExcelPackage.SaveAs(targetExcelFile);
 
                             }
