@@ -1,6 +1,14 @@
 # COMIGHT Assistant
 
-A Multi-Function Assistant for Office Work.
+## Introduction
+
+COMIGHT Assistant is a versatile office productivity tool offering a wide range of functions to streamline office work, including batch processing of Excel worksheets, formatting Word documents, and managing files and folders.
+
+The application is user-friendly, with clear menu options and on-screen prompts guiding users through each function. It aims to automate repetitive tasks, enhance data analysis, and improve document management, making it a valuable asset for office professionals seeking to boost their productivity and efficiency.
+
+Key features include merging and splitting Excel worksheets, comparing data, formatting Word documents to official standards, and converting file types. The tool also provides utilities like creating name cards, making file lists, and batch folder creation.
+
+A unique AI-Browser feature allows easy copying of text from web pages without manual selection. 
 
 ## System Requirements and Usage
 
