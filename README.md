@@ -2,17 +2,17 @@
 
 ## Introduction
 
-COMIGHT Assistant is a versatile office productivity tool offering a wide range of functions to streamline office work, including batch processing of Excel worksheets, formatting Word documents, and managing files and folders.
+COMIGHT Assistant is a office productivity tool offering a wide range of functions to streamline office work and automate repetitive tasks, including batch processing of Excel worksheets, formatting Word documents, and managing files and folders.
 
-The application is user-friendly, with clear menu options and on-screen prompts guiding users through each function. It aims to automate repetitive tasks, enhance data analysis, and improve document management, making it a valuable asset for office professionals seeking to boost their productivity and efficiency.
+It aims to , enhance data analysis, and improve document management, making it a valuable asset for office professionals seeking to boost their productivity and efficiency.
 
 Key features include merging and splitting Excel worksheets, comparing data, formatting Word documents to official standards, and converting file types. The tool also provides utilities like creating name cards, making file lists, and batch folder creation. Additionally, a unique built-in browser allows easy copying of text from web pages without manual selection. 
 
 ## System Requirements and Usage
 
-- Requires: (1) Windows 10 x64 or later, (2) Activated MS Office 2016 or later, or Microsoft 365, (3) WebView2 Runtime. 
+- Requires: (1) Windows 10 x64 or later, (2) MS Office 2016 or later, or Microsoft 365, (3) WebView2 Runtime, (4) .Net 8.0 SDK 
 
-- Extract all files into one folder and double-click COMIGHT.EXE to run. If the system prompts you to install the .NET Framework, follow the instructions.
+- Extract all files into one folder and double-click COMIGHT.EXE to run. 
 
 - Select a function from the menu at the top of the main window. Follow the on-screen prompts to select the files or folders to be processed in the dialog box, and enter the necessary parameters. The generated files and folders are located in the same folder as the source files/folder, or in the "COMIGHT Files" folder on the Desktop.
 
