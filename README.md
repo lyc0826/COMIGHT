@@ -2,7 +2,7 @@
 
 ## Introduction
 
-COMIGHT Assistant is a office productivity tool offering a wide range of functions to streamline office work and automate repetitive tasks, including batch processing of Excel worksheets, formatting Word documents, and managing files and folders.
+COMIGHT Assistant is a productivity tool offering a wide range of functions to streamline office work and automate repetitive tasks, including batch processing of Excel worksheets, formatting Word documents, and managing files and folders.
 
 It aims to , enhance data analysis, and improve document management, making it a valuable asset for office professionals seeking to boost their productivity and efficiency.
 
@@ -82,34 +82,34 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - **Source file format requirements:** The title is at the beginning of the document (if there are multiple articles in the same document, each article must start on a new page, separated from the previous article by a page break or section break). The body text is separated from the title by at least one blank line. Heading numbers shall be presented in the format as follows: 
     
-    Table 1£º
+    Table 1ï¼š
     | Heading Level | Chinese Heading Number Format | English Heading Number Format |
     |---|---|---|
-    | 0 | µÚÒ»²¿·Ö µÚ¶ş²¿·Ö µÚÈı²¿·Ö ... <br>£¨¡°²¿·Ö¡± can be replaced with ¡°Æª¡±¡°ÕÂ¡±¡°½Ú¡±£©| N.A. |
-    | 1 | Ò»¡¢ ¶ş¡¢ Èı¡¢... | A. B. C. or 1. 2. 3. ... (with a space behind) |
-    | 2 | £¨Ò»£© £¨¶ş£© £¨Èı£© ... | N.A. |
+    | 0 | ç¬¬ä¸€éƒ¨åˆ† ç¬¬äºŒéƒ¨åˆ† ç¬¬ä¸‰éƒ¨åˆ† ... <br>ï¼ˆâ€œéƒ¨åˆ†â€ can be replaced with â€œç¯‡â€â€œç« â€â€œèŠ‚â€ï¼‰| N.A. |
+    | 1 | ä¸€ã€ äºŒã€ ä¸‰ã€... | A. B. C. or 1. 2. 3. ... (with a space behind) |
+    | 2 | ï¼ˆä¸€ï¼‰ ï¼ˆäºŒï¼‰ ï¼ˆä¸‰ï¼‰ ... | N.A. |
     | 3 | 1. 2. 3. ...| N.A. |
     | 4 | (1) (2) (3) ... | N.A. |
 
-    For Chinese documents, the signature shall be separated from the body text by at least one blank line, with the organization name (can be multiple, arranged vertically) above, and the date (YYYYÄêMMÔÂDDÈÕ) below. 
+    For Chinese documents, the signature shall be separated from the body text by at least one blank line, with the organization name (can be multiple, arranged vertically) above, and the date (YYYYå¹´MMæœˆDDæ—¥) below. 
     Documents with columns, complex tables, or mixed text and images are not applicable.
 
 #### **Export Document Table into Word Document (Only works for Chinese Documents)**
 
 - Exports the contents of a document table into a Word document, automatically numbers headings at all levels, and formats them according to Chinese government document standards.
 
-  - A document table template is provided with this program, with instructions for filling it in. The "Text" column in the "Title" worksheet and the "Heading Level" and "Text" columns in the "Body" worksheet are mandatory and serve as the source of the output document content; the other columns are optional for notes, filtering, etc. "Heading Level" should be selected from the dropdown box, the formats are "0¼¶", "1¼¶", "2¼¶", "3¼¶", "4¼¶", "ÊÇ", "Ìõ", respectively. In the exported document, heading numbers will be presented in the style as follows: 
+  - A document table template is provided with this program, with instructions for filling it in. The "Text" column in the "Title" worksheet and the "Heading Level" and "Text" columns in the "Body" worksheet are mandatory and serve as the source of the output document content; the other columns are optional for notes, filtering, etc. "Heading Level" should be selected from the dropdown box, the formats are "0çº§", "1çº§", "2çº§", "3çº§", "4çº§", "æ˜¯", "æ¡", respectively. In the exported document, heading numbers will be presented in the style as follows: 
     
     Table 2:
     | Heading Level | Heading Number Format |
     |---|---| 
-    | 0¼¶ | µÚÒ»²¿·Ö µÚ¶ş²¿·Ö µÚÈı²¿·Ö... |
-    | 1¼¶ | Ò»¡¢ ¶ş¡¢ Èı¡¢... |
-    | 2¼¶ | £¨Ò»£© £¨¶ş£© £¨Èı£© ... |
-    | 3¼¶ | 1. 2. 3. ...|
-    | 4¼¶ | (1) (2) (3) ... |
-    | ÊÇ | Ò»ÊÇ  ¶şÊÇ  ÈıÊÇ ... |
-    | Ìõ | µÚÒ»Ìõ  µÚ¶şÌõ  µÚÈıÌõ ... |
+    | 0çº§ | ç¬¬ä¸€éƒ¨åˆ† ç¬¬äºŒéƒ¨åˆ† ç¬¬ä¸‰éƒ¨åˆ†... |
+    | 1çº§ | ä¸€ã€ äºŒã€ ä¸‰ã€... |
+    | 2çº§ | ï¼ˆä¸€ï¼‰ ï¼ˆäºŒï¼‰ ï¼ˆä¸‰ï¼‰ ... |
+    | 3çº§ | 1. 2. 3. ...|
+    | 4çº§ | (1) (2) (3) ... |
+    | æ˜¯ | ä¸€æ˜¯  äºŒæ˜¯  ä¸‰æ˜¯ ... |
+    | æ¡ | ç¬¬ä¸€æ¡  ç¬¬äºŒæ¡  ç¬¬ä¸‰æ¡ ... |
 
     None of the 3 worksheets can be deleted, moved, or have their column structure changed. Any rows that are hidden or filtered out will not be exported.
 
