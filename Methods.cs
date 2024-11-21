@@ -1634,8 +1634,8 @@ namespace COMIGHT
 
                     }
 
-                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题落款”工作表（第2张，1号）赋值给大标题首尾工作表变量
-                    ExcelRange titleCells = titleWorksheet.Cells; //将“大标题落款”工作表单元格赋值给大标题首尾工作表单元格变量
+                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题”工作表（第2张，1号）赋值给大标题工作表变量
+                    ExcelRange titleCells = titleWorksheet.Cells[titleWorksheet.Dimension.Address]; //将“大标题”工作表单元格赋值给大标题工作表单元格变量
 
                     lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "" }); //将大标题、空行添加到完整文章列表中
 
