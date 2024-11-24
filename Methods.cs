@@ -817,7 +817,7 @@ namespace COMIGHT
                         int cnHeading3_4FontSize = 16; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
                         int cnShiNumFontSize = 16; // 中文“是”语句
                         int cnItemNumFontSize = 16; // 中文“条”编号
-                        int enHeading1FontSize = 13; // 英文1级小标题
+                        int enHeadingFontSize = 13; // 英文小标题
                         int tableTitleFontSize = isCnDocument ? 16 : 12; // 表格标题字号
                         int tableBodyFontSize = isCnDocument ? 14 : 10; // 表格正文字号
                         int footerFontSize = 14; // 页脚字号为四号
@@ -830,7 +830,7 @@ namespace COMIGHT
                         string cnHeading3_4FontName = "仿宋"; // 通用小标题
                         string cnShiNumFontName = "仿宋"; // 中文“是”语句
                         string cnItemNumFontName = "黑体"; // 中文“条”编号
-                        string enHeading1FontName = "Arial"; // 英文1级小标题
+                        string enHeadingFontName = "Arial"; // 英文小标题
                         string tableTitleFontName = isCnDocument ? "黑体" : "Arial"; // 表格标题字体
                         string tableBodyFontName = isCnDocument ? "仿宋" : "Arial"; // 表格正文字体
                         string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
@@ -1087,12 +1087,9 @@ namespace COMIGHT
                                 find.Text = matchCnHeading3_4.Value;
                                 find.Execute();
 
-                                // 如果中文3、4级小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上（3级小标题），如果段落文字匹配成功
-                                if (paragraphs[1].Range.Sentences.Count == 1
-                                    && Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
-                                //if (Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
+                                if (paragraphs[1].Range.Sentences.Count == 1)
                                 {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3; //将小标题所在段落的大纲级别设为3级  
+                                    paragraphs[1].OutlineLevel = Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+")? WdOutlineLevel.wdOutlineLevel3 : WdOutlineLevel.wdOutlineLevel4; //设置小标题所在段落的大纲级别：正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上（3级小标题），如果段落文字被匹配成功，则设为3级；否则，设为4级  
                                 }
 
                                 font.Name = cnHeading3_4FontName;
@@ -1182,10 +1179,11 @@ namespace COMIGHT
                         else // 否则（为英文文档）
                         {
                             //设置英文小标题格式
+                            selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号（模式为"A. A.1 A.1.1"或"1. 1.1 1.1.1"，作为捕获组），空格制表符至少一个，非“：:；;”分页符换行符回车符的字符任意多个，英文字符至少一个，非“：:；;”分页符换行符回车符的字符1-100个，“：:”换行符回车符
-                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)([A-Z\d]\.(?:\d+(?:\.\d+)*)*)[ |\t]+[^：:；;\f\n\r]*[a-zA-Z]+[^：:；;\f\n\r]{1,100}[：:\n\r]", RegexOptions.Multiline);
-                            MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文1级小标题正则表达式匹配的结果
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号（模式为"A./A.1/A.1.1/A.1.1.1"或"1./1.1/1.1.1/1.1.1.1"，作为捕获组），空格制表符至少一个，非“：:；;”分页符换行符回车符的字符任意多个（尽可能少匹配），英文字符，非“：:；;”分页符换行符回车符的字符1-100个，“：:”换行符回车符
+                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)([A-Z\d]\.(?:\d+(?:\.\d+){0,2})?)[ |\t]+[^：:；;\f\n\r]*?[a-zA-Z][^：:；;\f\n\r]{1,100}[：:\n\r]", RegexOptions.Multiline);
+                            MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
                             foreach (Match matchEnHeading in matchesEnHeadings)
                             {
@@ -1194,26 +1192,15 @@ namespace COMIGHT
 
                                 if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
                                 {
-                                    // 计算小标题编号中含有几组数字：使用正则表达式分割小标题编号字符串（捕获组1），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
+                                    // 计算小标题编号中含有几组数字：使用正则表达式以"."分割小标题编号字符串（捕获组1），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
                                     int enHeadingNumsCount = Regex.Split(matchEnHeading.Groups[1].Value, @"\.")
                                         .Where(s => !string.IsNullOrWhiteSpace(s)) // 
                                         .ToList().Count;
-                                    switch (enHeadingNumsCount) // 根据小标题编号中数字组的数量，设置当前英文小标题的大纲级别
-                                    {
-                                        case 1:
-                                            paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前英文小标题的大纲级别设为1级
-                                            break;
-                                        case 2:
-                                            paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2; // 将当前英文小标题的大纲级别设为2级
-                                            break;
-                                        case 3:
-                                            paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3; // 将当前英文小标题的大纲级别设为3级
-                                            break;
-                                    }
-                                    
+                                    paragraphs[1].OutlineLevel = (WdOutlineLevel)enHeadingNumsCount; // 根据小标题编号中数字的组数，设置当前英文小标题的大纲级别（有几组数字就为几级大纲）
                                 }
-                                font.Name = enHeading1FontName;
-                                font.Size = enHeading1FontSize;
+
+                                font.Name = enHeadingFontName;
+                                font.Size = enHeadingFontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1222,9 +1209,17 @@ namespace COMIGHT
 
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
 
-                        // 定义清单数字编号正则表达式列表变量，匹配模式为中文1-4级和英文1级小标题编号（中文3级小标题编号和英文1级小标题数字编号共用第3项）
-                        List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
-                                @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]", @"[A-Z]+[ |\t]*\."};
+                        // 定义清单数字编号正则表达式列表变量
+                        List<string> listNums;
+                        if (isCnDocument) // 如果为中文文档，正则表达式列表中的匹配模式为中文1-4级小标题编号
+                        {
+                            listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
+                                @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]" };
+                        }
+                        else // 否则，正则表达式列表中的匹配模式为英文1-4级小标题编号
+                        {
+                            listNums = new List<string>() { @"[A-Z\d]+\.[ |\t]+", @"[A-Z\d]+\.\d[ |\t]+", @"[A-Z\d]+(?:\.\d){2}[ |\t]+", @"[A-Z\d]+(?:\.\d){3}[ |\t]+" };
+                        }
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
@@ -1232,9 +1227,9 @@ namespace COMIGHT
 
                             // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
                             //Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
-                            
-                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-80个，换行符回车符），以上字符串2个及以上
-                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^\f\n\r]{1,80}[\n\r]){2,}", RegexOptions.Multiline);
+
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-100个，换行符回车符），以上字符串2个及以上
+                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^\f\n\r]{1,100}[\n\r]){2,}", RegexOptions.Multiline);
 
                             MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
 
@@ -1278,7 +1273,7 @@ namespace COMIGHT
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                                 font.Name = tableTitleFontName;
                                 font.Size = tableTitleFontSize;
-                                font.Bold = 0;
+                                font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 
