@@ -881,7 +881,7 @@ namespace COMIGHT
                             // 如果当前段落不在表格内，且含有自动编号
                             if (!paragraph.Range.Information[WdInformation.wdWithInTable] && !string.IsNullOrEmpty(paragraph.Range.ListFormat.ListString))
                             {
-                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString); // 在段落文字前添加自动编号
+                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + " "); // 在段落文字前添加自动编号
                             }
                         }
 
@@ -1090,6 +1090,7 @@ namespace COMIGHT
                                 // 如果中文3、4级小标题所在段落只有一句，且正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上（3级小标题），如果段落文字匹配成功
                                 if (paragraphs[1].Range.Sentences.Count == 1
                                     && Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
+                                //if (Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+"))
                                 {
                                     paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3; //将小标题所在段落的大纲级别设为3级  
                                 }
@@ -1180,23 +1181,43 @@ namespace COMIGHT
 
                         else // 否则（为英文文档）
                         {
-                            // 定义英文1级小标题正则表达式变量，匹配模式为：从开头开始，A-Z字母或阿拉伯数字1个及以上，空格制表符任意多个，“.”，空格制表符至少一个，非“：:；;”分页符换行符回车符的字符任意多个，英文字符至少一个，非“：:；;”分页符换行符回车符的字符1-80个，“：:”换行符回车符
-                            Regex regExEnHeading1 = new Regex(@"(?<=^|\n|\r)[A-Z\d]+[ |\t]*\.[ |\t]+[^：:；;\f\n\r]*[a-zA-Z]+[^：:；;\f\n\r]{1,80}[：:\n\r]", RegexOptions.Multiline);
-                            MatchCollection matchesEnHeading1s = regExEnHeading1.Matches(documentText); // 获取全文文字经过英文1级小标题正则表达式匹配的结果
+                            //设置英文小标题格式
 
-                            foreach (Match matchEnHeading1 in matchesEnHeading1s)
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号（模式为"A. A.1 A.1.1"或"1. 1.1 1.1.1"，作为捕获组），空格制表符至少一个，非“：:；;”分页符换行符回车符的字符任意多个，英文字符至少一个，非“：:；;”分页符换行符回车符的字符1-100个，“：:”换行符回车符
+                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)([A-Z\d]\.(?:\d+(?:\.\d+)*)*)[ |\t]+[^：:；;\f\n\r]*[a-zA-Z]+[^：:；;\f\n\r]{1,100}[：:\n\r]", RegexOptions.Multiline);
+                            MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文1级小标题正则表达式匹配的结果
+
+                            foreach (Match matchEnHeading in matchesEnHeadings)
                             {
-                                find.Text = matchEnHeading1.Value;
+                                find.Text = matchEnHeading.Value;
                                 find.Execute();
-                                if (paragraphs[1].Range.Sentences.Count == 1)
+
+                                if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
                                 {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前英文小标题的大纲级别设为1级
+                                    // 计算小标题编号中含有几组数字：使用正则表达式分割小标题编号字符串（捕获组1），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
+                                    int enHeadingNumsCount = Regex.Split(matchEnHeading.Groups[1].Value, @"\.")
+                                        .Where(s => !string.IsNullOrWhiteSpace(s)) // 
+                                        .ToList().Count;
+                                    switch (enHeadingNumsCount) // 根据小标题编号中数字组的数量，设置当前英文小标题的大纲级别
+                                    {
+                                        case 1:
+                                            paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前英文小标题的大纲级别设为1级
+                                            break;
+                                        case 2:
+                                            paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2; // 将当前英文小标题的大纲级别设为2级
+                                            break;
+                                        case 3:
+                                            paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel3; // 将当前英文小标题的大纲级别设为3级
+                                            break;
+                                    }
+                                    
                                 }
                                 font.Name = enHeading1FontName;
                                 font.Size = enHeading1FontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
+
                         }
 
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
