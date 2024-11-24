@@ -76,29 +76,38 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Batch Format Word Documents**
 
-- Formats Word documents in official styles and adds outline structures.
+- Formats Word documents into official styles and adds outline structures.
 
-  - **Source file format requirements:** The title is at the beginning of the document (if there are multiple articles in the same document, each article must start on a new page, separated from the previous article by a page break or section break). The body text is separated from the title by at least one blank line. Heading numbers shall be presented in the format as follows: 
-    
-    Table 1：
-    | Heading Level | Chinese Heading Number Format | English Heading Number Format |
-    |---|---|---|
-    | 0 | 第一部分 第二部分 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| N.A. |
-    | 1 | 一、 二、 三、... | A. B. C. or 1. 2. 3. ... (with a space behind) |
-    | 2 | （一） （二） （三） ... | N.A. |
-    | 3 | 1. 2. 3. ...| N.A. |
-    | 4 | (1) (2) (3) ... | N.A. |
+- **Requirements of the source documents:** 
+ 
+  - The title shall be at the beginning of the document (If there are multiple articles in the same document, each article must start on a new page, separated from the previous article by a page break or section break). 
 
-    For Chinese documents, the signature shall be separated from the body text by at least one blank line, with the organization name (can be multiple, arranged vertically) above, and the date (YYYY年MM月DD日) below. 
-    Documents with columns, complex tables, or mixed text and images are not applicable.
+  - The body text is separated from the title by at least one blank line. 
+
+  - Heading numbers shall be presented in the formats as follows: 
+
+  | Heading Level | Chinese Heading Number Format | English Heading Number Format |
+  |---|---|---|
+  | 0 | 第一部分 第二部分 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| N.A. |
+  | 1 | 一、 二、 三、... | A. B. C. or 1. 2. 3. ... (with a space behind) |
+  | 2 | （一） （二） （三） ... | A.1 B.1 C.1 or 1.1 2.1 3.1 ... (with a space behind) |
+  | 3 | 1. 2. 3. ...| A.1.1 B.1.1 C.1.1 or 1.1.1 2.1.1 3.1.1 ... (with a space behind) |
+  | 4 | (1) (2) (3) ... | A.1.1.1 B.1.1.1 C.1.1.1 or 1.1.1.1 2.1.1.1 3.1.1.1 ... (with a space behind) |
+
+  - The signature shall be separated from the body text by at least one blank line, with the organization's/person's name above (can be multiple, arranged vertically), and the date below. For Chinese documents, the date format shall be "YYYY年MM月DD日".
+
+  - **Documents with columns, complex tables, or mixed text and images are not applicable!**
 
 #### **Export Document Table into Word Document (Only works for Chinese Documents)**
 
 - Exports the contents of a document table into a Word document, automatically numbers headings at all levels, and formats them according to Chinese government document standards.
 
-  - A document table template is provided with this program, with instructions for filling it in. The "Text" column in the "Title" worksheet and the "Heading Level" and "Text" columns in the "Body" worksheet are mandatory and serve as the source of the output document content; the other columns are optional for notes, filtering, etc. "Heading Level" should be selected from the dropdown box, the formats are "0级", "1级", "2级", "3级", "4级", "是", "条", respectively. In the exported document, heading numbers will be presented in the style as follows: 
-    
-    Table 2:
+- Requirements of the document table:
+
+  - A document table template is provided with this program, with instructions for filling it in. The "Text" column in the "Title" worksheet and the "Heading Level" and "Text" columns in the "Body" worksheet are mandatory and serve as the source of the output document content; the other columns are optional for notes, filtering, etc. 
+
+  - "Heading Level" shall be selected from the dropdown box, within the options of "0级", "1级", "2级", "3级", "4级", "是", "条", respectively. In the exported document, heading numbers will be presented in the formats as follows: 
+
     | Heading Level | Heading Number Format |
     |---|---| 
     | 0级 | 第一部分 第二部分 第三部分... |
@@ -109,7 +118,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
     | 是 | 一是  二是  三是 ... |
     | 条 | 第一条  第二条  第三条 ... |
 
-    None of the 3 worksheets can be deleted, moved, or have their column structure changed. Any rows that are hidden or filtered out will not be exported.
+  - **None of the 3 worksheets can be deleted, moved, or have their column structure changed. Any rows that are hidden or filtered out will not be exported.**
 
 #### **Import Text into Document Table (Only works for Chinese Documents)**
 
@@ -119,7 +128,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Merge Documents and Tables**
 
-- Converts selected Word documents and Excel spreadsheets to plain text without formatting, and then merges them into a single Word document, saved on the Windows desktop.
+- Converts selected Word documents and Excel spreadsheets to plain text, and then merges them into a single Word document, saved on the Windows desktop.
 
 #### **Batch Convert Office File Types**
 
@@ -135,7 +144,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Create Name Cards**
 
-- Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the seat plates must be in column A of the first worksheet (can be split into two lines within a cell), starting from cell A1. Each name card can accommodate a maximum of 10 Chinese characters or 25 English characters.
+- Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the seat plates must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell. Each name card can accommodate a maximum of 10 Chinese characters or 25 English characters.
 
 ### Browser
 
