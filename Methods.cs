@@ -938,7 +938,7 @@ namespace COMIGHT
                         font.Kerning = 0; // “为字体调整字符间距”值设为0
                         font.DisableCharacterSpaceGrid = true;  //取消“如果定义了文档网格,则对齐到网格”，忽略字体的每行字符数
 
-                        documentText = msWordDocument.Content.Text; // 全文文字变量重赋值
+                        documentText = msWordDocument.Content.Text; // 全文文字变量重赋值（前期对文档进行过处理，内容可能已经改变）
 
                         selection.HomeKey(WdUnits.wdStory);
 
@@ -1035,44 +1035,33 @@ namespace COMIGHT
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 
-                            // 中文1级小标题设置
+                            // 中文1、2级小标题设置
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义中文1级小标题正则表达式变量，匹配模式为：从开头开始，中文数字1个及以上，空格制表符任意多个，“、.，,”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
-                            Regex regExCnHeading1 = new Regex(@"(?<=^|\n|\r)[一二三四五六七八九十〇零]+[ |\t]*[、\.，,][^。：:；;\f\n\r]{1,40}[。：:\n\r]", RegexOptions.Multiline);
-                            MatchCollection matchesCnHeading1s = regExCnHeading1.Matches(documentText); // 获取全文文字经过中文1级小标题正则表达式匹配的结果
+                            // 定义中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
+                            Regex regExCnHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。：:；;\f\n\r]{1,40}[。：:\n\r]", RegexOptions.Multiline);
+                            MatchCollection matchesCnHeading1_2s = regExCnHeading1_2.Matches(documentText); // 获取全文文字经过中文1、2级小标题正则表达式匹配的结果
 
-                            foreach (Match matchCnHeading1 in matchesCnHeading1s)
+                            foreach (Match matchCnHeading1_2 in matchesCnHeading1_2s)
                             {
-                                find.Text = matchCnHeading1.Value;
+                                find.Text = matchCnHeading1_2.Value;
                                 find.Execute();
                                 if (paragraphs[1].Range.Sentences.Count == 1)
                                 {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
+                                    if (!matchCnHeading1_2.Groups[1].Success) //如果正则表达式匹配捕获组失败（ 编号开头不含“（” ）
+                                    {
+                                        paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
+                                        font.Name = cnHeading1FontName;
+                                        font.Size = cnHeading1FontSize;
+                                    }
+                                    else // 否则
+                                    {
+                                        paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2; // 将当前中文小标题的大纲级别设为2级
+                                        font.Name = cnHeading2FontName;
+                                        font.Size = cnHeading2FontSize;
+                                    }
                                 }
-                                font.Name = cnHeading1FontName;
-                                font.Size = cnHeading1FontSize;
-                                font.Bold = 1;
-                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
-                            }
 
-                            // 中文2级小标题设置
-                            selection.HomeKey(WdUnits.wdStory);
-
-                            // 定义中文2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“）)”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
-                            Regex regExCnHeading2 = new Regex(@"(?<=^|\n|\r)[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)][^。：:；;\f\n\r]{1,40}[。：:\n\r]", RegexOptions.Multiline);
-                            MatchCollection matchesCnHeading2s = regExCnHeading2.Matches(documentText); // 获取全文文字经过中文2级小标题正则表达式匹配的结果
-
-                            foreach (Match matchCnHeading2 in matchesCnHeading2s)
-                            {
-                                find.Text = matchCnHeading2.Value;
-                                find.Execute();
-                                if (paragraphs[1].Range.Sentences.Count == 1)
-                                {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2;
-                                }
-                                font.Name = cnHeading2FontName;
-                                font.Size = cnHeading2FontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1080,8 +1069,8 @@ namespace COMIGHT
                             // 中文3、4级小标题设置
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.，,”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
-                            Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,][^。：:；;\f\n\r]{1,40}[。：:\n\r]", RegexOptions.Multiline);
+                            // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
+                            Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。：:；;\f\n\r]{1,40}[。：:\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesCnHeading3_4s = regExCnHeading3_4.Matches(documentText); // 获取全文文字经过中文3、4级小标题正则表达式匹配的结果
 
                             foreach (Match matchCnHeading3_4 in matchesCnHeading3_4s)
@@ -1091,7 +1080,7 @@ namespace COMIGHT
 
                                 if (paragraphs[1].Range.Sentences.Count == 1)
                                 {
-                                    paragraphs[1].OutlineLevel = Regex.IsMatch(paragraphs[1].Range.Text, @"(?<=^|\n|\r)\d+")? WdOutlineLevel.wdOutlineLevel3 : WdOutlineLevel.wdOutlineLevel4; //设置小标题所在段落的大纲级别：正则表达式匹配模式设为：前方出现开头标记、换行符回车符，阿拉伯数字一个及以上（3级小标题），如果段落文字被匹配成功，则设为3级；否则，设为4级  
+                                    paragraphs[1].OutlineLevel = !matchCnHeading3_4.Groups[1].Success ? WdOutlineLevel.wdOutlineLevel3 : WdOutlineLevel.wdOutlineLevel4; //设置小标题所在段落的大纲级别：如果正则表达式匹配捕获组失败（ 编号开头不含“（” ），则设为3级；否则，设为4级  
                                 }
 
                                 font.Name = cnHeading3_4FontName;
@@ -1191,7 +1180,6 @@ namespace COMIGHT
                             {
                                 find.Text = matchEnHeading.Value;
                                 find.Execute();
-
                                 if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
                                 {
                                     // 计算小标题编号中含有几组数字：使用正则表达式以"."分割小标题编号字符串（捕获组1），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
@@ -1216,7 +1204,7 @@ namespace COMIGHT
                         if (isCnDocument) // 如果为中文文档，正则表达式列表中的匹配模式为中文1-4级小标题编号
                         {
                             listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
-                                @"[（\(]?[ |\t]*\d+[ |\t]*[）\)、\.，,]" };
+                                @"[（\(]?[ |\t]*\d+[ |\t]*[、\.，,）\)]" };
                         }
                         else // 否则，正则表达式列表中的匹配模式为英文1-4级小标题编号
                         {
@@ -1226,9 +1214,6 @@ namespace COMIGHT
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
                             selection.HomeKey(WdUnits.wdStory);
-
-                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非“。：:；;”分页符换行符回车符的字符任意多个，“。；;”至多一个，换行符回车符），以上字符串2个及以上
-                            //Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^。：:；;\f\n\r]*[。；;]?[\n\r]){2,}", RegexOptions.Multiline);
 
                             // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-100个，换行符回车符），以上字符串2个及以上
                             Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^\f\n\r]{1,100}[\n\r]){2,}", RegexOptions.Multiline);
