@@ -78,7 +78,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Formats Word documents into official styles and adds outline structures.
 
-- **Requirements of the source documents:** 
+- Requirements of the source documents: 
  
   - The title shall be at the beginning of the document (If there are multiple articles in the same document, each article must start on a new page, separated from the previous article by a page break or section break). 
 
