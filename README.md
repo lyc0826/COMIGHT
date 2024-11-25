@@ -82,7 +82,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
  
   - The title shall be at the beginning of the document (If there are multiple articles in the same document, each article must start on a new page, separated from the previous article by a page break or section break). 
 
-  - The body text is separated from the title by at least one blank line. 
+  - The body text shall be separated from the title by at least one blank line. 
 
   - Heading numbers shall be presented in the formats as follows: 
 
