@@ -881,7 +881,7 @@ namespace COMIGHT
                             // 如果当前段落不在表格内，且含有自动编号
                             if (!paragraph.Range.Information[WdInformation.wdWithInTable] && !string.IsNullOrEmpty(paragraph.Range.ListFormat.ListString))
                             {
-                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + " "); // 在段落文字前添加自动编号
+                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + (!isCnDocument? " " : "")); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
                             }
                         }
 
@@ -937,6 +937,8 @@ namespace COMIGHT
                         font.Bold = 0; // “是否粗体”设为0
                         font.Kerning = 0; // “为字体调整字符间距”值设为0
                         font.DisableCharacterSpaceGrid = true;  //取消“如果定义了文档网格,则对齐到网格”，忽略字体的每行字符数
+
+                        documentText = msWordDocument.Content.Text; // 全文文字变量重赋值
 
                         selection.HomeKey(WdUnits.wdStory);
 
