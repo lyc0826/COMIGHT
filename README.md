@@ -94,6 +94,8 @@ Key features include merging and splitting Excel worksheets, comparing data, for
   | 3 | 1. 2. 3. ...| A.1.1 B.1.1 C.1.1 or 1.1.1 2.1.1 3.1.1 ... (with a space behind) |
   | 4 | (1) (2) (3) ... | A.1.1.1 B.1.1.1 C.1.1.1 or 1.1.1.1 2.1.1.1 3.1.1.1 ... (with a space behind) |
 
+  - For English documents, blank lines shall be placed between different levels of headings, between a heading and its body paragraph, and between paragraphs.
+
   - The signature shall be separated from the body text by at least one blank line, with the organization's/person's name above (can be multiple, arranged vertically), and the date below. For Chinese documents, the date format shall be "YYYY年MM月DD日".
 
   - **Documents with columns, complex tables, or mixed text and images are not applicable!**
