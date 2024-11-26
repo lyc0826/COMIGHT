@@ -1208,7 +1208,8 @@ namespace COMIGHT
                         }
                         else // 否则，正则表达式列表中的匹配模式为英文1-4级小标题编号
                         {
-                            listNums = new List<string>() { @"[A-Z\d]+\.[ |\t]+", @"[A-Z\d]+\.\d[ |\t]+", @"[A-Z\d]+(?:\.\d){2}[ |\t]+", @"[A-Z\d]+(?:\.\d){3}[ |\t]+" };
+                            //listNums = new List<string>() { @"[A-Z\d]+\.[ |\t]+", @"[A-Z\d]+\.\d[ |\t]+", @"[A-Z\d]+(?:\.\d){2}[ |\t]+", @"[A-Z\d]+(?:\.\d){3}[ |\t]+" };
+                            listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
                         }
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
