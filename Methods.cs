@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Interop;
 using Xceed.Words.NET;
 using Application = System.Windows.Application;
@@ -21,7 +22,9 @@ using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-
+using Table = Microsoft.Office.Interop.Word.Table;
+using Section = Microsoft.Office.Interop.Word.Section;
+using Paragraph = Microsoft.Office.Interop.Word.Paragraph;
 
 
 
@@ -1212,6 +1215,9 @@ namespace COMIGHT
                             listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
                         }
 
+                        // 定义数字编号清单文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-150个
+                        Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,150}", RegexOptions.Multiline);
+                        
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
                             selection.HomeKey(WdUnits.wdStory);
@@ -1221,18 +1227,24 @@ namespace COMIGHT
 
                             MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
 
-                            foreach (Match matchListGroup in matchesListGroups)
+                            foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
                             {
-                                find.Text = matchListGroup.Value;
-                                find.Execute();
+                                                             
+                                MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); // 获取当前数字编号清单字符串经过数字编号清单文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的字数限制）
 
-                                paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单的大纲级别设为正文级别
+                                foreach (Match matchTextSection in matchesTextSections) // 遍历数字编号清单文本片段正则表达式匹配结果集合
+                                {
+                                    find.Text = matchTextSection.Value;
+                                    find.Execute();
 
-                                //将数字编号清单设为正文文字格式
-                                font.Name = bodyFontName;
-                                font.Size = bodyFontSize;
-                                font.Bold = 0;
-                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                                    paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单文本片段所在段落的大纲级别设为正文级别
+
+                                    //将数字编号清单设为正文文字格式
+                                    font.Name = bodyFontName;
+                                    font.Size = bodyFontSize;
+                                    font.Bold = 0;
+                                    selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                                }
                             }
 
                         }
