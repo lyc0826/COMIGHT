@@ -9,22 +9,19 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Interop;
 using Xceed.Words.NET;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
 using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
+using Paragraph = Microsoft.Office.Interop.Word.Paragraph;
+using Section = Microsoft.Office.Interop.Word.Section;
+using Table = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using Table = Microsoft.Office.Interop.Word.Table;
-using Section = Microsoft.Office.Interop.Word.Section;
-using Paragraph = Microsoft.Office.Interop.Word.Paragraph;
 
 
 
@@ -199,7 +196,7 @@ namespace COMIGHT
 
                     int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
                     //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75? true : false;
+                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
                     //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
 
@@ -265,7 +262,7 @@ namespace COMIGHT
             {
                 if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
                 {
-                    excelWorksheet.Rows[i].CustomHeight = false; 
+                    excelWorksheet.Rows[i].CustomHeight = false;
                 }
             }
 
@@ -810,7 +807,7 @@ namespace COMIGHT
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
-                        int lineSpace = isCnDocument? 28 : 24; // 行间距
+                        int lineSpace = isCnDocument ? 28 : 24; // 行间距
 
                         int titleFontSize = isCnDocument ? 22 : 18; // 大标题字号：如果为中文文档，则字号为二号；否则为18
                         int bodyFontSize = isCnDocument ? 16 : 12; // 正文字号：如果为中文文档，则字号为三号；否则为12
@@ -884,7 +881,7 @@ namespace COMIGHT
                             // 如果当前段落不在表格内，且含有自动编号
                             if (!paragraph.Range.Information[WdInformation.wdWithInTable] && !string.IsNullOrEmpty(paragraph.Range.ListFormat.ListString))
                             {
-                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + (!isCnDocument? " " : "")); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
+                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + (!isCnDocument ? " " : "")); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
                             }
                         }
 
@@ -895,7 +892,7 @@ namespace COMIGHT
                         paragraphFormat.Reset(); // 段落格式清除
                         paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0
                         paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphJustify; // 对齐方式设为两端对齐
-                        paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
+                        paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
 
                         // 清除文首和文末的空白段
                         while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为回车符，则继续循环
@@ -1217,7 +1214,7 @@ namespace COMIGHT
 
                         // 定义数字编号清单文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-150个
                         Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,150}", RegexOptions.Multiline);
-                        
+
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
                             selection.HomeKey(WdUnits.wdStory);
@@ -1229,7 +1226,7 @@ namespace COMIGHT
 
                             foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
                             {
-                                                             
+
                                 MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); // 获取当前数字编号清单字符串经过数字编号清单文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的字数限制）
 
                                 foreach (Match matchTextSection in matchesTextSections) // 遍历数字编号清单文本片段正则表达式匹配结果集合
