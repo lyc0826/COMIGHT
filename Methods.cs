@@ -1212,8 +1212,8 @@ namespace COMIGHT
                             listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
                         }
 
-                        // 定义数字编号清单文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-150个
-                        Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,150}", RegexOptions.Multiline);
+                        // 定义数字编号清单文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-256个
+                        Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,256}", RegexOptions.Multiline);
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
@@ -1227,7 +1227,7 @@ namespace COMIGHT
                             foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
                             {
 
-                                MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); // 获取当前数字编号清单字符串经过数字编号清单文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的字数限制）
+                                MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); // 获取当前数字编号清单字符串经过数字编号清单文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的256个字符数限制）
 
                                 foreach (Match matchTextSection in matchesTextSections) // 遍历数字编号清单文本片段正则表达式匹配结果集合
                                 {
