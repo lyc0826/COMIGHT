@@ -1015,7 +1015,7 @@ namespace COMIGHT
                             // 中文0级（部分、篇、章、节）小标题设置
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。：:；;”分页符换行符回车符的字符0-40个，换行符回车符
+                            // 定义中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。；;”分页符换行符回车符的字符0-40个，换行符回车符
                             Regex regExCnHeading0 = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[^。；;\f\n\r]{0,40}[\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesCnHeading0s = regExCnHeading0.Matches(documentText); // 获取全文文字经过中文0级小标题正则表达式匹配的结果
 
@@ -1038,7 +1038,7 @@ namespace COMIGHT
                             // 中文1、2级小标题设置
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
+                            // 定义中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
                             Regex regExCnHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesCnHeading1_2s = regExCnHeading1_2.Matches(documentText); // 获取全文文字经过中文1、2级小标题正则表达式匹配的结果
 
@@ -1069,7 +1069,7 @@ namespace COMIGHT
                             // 中文3、4级小标题设置
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。：:；;”分页符换行符回车符的字符1-40个，“。：:”换行符回车符
+                            // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
                             Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesCnHeading3_4s = regExCnHeading3_4.Matches(documentText); // 获取全文文字经过中文3、4级小标题正则表达式匹配的结果
 
@@ -1172,7 +1172,7 @@ namespace COMIGHT
                             //设置英文小标题格式
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号（模式为"A./A.1/A.1.1/A.1.1.1"或"1./1.1/1.1.1/1.1.1.1"，作为捕获组），空格制表符至少一个，非“：:；;”分页符换行符回车符的字符任意多个（尽可能少匹配），英文字符，非“：:；;”分页符换行符回车符的字符1-100个，“：:”换行符回车符
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号（模式为"A./A.1/A.1.2/A.1.2.3"或"1./1.2/1.2.3/1.2.3.4"，作为捕获组），空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
                             Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)([A-Z\d]\.(?:\d+(?:\.\d+){0,2})?)[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
@@ -1212,31 +1212,37 @@ namespace COMIGHT
                             listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
                         }
 
-                        // 定义数字编号清单文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-256个
+                        // 定义文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-256个
                         Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,256}", RegexOptions.Multiline);
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-60个，换行符回车符），以上字符串2个及以上
-                            Regex regExListGroup = new Regex(@"(?:(?<=^|\n|\r)" + listNum + @"[^\f\n\r]{1,60}[\n\r]){2,}", RegexOptions.Multiline);
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-100个，换行符回车符），以上字符串（捕获组）2个及以上
+                            Regex regExListGroup = new Regex(@"((?<=^|\n|\r)" + listNum + @"[^\f\n\r]+[\n\r]){2,}", RegexOptions.Multiline);
 
                             MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
 
                             foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
                             {
+                                //如果数字编号清单正则表达式匹配到的字符串长度/捕获组数的商（即每个条目的平均字数）大于等于指定数值（中文文档60，英文文档120），则不视为清单条目，直接跳过当前循环并进入下一个循环
+                                if (matchListGroup.Value.Length / (matchListGroup.Groups[1].Captures.Count) >= (isCnDocument ? 60 : 120)) 
+                                {
+                                    continue;
+                                }
+                                
+                                // 获取当前数字编号清单字符串经过文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的256个字符数限制）
+                                MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); 
 
-                                MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); // 获取当前数字编号清单字符串经过数字编号清单文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的256个字符数限制）
-
-                                foreach (Match matchTextSection in matchesTextSections) // 遍历数字编号清单文本片段正则表达式匹配结果集合
+                                foreach (Match matchTextSection in matchesTextSections) // 遍历文本片段正则表达式匹配结果集合
                                 {
                                     find.Text = matchTextSection.Value;
                                     find.Execute();
 
-                                    paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将数字编号清单文本片段所在段落的大纲级别设为正文级别
+                                    paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将文本片段所在段落的大纲级别设为正文级别
 
-                                    //将数字编号清单设为正文文字格式
+                                    //将文本片段设为正文文字格式
                                     font.Name = bodyFontName;
                                     font.Size = bodyFontSize;
                                     font.Bold = 0;
