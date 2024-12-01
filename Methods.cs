@@ -1226,8 +1226,8 @@ namespace COMIGHT
 
                             foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
                             {
-                                //如果数字编号清单正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档60，英文文档120），则不视为清单条目，直接跳过当前循环并进入下一个循环
-                                if (matchListGroup.Value.Length / (matchListGroup.Groups[1].Captures.Count) >= (isCnDocument ? 60 : 120)) 
+                                //如果数字编号清单正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档80，英文文档200），则不视为清单条目，直接跳过当前循环并进入下一个循环
+                                if (matchListGroup.Value.Length / (matchListGroup.Groups[1].Captures.Count) >= (isCnDocument ? 80 : 200)) 
                                 {
                                     continue;
                                 }
