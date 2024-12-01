@@ -1219,7 +1219,7 @@ namespace COMIGHT
                         {
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符1-100个，换行符回车符），以上字符串（捕获组）2个及以上
+                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符至少一个，换行符回车符），以上字符串（捕获组）2个及以上
                             Regex regExListGroup = new Regex(@"((?<=^|\n|\r)" + listNum + @"[^\f\n\r]+[\n\r]){2,}", RegexOptions.Multiline);
 
                             MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
