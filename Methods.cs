@@ -1238,7 +1238,7 @@ namespace COMIGHT
                                 find.Text = matchTextSection.Value;
                                 find.Execute();
 
-                                selection.MoveEnd(WdUnits.wdCharacter, matchListGroup.Value.Length - matchTextSection.Value.Length); //将搜索到的选区的末尾向后扩展至数字编号清单的末尾
+                                selection.MoveEnd(WdUnits.wdCharacter, matchListGroup.Value.Length - matchTextSection.Value.Length); //将搜索结果选区的末尾向后扩展至数字编号清单的末尾
                                 paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将选区所在段落的大纲级别设为正文级别
 
                                 //将选区设为正文文字格式
