@@ -939,10 +939,10 @@ namespace COMIGHT
                         font.DisableCharacterSpaceGrid = true;  //取消“如果定义了文档网格,则对齐到网格”，忽略字体的每行字符数
 
                         documentText = msWordDocument.Content.Text; // 全文文字变量重赋值（前期对文档进行过处理，内容可能已经改变）
-
+                        
+                        // 文档大标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 文档大标题设置
                         // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-120个，换行符回车符，后方出现：换行符回车符
                         Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,120}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -984,9 +984,9 @@ namespace COMIGHT
                                     font.Bold = (int)WdConstants.wdToggle; // 字体加粗
                                     selection.EndKey(WdUnits.wdLine); // 光标一到选区的最后一个字（换行符之前）
 
+                                    // 中文发往单位设置
                                     if (isCnDocument) // 如果是中文文档
                                     {
-                                        // 中文发往单位设置
                                         selection.MoveDown(WdUnits.wdLine, 1, WdMovementType.wdMove); // 光标下移到下方一行
                                         selection.Expand(WdUnits.wdLine); // 全选一行
                                         selection.MoveEnd(WdUnits.wdLine, 5); // 选区向下扩大5行
