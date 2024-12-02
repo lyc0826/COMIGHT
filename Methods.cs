@@ -1212,8 +1212,8 @@ namespace COMIGHT
                             listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
                         }
 
-                        // 定义文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-256个
-                        Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,256}", RegexOptions.Multiline);
+                        // 定义文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-255个
+                        //Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,255}", RegexOptions.Multiline);
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
@@ -1227,27 +1227,26 @@ namespace COMIGHT
                             foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
                             {
                                 //如果数字编号清单正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档80，英文文档200），则不视为清单条目，直接跳过当前循环并进入下一个循环
-                                if (matchListGroup.Value.Length / (matchListGroup.Groups[1].Captures.Count) >= (isCnDocument ? 80 : 200)) 
+                                if (matchListGroup.Value.Length / (matchListGroup.Groups[1].Captures.Count) >= (isCnDocument ? 80 : 200))
                                 {
                                     continue;
                                 }
-                                
-                                // 获取当前数字编号清单字符串经过文本片段正则表达式匹配的结果（将数字编号清单字符串按指定字数分割成若干个片段，避免超出Interop库Find方法的256个字符数限制）
-                                MatchCollection matchesTextSections = regExTextSection.Matches(matchListGroup.Value); 
 
-                                foreach (Match matchTextSection in matchesTextSections) // 遍历文本片段正则表达式匹配结果集合
-                                {
-                                    find.Text = matchTextSection.Value;
-                                    find.Execute();
+                                // 文本片段正则表达式匹配模式设为：含换行符回车符的任意字符的字符1-255个；获取当前数字编号清单字符串经匹配后的第一个结果（截取前部最多255个字符，避免超出Interop库Find方法的限制）
+                                Match matchTextSection = Regex.Match(matchListGroup.Value, @"(?:.|[\n\r]){1,255}", RegexOptions.Multiline);
 
-                                    paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将文本片段所在段落的大纲级别设为正文级别
+                                find.Text = matchTextSection.Value;
+                                find.Execute();
 
-                                    //将文本片段设为正文文字格式
-                                    font.Name = bodyFontName;
-                                    font.Size = bodyFontSize;
-                                    font.Bold = 0;
-                                    selection.Collapse(WdCollapseDirection.wdCollapseEnd);
-                                }
+                                selection.MoveEnd(WdUnits.wdCharacter, matchListGroup.Value.Length - matchTextSection.Value.Length); //将搜索到的选区的末尾向后扩展至数字编号清单的末尾
+                                paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将选区所在段落的大纲级别设为正文级别
+
+                                //将选区设为正文文字格式
+                                font.Name = bodyFontName;
+                                font.Size = bodyFontSize;
+                                font.Bold = 0;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+
                             }
 
                         }
