@@ -8,7 +8,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 ## System Requirements and Usage
 
-- Requires: (1) Windows 10 x64 or later, (2) MS Office 2016 or later, or Microsoft 365, (3) WebView2 Runtime, (4) .Net 8.0 SDK 
+- Requires: (1) Windows 10 x64 or later; (2) MS Office 2016 or later, or Microsoft 365; (3) WebView2 Runtime; (4) .Net 8.0 SDK 
 
 - Extract all files into one folder and double-click COMIGHT.EXE to run. 
 
