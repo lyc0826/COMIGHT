@@ -1212,9 +1212,6 @@ namespace COMIGHT
                             listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
                         }
 
-                        // 定义文本片段正则表达式变量，匹配模式为：含换行符回车符的任意字符的字符1-255个
-                        //Regex regExTextSection = new Regex(@"(?:.|[\n\r]){1,255}", RegexOptions.Multiline);
-
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
                             selection.HomeKey(WdUnits.wdStory);
