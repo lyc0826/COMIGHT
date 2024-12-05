@@ -178,7 +178,7 @@ namespace COMIGHT
                 ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
 
                 // 设置表头区域字体、对齐
-                headerRange.Style.Font.Name = "Microsoft YaHei";
+                headerRange.Style.Font.Name = "Microsoft YaHei UI";
                 headerRange.Style.Font.Size = 12;
                 headerRange.Style.Font.Bold = true; //表头区域字体加粗
                 headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
@@ -217,7 +217,7 @@ namespace COMIGHT
             ExcelRange recordRange = excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column];
 
             // 设置记录区域字体、对齐
-            recordRange.Style.Font.Name = "Microsoft YaHei";
+            recordRange.Style.Font.Name = "Microsoft YaHei UI";
             recordRange.Style.Font.Size = 11;
             recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
             recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
