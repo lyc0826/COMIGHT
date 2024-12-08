@@ -797,10 +797,7 @@ namespace COMIGHT
 
                         string documentText = msWordDocument.Content.Text; // 全文文字变量赋值
 
-                        //判断是否为中文文档
-                        int nonCNCharsCount = Regex.Matches(documentText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
-                        double nonCNCharsRatio = nonCNCharsCount / documentText.Length; // 计算非中文字符占全文的比例
-                        bool isCnDocument = nonCNCharsRatio < 0.5; // 获取“是否为中文文档”值：如果非中文字符比例小于0.5，得到true；否则得到false
+                        bool isCnDocument = IsChineseText(documentText); // 判断是否为中文文档，赋值给“是否为中文文档”变量
 
                         // 定义页边距、行距、字体、字号等的值
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
@@ -939,7 +936,7 @@ namespace COMIGHT
                         font.DisableCharacterSpaceGrid = true;  //取消“如果定义了文档网格,则对齐到网格”，忽略字体的每行字符数
 
                         documentText = msWordDocument.Content.Text; // 全文文字变量重赋值（前期对文档进行过处理，内容可能已经改变）
-                        
+
                         // 文档大标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
@@ -1382,6 +1379,15 @@ namespace COMIGHT
 
             }
             await task;
+        }
+
+        public static bool IsChineseText(string inText)
+        {
+            //判断是否为中文文档
+            int nonCnCharsCount = Regex.Matches(inText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
+            double nonCnCharsRatio = nonCnCharsCount / inText.Length; // 计算非中文字符占全文的比例
+            bool isCnDocument = nonCnCharsRatio < 0.5? true : false; // 获取“是否为中文文档”值：如果非中文字符比例小于0.5，得到true；否则得到false
+            return isCnDocument;
         }
 
         //定义句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”

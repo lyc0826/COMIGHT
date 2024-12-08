@@ -6,6 +6,7 @@ using OfficeOpenXml.Style;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -918,8 +919,12 @@ namespace COMIGHT
                     return;
                 }
 
+                //获取已安装的字体名称：读取系统中已安装的字体，将其名称合并成字符串
+                InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+                string installedFontNames = string.Join('\n', installedFontCollention.Families.Select(f => f.Name));
+
                 string latestFontName = Properties.Settings.Default.latestFontName; //读取设置中保存的字体名称
-                InputDialog inputDialog = new InputDialog("Input the font name", latestFontName); //弹出对话框，输入字体名称
+                InputDialog inputDialog = new InputDialog($"Input the font name among the following:\n\n{installedFontNames}", latestFontName); //弹出对话框，输入字体名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -942,10 +947,10 @@ namespace COMIGHT
 
                     for (int i = 1; i <= sourceExcelWorksheet.Dimension.End.Row; i++) //遍历源数据工作表所有行
                     {
-                        string name = sourceExcelWorksheet.Cells[i, 1].Text; // 将A列当前行的文字赋值给名称变量
+                        string name = sourceExcelWorksheet.Cells[i, 1].Text; // 将A列当前行单元格的文字赋值给名称变量
 
-                        // 在目标工作簿中添加一个工作表，表名为编号i加名称后截取前8个字符，赋值给目标Excel工作表变量
-                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanName(i.ToString() + name, 8));
+                        // 在目标工作簿中添加一个工作表，表名为编号i加名称后截取前10个字符，赋值给目标Excel工作表变量
+                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanName(i.ToString() + name, 10));
 
                         // 在目标工作表中插入名称并设置样式
                         targetExcelWorksheet.Cells["A1:A2"].Merge = true; //合并A1、A2单元格
@@ -962,9 +967,10 @@ namespace COMIGHT
 
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
                         cellABStyle.Font.Name = fontName; //设置字体
-                        //cellABStyle.Font.Size = !name.Contains('\n') ? 160 : 100; //设置字体大小：如果单元格文字不含换行符，为160；否则为100
+
+                        int charLimit = IsChineseText(name) ? 10 : 20; // 计算字符上限：如果是中文名称，则得到10；否则得到20
                         cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100)
-                            * Math.Min(1, 1 - (cellA.Text.Length - 10) * 0.02)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
+                            * Math.Min(1, 1 - (name.Length - charLimit) * 0.035)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
