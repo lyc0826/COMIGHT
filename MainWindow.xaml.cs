@@ -213,8 +213,8 @@ namespace COMIGHT
             string currentFilePath = "";
             try
             {
-                List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
-                    "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cells Data", "7-Adjust Worksheet Format for Printing"};
+                List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
+                    "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cell Data", "7-Adjust Worksheet Format for Printing"};
                 InputDialog inputDialog = new InputDialog(question: "Select the function", options:lstFunctions); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {

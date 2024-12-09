@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="COMIGHT Assistant" Width="480" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" SizeToContent="Height" >
+        Title="COMIGHT Assistant" Width="480" SizeToContent="Height" FontSize="14" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing"  >
 
     <Grid Margin="3,0,3,3">
         <Grid.ColumnDefinitions>
@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" >
-            <Menu DockPanel.Dock="Top" Height="30" UseLayoutRounding="True" FontSize="14" VerticalContentAlignment="Center" >
+            <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
                 <MenuItem Header="Start">
                     <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
@@ -33,7 +33,7 @@
                     <MenuItem x:Name="mnuScreenStocks" Header= "Screen Stocks" Click="MnuScreenStocks_Click" />
                 </MenuItem>
 
-                <MenuItem Header="Document" ToolTip="Document Table only works for Chinese Document.">
+                <MenuItem Header="Document" ToolTip="Document Table only works for Chinese documents.">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
                     <MenuItem x:Name="mnuImportTextIntoDocumentTableAndWord" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
@@ -51,7 +51,7 @@
             </Menu>
         </DockPanel>
 
-        <Label x:Name="lblIntro" Height="30" Grid.Row="1" Grid.Column="0" FontSize="14" />
+        <Label x:Name="lblIntro" Height="30" Grid.Row="1" Grid.Column="0" />
         <!-- <TextBox x:Name="txtbxExportableText" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" /> -->
 
     </Grid>
