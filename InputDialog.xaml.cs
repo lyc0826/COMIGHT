@@ -14,12 +14,12 @@ namespace COMIGHT
         public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptReturn = false )
         {
             InitializeComponent();
-            txtbxQuestion.Text = question; //将问题值赋值给问题文本块
+            txtblkQuestion.Text = question; //将问题值赋值给问题文本块
             if (options != null) //如果选项列表不为null
             { 
                 cmbbxOptions.ItemsSource = options; // 将选项列表赋值给选项组合框
             }
-            else
+            else //否则
             {
                 cmbbxOptions.Visibility = Visibility.Collapsed; // 隐藏选项组合框
             }
@@ -65,7 +65,7 @@ namespace COMIGHT
 
         public int SelectedIndex
         {
-            get { return cmbbxOptions.SelectedIndex; } //获取选项组合框的选中项索引，赋值给选中索引属性
+            get { return cmbbxOptions.SelectedIndex; } //获取选项组合框的选中项索引，赋值给选中项索引号属性
         }
     }
 }

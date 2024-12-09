@@ -212,14 +212,14 @@ namespace COMIGHT
             string currentFilePath = "";
             try
             {
-                string functionOptions = string.Join('\n', new string[] {"Input the function number:", "1-Merge Records", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
-                    "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cells Data", "7-Adjust Worksheet Format for Printing"});
-                InputDialog inputDialog = new InputDialog(question:functionOptions, defaultAnswer:"1"); //弹出功能选择对话框
+                List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
+                    "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cells Data", "7-Adjust Worksheet Format for Printing"};
+                InputDialog inputDialog = new InputDialog(question: "Select the function", options:lstFunctions); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
-                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                int functionNum = inputDialog.SelectedIndex; //获取对话框返回的功能选项索引号
                 if (functionNum < 1 || functionNum > 7) //如果功能选项不在设定范围，则结束本过程
                 {
                     return;
@@ -248,7 +248,7 @@ namespace COMIGHT
                 }
 
                 string excelWorksheetIndexesStr = inputDialog.Answer; //获取对话框返回的Excel工作表索引号范围字符串
-                if (excelWorksheetIndexesStr != string.Empty)
+                if (!string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串不为null或全空白字符
                 {
                     Properties.Settings.Default.latestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串存入设置
                     Properties.Settings.Default.Save();
@@ -385,7 +385,7 @@ namespace COMIGHT
                                         continue;
                                     }
 
-                                    int sourceStartRowIndex = fileNum == 1 && i == excelWorksheetIndexLower ? 1 : headerCount + 1; //获取被处理工作表起始行索引号：如果当前是第一个Excel工作簿的第一个工作表，则得到1；否则得到表头行数+1
+                                    int sourceStartRowIndex = (fileNum == 1 && i == excelWorksheetIndexLower) ? 1 : headerCount + 1; //获取被处理工作表起始行索引号：如果当前是第一个Excel工作簿的第一个工作表，则得到1；否则得到表头行数+1
                                     int sourceEndRowIndex = excelWorksheet.Dimension!.End.Row - footerCount; //获取被处理工作表末尾行索引号：已使用区域最末行的索引号-表尾行数
                                     int targetStartRowIndex = (targetExcelWorksheet.Dimension?.End.Row ?? 0) + 1; //获取目标工作表起始行索引号：已使用区域最末行的索引号（如果工作表为空，则为0）+1
 
@@ -401,7 +401,7 @@ namespace COMIGHT
                                     {
                                         targetExcelWorksheet.Cells[1, 1, headerCount, 2].Value = string.Empty; //将目标工作表的表头第1、2列的数据清空
                                         //在目标工作表的表头最末行的第1、2列单元格分别添加"工作簿文件名", "工作表名"的列名
-                                        targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "工作簿文件名", "工作表名" } });
+                                        targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "源工作簿名", "源工作表名" } });
                                     }
 
                                     break;
@@ -969,8 +969,8 @@ namespace COMIGHT
                         cellABStyle.Font.Name = fontName; //设置字体
 
                         int charLimit = IsChineseText(name) ? 10 : 20; // 计算字符上限：如果是中文名称，则得到10；否则得到20
-                        cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100)
-                            * Math.Min(1, 1 - (name.Length - charLimit) * 0.035)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
+                        cellABStyle.Font.Size = (float) ( (!name.Contains('\n') ? 160 : 100)
+                            * (1 - (name.Length - charLimit) * 0.035).Clamp(0.5, 1) ); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
@@ -1525,13 +1525,13 @@ namespace COMIGHT
             try
             {
                 InputDialog inputDialog;
-                string functionOptions = string.Join('\n', new string[] { "Input the function number:", "1-Split into Workbooks", "2-Split into Worksheets" });
-                inputDialog = new InputDialog(question:functionOptions, defaultAnswer:"1"); //弹出对话框，输入功能选项
+                List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
+                inputDialog = new InputDialog(question: "Select the function", options:lstFunctions); //弹出对话框，选择功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
-                int functionNum = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+                int functionNum = inputDialog.SelectedIndex; //获取对话框返回的功能选项索引号
                 if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
                 {
                     return;

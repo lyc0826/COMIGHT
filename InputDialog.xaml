@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBox x:Name="txtbxQuestion" MaxHeight="480" Grid.Row ="0" Grid.Column="0" Margin="0,5,0,5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
+        <TextBlock x:Name="txtblkQuestion" MaxHeight="480" Grid.Row ="0" Grid.Column="0" Margin="0,5,0,5" TextWrapping="Wrap" />
         <ComboBox x:Name="cmbbxOptions" Grid.Row ="1" Grid.Column="0" Margin="0,5,0,5" SelectionChanged="cmbbxOptions_SelectionChanged" SelectedIndex="0" />
         <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Grid.Column="0" Margin="0,5,0,5"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
         <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
