@@ -610,7 +610,7 @@ namespace COMIGHT
                     fileNum++; //文件计数器加1
                 }
 
-                if (targetExcelWorkbookPrefix != null)  //如果目标Excel工作簿前缀不为null（需要保存目标工作簿）
+                if (targetExcelWorkbookPrefix != null)  //如果目标Excel工作簿前缀不为null（执行功能1-4时，将生成新工作簿并保存）
                 {
                     //创建目标文件夹
                     if (!Directory.Exists(targetFolderPath))
