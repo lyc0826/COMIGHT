@@ -364,7 +364,7 @@ namespace COMIGHT
         public static string? GetKeyColumnLetter()
         {
             string latestColumnLetter = Properties.Settings.Default.latestSplittingColumnLetter; //读取设置中保存的主键列符
-            InputDialog inputDialog = new InputDialog("Input the key column letter (e.g. \"A\"）", latestColumnLetter); //弹出对话框，输入主键列符
+            InputDialog inputDialog = new InputDialog(question:"Input the key column letter (e.g. \"A\"）", defaultAnswer:latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
@@ -381,7 +381,7 @@ namespace COMIGHT
             try
             {
                 string lastestHeaderFooterCountStr = Properties.Settings.Default.lastestHeaderFooterCountStr; //读取设置中保存的表头表尾行数字符串
-                InputDialog inputDialog = new InputDialog("Input the line count of the table header and footer (separated by a comma, e.g. \"2,0\")", lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
+                InputDialog inputDialog = new InputDialog(question:"Input the line count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer:lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
                     headerCount = 0;

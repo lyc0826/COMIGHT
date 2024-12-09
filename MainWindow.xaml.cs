@@ -214,7 +214,7 @@ namespace COMIGHT
             {
                 string functionOptions = string.Join('\n', new string[] {"Input the function number:", "1-Merge Records", "2-Accumulate Values", "3-Extract Cells Data", "4-Convert Textual Numbers into Numeric",
                     "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cells Data", "7-Adjust Worksheet Format for Printing"});
-                InputDialog inputDialog = new InputDialog(functionOptions, "1"); //弹出功能选择对话框
+                InputDialog inputDialog = new InputDialog(question:functionOptions, defaultAnswer:"1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -241,7 +241,7 @@ namespace COMIGHT
                 List<string>? lstOperatingRangeAddresses = null;
 
                 string latestExcelWorksheetIndexesStr = Properties.Settings.Default.latestExcelWorksheetIndexesStr; //读取设置中保存的Excel工作表索引号范围字符串
-                inputDialog = new InputDialog("Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
+                inputDialog = new InputDialog(question:"Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", defaultAnswer:latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -261,7 +261,7 @@ namespace COMIGHT
                 else
                 {
                     string latestExcelWorksheetName = Properties.Settings.Default.latestExcelWorksheetName; //读取设置中保存的Excel工作表名称
-                    inputDialog = new InputDialog("Input the worksheet name (one worksheet per operation)", latestExcelWorksheetName); //弹出对话框，输入工作表名称
+                    inputDialog = new InputDialog(question:"Input the worksheet name (one worksheet per operation)", defaultAnswer:latestExcelWorksheetName); //弹出对话框，输入工作表名称
                     if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                     {
                         return;
@@ -275,6 +275,9 @@ namespace COMIGHT
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
+                    case 7: //调整工作表打印版式
+                        GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
+                        break;
 
                     case 2:
                     case 3:
@@ -282,7 +285,7 @@ namespace COMIGHT
                     case 5:
                     case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表, 6-提取单元格数据给工作簿文件名加前缀
                         string latestOperatingRangeAddresses = Properties.Settings.Default.latestOperatingRangeAddresses; //读取设置中保存的操作区域
-                        inputDialog = new InputDialog("Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", latestOperatingRangeAddresses); //弹出对话框，输入操作区域
+                        inputDialog = new InputDialog(question:"Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer:latestOperatingRangeAddresses); //弹出对话框，输入操作区域
                         if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                         {
                             return;
@@ -292,10 +295,6 @@ namespace COMIGHT
                         Properties.Settings.Default.Save();
                         //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
                         lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
-                        break;
-
-                    case 7: //调整工作表打印版式
-                        GetHeaderAndFooterCount(out headerCount, out footerCount); //获取表头、表尾行数
                         break;
 
                 }
@@ -919,12 +918,13 @@ namespace COMIGHT
                     return;
                 }
 
-                //获取已安装的字体名称：读取系统中已安装的字体，将其名称合并成字符串
+                //获取已安装的字体名称：读取系统中已安装的字体，赋值给字体名称列表变量
                 InstalledFontCollection installedFontCollention = new InstalledFontCollection();
-                string installedFontNames = string.Join('\n', installedFontCollention.Families.Select(f => f.Name));
+                List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
 
                 string latestFontName = Properties.Settings.Default.latestFontName; //读取设置中保存的字体名称
-                InputDialog inputDialog = new InputDialog($"Input the font name among the following:\n\n{installedFontNames}", latestFontName); //弹出对话框，输入字体名称
+                InputDialog inputDialog = new InputDialog(question:"Select the font", defaultAnswer:latestFontName, options:lstFontNames); //弹出对话框，输入字体名称
+
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1010,7 +1010,7 @@ namespace COMIGHT
         {
             try
             {
-                InputDialog inputDialog = new InputDialog("Input the text to be imported", "", 300, true); //弹出对话框，输入功能选项
+                InputDialog inputDialog = new InputDialog(question:"Input the text to be imported", defaultAnswer:"" , textboxHeight:300, acceptReturn:true); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1288,7 +1288,7 @@ namespace COMIGHT
                 Properties.Settings.Default.latestFolderPath = folderPath; //将第一级文件夹路径存入设置
                 Properties.Settings.Default.Save();
 
-                InputDialog inputDialog = new InputDialog("Input the level of subdirectories", "1"); //弹出功能选择对话框
+                InputDialog inputDialog = new InputDialog(question:"Input the level of subdirectories", defaultAnswer:"1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1417,7 +1417,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog("Input the column name of Stock Code, Name, Sector, Price, PB, and PE (separated by commas)", latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog(question:"Input the column name of Stock Code, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer:latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1526,7 +1526,7 @@ namespace COMIGHT
             {
                 InputDialog inputDialog;
                 string functionOptions = string.Join('\n', new string[] { "Input the function number:", "1-Split into Workbooks", "2-Split into Worksheets" });
-                inputDialog = new InputDialog(functionOptions, "1"); //弹出对话框，输入功能选项
+                inputDialog = new InputDialog(question:functionOptions, defaultAnswer:"1"); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1551,7 +1551,7 @@ namespace COMIGHT
                     return;
                 }
 
-                inputDialog = new InputDialog("Input the filename of target workbooks", Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
+                inputDialog = new InputDialog(question:"Input the filename of target workbooks", defaultAnswer:Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;

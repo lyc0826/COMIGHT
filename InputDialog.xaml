@@ -1,7 +1,7 @@
 ﻿<Window x:Class="COMIGHT.InputDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Input" Width="300" Height="120" SizeToContent="Height" WindowStartupLocation="CenterScreen" ContentRendered="InputDialog_ContentRendered" >
+        Title="Input" Width="300" Height="150" SizeToContent="Height" WindowStartupLocation="CenterScreen" ContentRendered="InputDialog_ContentRendered" >
     
     <Grid Margin="10,10,10,10">
         <Grid.ColumnDefinitions>
@@ -12,11 +12,13 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBox x:Name="txtbxQuestion" MaxHeight="480" Grid.Row ="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
-        <TextBox x:Name="txtbxAnswer" Grid.Row ="1" Grid.Column="0" Margin="0,10,0,10"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
-        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+        <TextBox x:Name="txtbxQuestion" MaxHeight="480" Grid.Row ="0" Grid.Column="0" Margin="0,5,0,5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
+        <ComboBox x:Name="cmbbxOptions" Grid.Row ="1" Grid.Column="0" Margin="0,5,0,5" SelectionChanged="cmbbxOptions_SelectionChanged" SelectedIndex="0" />
+        <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Grid.Column="0" Margin="0,5,0,5"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
+        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOk" Content="OK" Width="50" Height="30" Click="btnDialogOk_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30" Click="btnDialogCancel_Click" />
         </StackPanel>
