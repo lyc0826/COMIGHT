@@ -5,6 +5,7 @@ using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Globalization;
@@ -324,17 +325,8 @@ namespace COMIGHT
 
                         if (fileNum == 1) //如果当前是第一个Excel工作簿文件
                         {
-                            targetFileMainName = Path.GetFileNameWithoutExtension(excelFileName); //目标文件主名变量赋值
-                            switch (functionNum) //根据功能序号进入相应的分支
-                            {
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 4:  // 1-记录合并; 2-数值累加; 3-提取单元格数据; 4-文本型数字转数值型
-                                    targetFolderPath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, "Consolidated Tables"); //获取目标文件的文件夹路径
-                                    targetExcelWorkbookPrefix = $"{functionNum}_Consol"; //获取目标Excel工作簿类型
-                                    break;
-                            }
+                            targetFileMainName = Path.GetFileNameWithoutExtension(excelFileName); //获取目标文件的文件主名
+                            targetFolderPath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, "Output Tables"); //获取目标文件的文件夹路径
                         }
 
                         //获取被处理Excel工作表索引号范围
@@ -377,6 +369,8 @@ namespace COMIGHT
 
                                 case 1: //记录合并
 
+                                    targetExcelWorkbookPrefix = "Mrg"; //目标Excel工作簿类型变量赋值为“合并”
+
                                     TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     //如果当前被处理Excel工作表的已使用行数（如果工作表为空，则为0）小于等于表头表尾行数之和，只有表头表尾无有效数据，则直接跳过当前循环并进入下一个循环
@@ -401,12 +395,14 @@ namespace COMIGHT
                                     {
                                         targetExcelWorksheet.Cells[1, 1, headerCount, 2].Value = string.Empty; //将目标工作表的表头第1、2列的数据清空
                                         //在目标工作表的表头最末行的第1、2列单元格分别添加"工作簿文件名", "工作表名"的列名
-                                        targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "源工作簿名", "源工作表名" } });
+                                        targetExcelWorksheet.Cells[headerCount, 1, headerCount, 2].LoadFromArrays(new List<object[]> { new object[] { "Source Workbook", "Source Worksheet" } });
                                     }
 
                                     break;
 
                                 case 2: //数值累加
+
+                                    targetExcelWorkbookPrefix = "Accum"; //目标Excel工作簿类型变量赋值为“累加”
 
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
@@ -443,11 +439,13 @@ namespace COMIGHT
 
                                 case 3: //提取单元格数据
 
+                                    targetExcelWorkbookPrefix = "Extcd"; //目标Excel工作簿类型变量赋值为“提取”
+
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件的第一个Excel工作表
                                     {
                                         dataTable = new DataTable(); //定义DataTable
-                                        dataTable.Columns.Add("Filename"); //添加列
-                                        dataTable.Columns.Add("Worksheet");
+                                        dataTable.Columns.Add("Source Workbook"); //添加列
+                                        dataTable.Columns.Add("Source Worksheet");
 
                                         foreach (string anOperatingRange in lstOperatingRangeAddresses!)
                                         {
@@ -462,8 +460,8 @@ namespace COMIGHT
                                     }
 
                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
-                                    dataRow["Filename"] = excelFileName;
-                                    dataRow["Worksheet"] = excelWorksheet.Name;
+                                    dataRow["Source Workbook"] = excelFileName;
+                                    dataRow["Source Worksheet"] = excelWorksheet.Name;
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
                                     {
                                         for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
@@ -489,13 +487,15 @@ namespace COMIGHT
 
                                 case 4: //文本型数字转数值型
 
+                                    targetExcelWorkbookPrefix = "Fail"; //目标Excel工作簿类型变量赋值为“失败”
+
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
                                         dataTable = new DataTable(); //定义DataTable
                                         dataTable.Columns.AddRange(new DataColumn[]
                                             {
-                                                new DataColumn("Filename"),
-                                                new DataColumn("Worksheet"),
+                                                new DataColumn("Source Workbook"),
+                                                new DataColumn("Source Worksheet"),
                                                 new DataColumn("Unconverted Address"),
                                                 new DataColumn("Unconverted Value")
                                             }); //向DataTable添加列
@@ -520,8 +520,8 @@ namespace COMIGHT
                                                 {
                                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
                                                     //将相关数据填入对应的数据列
-                                                    dataRow["Filename"] = excelFileName;
-                                                    dataRow["Worksheet"] = excelWorksheet.Name;
+                                                    dataRow["Source Workbook"] = excelFileName;
+                                                    dataRow["Source Worksheet"] = excelWorksheet.Name;
                                                     dataRow["Unconverted Address"] = cell.Address;
                                                     dataRow["Unconverted Value"] = cell.Value;
                                                     dataTable.Rows.Add(dataRow); //向DataTable添加数据行
@@ -586,7 +586,7 @@ namespace COMIGHT
                                         string prefixes = string.Join(' ', lstPrefixes); //合并前缀列表中的字符串，当中用空格分隔
                                         excelPackage.Dispose(); //关闭当前被处理Excel工作簿
                                                                 //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
-                                        string renamedExcelFileName = CleanName($"{prefixes}{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
+                                        string renamedExcelFileName = CleanName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
                                         string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
                                         File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
                                     }
