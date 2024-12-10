@@ -75,11 +75,11 @@ namespace COMIGHT
 
             //从左到右逐字将阿拉伯位数字转换成中文位数字、获取其中文数字单位，并逐步合并，赋值给中文数字字符串变量
             string chineseNumberStr = arabicNumberStr.Select((arabicDigit, i) =>
-            {
-                string chineseDigit = dicChineseDigits[arabicDigit]; //获取当前阿拉伯位数字对应的中文位数字
-                string chineseUnit = arrChineseUnits[n - i - 1]; //获取当前阿拉伯位数字对应的中文单位 （假设是个3位数，当i到达第2位（1号）数字时，3-1-1=1，在中文数字单位数组中索引号为1的元素为“十”，依此类推）
-                return chineseDigit + chineseUnit; //返回当前中文位数字和中文单位的组合
-            }).Aggregate("", (tempChineseNumberStr, addedChineseNumberStr) => tempChineseNumberStr + addedChineseNumberStr);
+                {
+                    string chineseDigit = dicChineseDigits[arabicDigit]; //获取当前阿拉伯位数字对应的中文位数字
+                    string chineseUnit = arrChineseUnits[n - i - 1]; //获取当前阿拉伯位数字对应的中文单位 （假设是个3位数，从左往右数当i到达第2位（1号）数字时，3-1-1=1，在中文数字单位数组中索引号为1的元素为“十”，依此类推）
+                    return chineseDigit + chineseUnit; //返回当前中文位数字和中文单位的组合
+                }).Aggregate("", (tempChineseNumberStr, addedChineseNumberStr) => tempChineseNumberStr + addedChineseNumberStr);
 
             //正则表达式匹配模式为：从开头开始，“一”，后方出现“十”；将匹配到的字符串替换为空（删除二位数的“十”前面的“一”）
             chineseNumberStr = Regex.Replace(chineseNumberStr, @"^一(?=十)", "");
