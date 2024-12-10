@@ -156,7 +156,7 @@ namespace COMIGHT
             }
         }
 
-        public static void FormatExcelWorksheet(ExcelWorksheet excelWorksheet, int headerCount = 0, int footerCount = 0)
+        public static void FormatExcelWorksheet(ExcelWorksheet excelWorksheet, int headerRowCount = 0, int footerRowCount = 0)
         {
             if (excelWorksheet.Dimension == null) //如果Excel工作表为空，则结束本过程
             {
@@ -173,9 +173,9 @@ namespace COMIGHT
             }
 
             //设置表头格式、自动筛选
-            if (headerCount >= 1) //如果表头行数大于等于1
+            if (headerRowCount >= 1) //如果表头行数大于等于1
             {
-                ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
+                ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
 
                 // 设置表头区域字体、对齐
                 headerRange.Style.Font.Name = "Microsoft YaHei UI";
@@ -187,10 +187,10 @@ namespace COMIGHT
 
                 if (excelWorksheet.AutoFilter.Address == null) // 如果自动筛选区域为null（未开启自动筛选），则将表头最后一行的自动筛选设为true
                 {
-                    excelWorksheet.Cells[headerCount, 1, headerCount, excelWorksheet.Dimension.End.Column].AutoFilter = true;
+                    excelWorksheet.Cells[headerRowCount, 1, headerRowCount, excelWorksheet.Dimension.End.Column].AutoFilter = true;
                 }
 
-                for (int i = 1; i <= headerCount; i++) //遍历表头所有行
+                for (int i = 1; i <= headerRowCount; i++) //遍历表头所有行
                 {
                     ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
 
@@ -214,7 +214,7 @@ namespace COMIGHT
             }
 
             // 将Excel工作表除去表头、表尾的区域赋值给记录区域变量
-            ExcelRange recordRange = excelWorksheet.Cells[headerCount + 1, 1, excelWorksheet.Dimension.End.Row - footerCount, excelWorksheet.Dimension.End.Column];
+            ExcelRange recordRange = excelWorksheet.Cells[headerRowCount + 1, 1, excelWorksheet.Dimension.End.Row - footerRowCount, excelWorksheet.Dimension.End.Column];
 
             // 设置记录区域字体、对齐
             recordRange.Style.Font.Name = "Microsoft YaHei UI";
@@ -233,9 +233,9 @@ namespace COMIGHT
             //设置列宽
             double fullWidth = 0; //全表格宽度赋值为0
 
-            int firstRefRowIndex = Math.Max(1, headerCount); //获取起始参考行的索引号：表头最末行的索引号，如果小于1，则限定为1
+            int firstRefRowIndex = Math.Max(1, headerRowCount); //获取起始参考行的索引号：表头最末行的索引号，如果小于1，则限定为1
             //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
-            int lastRefRowIndex = Math.Max(firstRefRowIndex, excelWorksheet.Dimension.End.Row - footerCount);
+            int lastRefRowIndex = Math.Max(firstRefRowIndex, excelWorksheet.Dimension.End.Row - footerRowCount);
 
             for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历所有列
             {
@@ -258,7 +258,7 @@ namespace COMIGHT
             }
 
             //设置记录区域行高
-            for (int i = headerCount + 1; i <= excelWorksheet.Dimension.End.Row - footerCount; i++) //遍历除去表头、表尾的所有行
+            for (int i = headerRowCount + 1; i <= excelWorksheet.Dimension.End.Row - footerRowCount; i++) //遍历除去表头、表尾的所有行
             {
                 if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
                 {
@@ -283,7 +283,7 @@ namespace COMIGHT
             printerSettings.FooterMargin = (decimal)(0.8 / 2.54);
 
             //设定打印顶端标题行：如果表头行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
-            printerSettings.RepeatRows = headerCount >= 1 ? new ExcelAddress($"$1:${headerCount}") : new ExcelAddress("");
+            printerSettings.RepeatRows = headerRowCount >= 1 ? new ExcelAddress($"$1:${headerRowCount}") : new ExcelAddress("");
             //设定打印左侧重复列为A列
             printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
 
@@ -295,7 +295,7 @@ namespace COMIGHT
             // 设置视图和打印版式
             ExcelWorksheetView view = excelWorksheet.View; //将Excel工作表视图设置赋值给视图设置变量
             view.UnFreezePanes(); //取消冻结窗格
-            view.FreezePanes(headerCount + 1, 2); // 冻结最上方的行和最左侧的列（参数指定第一个不要冻结的单元格）
+            view.FreezePanes(headerRowCount + 1, 2); // 冻结最上方的行和最左侧的列（参数指定第一个不要冻结的单元格）
             view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
             printerSettings.FitToPage = true; // 启用适应页面的打印设置
             int printPagesCount = Math.Max(1, (int)Math.Round(fullWidth / 120, 0)); //计算打印页面数：将全表格宽度除以指定最大宽度的商四舍五入取整，如果小于1，则限定为1
@@ -363,45 +363,45 @@ namespace COMIGHT
 
         public static string? GetKeyColumnLetter()
         {
-            string latestColumnLetter = Properties.Settings.Default.latestSplittingColumnLetter; //读取设置中保存的主键列符
+            string latestColumnLetter = Properties.Settings.Default.latestKeyColumnLetter; //读取设置中保存的主键列符
             InputDialog inputDialog = new InputDialog(question:"Input the key column letter (e.g. \"A\"）", defaultAnswer:latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
             string columnLetter = inputDialog.Answer;
-            Properties.Settings.Default.latestSplittingColumnLetter = columnLetter; // 将对话框返回的列符存入设置
+            Properties.Settings.Default.latestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
             Properties.Settings.Default.Save();
             return columnLetter; //将列符赋值给函数返回值
         }
 
 
-        public static void GetHeaderAndFooterCount(out int headerCount, out int footerCount)
+        public static void GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount)
         {
             try
             {
-                string lastestHeaderFooterCountStr = Properties.Settings.Default.lastestHeaderFooterCountStr; //读取设置中保存的表头表尾行数字符串
-                InputDialog inputDialog = new InputDialog(question:"Input the line count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer:lastestHeaderFooterCountStr); //弹出对话框，输入表头表尾行数
+                string lastestHeaderFooterRowCountStr = Properties.Settings.Default.lastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
+                InputDialog inputDialog = new InputDialog(question:"Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer:lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
-                    headerCount = 0;
-                    footerCount = 0;
+                    headerRowCount = 0;
+                    footerRowCount = 0;
                     return;
                 }
-                string headerFooterCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-                Properties.Settings.Default.lastestHeaderFooterCountStr = headerFooterCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+                string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
+                Properties.Settings.Default.lastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
                 Properties.Settings.Default.Save();
                 //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
-                List<int> lstHeaderFooterCount = headerFooterCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
+                List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
                 //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
-                headerCount = Math.Max(0, lstHeaderFooterCount[0]);
-                footerCount = Math.Max(0, lstHeaderFooterCount[1]);
+                headerRowCount = Math.Max(0, lstHeaderFooterRowCount[0]);
+                footerRowCount = Math.Max(0, lstHeaderFooterRowCount[1]);
             }
 
             catch (Exception ex) // 捕获错误
             {
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-                headerCount = 0; footerCount = 0; //表头、表尾行数变量赋值为0
+                headerRowCount = 0; footerRowCount = 0; //表头、表尾行数变量赋值为0
             }
         }
 
@@ -434,17 +434,17 @@ namespace COMIGHT
             GC.WaitForPendingFinalizers();
         }
 
-        public static void MergeExcelWorksheetHeader(ExcelWorksheet excelWorksheet, int headerCount)
+        public static void MergeExcelWorksheetHeader(ExcelWorksheet excelWorksheet, int headerRowCount)
         {
-            if (excelWorksheet.Dimension == null || headerCount < 2) //如果工作表为空或者表头行数小于2，则结束本过程
+            if (excelWorksheet.Dimension == null || headerRowCount < 2) //如果工作表为空或者表头行数小于2，则结束本过程
             {
                 return;
             }
 
-            excelWorksheet.Cells[1, 1, headerCount, excelWorksheet.Dimension.End.Column].Merge = false; //表头所有单元格的合并状态设为false
+            excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].Merge = false; //表头所有单元格的合并状态设为false
 
             //删除表头行中只含一个有效数据单元格的行（该行没有任何分类意义）
-            for (int i = headerCount; i >= 1; i--) //遍历表头所有行
+            for (int i = headerRowCount; i >= 1; i--) //遍历表头所有行
             {
                 ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
 
@@ -452,14 +452,14 @@ namespace COMIGHT
                 if (usedCellsCount <= 1) //如果已使用单元格数量小于等于1
                 {
                     excelWorksheet.DeleteRow(i); //删除当前行
-                    headerCount--; //表头行数减1
+                    headerRowCount--; //表头行数减1
                 }
             }
 
             for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历工作表所有列
             {
                 List<string> lstFullColumnName = new List<string>(); //定义完整列名称列表
-                for (int i = 1; i <= headerCount; i++) //遍历表头所有行
+                for (int i = 1; i <= headerRowCount; i++) //遍历表头所有行
                 {
                     bool copyLeftCell = false; //“是否复制左侧单元格”赋值为false
                     if (j > 1 && string.IsNullOrWhiteSpace(excelWorksheet.Cells[i, j].Text)) //如果当前列索引号大于1，且当前单元格为null或全空白字符
@@ -479,14 +479,14 @@ namespace COMIGHT
                     lstFullColumnName.Add(excelWorksheet.Cells[i, j].Text); //将当前单元格值添加到完整列名称列表
                 }
                 //将完整列名称列表中不为null或全空白字符的元素合并（以下划线分隔），赋值给表头最后一行当前列的单元格
-                excelWorksheet.Cells[headerCount, j].Value = string.Join('_', lstFullColumnName.Where(e => !string.IsNullOrWhiteSpace(e)));
+                excelWorksheet.Cells[headerRowCount, j].Value = string.Join('_', lstFullColumnName.Where(e => !string.IsNullOrWhiteSpace(e)));
 
             }
-            excelWorksheet.DeleteRow(1, headerCount - 1); //删除表头除了最后一行的所有行
+            excelWorksheet.DeleteRow(1, headerRowCount - 1); //删除表头除了最后一行的所有行
 
         }
 
-        public static DataTable? ReadExcelWorksheetIntoDataTableAsString(string filePath, object worksheetID, int headerCount = 1, int footerCount = 0)
+        public static DataTable? ReadExcelWorksheetIntoDataTableAsString(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
         {
             try
             {
@@ -507,7 +507,7 @@ namespace COMIGHT
 
                     TrimCellsStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet!); //删除Excel工作表内所有空白行和空白列
-                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerCount + footerCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
+                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
                     {
                         return null;
                     }
@@ -518,7 +518,7 @@ namespace COMIGHT
                         cell.Value = cell.Text.Trim();
                     }
 
-                    MergeExcelWorksheetHeader(excelWorksheet, headerCount); //将多行表头合并为单行
+                    MergeExcelWorksheetHeader(excelWorksheet, headerRowCount); //将多行表头合并为单行
 
                     DataTable dataTable = new DataTable(); // 定义DataTable变量
                     //读取Excel工作表并载入DataTable（第一行为表头，跳过表尾指定行数，将所有错误值视为空值，总是允许无效值）
@@ -526,7 +526,7 @@ namespace COMIGHT
                         o =>
                         {
                             o.FirstRowIsColumnNames = true;
-                            o.SkipNumberOfRowsEnd = footerCount;
+                            o.SkipNumberOfRowsEnd = footerRowCount;
                             o.ExcelErrorParsingStrategy = ExcelErrorParsingStrategy.HandleExcelErrorsAsBlankCells;
                             o.AlwaysAllowNull = true;
                         });
@@ -548,10 +548,21 @@ namespace COMIGHT
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
             {
                 //如果当前数据行所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
-                if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
+                //if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
+                //{
+                //    dataTable.Rows[i].Delete();
+                //}
+
+                // 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
+                int nonNullCount = dataTable.Rows[i].ItemArray.Count(value =>
+                    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
+
+                // 如果以上数据元素的数量小于等于1（仅含有一个数据的数据行无意义），则删除这一行
+                if (nonNullCount <= 1)
                 {
                     dataTable.Rows[i].Delete();
                 }
+                dataTable.AcceptChanges();
             }
 
             //清除空白数据列

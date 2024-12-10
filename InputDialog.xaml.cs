@@ -18,6 +18,10 @@ namespace COMIGHT
             if (options != null) //如果选项列表不为null
             { 
                 cmbbxOptions.ItemsSource = options; // 将选项列表赋值给选项组合框
+                if (cmbbxOptions.Items.Contains(defaultAnswer) ) // 如果选项组合框列表包含默认答案值
+                {
+                    cmbbxOptions.SelectedItem = defaultAnswer; // 选定选项组合框中与默认答案值相符的选项
+                }
             }
             else //否则
             {

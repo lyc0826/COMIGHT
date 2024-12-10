@@ -62,24 +62,24 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string lastestHeaderFooterCountStr {
+        public string lastestHeaderAndFooterRowCountStr {
             get {
-                return ((string)(this["lastestHeaderFooterCountStr"]));
+                return ((string)(this["lastestHeaderAndFooterRowCountStr"]));
             }
             set {
-                this["lastestHeaderFooterCountStr"] = value;
+                this["lastestHeaderAndFooterRowCountStr"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string latestSplittingColumnLetter {
+        public string latestKeyColumnLetter {
             get {
-                return ((string)(this["latestSplittingColumnLetter"]));
+                return ((string)(this["latestKeyColumnLetter"]));
             }
             set {
-                this["latestSplittingColumnLetter"] = value;
+                this["latestKeyColumnLetter"] = value;
             }
         }
         
@@ -140,6 +140,30 @@ namespace COMIGHT.Properties {
             }
             set {
                 this["latestFontName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string latestBatchProcessWorkbookOption {
+            get {
+                return ((string)(this["latestBatchProcessWorkbookOption"]));
+            }
+            set {
+                this["latestBatchProcessWorkbookOption"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string latestSplitWorksheetOption {
+            get {
+                return ((string)(this["latestSplitWorksheetOption"]));
+            }
+            set {
+                this["latestSplitWorksheetOption"] = value;
             }
         }
     }

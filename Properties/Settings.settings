@@ -11,10 +11,10 @@
     <Setting Name="latestStockDataColumnNamesStr" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="lastestHeaderFooterCountStr" Type="System.String" Scope="User">
+    <Setting Name="lastestHeaderAndFooterRowCountStr" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="latestSplittingColumnLetter" Type="System.String" Scope="User">
+    <Setting Name="latestKeyColumnLetter" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="latestExcelWorksheetIndexesStr" Type="System.String" Scope="User">
@@ -30,6 +30,12 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="latestFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="latestBatchProcessWorkbookOption" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="latestSplitWorksheetOption" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>
