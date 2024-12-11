@@ -758,13 +758,13 @@ namespace COMIGHT
                             //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
                             if (!startDataIsNumeric || !endDataIsNumeric)
                             {
-                                result = $"Start:{startDataStr}\nEnd:{endDataStr}";
+                                result = $"Start: {startDataStr}\nEnd: {endDataStr}";
                             }
                             else //否则
                             {
                                 double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
                                 double percent = startDataValue != 0 ? Math.Round((difference / startDataValue) * 100, 2) : double.NaN; //获取终点和起始数据的变化率百分比：如果起始数值不为零，得到变化率百分比；否则得到NaN
-                                result = $"Start:{startDataValue}\nEnd:{endDataValue}\nDiff:{difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+                                result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
                             }
                         }
                         differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
