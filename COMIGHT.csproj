@@ -65,8 +65,8 @@
 
   <ItemGroup>
     <PackageReference Include="DocX" Version="3.0.1" />
-    <PackageReference Include="EPPlus" Version="7.5.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
+    <PackageReference Include="EPPlus" Version="7.5.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
   </ItemGroup>
 
   <ItemGroup>

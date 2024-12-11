@@ -14,11 +14,12 @@ namespace COMIGHT
         public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptReturn = false )
         {
             InitializeComponent();
+
             txtblkQuestion.Text = question; //将问题值赋值给问题文本块
             if (options != null) //如果选项列表不为null
             { 
                 cmbbxOptions.ItemsSource = options; // 将选项列表赋值给选项组合框
-                if (cmbbxOptions.Items.Contains(defaultAnswer) ) // 如果选项组合框列表包含默认答案值
+                if (cmbbxOptions.Items.Contains(defaultAnswer)) // 如果选项组合框列表包含默认答案值
                 {
                     cmbbxOptions.SelectedItem = defaultAnswer; // 选定选项组合框中与默认答案值相符的选项
                 }
@@ -42,10 +43,10 @@ namespace COMIGHT
             this.DialogResult = false; //对话框返回值设为false
         }
 
-        private void cmbbxOptions_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            txtbxAnswer.Text = cmbbxOptions.SelectedItem.ToString(); // 将选项值赋值给答案文本框
-        }
+        //private void cmbbxOptions_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        //{
+        //    txtbxAnswer.Text = cmbbxOptions.SelectedItem.ToString(); // 将选项值赋值给答案文本框
+        //}
 
         private void txtbxAnswer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
