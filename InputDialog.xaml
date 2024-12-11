@@ -17,7 +17,7 @@
 
         <TextBlock x:Name="txtblkQuestion" MaxHeight="480" Grid.Row ="0" Grid.Column="0" Margin="0,5,0,5" TextWrapping="Wrap" />
         <ComboBox x:Name="cmbbxOptions" Grid.Row ="1" Grid.Column="0" Margin="0,5,0,5"  SelectedIndex="0" IsEditable="False" />
-        <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Grid.Column="0" Margin="0,5,0,5"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" Text ="{Binding Path=SelectedItem, ElementName=cmbbxOptions, Mode=OneWay, UpdateSourceTrigger=Default}"/>
+        <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Grid.Column="0" Margin="0,5,0,5"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
         <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOk" Content="OK" Width="50" Height="30" Click="btnDialogOk_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30" Click="btnDialogCancel_Click" />

@@ -29,7 +29,7 @@ namespace COMIGHT
             }
             else //否则
             {
-                cmbbxOptions.Visibility = Visibility.Collapsed; // 隐藏选项组合框
+                cmbbxOptions.Visibility = Visibility.Collapsed; // 隐藏功能选项组合框
 
                 txtbxAnswer.Text = defaultAnswer; //将默认答案值赋值给答案文本框
                 txtbxAnswer.Height = textboxHeight; //将答案文本框的高度设为输入的高度，默认为30
@@ -47,11 +47,6 @@ namespace COMIGHT
         {
             this.DialogResult = false; //对话框返回值设为false
         }
-
-        //private void cmbbxOptions_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        //{
-        //    txtbxAnswer.Text = cmbbxOptions.SelectedItem.ToString(); // 将选项值赋值给答案文本框
-        //}
 
         private void txtbxAnswer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -73,18 +68,8 @@ namespace COMIGHT
         {
             get 
             {
-                if (cmbbxOptions.SelectedItem != null)
-                {
-                    return cmbbxOptions.SelectedItem.ToString()!;
-                }
-                else if (!string.IsNullOrWhiteSpace(txtbxAnswer.Text))
-                {
-                    return txtbxAnswer.Text.Trim(); //移除答案文本框的文字的首尾空白字符，赋值给答案属性
-                }
-                else
-                {
-                    return "";
-                }
+                //如果选项组合框有选定项，则将功能选项组合框的选定项值赋给函数返回值；否则，将答案文本框的值赋给函数返回值
+                return cmbbxOptions.SelectedItem != null ? cmbbxOptions.SelectedItem.ToString()! : txtbxAnswer.Text.Trim();
             } 
         }
 

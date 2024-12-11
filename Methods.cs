@@ -108,7 +108,7 @@ namespace COMIGHT
                     continue;
                 }
 
-                if (excelWorksheet.Index >= 2) // 如果当前Excel工作表的索引号大于等于2（“主体”工作表或“提取”工作表）
+                if (excelWorksheet.Index >= 2) // 如果当前Excel工作表的索引号大于等于2（“主体”工作表及以后的工作表）
                 {
                     //将A、D、E、F列中所有为null或全空白字符的单元格赋值给空白单元格变量
                     IEnumerable<ExcelRangeBase> emptyCells = excelWorksheet.Cells["A:A,D:D,E:E,F:F"].Where(c => string.IsNullOrWhiteSpace(c.Text));
