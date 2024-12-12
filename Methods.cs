@@ -29,9 +29,14 @@ namespace COMIGHT
 {
     public static partial class Methods
     {
-        //定义数据库文件路径全名和用户手册网址
-        public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //定义数据库Excel工作簿文件路径全名
+        //获取数据库文件路径全名
+        public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
+        
+        public static string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
+        public static string targetBaseFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标基文件夹路径
+
         public static string manualUrl = @"https://github.com/lyc0826/COMIGHT/"; //定义用户手册网址
+
 
         //定义小标题文字正则表达式变量，匹配模式为：从开头开始，非“。：:；;分页符换行符回车符”的字符2-40个；后方出现：“。：:”换行符回车符或结尾标记
         public static Regex regExHeadingText = new Regex(@"^[^。：:；;\f\n\r]{2,50}(?=。|：|:|\n|\r|$)", RegexOptions.Multiline);
