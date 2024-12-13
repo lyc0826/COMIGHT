@@ -12,7 +12,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Extract all files into one folder and double-click COMIGHT.EXE to run. 
 
-- Select a function from the menu at the top of the main window. Follow the on-screen prompts to select the files or folders to be processed in the dialog box, and enter the necessary parameters. The generated files and folders are located in the same folder as the source files/folder, or in the "COMIGHT Files" folder on the Desktop.
+- Select a function from the menu at the top of the main window. Follow the on-screen prompts to select a sub-function and files or folders to be processed in the dialog box, and enter the necessary parameters. The generated files and folders are located in the "COMIGHT Files" folder on the Desktop.
 
 ## Function Introduction
 
@@ -120,17 +120,13 @@ Key features include merging and splitting Excel worksheets, comparing data, for
     | 是 | 一是  二是  三是 ... |
     | 条 | 第一条  第二条  第三条 ... |
 
-  - **None of the 3 worksheets can be deleted, moved, or have their column structure changed. Any rows that are hidden or filtered out will not be exported.**
+  - **None of the 2 worksheets can be renamed, deleted, or have their column structure changed. Any rows that are hidden or filtered out will not be exported.**
 
 #### **Import Text into Document Table (Only works for Chinese Documents)**
 
 - Imports the content of the text box in the dialog box into a document table, saved on the Windows desktop.
 
 ### Tools
-
-#### **Merge Documents and Tables**
-
-- Converts selected Word documents and Excel spreadsheets to plain text, and then merges them into a single Word document, saved on the Windows desktop.
 
 #### **Batch Convert Office File Types**
 
