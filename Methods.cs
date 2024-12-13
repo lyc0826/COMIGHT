@@ -94,7 +94,7 @@ namespace COMIGHT
                 FormatExcelWorksheet(excelWorksheet, 1, 0); //设置Excel工作表格式
 
                 //设置A-I列列宽（小标题级别、小标题编号、文字、完成时限、责任人、分类）
-                excelWorksheet.Cells["A:B"].EntireColumn.Width = 12; //=.Columns[1,6]
+                excelWorksheet.Cells["A:B"].EntireColumn.Width = 12; //=.Columns[1,2]
                 excelWorksheet.Cells["C"].EntireColumn.Width = 80;
                 excelWorksheet.Cells["D:F"].EntireColumn.Width = 12;
                 excelWorksheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left; //文字水平左对齐
@@ -104,7 +104,7 @@ namespace COMIGHT
                     continue;
                 }
 
-                if (excelWorksheet.Index >= 2) // 如果当前Excel工作表的索引号大于等于2（“主体”工作表及以后的工作表）
+                if (excelWorksheet.Name == "Body") // 如果当前Excel工作表为“主体”工作表
                 {
                     //将A、D、E、F列中所有为null或全空白字符的单元格赋值给空白单元格变量
                     IEnumerable<ExcelRangeBase> emptyCells = excelWorksheet.Cells["A:A,D:D,E:E,F:F"].Where(c => string.IsNullOrWhiteSpace(c.Text));
@@ -144,7 +144,7 @@ namespace COMIGHT
 
                     for (int i = 2; i <= excelWorksheet.Dimension.End.Row; i++) //遍历Excel工作表从第2行开始到末尾的所有行
                     {
-                        //设置当前行1至3列字体加粗：如果当前行不含小标题且文字字数少于50字（纯小标题），则加粗；否则不加粗
+                        //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于50字（纯小标题），则加粗；否则不加粗
                         excelWorksheet.Cells[i, 1, i, 3].Style.Font.Bold =
                             (excelWorksheet.Cells[i, 1].Text.EndsWith("级") && excelWorksheet.Cells[i, 3].Text.Length < 50) ? true : false;
                     }
@@ -657,7 +657,6 @@ namespace COMIGHT
                 using (ExcelPackage excelPackage = new ExcelPackage())
                 {
                     // 建立目标工作簿和工作表，初始化表头
-                    ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets.Add("Headings");
                     ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets.Add("Title");
                     ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets.Add("Body");
 
@@ -671,7 +670,6 @@ namespace COMIGHT
 
                     // 初始化“主体”工作表表头
                     bodyTextsWorksheet.Cells["A1:F1"].LoadFromArrays(new List<object[]> { new object[] { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类" } });
-                    bodyTextsWorksheet.Cells["A1:F1"].Copy(headingsWorksheet.Cells["A1"]); //将“主体”工作表的表头复制到“小标题”工作表
 
                     // 将Word文档数组内容从1号（第2个）元素即正文第一段开始，赋值给“主体”工作表内容列的单元格
                     for (int i = 1; i < lstParagraphs!.Count; i++) //遍历数组所有元素
@@ -685,19 +683,6 @@ namespace COMIGHT
                         string cellText = bodyTextsWorksheet.Cells[i, 3].Text; //将当前行的小标题正文文字（第3列）单元格的文本赋值给单元格文本变量
                         bodyTextsWorksheet.Cells[i, 1].Value = GetTitleLevel(cellText); //获取单元格文本的小标题级别，赋值给当前行的小标题级别单元格
                         bodyTextsWorksheet.Cells[i, 3].Value = RemoveHeadingNum(cellText); //删除单元格文本中的所有小标题编号，赋值给当前行的小标题正文文字单元格
-
-                        //更新“小标题”工作表
-                        if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级")) // 如果当前行含小标题
-                        {
-                            MatchCollection matchesHeadingTexts = regExCnHeadingText.Matches(bodyTextsWorksheet.Cells[i, 3].Text);  // 获取当前行的小标题正文文字经过小标题文字正则表达式匹配的结果
-                            string headingText = matchesHeadingTexts.Count > 0 ? matchesHeadingTexts[0].Value : ""; // 如果匹配到的结果集合元素数大于0，则将匹配到的小标题文字赋值给小标题文字变量
-
-                            int lastRowIndex = headingsWorksheet.Dimension?.End.Row ?? 0; //获取“小标题”工作表最末行索引号（如果工作表为空， 则为0）
-                            headingsWorksheet.Cells[lastRowIndex + 1, 1, lastRowIndex + 1, 3].Style.Numberformat.Format = "@"; // 将“小标题”工作表第一个空白行第1至3列的单元格的格式设为文本
-                            headingsWorksheet.Cells[lastRowIndex + 1, 1].Value = bodyTextsWorksheet.Cells[i, 1].Text; // 将当前行的小标题级别赋值给“小标题”工作表第一个空白行的小标题级别单元格
-                            headingsWorksheet.Cells[lastRowIndex + 1, 2].Value = bodyTextsWorksheet.Cells[i, 2].Text; // 将当前行的小标题编号赋值给“小标题”工作表第一个空白行的小标题编号单元格
-                            headingsWorksheet.Cells[lastRowIndex + 1, 3].Value = headingText; // 将小标题文字赋值给“小标题”工作表第一个空白行的小标题文字单元格
-                        }
 
                     }
 
@@ -1422,23 +1407,11 @@ namespace COMIGHT
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(documentTableFilePath))) //打开结构化文档表Excel工作簿，赋值给Excel包变量
                 {
 
-                    ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets[2]; //将“主体”（第3张，2号）工作表赋值给“主体”工作表变量
+                    ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets["Body"]; //将“主体”工作表赋值给“主体”工作表变量
                     RemoveWorksheetEmptyRowsAndColumns(bodyTextsWorksheet); //删除“主体”工作表内所有空白行和空白列
                     if ((bodyTextsWorksheet.Dimension?.Rows ?? 0) <= 1) // 如果“主体”工作表已使用行数小于等于1（如果工作表为空，则为0），只有表头无有效数据，则结束本过程
                     {
                         return;
-                    }
-
-                    ExcelWorksheet headingsWorksheet = excelPackage.Workbook.Worksheets[0]; // 将“小标题”（第1张，0号）工作表赋值给“小标题”工作表变量
-                    // 删除工作表中的所有行
-                    for (int i = headingsWorksheet.Dimension.End.Row; i >= 2; i--)
-                    {
-                        headingsWorksheet.DeleteRow(i);
-                    }
-
-                    while (excelPackage.Workbook.Worksheets.Count > 3) //当Excel工作簿中的工作表大于3张，则继续循环，删除最后一张
-                    {
-                        excelPackage.Workbook.Worksheets.Delete(excelPackage.Workbook.Worksheets.Count - 1);
                     }
 
                     //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中
@@ -1603,35 +1576,17 @@ namespace COMIGHT
 
                     }
 
-                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets[1]; //将“大标题”工作表（第2张，1号）赋值给大标题工作表变量
+                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets["Title"]; //将“大标题”工作表赋值给大标题工作表变量
                     ExcelRange titleCells = titleWorksheet.Cells[titleWorksheet.Dimension.Address]; //将“大标题”工作表单元格赋值给大标题工作表单元格变量
 
                     lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "" }); //将大标题、空行添加到完整文章列表中
 
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++)  // 遍历“主体”工作表第2行到最末行的所有行
                     {
-                        string headingText = ""; // 小标题文字变量赋值为空
+                        //string headingText = ""; // 小标题文字变量赋值为空
+
                         if (bodyTextsWorksheet.Cells[i, 2].Text != "X")  // 如果当前行没有"X"标记（非忽略行）
                         {
-                            //更新“小标题”工作表
-                            if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级")) // 如果当前行含小标题
-                            {
-                                MatchCollection matchesHeadingTexts = regExCnHeadingText.Matches(bodyTextsWorksheet.Cells[i, 3].Text);  // 获取当前行的小标题正文文字经过小标题文字正则表达式匹配的结果
-                                // 获取小标题文字：如果正则表达式匹配到的结果集合元素数大于0，得到匹配到的小标题文字；否则得到空字符串
-                                headingText = matchesHeadingTexts.Count > 0 ? matchesHeadingTexts[0].Value : "";
-
-                                // 更新“小标题”工作表内容
-                                int lastRowIndex = headingsWorksheet.Dimension?.End.Row ?? 0; //获取“小标题”工作表最末行的索引号（如果工作表为空，则为0）
-                                //将“小标题”工作表第一个空白行第1至6列的单元格赋值给小标题单元格组变量
-                                ExcelRange headingsCells = headingsWorksheet.Cells[lastRowIndex + 1, 1, lastRowIndex + 1, 6];
-                                headingsCells.Style.Numberformat.Format = "@"; // 将小标题单元格组的格式设为文本
-                                //将当前行的小标题级别、编号、正文、完成时限、责任部门、分类赋值给小标题单元格组
-                                headingsCells.LoadFromArrays(new List<object[]> { new object[]
-                                    {bodyTextsWorksheet.Cells[i, 1].Text, bodyTextsWorksheet.Cells[i, 2].Text, headingText,
-                                     bodyTextsWorksheet.Cells[i, 4].Text, bodyTextsWorksheet.Cells[i, 5].Text, bodyTextsWorksheet.Cells[i, 6].Text} });
-
-                            }
-
                             //将当前行的小标题编号和小标题正文文字添加到完整文章列表
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
                             if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表
