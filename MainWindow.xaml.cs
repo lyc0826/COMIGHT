@@ -5,28 +5,21 @@ using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using Xceed.Words.NET;
 using static COMIGHT.Methods;
+using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
 using MSExcel = Microsoft.Office.Interop.Excel;
 using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
 using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
-using Paragraph = Xceed.Document.NET.Paragraph;
-using Table = Xceed.Document.NET.Table;
-using TableCell = Xceed.Document.NET.Cell;
-using TableRow = Xceed.Document.NET.Row;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-
 
 
 namespace COMIGHT
@@ -90,11 +83,6 @@ namespace COMIGHT
         {
             await BatchConvertOfficeFilesTypes();
         }
-
-        //private void MnuMergeDocumentsAndTables_Click(object sender, RoutedEventArgs e)
-        //{
-        //    MergeDocumentsAndTables();
-        //}
 
         private void MnuMakeFileList_Click(object sender, RoutedEventArgs e)
         {
@@ -217,7 +205,7 @@ namespace COMIGHT
                     "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cell Data", "7-Adjust Worksheet Format for Printing"};
 
                 string latestBatchProcessWorkbookOption = Properties.Settings.Default.latestBatchProcessWorkbookOption; //读取设置中保存的批量处理Excel工作簿功能选项字符串
-                InputDialog inputDialog = new InputDialog(question: "Select the function", options:lstFunctions, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
+                InputDialog inputDialog = new InputDialog(question: "Select the function", options: lstFunctions, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -249,7 +237,7 @@ namespace COMIGHT
                 List<string>? lstOperatingRangeAddresses = null;
 
                 string latestExcelWorksheetIndexesStr = Properties.Settings.Default.latestExcelWorksheetIndexesStr; //读取设置中保存的Excel工作表索引号范围字符串
-                inputDialog = new InputDialog(question:"Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", defaultAnswer:latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
+                inputDialog = new InputDialog(question: "Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -269,7 +257,7 @@ namespace COMIGHT
                 else
                 {
                     string latestExcelWorksheetName = Properties.Settings.Default.latestExcelWorksheetName; //读取设置中保存的Excel工作表名称
-                    inputDialog = new InputDialog(question:"Input the worksheet name (one worksheet per operation)", defaultAnswer:latestExcelWorksheetName); //弹出对话框，输入工作表名称
+                    inputDialog = new InputDialog(question: "Input the worksheet name (one worksheet per operation)", defaultAnswer: latestExcelWorksheetName); //弹出对话框，输入工作表名称
                     if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                     {
                         return;
@@ -293,7 +281,7 @@ namespace COMIGHT
                     case 5:
                     case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表, 6-提取单元格数据给工作簿文件名加前缀
                         string latestOperatingRangeAddresses = Properties.Settings.Default.latestOperatingRangeAddresses; //读取设置中保存的操作区域
-                        inputDialog = new InputDialog(question:"Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer:latestOperatingRangeAddresses); //弹出对话框，输入操作区域
+                        inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
                         if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                         {
                             return;
@@ -672,8 +660,8 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? startDataTable = ReadExcelWorksheetIntoDataTableAsString(startFilePaths[0], 1, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
-                DataTable? endDataTable = ReadExcelWorksheetIntoDataTableAsString(endFilePaths[0], 1, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+                DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], 1, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+                DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], 1, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
 
                 if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则结束本过程
                 {
@@ -901,7 +889,7 @@ namespace COMIGHT
                 List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
 
                 string latestFontName = Properties.Settings.Default.latestFontName; //读取设置中保存的字体名称
-                InputDialog inputDialog = new InputDialog(question:"Select the font", defaultAnswer:latestFontName, options:lstFontNames); //弹出对话框，输入字体名称
+                InputDialog inputDialog = new InputDialog(question: "Select the font", defaultAnswer: latestFontName, options: lstFontNames); //弹出对话框，输入字体名称
 
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
@@ -947,8 +935,8 @@ namespace COMIGHT
                         cellABStyle.Font.Name = fontName; //设置字体
 
                         int charLimit = IsChineseText(name) ? 10 : 20; // 计算字符上限：如果是中文名称，则得到10；否则得到20
-                        cellABStyle.Font.Size = (float) ( (!name.Contains('\n') ? 160 : 100)
-                            * (1 - (name.Length - charLimit) * 0.035).Clamp(0.5, 1) ); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
+                        cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100)
+                            * (1 - (name.Length - charLimit) * 0.035).Clamp(0.5, 1)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
@@ -989,7 +977,7 @@ namespace COMIGHT
         {
             try
             {
-                InputDialog inputDialog = new InputDialog(question:"Input the text to be imported", defaultAnswer:"" , textboxHeight:300, acceptReturn:true); //弹出对话框，输入功能选项
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be imported", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1036,7 +1024,7 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 string targetFolderPath = Path.Combine(targetBaseFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
@@ -1120,130 +1108,6 @@ namespace COMIGHT
             }
         }
 
-
-        //private void MergeDocumentsAndTables()
-        //{
-        //    try
-        //    {
-        //        List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "Select Word and Excel Files"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        List<string> lstFullText = new List<string>(); //建立全文本列表
-
-        //        foreach (string filePath in filePaths) //遍历所有列表中的文件
-        //        {
-        //            if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
-        //            {
-        //                continue;
-        //            }
-
-        //            string fileName = Path.GetFileName(filePath); // 获取当前文件的主名
-        //            string fileExtension = Path.GetExtension(filePath); // 获取当前文件的扩展名
-
-        //            if (fileExtension.ToLower().Contains("xlsx")) // 如果当前文件扩展名转换为小写后含有“xlsx”（Excel文件）
-        //            {
-        //                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
-        //                {
-        //                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) // 遍历所有Excel工作表
-        //                    {
-        //                        TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
-        //                        RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
-        //                        if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
-        //                        {
-        //                            continue;
-        //                        }
-
-        //                        lstFullText.Add($"{fileName}: {excelWorksheet.Name}"); //全文本列表中追加当前Excel文件主名和当前工作表名
-        //                        for (int i = 1; i <= excelWorksheet.Dimension.End.Row; i++) // 遍历Excel工作表所有行
-        //                        {
-        //                            StringBuilder tableRowStringBuilder = new StringBuilder(); //定义表格行数据字符串构建器
-        //                            for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) // 遍历Excel工作表所有列
-        //                            {
-        //                                tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text); // 将当前单元格文字追加到字符串构建器中
-        //                                tableRowStringBuilder.Append('\t'); //追加制表符到字符串构建器中
-        //                            }
-        //                            lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd()); //将字符串构建器中当前行数据转换成字符串，移除尾部的空白字符，并追加到全文本列表中
-        //                        }
-        //                        lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"The End"元素和一个空字符串元素
-        //                    }
-        //                }
-        //            }
-
-        //            else if (fileExtension.ToLower().Contains("docx")) // 如果当前文件扩展名转换为小写后含有“docx”（Word文件）
-        //            {
-        //                using (DocX wordDocument = DocX.Load(filePath)) // 打开Word文档，赋值给Word文档变量
-        //                {
-        //                    lstFullText.Add(fileName); //全文本列表中追加当前Word文件主名
-
-        //                    //将Word文档中的所有表格转换为制表符分隔的文本形式
-        //                    for (int i = wordDocument.Tables.Count - 1; i >= 0; i--) //遍历文档中所有表格
-        //                    {
-        //                        Table table = wordDocument.Tables[i];
-        //                        List<string> lstTableRows = new List<string>(); //建立表格行数据列表
-
-        //                        foreach (TableRow tableRow in table.Rows) // 遍历表格中的所有行
-        //                        {
-        //                            StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
-        //                            foreach (TableCell cell in tableRow.Cells) // 遍历行中的所有单元格
-        //                            {
-        //                                tableRowStringBuilder.Append(string.Join(" ", cell.Paragraphs.Select(p => p.Text))); // 将当前单元格的每个段落文本合并，中间用空格分隔，然后添加到字符串构建器中
-        //                                tableRowStringBuilder.Append("\t"); //追加制表符到字符串构建器中
-        //                            }
-        //                            lstTableRows.Add(tableRowStringBuilder.ToString().TrimEnd()); //将字符串构建器中当前行数据转换成字符串，移除尾部的空白字符，并追加到表格行数据列表中
-        //                        }
-
-        //                        foreach (string tableRows in lstTableRows) //遍历表格行数据列表
-        //                        {
-        //                            table.InsertParagraphBeforeSelf(tableRows); //将当前表格行文本插入到当前表格的前方
-        //                        }
-
-        //                        table.Remove(); // 移除当前表格
-        //                    }
-
-        //                    //将文本添加到全文本列表
-        //                    foreach (Paragraph paragraph in wordDocument.Paragraphs) // 遍历所有段落
-        //                    {
-        //                        string paragraphText = paragraph.Text; //将当前段落文字赋值给段落文字变量
-        //                        if (!string.IsNullOrWhiteSpace(paragraphText)) // 如果段落文字不为null或全空白字符，则将段落文字追加到全文本列表中
-        //                        {
-        //                            lstFullText.Add(paragraphText);
-        //                        }
-        //                    }
-        //                    lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个"The End"元素和一个空字符串元素
-        //                }
-        //            }
-        //        }
-
-        //        string targetFolderPath = targetBaseFolderPath; //获取目标文件夹路径
-
-        //        //创建目标文件夹
-        //        if (!Directory.Exists(targetFolderPath)) //如果目标文件夹路径不存在，则建立该文件夹路径
-        //        {
-        //            Directory.CreateDirectory(targetFolderPath);
-        //        }
-
-        //        string targetWordFilePath = Path.Combine(targetFolderPath, $"Mrg_{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件的路径全名
-        //        using DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
-        //        {
-        //            foreach (string paragraphText in lstFullText) //遍历全文本列表的所有元素
-        //            {
-        //                targetWordDocument.InsertParagraph(paragraphText); //将当前元素的段落文字插入目标Word文档
-        //            }
-        //            targetWordDocument.Save(); //保存目标Word文档
-        //        }
-        //        MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-        //    }
-
-        //}
-
         private void MakeFileList()
         {
             try
@@ -1265,7 +1129,7 @@ namespace COMIGHT
                 Properties.Settings.Default.latestFolderPath = folderPath; //将第一级文件夹路径存入设置
                 Properties.Settings.Default.Save();
 
-                InputDialog inputDialog = new InputDialog(question:"Input the level of subdirectories", defaultAnswer:"1"); //弹出功能选择对话框
+                InputDialog inputDialog = new InputDialog(question: "Input the level of subdirectories", defaultAnswer: "1"); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1396,7 +1260,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = Properties.Settings.Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog(question:"Input the column name of Stock Code, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer:latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Code, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1415,7 +1279,7 @@ namespace COMIGHT
                 string pbDataColumnName = lstDataColumnNamesStr[4];
                 string peDataColumnName = lstDataColumnNamesStr[5];
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
                 {
                     throw new Exception("No Valid Data Found!");
@@ -1538,7 +1402,7 @@ namespace COMIGHT
                     return;
                 }
 
-                inputDialog = new InputDialog(question:"Input the filename of target workbooks", defaultAnswer:Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
+                inputDialog = new InputDialog(question: "Input the filename of target workbooks", defaultAnswer: Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;

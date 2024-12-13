@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static COMIGHT.Methods;
+using static COMIGHT.PublicVariables;
 
 namespace COMIGHT
 {
@@ -93,7 +94,7 @@ namespace COMIGHT
         private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e) //WebView初始化完成后，执行此过程
         {
 
-            DataTable? dataTable = ReadExcelWorksheetIntoDataTableAsString(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
+            DataTable? dataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
 
             if (dataTable != null) //如果DataTable变量不为null
             {

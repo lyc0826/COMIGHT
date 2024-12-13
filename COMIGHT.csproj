@@ -60,7 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="NATO Logo.ico" />
+    <Content Include="Logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

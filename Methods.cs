@@ -22,6 +22,7 @@ using Section = Microsoft.Office.Interop.Word.Section;
 using Table = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
+using static COMIGHT.PublicVariables;
 
 
 
@@ -29,17 +30,7 @@ namespace COMIGHT
 {
     public static partial class Methods
     {
-        //获取数据库文件路径全名
-        public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
         
-        public static string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
-        public static string targetBaseFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标基文件夹路径
-
-        public static string manualUrl = @"https://github.com/lyc0826/COMIGHT/"; //定义用户手册网址
-
-
-        //定义小标题文字正则表达式变量，匹配模式为：从开头开始，非“。：:；;分页符换行符回车符”的字符2-40个；后方出现：“。：:”换行符回车符或结尾标记
-        public static Regex regExHeadingText = new Regex(@"^[^。：:；;\f\n\r]{2,50}(?=。|：|:|\n|\r|$)", RegexOptions.Multiline);
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
@@ -491,7 +482,7 @@ namespace COMIGHT
 
         }
 
-        public static DataTable? ReadExcelWorksheetIntoDataTableAsString(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
+        public static DataTable? ReadExcelWorksheetIntoDataTable(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
         {
             try
             {
@@ -614,8 +605,8 @@ namespace COMIGHT
 
         public static string RemoveHeadingNum(string inText, bool keepLeadingNum = false)
         {
-            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分|篇|章|节” “：:”空格至少一个/或“）)、\.．，,是”，空格制表符任意多个
-            string headingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节)[：:| ]+|[）\)、\.．，,是])[ |\t]*";
+            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分|篇|章|节” “：:”空格至少一个/或“、\.，,）)是”，空格制表符任意多个
+            string headingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节)[：:| ]+|[、\.，,）\)是])[ |\t]*";
             //定义开头标记正则表达式字符串：如果“保留开头小标题编号”为false，则为：前方出现开头标记或“。：:；;”；否则为：前方出现“。：:；;”
             string leadingMarksRegEx = !keepLeadingNum ? @"(?<=^|[。：:；;])" : @"(?<=[。：:；;])";
             //定义小标题编号正则表达式变量，匹配模式为：开头标记和小标题编号两个正则表达式字符串的合并字符串
@@ -623,15 +614,12 @@ namespace COMIGHT
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
-        public enum FileType { Excel, Word, WordAndExcel, Convertible } //定义文件类型枚举
-
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
             string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
             {
                 FileType.Excel => "Excel Files(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|All Files(*.*)|*.*",
                 FileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
-                FileType.WordAndExcel => "Word or Excel Files(*.docx;*.docm;*.xlsx;*.xlsm)|*.docx;*.docm;*.xlsx;*.xlsm|All Files(*.*)|*.*",
                 FileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
                 _ => "All Files(*.*)|*.*"
             };
@@ -655,57 +643,6 @@ namespace COMIGHT
                 return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
             }
             return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
-        }
-
-        public static string ProceedToExtractText(string inText, char separator, int targetLength)
-        {
-            if (targetLength >= inText.Length) //如果目标字数大于等于输入文字字数，则将输入文字赋值给函数返回值
-            {
-                return inText;
-            }
-
-            //将输入文字按换行符拆分为数组（删除每个元素前后空白字符），转换成列表
-            List<string> lstParagraphs = inText.Split('\n', StringSplitOptions.TrimEntries).ToList();
-
-            int bodyParagraphCount = Math.Max(1, lstParagraphs.Count(p => p.Length >= 50)); //计算字数大于等于50字的段落数量（正文段落），如果结果小于1则限定为1
-
-            //定义冗余文字正则表达式变量，匹配模式为：前方出现“。；;”，任意字符任意多个（尽可能少），阿拉伯数字至少一个、小数点至多一个、阿拉伯数字任意多个（数字捕获组），任意字符任意多个（尽可能少），“。；;”
-            Regex regExRedundantTexts = new Regex(@"(?<=[。；;]).*?(\d+\.?\d*)?.*?[。；;]");
-
-            for (int i = lstParagraphs.Count - 1; i >= 0; i--)  //遍历段落列表元素
-            {
-                bool paragraphIsShortened = false; //“段落是否缩短”变量赋值为false
-                MatchCollection matchesRedundantTexts = regExRedundantTexts.Matches(lstParagraphs[i]); //获取当前元素（段落）经过冗余文字正则表达式匹配的结果集合
-                //将匹配结果集合转换为单个匹配的枚举集合，颠倒元素顺序，再按捕获组数量从少到多排序，转换成列表，赋值给冗余文字匹配结果列表（段落中最靠尾部的句子、含数字最少的句子排在前）
-                List<Match> lstMatchesRedundantTexts = matchesRedundantTexts.Cast<Match>().Reverse().OrderBy(m => m.Groups.Count).ToList();
-
-                //如果当前元素（段落）的字数大于限定至目标字数后平均每个正文段落的字数（正文段落总字数约等于全文总字数的95%），则继续循环
-                while (lstParagraphs[i].Length > targetLength * 0.95 / bodyParagraphCount)
-                {
-                    if (lstMatchesRedundantTexts.Count > 0) //如果冗余文字匹配结果列表元素数大于0
-                    {
-                        //将段落列表当前元素中的与冗余文字匹配结果列表0号元素（数字捕获组最多的元素）相同的文字替换为空
-                        lstParagraphs[i] = lstParagraphs[i].Replace(lstMatchesRedundantTexts[0].Value, "");
-                        lstMatchesRedundantTexts.RemoveAt(0); //移除冗余文字匹配结果列表0号元素
-                        paragraphIsShortened = true; //“段落是否缩短”变量赋值为true
-                    }
-                    else //否则，退出循环
-                    {
-                        break;
-                    }
-                }
-                //重新给当前元素赋值：如果段落被缩短，则得到移除当前元素小标题编号（但保留开头的编号）后的文字；否则得到当前元素原值
-                lstParagraphs[i] = paragraphIsShortened ? RemoveHeadingNum(lstParagraphs[i], true) : lstParagraphs[i];
-            }
-
-            //如果段落列表所有元素合并后的总字数大于目标字数，则继续循环，删除最后一个元素
-            while (string.Join(separator, lstParagraphs).Length > targetLength)
-            {
-                lstParagraphs.RemoveAt(lstParagraphs.Count - 1);
-            }
-
-            return string.Join(separator, lstParagraphs); //将段落列表所有元素合并，赋值给函数返回值
-
         }
 
         public static void ProcessParagraphsIntoDocumentTable(List<string>? lstParagraphs, string targetExcelFilePath)
@@ -752,7 +689,7 @@ namespace COMIGHT
                         //更新“小标题”工作表
                         if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级")) // 如果当前行含小标题
                         {
-                            MatchCollection matchesHeadingTexts = regExHeadingText.Matches(bodyTextsWorksheet.Cells[i, 3].Text);  // 获取当前行的小标题正文文字经过小标题文字正则表达式匹配的结果
+                            MatchCollection matchesHeadingTexts = regExCnHeadingText.Matches(bodyTextsWorksheet.Cells[i, 3].Text);  // 获取当前行的小标题正文文字经过小标题文字正则表达式匹配的结果
                             string headingText = matchesHeadingTexts.Count > 0 ? matchesHeadingTexts[0].Value : ""; // 如果匹配到的结果集合元素数大于0，则将匹配到的小标题文字赋值给小标题文字变量
 
                             int lastRowIndex = headingsWorksheet.Dimension?.End.Row ?? 0; //获取“小标题”工作表最末行索引号（如果工作表为空， 则为0）
@@ -1402,12 +1339,8 @@ namespace COMIGHT
             //判断是否为中文文档
             int nonCnCharsCount = Regex.Matches(inText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
             double nonCnCharsRatio = nonCnCharsCount / inText.Length; // 计算非中文字符占全文的比例
-            bool isCnDocument = nonCnCharsRatio < 0.5? true : false; // 获取“是否为中文文档”值：如果非中文字符比例小于0.5，得到true；否则得到false
-            return isCnDocument;
+            return nonCnCharsRatio < 0.5 ? true : false; //赋值给函数返回值：如果非中文字符比例小于0.5，得到true；否则，得到false
         }
-
-        //定义句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
-        public static Regex regExSentence = new Regex(@"[^。；;]*[。；;]");
 
         public static void PreprocessDocumentTexts(ExcelRange range)
         {
@@ -1442,7 +1375,7 @@ namespace COMIGHT
                             }
 
                             //获取字符串列表0号元素经过句子正则表达式匹配后的结果集合
-                            MatchCollection matchesSentences = regExSentence.Matches(lstStrs[0]);
+                            MatchCollection matchesSentences = regExCnSentence.Matches(lstStrs[0]);
 
                             foreach (Match matchSentence in matchesSentences) //遍历所有句子正则表达式匹配的结果
                             {
@@ -1683,7 +1616,7 @@ namespace COMIGHT
                             //更新“小标题”工作表
                             if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级")) // 如果当前行含小标题
                             {
-                                MatchCollection matchesHeadingTexts = regExHeadingText.Matches(bodyTextsWorksheet.Cells[i, 3].Text);  // 获取当前行的小标题正文文字经过小标题文字正则表达式匹配的结果
+                                MatchCollection matchesHeadingTexts = regExCnHeadingText.Matches(bodyTextsWorksheet.Cells[i, 3].Text);  // 获取当前行的小标题正文文字经过小标题文字正则表达式匹配的结果
                                 // 获取小标题文字：如果正则表达式匹配到的结果集合元素数大于0，得到匹配到的小标题文字；否则得到空字符串
                                 headingText = matchesHeadingTexts.Count > 0 ? matchesHeadingTexts[0].Value : "";
 
@@ -1705,7 +1638,7 @@ namespace COMIGHT
                             {
                                 lstFullTexts.Add(paragraphText);
                             }
-                            else  //否则，将段落文字累加到完整文章列表最后一个元素的文字末尾
+                            else  //否则，将段落文字累加到完整文章列表最后一个元素的文字的末尾
                             {
                                 lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
                             }
