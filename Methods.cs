@@ -705,6 +705,7 @@ namespace COMIGHT
             }
         }
 
+
         public static async Task FormatWordDocumentsAsync(List<string> filePaths)
         {
             Task task = Task.Run(() => process());
@@ -782,6 +783,7 @@ namespace COMIGHT
 
                         // 全文空格替换为半角空格，制表符替换为空格，换行符替换为回车符
                         selection.WholeStory();
+
                         find.Text = " "; // 查找空格
                         find.Replacement.Text = " "; // 将空格替换为半角空格
                         find.Execute(Replace: WdReplace.wdReplaceAll);
@@ -825,9 +827,10 @@ namespace COMIGHT
                         selection.ClearFormatting(); // 清除全部格式、样式
                         MSWord.ParagraphFormat paragraphFormat = msWordApp.Selection.ParagraphFormat; //将选区段落格式赋值给段落格式变量
                         paragraphFormat.Reset(); // 段落格式清除
-                        paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0
+                        paragraphFormat.CharacterUnitFirstLineIndent = (isCnDocument ? 2 : 0); // 设置首行缩进：如果为中文文档，则缩进2个字符；否则为0个字符
+                        paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0pt
                         paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphJustify; // 对齐方式设为两端对齐
-                        paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
+                        //paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
 
                         // 清除文首和文末的空白段
                         while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为回车符，则继续循环
@@ -912,12 +915,13 @@ namespace COMIGHT
 
                                 if (formatTitle) // 如果要设置大标题格式
                                 {
+                                    paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                     paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0
                                     paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
                                     font.Name = titleFontName; // 设置字体为预设值
                                     font.Size = titleFontSize; // 设置字号为预设值
                                     font.Bold = (int)WdConstants.wdToggle; // 字体加粗
-                                    selection.EndKey(WdUnits.wdLine); // 光标一到选区的最后一个字（换行符之前）
+                                    selection.EndKey(WdUnits.wdLine); // 光标移到选区的最后一个字（换行符之前）
 
                                     // 中文发往单位设置
                                     if (isCnDocument) // 如果是中文文档
@@ -934,6 +938,7 @@ namespace COMIGHT
 
                                             if (!selection.Information[WdInformation.wdWithInTable]) // 如果找到的文字不在表格内
                                             {
+                                                paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                                 paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 段落首行缩进为0
                                             }
                                             selection.Collapse(WdCollapseDirection.wdCollapseEnd); // 将选区折叠到末尾
@@ -962,6 +967,7 @@ namespace COMIGHT
                                 {
                                     paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
                                 }
+                                paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                 paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进为0
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
                                 font.Name = cnHeading0FontName;
@@ -1071,6 +1077,7 @@ namespace COMIGHT
                                 find.Execute();
                                 if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
                                 {
+                                    paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                     paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0
                                     paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphLeft; // 左对齐
                                 }
@@ -1094,8 +1101,8 @@ namespace COMIGHT
                                     foreach (Paragraph paragraph in selection.Paragraphs) // 遍历所有落款中的段落
                                     {
                                         float rightIndentation = Math.Max(0, 10 - paragraph.Range.Text.Length / 2); // 计算右缩进量，如果小于0，则限定为0
-                                        paragraph.Format.Alignment = WdParagraphAlignment.wdAlignParagraphRight; // 右对齐
                                         paragraph.Format.CharacterUnitRightIndent = rightIndentation; // 右缩进设为之前计算值
+                                        paragraph.Format.Alignment = WdParagraphAlignment.wdAlignParagraphRight; // 右对齐
                                     }
                                 }
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
@@ -1202,6 +1209,7 @@ namespace COMIGHT
                             {
                                 find.Text = matchesTableTitles[0].Value;
                                 find.Execute();
+                                paragraphFormat.CharacterUnitFirstLineIndent = 0;                                
                                 paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0);
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                                 font.Name = tableTitleFontName;
@@ -1245,6 +1253,7 @@ namespace COMIGHT
                             table.Range.Font.Kerning = 0; // “为字体调整字符间距”值设为0
                             table.Range.Font.DisableCharacterSpaceGrid = true;
 
+                            table.Range.ParagraphFormat.CharacterUnitFirstLineIndent = 0;
                             table.Range.ParagraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0);
                             table.Range.ParagraphFormat.AutoAdjustRightIndent = 0; // 自动调整右缩进为false
                             //table.Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 单元格内容水平居中
@@ -1271,6 +1280,7 @@ namespace COMIGHT
                             find.Execute();
                             if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
                             {
+                                paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                 paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
                             }
