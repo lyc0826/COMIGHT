@@ -745,30 +745,30 @@ namespace COMIGHT
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
                         int lineSpace = isCnDocument ? 28 : 24; // 行间距
 
-                        int titleFontSize = isCnDocument ? 22 : 18; // 大标题字号：如果为中文文档，则字号为二号；否则为18
-                        int bodyFontSize = isCnDocument ? 16 : 12; // 正文字号：如果为中文文档，则字号为三号；否则为12
+                        int titleFontSize = isCnDocument ? 22 : 20; // 大标题字号：如果为中文文档，则字号为二号；否则为20
+                        int bodyFontSize = isCnDocument ? 16 : 14; // 正文字号：如果为中文文档，则字号为三号；否则为14
                         int cnHeading0FontSize = 16; // 中文0级小标题
                         int cnHeading1FontSize = 16; // 中文1级小标题
                         int cnHeading2FontSize = 16; // 中文2级小标题
                         int cnHeading3_4FontSize = 16; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
                         int cnShiNumFontSize = 16; // 中文“是”语句
                         int cnItemNumFontSize = 16; // 中文“条”编号
-                        int enHeadingFontSize = 13; // 英文小标题
-                        int tableTitleFontSize = isCnDocument ? 16 : 12; // 表格标题字号
-                        int tableBodyFontSize = isCnDocument ? 14 : 10; // 表格正文字号
+                        int enHeadingFontSize = 14; // 英文小标题
+                        int tableTitleFontSize = isCnDocument ? 16 : 14; // 表格标题字号
+                        int tableBodyFontSize = isCnDocument ? 14 : 12; // 表格正文字号
                         int footerFontSize = 14; // 页脚字号为四号
 
-                        string titleFontName = isCnDocument ? "华文中宋" : "Arial"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Arial
-                        string bodyFontName = isCnDocument ? "仿宋" : "Arial"; // 正文字体：如果为中文文档，则字体为仿宋；否则为Arial
+                        string titleFontName = isCnDocument ? "华文中宋" : "Times New Roman"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Times New Roman
+                        string bodyFontName = isCnDocument ? "仿宋" : "Times New Roman"; // 正文字体：如果为中文文档，则字体为仿宋；否则为Times New Roman
                         string cnHeading0FontName = "黑体"; // 中文0级小标题
                         string cnHeading1FontName = "黑体"; // 中文1级小标题
                         string cnHeading2FontName = "楷体"; // 中文2级小标题
                         string cnHeading3_4FontName = "仿宋"; // 通用小标题
                         string cnShiNumFontName = "仿宋"; // 中文“是”语句
                         string cnItemNumFontName = "黑体"; // 中文“条”编号
-                        string enHeadingFontName = "Arial"; // 英文小标题
-                        string tableTitleFontName = isCnDocument ? "黑体" : "Arial"; // 表格标题字体
-                        string tableBodyFontName = isCnDocument ? "仿宋" : "Arial"; // 表格正文字体
+                        string enHeadingFontName = "Times New Roman"; // 英文小标题
+                        string tableTitleFontName = isCnDocument ? "黑体" : "Times New Roman"; // 表格标题字体
+                        string tableBodyFontName = isCnDocument ? "仿宋" : "Times New Roman"; // 表格正文字体
                         string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
 
                         // 设置查找模式
