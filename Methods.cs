@@ -1107,8 +1107,8 @@ namespace COMIGHT
                             //设置英文小标题格式
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号（模式为"A./A.1/A.1.2/A.1.2.3"或"1./1.2/1.2.3/1.2.3.4"，作为捕获组），空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
-                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)([A-Z\d]\.(?:\d+(?:\.\d+){0,2})?)[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline);
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组】，空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
+                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:(?:[A-Z]+\.)|(?:\d+\.?))(?:\d+\.?){0,3})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
                             foreach (Match matchEnHeading in matchesEnHeadings)
@@ -1143,7 +1143,7 @@ namespace COMIGHT
                         }
                         else // 否则，正则表达式列表中的匹配模式为英文1-4级小标题编号
                         {
-                            listNums = new List<string>() { @"[A-Z\d]\.(?:\d+(?:\.\d+){0,2})?" };
+                            listNums = new List<string>() { @"(?:(?:[A-Z]+\.)|(?:\d+\.?))(?:\d+\.?){0,3}" };
                         }
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
