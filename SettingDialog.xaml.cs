@@ -19,18 +19,19 @@ namespace COMIGHT
             InitializeComponent();
 
             LoadSettings();
-            dtgrdSettings.ItemsSource = settingTable!.DefaultView;
+            dtgrdSettings.ItemsSource = settingTable!.DefaultView; // 将设置DataTable绑定到设置DataGrid上
         }
 
         private DataTable settingTable;
 
         private void LoadSettings()
         {
+            // 创建设置DataTable, 并添加列
             settingTable = new DataTable();
             settingTable.Columns.Add("Item", typeof(string));
             settingTable.Columns.Add("Value", typeof(object));
 
-            // 添加设置项和默认值到DataTable，并为"Item"列设为唯一键或主键
+            // 添加设置项和默认值到设置DataTable
             settingTable.Rows.Add("Saving Folder Path", Default.savingFolderPath);
             settingTable.Rows.Add("Chinese Title Font Name", Default.cnTitleFontName);
             settingTable.Rows.Add("Chinese Title Font Size", Default.cnTitleFontSize);
@@ -110,11 +111,11 @@ namespace COMIGHT
             row = settingTable.Rows.Find("English Line Space");
             if (row != null) Default.enLineSpace = Convert.ToInt32(row["Value"]);
 
-            Default.Save();
+            Default.Save(); // 保存默认设置
 
             MessageBox.Show("Settings saved successfully.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            this.Close();
+            this.Close(); // 关闭窗口
         }
 
     }
