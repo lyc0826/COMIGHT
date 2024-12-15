@@ -754,8 +754,8 @@ namespace COMIGHT
                         int cnShiNumFontSize = 16; // 中文“是”语句
                         int cnItemNumFontSize = 16; // 中文“条”编号
                         int enHeadingFontSize = 14; // 英文小标题
-                        int tableTitleFontSize = isCnDocument ? 16 : 14; // 表格标题字号
-                        int tableBodyFontSize = isCnDocument ? 14 : 12; // 表格正文字号
+                        int tableTitleFontSize = bodyFontSize; // 表格标题字号
+                        int tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
                         int footerFontSize = 14; // 页脚字号为四号
 
                         string titleFontName = isCnDocument ? "华文中宋" : "Times New Roman"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Times New Roman
@@ -768,7 +768,7 @@ namespace COMIGHT
                         string cnItemNumFontName = "黑体"; // 中文“条”编号
                         string enHeadingFontName = "Times New Roman"; // 英文小标题
                         string tableTitleFontName = isCnDocument ? "黑体" : "Times New Roman"; // 表格标题字体
-                        string tableBodyFontName = isCnDocument ? "仿宋" : "Times New Roman"; // 表格正文字体
+                        string tableBodyFontName = bodyFontName; // 表格正文字体
                         string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
 
                         // 设置查找模式
