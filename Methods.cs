@@ -23,7 +23,7 @@ using Table = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
 using static COMIGHT.PublicVariables;
-
+using static COMIGHT.Properties.Settings;
 
 
 namespace COMIGHT
@@ -738,38 +738,73 @@ namespace COMIGHT
 
                         bool isCnDocument = IsChineseText(documentText); // 判断是否为中文文档，赋值给“是否为中文文档”变量
 
+
                         // 定义页边距、行距、字体、字号等的值
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
-                        int lineSpace = isCnDocument ? 28 : 24; // 行间距
-
-                        int titleFontSize = isCnDocument ? 22 : 20; // 大标题字号：如果为中文文档，则字号为二号；否则为20
-                        int bodyFontSize = isCnDocument ? 16 : 14; // 正文字号：如果为中文文档，则字号为三号；否则为14
-                        int cnHeading0FontSize = 16; // 中文0级小标题
-                        int cnHeading1FontSize = 16; // 中文1级小标题
-                        int cnHeading2FontSize = 16; // 中文2级小标题
-                        int cnHeading3_4FontSize = 16; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
-                        int cnShiNumFontSize = 16; // 中文“是”语句
-                        int cnItemNumFontSize = 16; // 中文“条”编号
-                        int enHeadingFontSize = 14; // 英文小标题
+                        int lineSpace = isCnDocument ? Default.cnLineSpace : Default.enLineSpace; // 行间距
+                        
+                        string titleFontName = isCnDocument ? Default.cnTitleFontName : Default.enTitleFontName; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Times New Roman
+                        string bodyFontName = isCnDocument ? Default.cnBodyFontName : Default.enBodyFontName; // 正文字体：如果为中文文档，则字体为仿宋；否则为Times New Roman
+                        string cnHeading0FontName = Default.cnHeading0FontName; // 中文0级小标题
+                        string cnHeading1FontName = Default.cnHeading1FontName; ; // 中文1级小标题
+                        string cnHeading2FontName = Default.cnHeading2FontName; ; // 中文2级小标题
+                        string cnHeading3_4FontName = Default.cnHeading3_4FontName; ; // 通用小标题
+                        string cnShiNumFontName = bodyFontName; // 中文“是”语句
+                        string cnItemNumFontName = bodyFontName; // 中文“条”编号
+                        string enHeadingFontName = Default.enHeadingFontName; ; // 英文小标题
+                        string tableTitleFontName = bodyFontName; // 表格标题字体
+                        string tableBodyFontName = bodyFontName; // 表格正文字体
+                        string footerFontName = Default.footerFontName; ; // 页脚字体为Times New Roman
+                        
+                        int titleFontSize = isCnDocument ? Default.cnTitleFontSize : Default.enTitleFontSize; // 大标题字号：如果为中文文档，则字号为二号；否则为20
+                        int bodyFontSize = isCnDocument ? Default.cnBodyFontSize : Default.enBodyFontSize; ; // 正文字号：如果为中文文档，则字号为三号；否则为14
+                        int cnHeading0FontSize = Default.cnHeading0FontSize; // 中文0级小标题
+                        int cnHeading1FontSize = Default.cnHeading1FontSize; // 中文1级小标题
+                        int cnHeading2FontSize = Default.cnHeading2FontSize; // 中文2级小标题
+                        int cnHeading3_4FontSize = Default.cnHeading3_4FontSize; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
+                        int cnShiNumFontSize = bodyFontSize; // 中文“是”语句
+                        int cnItemNumFontSize = bodyFontSize; // 中文“条”编号
+                        int enHeadingFontSize = Default.enHeadingFontSize; // 英文小标题
                         int tableTitleFontSize = bodyFontSize; // 表格标题字号
                         int tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
-                        int footerFontSize = 14; // 页脚字号为四号
+                        int footerFontSize = Default.footerFontSize; // 页脚字号为四号
 
-                        string titleFontName = isCnDocument ? "华文中宋" : "Times New Roman"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Times New Roman
-                        string bodyFontName = isCnDocument ? "仿宋" : "Times New Roman"; // 正文字体：如果为中文文档，则字体为仿宋；否则为Times New Roman
-                        string cnHeading0FontName = "黑体"; // 中文0级小标题
-                        string cnHeading1FontName = "黑体"; // 中文1级小标题
-                        string cnHeading2FontName = "楷体"; // 中文2级小标题
-                        string cnHeading3_4FontName = "仿宋"; // 通用小标题
-                        string cnShiNumFontName = "仿宋"; // 中文“是”语句
-                        string cnItemNumFontName = "黑体"; // 中文“条”编号
-                        string enHeadingFontName = "Times New Roman"; // 英文小标题
-                        string tableTitleFontName = isCnDocument ? "黑体" : "Times New Roman"; // 表格标题字体
-                        string tableBodyFontName = bodyFontName; // 表格正文字体
-                        string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
+
+                        //// 定义页边距、行距、字体、字号等的值
+                        //double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
+                        //double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
+                        //double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
+                        //double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
+                        //int lineSpace = isCnDocument ? 28 : 24; // 行间距
+
+                        //string titleFontName = isCnDocument ? "华文中宋" : "Times New Roman"; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Times New Roman
+                        //string bodyFontName = isCnDocument ? "仿宋" : "Times New Roman"; // 正文字体：如果为中文文档，则字体为仿宋；否则为Times New Roman
+                        //string cnHeading0FontName = "黑体"; // 中文0级小标题
+                        //string cnHeading1FontName = "黑体"; // 中文1级小标题
+                        //string cnHeading2FontName = "楷体"; // 中文2级小标题
+                        //string cnHeading3_4FontName = "仿宋"; // 通用小标题
+                        //string cnShiNumFontName = bodyFontName; // 中文“是”语句
+                        //string cnItemNumFontName = bodyFontName; // 中文“条”编号
+                        //string enHeadingFontName = "Times New Roman"; // 英文小标题
+                        //string tableTitleFontName = bodyFontName; // 表格标题字体
+                        //string tableBodyFontName = bodyFontName; // 表格正文字体
+                        //string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
+
+                        //int titleFontSize = isCnDocument ? 22 : 20; // 大标题字号：如果为中文文档，则字号为二号；否则为20
+                        //int bodyFontSize = isCnDocument ? 16 : 14; // 正文字号：如果为中文文档，则字号为三号；否则为14
+                        //int cnHeading0FontSize = 16; // 中文0级小标题
+                        //int cnHeading1FontSize = 16; // 中文1级小标题
+                        //int cnHeading2FontSize = 16; // 中文2级小标题
+                        //int cnHeading3_4FontSize = 16; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
+                        //int cnShiNumFontSize = bodyFontSize; // 中文“是”语句
+                        //int cnItemNumFontSize = bodyFontSize; // 中文“条”编号
+                        //int enHeadingFontSize = 14; // 英文小标题
+                        //int tableTitleFontSize = bodyFontSize; // 表格标题字号
+                        //int tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
+                        //int footerFontSize = 14; // 页脚字号为四号
 
                         // 设置查找模式
                         MSWord.Selection selection = msWordApp.Selection; //将选区赋值给选区变量

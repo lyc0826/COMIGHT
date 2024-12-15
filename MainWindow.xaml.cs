@@ -1581,5 +1581,10 @@ namespace COMIGHT
             //MessageBox.Show("标题提前后：" + result);
         }
 
+        private void mnuSettings_Click(object sender, RoutedEventArgs e)
+        {
+            SettingDialog settingDialog = new SettingDialog();
+            settingDialog.ShowDialog();
+        }
     }
 }

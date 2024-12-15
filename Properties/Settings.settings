@@ -39,7 +39,73 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="savingFolderPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">C:\COMIGHT Files</Value>
+    </Setting>
+    <Setting Name="cnTitleFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">华文中宋</Value>
+    </Setting>
+    <Setting Name="cnBodyFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">仿宋</Value>
+    </Setting>
+    <Setting Name="cnHeading0FontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">黑体</Value>
+    </Setting>
+    <Setting Name="cnHeading1FontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">黑体</Value>
+    </Setting>
+    <Setting Name="cnHeading2FontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">楷体</Value>
+    </Setting>
+    <Setting Name="cnHeading3_4FontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">仿宋</Value>
+    </Setting>
+    <Setting Name="enTitleFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Times New Roman</Value>
+    </Setting>
+    <Setting Name="enBodyFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Times New Roman</Value>
+    </Setting>
+    <Setting Name="enHeadingFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Times New Roman</Value>
+    </Setting>
+    <Setting Name="footerFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Times New Roman</Value>
+    </Setting>
+    <Setting Name="cnTitleFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">22</Value>
+    </Setting>
+    <Setting Name="cnBodyFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="cnHeading0FontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="cnHeading1FontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="cnHeading2FontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="cnHeading3_4FontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="enTitleFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="enBodyFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">14</Value>
+    </Setting>
+    <Setting Name="enHeadingFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">14</Value>
+    </Setting>
+    <Setting Name="footerFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">14</Value>
+    </Setting>
+    <Setting Name="cnLineSpace" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">28</Value>
+    </Setting>
+    <Setting Name="enLineSpace" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">24</Value>
     </Setting>
   </Settings>
 </SettingsFile>
