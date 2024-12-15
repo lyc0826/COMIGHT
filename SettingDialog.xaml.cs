@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using System.Data;
 using static COMIGHT.PublicVariables;
 using static COMIGHT.Properties.Settings;
 
@@ -13,81 +14,101 @@ namespace COMIGHT
     public partial class SettingDialog : Window
     {
 
-        private ObservableCollection<SettingItem> settingItems;
-
         public SettingDialog()
         {
             InitializeComponent();
 
             LoadSettings();
-            dtgrdSettings.ItemsSource = settingItems;
+            dtgrdSettings.ItemsSource = settingTable!.DefaultView;
         }
+
+        private DataTable settingTable;
 
         private void LoadSettings()
         {
-            settingItems = new ObservableCollection<SettingItem>
-            {
-                // Load previous settings or default values here.
-                // For example:
-                new SettingItem { Item = "Saving Folder Path", Value = Default.savingFolderPath },
+            settingTable = new DataTable();
+            settingTable.Columns.Add("Item", typeof(string));
+            settingTable.Columns.Add("Value", typeof(object));
 
-                new SettingItem { Item = "Chinese Title Font Name", Value = Default.cnTitleFontName },
-                new SettingItem { Item = "Chinese Title Font Size", Value = Default.cnTitleFontSize },
-                new SettingItem { Item = "Chinese Body Text Font Name", Value = Default.cnBodyFontName },
-                new SettingItem { Item = "Chinese Body Text Font Size", Value = Default.cnBodyFontSize },
-                new SettingItem { Item = "Chinese Heading Lv0 Font Name", Value = Default.cnHeading0FontName },
-                new SettingItem { Item = "Chinese Heading Lv0 Font Size", Value = Default.cnHeading0FontSize },
-                new SettingItem { Item = "Chinese Heading Lv1 Font Name", Value = Default.cnHeading1FontName },
-                new SettingItem { Item = "Chinese Heading Lv1 Font Size", Value = Default.cnHeading1FontSize },
-                new SettingItem { Item = "Chinese Heading Lv2 Font Name", Value = Default.cnHeading2FontName },
-                new SettingItem { Item = "Chinese Heading Lv2 Font Size", Value = Default.cnHeading2FontSize },
-                new SettingItem { Item = "Chinese Heading Lv3-4 Font Name", Value = Default.cnHeading3_4FontName },
-                new SettingItem { Item = "Chinese Heading Lv3-4 Font Size", Value = Default.cnHeading3_4FontSize },
-                new SettingItem { Item = "English Title Font Name", Value = Default.enTitleFontName },
-                new SettingItem { Item = "English Title Font Size", Value = Default.enTitleFontSize },
-                new SettingItem { Item = "English Body Text Font Name", Value = Default.enBodyFontName },
-                new SettingItem { Item = "English Body Text Font Size", Value = Default.enBodyFontSize },
-                new SettingItem { Item = "English Heading Font Name", Value = Default.enHeadingFontName },
-                new SettingItem { Item = "English Heading Font Size", Value = Default.enHeadingFontSize },
-                new SettingItem { Item = "Footer Font Name", Value = Default.footerFontName },
-                new SettingItem { Item = "Footer Font Size", Value = Default.footerFontSize },
-                new SettingItem { Item = "Chinese Line Space", Value = Default.cnLineSpace },
-                new SettingItem { Item = "English Line Space", Value = Default.enLineSpace },
+            // 添加设置项和默认值到DataTable，并为"Item"列设为唯一键或主键
+            settingTable.Rows.Add("Saving Folder Path", Default.savingFolderPath);
+            settingTable.Rows.Add("Chinese Title Font Name", Default.cnTitleFontName);
+            settingTable.Rows.Add("Chinese Title Font Size", Default.cnTitleFontSize);
+            settingTable.Rows.Add("Chinese Body Text Font Name", Default.cnBodyFontName);
+            settingTable.Rows.Add("Chinese Body Text Font Size", Default.cnBodyFontSize);
+            settingTable.Rows.Add("Chinese Heading Lv0 Font Name", Default.cnHeading0FontName);
+            settingTable.Rows.Add("Chinese Heading Lv0 Font Size", Default.cnHeading0FontSize);
+            settingTable.Rows.Add("Chinese Heading Lv1 Font Name", Default.cnHeading1FontName);
+            settingTable.Rows.Add("Chinese Heading Lv1 Font Size", Default.cnHeading1FontSize);
+            settingTable.Rows.Add("Chinese Heading Lv2 Font Name", Default.cnHeading2FontName);
+            settingTable.Rows.Add("Chinese Heading Lv2 Font Size", Default.cnHeading2FontSize);
+            settingTable.Rows.Add("Chinese Heading Lv3-4 Font Name", Default.cnHeading3_4FontName);
+            settingTable.Rows.Add("Chinese Heading Lv3-4 Font Size", Default.cnHeading3_4FontSize);
+            settingTable.Rows.Add("English Title Font Name", Default.enTitleFontName);
+            settingTable.Rows.Add("English Title Font Size", Default.enTitleFontSize);
+            settingTable.Rows.Add("English Body Text Font Name", Default.enBodyFontName);
+            settingTable.Rows.Add("English Body Text Font Size", Default.enBodyFontSize);
+            settingTable.Rows.Add("English Heading Font Name", Default.enHeadingFontName);
+            settingTable.Rows.Add("English Heading Font Size", Default.enHeadingFontSize);
+            settingTable.Rows.Add("Footer Font Name", Default.footerFontName);
+            settingTable.Rows.Add("Footer Font Size", Default.footerFontSize);
+            settingTable.Rows.Add("Chinese Line Space", Default.cnLineSpace);
+            settingTable.Rows.Add("English Line Space", Default.enLineSpace);
 
-            };
+            // 设置 "Item" 列为主键以方便查找
+            settingTable.PrimaryKey = new[] { settingTable.Columns["Item"]! };
         }
 
         private void btnDialogSave_Click(object sender, RoutedEventArgs e)
         {
             // 保存设置
-            Default.savingFolderPath = (string)settingItems.FirstOrDefault(e => e.Item == "Saving Folder Path")!.Value;
+            DataRow? row = settingTable.Rows.Find("Saving Folder Path");
+            if (row != null) Default.savingFolderPath = (string)row["Value"];
 
-            Default.cnTitleFontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Title Font Name")!.Value;
-            Default.cnTitleFontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Title Font Size")!.Value);
-            Default.cnBodyFontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Body Text Font Name")!.Value;
-            Default.cnBodyFontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Body Text Font Size")!.Value);
-            Default.cnHeading0FontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv0 Font Name")!.Value;
-            Default.cnHeading0FontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv0 Font Size")!.Value);
-            Default.cnHeading1FontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv1 Font Name")!.Value;
-            Default.cnHeading1FontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv1 Font Size")!.Value);
-            Default.cnHeading2FontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv2 Font Name")!.Value;
-            Default.cnHeading2FontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv2 Font Size")!.Value);
-            Default.cnHeading3_4FontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv3-4 Font Name")!.Value;
-            Default.cnHeading3_4FontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Heading Lv3-4 Font Size")!.Value);
-            Default.enTitleFontName = (string)settingItems.FirstOrDefault(e => e.Item == "English Title Font Name")!.Value;
-            Default.enTitleFontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "English Title Font Size")!.Value);
-            Default.enBodyFontName = (string)settingItems.FirstOrDefault(e => e.Item == "English Body Text Font Name")!.Value;
-            Default.enBodyFontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "English Body Text Font Size")!.Value);
-            Default.enHeadingFontName = (string)settingItems.FirstOrDefault(e => e.Item == "English Heading Font Name")!.Value;
-            Default.enHeadingFontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "English Heading Font Size")!.Value);
-            Default.footerFontName = (string)settingItems.FirstOrDefault(e => e.Item == "Footer Font Name")!.Value;
-            Default.footerFontSize = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Footer Font Size")!.Value);
-            Default.cnLineSpace = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "Chinese Line Space")!.Value);
-            Default.enLineSpace = Convert.ToInt32(settingItems.FirstOrDefault(e => e.Item == "English Line Space")!.Value);
-
-
-
-            // Continue with the rest of your settings...
+            row = settingTable.Rows.Find("Chinese Title Font Name");
+            if (row != null) Default.cnTitleFontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Chinese Title Font Size");
+            if (row != null) Default.cnTitleFontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Chinese Body Text Font Name");
+            if (row != null) Default.cnBodyFontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Chinese Body Text Font Size");
+            if (row != null) Default.cnBodyFontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Chinese Heading Lv0 Font Name");
+            if (row != null) Default.cnHeading0FontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Chinese Heading Lv0 Font Size");
+            if (row != null) Default.cnHeading0FontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Chinese Heading Lv1 Font Name");
+            if (row != null) Default.cnHeading1FontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Chinese Heading Lv1 Font Size");
+            if (row != null) Default.cnHeading1FontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Chinese Heading Lv2 Font Name");
+            if (row != null) Default.cnHeading2FontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Chinese Heading Lv2 Font Size");
+            if (row != null) Default.cnHeading2FontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Chinese Heading Lv3-4 Font Name");
+            if (row != null) Default.cnHeading3_4FontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Chinese Heading Lv3-4 Font Size");
+            if (row != null) Default.cnHeading3_4FontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("English Title Font Name");
+            if (row != null) Default.enTitleFontName = (string)row["Value"];
+            row = settingTable.Rows.Find("English Title Font Size");
+            if (row != null) Default.enTitleFontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("English Body Text Font Name");
+            if (row != null) Default.enBodyFontName = (string)row["Value"];
+            row = settingTable.Rows.Find("English Body Text Font Size");
+            if (row != null) Default.enBodyFontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("English Heading Font Name");
+            if (row != null) Default.enHeadingFontName = (string)row["Value"];
+            row = settingTable.Rows.Find("English Heading Font Size");
+            if (row != null) Default.enHeadingFontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Footer Font Name");
+            if (row != null) Default.footerFontName = (string)row["Value"];
+            row = settingTable.Rows.Find("Footer Font Size");
+            if (row != null) Default.footerFontSize = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("Chinese Line Space");
+            if (row != null) Default.cnLineSpace = Convert.ToInt32(row["Value"]);
+            row = settingTable.Rows.Find("English Line Space");
+            if (row != null) Default.enLineSpace = Convert.ToInt32(row["Value"]);
 
             Default.Save();
 
@@ -96,44 +117,5 @@ namespace COMIGHT
             this.Close();
         }
 
-
-        public class SettingItem : INotifyPropertyChanged
-        {
-            private string? _item;
-            private object? _value;
-
-            public string Item
-            {
-                get { return _item!; }
-                set
-                {
-                    if (_item != value)
-                    {
-                        _item = value;
-                        OnPropertyChanged(nameof(Item));
-                    }
-                }
-            }
-
-            public object Value
-            {
-                get { return _value!; }
-                set
-                {
-                    if (this._value != value)
-                    {
-                        this._value = value;
-                        OnPropertyChanged(nameof(Value));
-                    }
-                }
-            }
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-
-            protected void OnPropertyChanged(string propertyName)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }
