@@ -54,15 +54,12 @@ namespace COMIGHT
                 new SettingItem { Item = "Chinese Line Space", Value = Default.cnLineSpace },
                 new SettingItem { Item = "English Line Space", Value = Default.enLineSpace },
 
-
-
             };
         }
 
         private void btnDialogSave_Click(object sender, RoutedEventArgs e)
         {
-            // Save the settings back to the application's settings file.
-            //Properties.Settings.Default.savingFolderPath = (string)_settingItems[0].Value;
+            // 保存设置
             Default.savingFolderPath = (string)settingItems.FirstOrDefault(e => e.Item == "Saving Folder Path")!.Value;
 
             Default.cnTitleFontName = (string)settingItems.FirstOrDefault(e => e.Item == "Chinese Title Font Name")!.Value;

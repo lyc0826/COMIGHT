@@ -9,13 +9,11 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-
         </Grid.RowDefinitions>
 
-        <DataGrid x:Name="dtgrdSettings" Grid.Row="0" Grid.Column="0" Margin="0,5,0,5" AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" >
+        <DataGrid x:Name="dtgrdSettings" Grid.Row="0" Grid.Column="0" Margin="0,5,0,5" AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = PropertyChanged}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = PropertyChanged}"/>

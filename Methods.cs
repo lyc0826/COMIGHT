@@ -359,15 +359,15 @@ namespace COMIGHT
 
         public static string? GetKeyColumnLetter()
         {
-            string latestColumnLetter = Properties.Settings.Default.latestKeyColumnLetter; //读取设置中保存的主键列符
+            string latestColumnLetter = Default.latestKeyColumnLetter; //读取设置中保存的主键列符
             InputDialog inputDialog = new InputDialog(question:"Input the key column letter (e.g. \"A\"）", defaultAnswer:latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
             string columnLetter = inputDialog.Answer;
-            Properties.Settings.Default.latestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
-            Properties.Settings.Default.Save();
+            Default.latestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
+            Default.Save();
             return columnLetter; //将列符赋值给函数返回值
         }
 
@@ -376,7 +376,7 @@ namespace COMIGHT
         {
             try
             {
-                string lastestHeaderFooterRowCountStr = Properties.Settings.Default.lastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
+                string lastestHeaderFooterRowCountStr = Default.lastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
                 InputDialog inputDialog = new InputDialog(question:"Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer:lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
@@ -385,8 +385,8 @@ namespace COMIGHT
                     return;
                 }
                 string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-                Properties.Settings.Default.lastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
-                Properties.Settings.Default.Save();
+                Default.lastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+                Default.Save();
                 //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
                 List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
                 //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
@@ -624,7 +624,7 @@ namespace COMIGHT
                 _ => "All Files(*.*)|*.*"
             };
 
-            string initialDirectory = Properties.Settings.Default.latestFolderPath; //获取保存在设置中的文件夹路径
+            string initialDirectory = Default.latestFolderPath; //获取保存在设置中的文件夹路径
             //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
             initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : @"C:\";
             OpenFileDialog openFileDialog = new OpenFileDialog() //打开文件选择对话框
@@ -637,8 +637,8 @@ namespace COMIGHT
 
             if (openFileDialog.ShowDialog() == true) //如果对话框返回true（选择了OK）
             {
-                Properties.Settings.Default.latestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0]); // 将本次选择的文件的文件夹路径保存到设置中
-                Properties.Settings.Default.Save(); //
+                Default.latestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0]); // 将本次选择的文件的文件夹路径保存到设置中
+                Default.Save(); //
 
                 return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
             }

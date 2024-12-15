@@ -6,7 +6,6 @@ namespace COMIGHT
 {
     public static partial class PublicVariables
     {
-        internal static Settings settings = Properties.Settings.Default;
         public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
 
         public static string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
