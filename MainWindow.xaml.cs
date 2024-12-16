@@ -48,7 +48,7 @@ namespace COMIGHT
 
         private void mnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
         {
-            ConvertMarkdownIntoWord();
+            ConvertMarkDownIntoWord();
         }
 
         private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
@@ -807,7 +807,7 @@ namespace COMIGHT
 
         }
 
-        private void ConvertMarkdownIntoWord()
+        private void ConvertMarkDownIntoWord()
         {
             try
             {
@@ -828,7 +828,8 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
-                string targetFileMainName = CleanName(lstParagraphs[0], 40); // 获取目标文件主名
+                // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
+                string targetFileMainName = CleanName(lstParagraphs[0].RemoveMarkDownMarks(), 40); 
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
@@ -896,7 +897,7 @@ namespace COMIGHT
 
                 //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
                 Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
-                //可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
+                //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
                 Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
 
                 Task task = Task.Run(() => process());

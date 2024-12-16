@@ -35,6 +35,8 @@ namespace COMIGHT
 
                 // 添加设置项和默认值到设置DataTable
                 settingTable.Rows.Add("Saving Folder Path", Default.savingFolderPath);
+                settingTable.Rows.Add("Pandoc Application Path", Default.pandocPath);
+
                 settingTable.Rows.Add("Chinese Title Font Name", Default.cnTitleFontName);
                 settingTable.Rows.Add("Chinese Title Font Size", Default.cnTitleFontSize);
                 settingTable.Rows.Add("Chinese Body Text Font Name", Default.cnBodyFontName);
@@ -55,7 +57,6 @@ namespace COMIGHT
                 settingTable.Rows.Add("English Heading Font Size", Default.enHeadingFontSize);
                 settingTable.Rows.Add("Chinese Line Space", Default.cnLineSpace);
                 settingTable.Rows.Add("English Line Space", Default.enLineSpace);
-                settingTable.Rows.Add("Pandoc Application", Default.pandocPath);
 
 
                 // 设置 "Item" 列为主键以方便查找
@@ -74,6 +75,8 @@ namespace COMIGHT
                 // 保存设置
                 DataRow? row = settingTable.Rows.Find("Saving Folder Path");
                 if (row != null) Default.savingFolderPath = (string)row["Value"];
+                row = settingTable.Rows.Find("Pandoc Application Path");
+                if (row != null) Default.pandocPath = (string)row["Value"];
 
                 row = settingTable.Rows.Find("Chinese Title Font Name");
                 if (row != null) Default.cnTitleFontName = (string)row["Value"];
@@ -115,8 +118,6 @@ namespace COMIGHT
                 if (row != null) Default.cnLineSpace = Convert.ToInt32(row["Value"]);
                 row = settingTable.Rows.Find("English Line Space");
                 if (row != null) Default.enLineSpace = Convert.ToInt32(row["Value"]);
-                row = settingTable.Rows.Find("Pandoc Application");
-                if (row != null) Default.pandocPath = (string)row["Value"];
 
                 Default.Save(); // 保存默认设置
 

@@ -574,6 +574,47 @@ namespace COMIGHT
             return dataTable; // 将DataTable赋值给函数返回值
         }
 
+        public static string RemoveMarkDownMarks(this string inText)
+        {
+            string outText = inText;
+            // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
+            //[^\S\n]+与(?:(?!\n)\s)+等同
+            outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
+
+            // 文档分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^[\*\-_]+$", "", RegexOptions.Multiline);
+            // 表格表头分隔线符号正则表达式匹配模式为：开头标记，“|-:”至少一个，结尾标记；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^[\|\-:]+$", "", RegexOptions.Multiline);
+
+            // 标题符号正则表达式匹配模式为：开头标记，“#”（同行标题标记）至少一个，空格任意多个/或开头标记，“=-”（上一行标题标记）至少一个，结尾标记；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^#+[ ]*|^[=\-]+$", "", RegexOptions.Multiline);
+            // 斜体或粗体符号（1个代表斜体，2个代表粗体）正则表达式匹配模式为：开头标记或任意字符任意多个（尽可能少）（捕获组1），“*_”至少一个，任意字符任意多个（尽可能少）（捕获组2），“*_”至少一个，任意字符任意多个（尽可能少）或结尾标记（捕获组3）；将匹配到的字符串替换为3个捕获组合并后的字符串
+            outText = Regex.Replace(outText, @"(^|.*?)[\*_]+(.*?)[\*_]+(.*?|$)", "$1$2$3", RegexOptions.Multiline);
+            // 引用符号正则表达式匹配模式为：开头标记，“>”；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^>", "", RegexOptions.Multiline);
+            // 无序列表符号正则表达式匹配模式为：开头标记，“*-”，空格任意多个；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^[\*-][ ]*", "", RegexOptions.Multiline);
+
+            // 代码引用符号转义符号正则表达式匹配模式为：“`”至少2个，；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"`{2,}", "", RegexOptions.Multiline);
+            // 代码引用符号正则表达式匹配模式为：开头标记或任意字符任意多个（尽可能少）（捕获组1），“`”，任意字符任意多个（尽可能少）（捕获组2），“`”，任意字符任意多个（尽可能少）或结尾标记（捕获组3）；将匹配到的字符串替换为3个捕获组用"隔开后的字符串
+            outText = Regex.Replace(outText, @"(^|.*?)`(.*?)`(.*?|$)", "$1\"$2\"$3", RegexOptions.Multiline);
+            // 删除线符号正则表达式匹配模式为：开头标记或任意字符任意多个（尽可能少）（捕获组1），“~~”，任意字符任意多个（尽可能少）（捕获组2），“~~”，任意字符任意多个（尽可能少）或结尾标记（捕获组3）；将匹配到的字符串替换为3个捕获组合并后的字符串
+            outText = Regex.Replace(outText, @"(^|.*?)~~(.*?)~~(.*?|$)", "$1$2$3", RegexOptions.Multiline);
+
+            // 表格行开头和结尾符号正则表达式匹配模式为：开头标记，“|”/或“|”，结尾标记；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^\||\|$", "", RegexOptions.Multiline);
+            // 表格内部多余空白字符正则表达式匹配模式为：前方出现“|”，不为换行符的空白字符至少一个/或前述字符至少一个，后方出现“|”；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"(?<=\|)[^\S\n]+|[^\S\n]+(?=\|)", "", RegexOptions.Multiline);
+
+            // 空白行正则表达式匹配模式设为：开头标记，空白字符任意多个；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^\s*", "", RegexOptions.Multiline);
+            // 再次将每行首尾空白字符替换为空
+            outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
+
+            return outText; //将输出文字赋值给函数返回值
+        }
+
         public static void RemoveWorksheetEmptyRowsAndColumns(ExcelWorksheet excelWorksheet)
         {
             if (excelWorksheet.Dimension == null) //如果Excel工作表为空，结束本过程
