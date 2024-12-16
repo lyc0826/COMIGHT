@@ -22,9 +22,9 @@ namespace COMIGHT
                 txtbxAnswer.Visibility = Visibility.Collapsed; // 隐藏文本框
 
                 cmbbxOptions.ItemsSource = options; // 将选项列表赋值给选项组合框
-                if (cmbbxOptions.Items.Contains(defaultAnswer)) // 如果选项组合框列表包含默认答案值
+                if (cmbbxOptions.Items.Contains(defaultAnswer)) // 如果选项组合框列表包含默认答案值，则选定选项组合框中与默认答案值相符的选项
                 {
-                    cmbbxOptions.SelectedItem = defaultAnswer; // 选定选项组合框中与默认答案值相符的选项
+                    cmbbxOptions.SelectedItem = defaultAnswer; 
                 }
             }
             else //否则
@@ -32,8 +32,8 @@ namespace COMIGHT
                 cmbbxOptions.Visibility = Visibility.Collapsed; // 隐藏功能选项组合框
 
                 txtbxAnswer.Text = defaultAnswer; //将默认答案值赋值给答案文本框
-                txtbxAnswer.Height = textboxHeight; //将答案文本框的高度设为输入的高度，默认为30
-                txtbxAnswer.AcceptsReturn = acceptReturn; //将答案文本框是否接受回车键设为输入的值，默认为false
+                txtbxAnswer.Height = textboxHeight; //将答案文本框的高度设为输入参数的高度，默认为30
+                txtbxAnswer.AcceptsReturn = acceptReturn; //将答案文本框是否接受回车键设为输入参数的值，默认为false
             }
             
         }
@@ -68,7 +68,7 @@ namespace COMIGHT
         {
             get 
             {
-                //如果选项组合框有选定项，则将功能选项组合框的选定项值赋给函数返回值；否则，将答案文本框的文本去除首尾空白字符后赋给函数返回值
+                //如果选项组合框有选定项，则将该项的值赋给函数返回值；否则，将答案文本框的文本去除首尾空白字符后赋给函数返回值
                 return cmbbxOptions.SelectedItem != null ? cmbbxOptions.SelectedItem.ToString()! : txtbxAnswer.Text.Trim();
             } 
         }

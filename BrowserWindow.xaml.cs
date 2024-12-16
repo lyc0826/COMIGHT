@@ -205,8 +205,8 @@ namespace COMIGHT
 
         private void BrowserWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            this.Top = 50.0;
-            this.Left = 100.0;
+            this.Top = 20.0;
+            this.Left = 50.0;
         }
 
 

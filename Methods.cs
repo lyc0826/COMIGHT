@@ -746,18 +746,16 @@ namespace COMIGHT
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
                         int lineSpace = isCnDocument ? Default.cnLineSpace : Default.enLineSpace; // 行间距
                         
-                        string titleFontName = isCnDocument ? Default.cnTitleFontName : Default.enTitleFontName; // 大标题字体：如果为中文文档，则字体为华文中宋；否则为Times New Roman
-                        string bodyFontName = isCnDocument ? Default.cnBodyFontName : Default.enBodyFontName; // 正文字体：如果为中文文档，则字体为仿宋；否则为Times New Roman
+                        string titleFontName = isCnDocument ? Default.cnTitleFontName : Default.enTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
+                        string bodyFontName = isCnDocument ? Default.cnBodyFontName : Default.enBodyFontName; // 正文字体
                         string cnHeading0FontName = Default.cnHeading0FontName; // 中文0级小标题
                         string cnHeading1FontName = Default.cnHeading1FontName; ; // 中文1级小标题
                         string cnHeading2FontName = Default.cnHeading2FontName; ; // 中文2级小标题
                         string cnHeading3_4FontName = Default.cnHeading3_4FontName; ; // 通用小标题
-                        string cnShiNumFontName = bodyFontName; // 中文“是”语句
-                        string cnItemNumFontName = bodyFontName; // 中文“条”编号
                         string enHeadingFontName = Default.enHeadingFontName; ; // 英文小标题
                         string tableTitleFontName = bodyFontName; // 表格标题字体
                         string tableBodyFontName = bodyFontName; // 表格正文字体
-                        string footerFontName = Default.footerFontName; ; // 页脚字体为Times New Roman
+                        string footerFontName = "Times New Roman"; // 页脚字体
                         
                         int titleFontSize = isCnDocument ? Default.cnTitleFontSize : Default.enTitleFontSize; // 大标题字号：如果为中文文档，则字号为二号；否则为20
                         int bodyFontSize = isCnDocument ? Default.cnBodyFontSize : Default.enBodyFontSize; ; // 正文字号：如果为中文文档，则字号为三号；否则为14
@@ -765,12 +763,10 @@ namespace COMIGHT
                         int cnHeading1FontSize = Default.cnHeading1FontSize; // 中文1级小标题
                         int cnHeading2FontSize = Default.cnHeading2FontSize; // 中文2级小标题
                         int cnHeading3_4FontSize = Default.cnHeading3_4FontSize; // 通用小标题（以阿拉伯数字和小数点开头，适用于英文文档各级标题和中文文档3、4级标题）
-                        int cnShiNumFontSize = bodyFontSize; // 中文“是”语句
-                        int cnItemNumFontSize = bodyFontSize; // 中文“条”编号
                         int enHeadingFontSize = Default.enHeadingFontSize; // 英文小标题
                         int tableTitleFontSize = bodyFontSize; // 表格标题字号
                         int tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
-                        int footerFontSize = Default.footerFontSize; // 页脚字号为四号
+                        int footerFontSize = 14; // 页脚字号为四号
 
 
                         //// 定义页边距、行距、字体、字号等的值
@@ -1076,8 +1072,6 @@ namespace COMIGHT
                             {
                                 find.Text = matchCnShiNum.Value;
                                 find.Execute();
-                                font.Name = cnShiNumFontName;
-                                font.Size = cnShiNumFontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
@@ -1093,9 +1087,7 @@ namespace COMIGHT
                             {
                                 find.Text = matchCnItemNum.Value;
                                 find.Execute();
-                                font.Name = cnItemNumFontName;
-                                font.Size = cnItemNumFontSize;
-                                font.Bold = 0;
+                                font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 

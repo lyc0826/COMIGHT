@@ -53,8 +53,6 @@ namespace COMIGHT
                 settingTable.Rows.Add("English Body Text Font Size", Default.enBodyFontSize);
                 settingTable.Rows.Add("English Heading Font Name", Default.enHeadingFontName);
                 settingTable.Rows.Add("English Heading Font Size", Default.enHeadingFontSize);
-                settingTable.Rows.Add("Footer Font Name", Default.footerFontName);
-                settingTable.Rows.Add("Footer Font Size", Default.footerFontSize);
                 settingTable.Rows.Add("Chinese Line Space", Default.cnLineSpace);
                 settingTable.Rows.Add("English Line Space", Default.enLineSpace);
 
@@ -111,10 +109,6 @@ namespace COMIGHT
                 if (row != null) Default.enHeadingFontName = (string)row["Value"];
                 row = settingTable.Rows.Find("English Heading Font Size");
                 if (row != null) Default.enHeadingFontSize = Convert.ToInt32(row["Value"]);
-                row = settingTable.Rows.Find("Footer Font Name");
-                if (row != null) Default.footerFontName = (string)row["Value"];
-                row = settingTable.Rows.Find("Footer Font Size");
-                if (row != null) Default.footerFontSize = Convert.ToInt32(row["Value"]);
                 row = settingTable.Rows.Find("Chinese Line Space");
                 if (row != null) Default.cnLineSpace = Convert.ToInt32(row["Value"]);
                 row = settingTable.Rows.Find("English Line Space");
