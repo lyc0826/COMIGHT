@@ -96,6 +96,8 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - For English documents, blank lines shall be placed between different levels of headings, between a heading and its body paragraph, and between paragraphs.
 
+  - Tables shall be separated from its following text by at least one blank line.
+
   - The signature shall be separated from the body text by at least one blank line, with the organization's/person's name above (can be multiple, arranged vertically), and the date below. For Chinese documents, the date format shall be "YYYY年MM月DD日".
 
   - **Documents with columns, complex tables, or mixed text and images are not applicable!**
