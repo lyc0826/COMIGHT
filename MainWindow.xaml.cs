@@ -37,18 +37,56 @@ namespace COMIGHT
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
-            lblIntro.Content = $"An AI-Powered Multi-Tool. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
+            lblIntro.Content = $"A Multi-Tool for Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
 
-        private void mnuSettings_Click(object sender, RoutedEventArgs e)
+        private async void MnuBatchConvertOfficeFilesTypes_Click(object sender, RoutedEventArgs e)
         {
-            SettingDialog settingDialog = new SettingDialog();
-            settingDialog.ShowDialog();
+            await BatchConvertOfficeFilesTypes();
+        }
+
+        private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
+        {
+            await BatchFormatWordDocumentsAsync();
+        }
+
+        private void MnuBatchProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        {
+            BatchProcessExcelWorksheets();
+        }
+
+        private void MnuBatchUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        {
+            BatchUnhideExcelWorksheets();
+        }
+
+        private void MnuBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetInstanceCountByHandle<BrowserWindow>() < 3) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
+            {
+                BrowserWindow browserWindow = new BrowserWindow();
+                browserWindow.Show();
+            }
+        }
+
+        private void MnuCompareExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        {
+            CompareExcelWorksheets();
         }
 
         private void mnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
         {
             ConvertMarkDownIntoWord();
+        }
+
+        private void MnuCreateNameCards_Click(object sender, RoutedEventArgs e)
+        {
+            CreateNameCards();
+        }
+
+        private void MnuExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
@@ -61,41 +99,6 @@ namespace COMIGHT
             ImportTextIntoDocumentTable();
         }
 
-        private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
-        {
-            await BatchFormatWordDocumentsAsync();
-        }
-
-        private void MnuBatchUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
-        {
-            BatchUnhideExcelWorksheets();
-        }
-
-        private void MnuBatchProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
-        {
-            BatchProcessExcelWorksheets();
-        }
-
-        private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
-        {
-            SplitExcelWorksheet();
-        }
-
-        private void MnuCompareExcelWorksheets_Click(object sender, RoutedEventArgs e)
-        {
-            CompareExcelWorksheets();
-        }
-
-        private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
-        {
-            ScreenStocks();
-        }
-
-        private async void MnuBatchConvertOfficeFilesTypes_Click(object sender, RoutedEventArgs e)
-        {
-            await BatchConvertOfficeFilesTypes();
-        }
-
         private void MnuMakeFileList_Click(object sender, RoutedEventArgs e)
         {
             MakeFileList();
@@ -106,18 +109,20 @@ namespace COMIGHT
             MakeFolders();
         }
 
-        private void MnuCreateNameCards_Click(object sender, RoutedEventArgs e)
+        private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
         {
-            CreateNameCards();
+            ScreenStocks();
         }
 
-        private void MnuBrowser_Click(object sender, RoutedEventArgs e)
+        private void mnuSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (GetInstanceCountByHandle<BrowserWindow>() < 3) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
-            {
-                BrowserWindow browserWindow = new BrowserWindow();
-                browserWindow.Show();
-            }
+            SettingDialog settingDialog = new SettingDialog();
+            settingDialog.ShowDialog();
+        }
+
+        private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
+        {
+            SplitExcelWorksheet();
         }
 
         private void MnuHelp_Click(object sender, RoutedEventArgs e)
@@ -132,7 +137,6 @@ namespace COMIGHT
                 };
                 //启动新的进程
                 Process.Start(startInfo);
-
             }
 
             catch (Exception ex)
@@ -140,12 +144,6 @@ namespace COMIGHT
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
-        private void MnuExit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
 
         private async Task BatchFormatWordDocumentsAsync()
         {
@@ -811,7 +809,7 @@ namespace COMIGHT
         {
             try
             {
-                InputDialog inputDialog = new InputDialog(question: "Input the text to be comverted", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;

@@ -1268,8 +1268,8 @@ namespace COMIGHT
                             selection.Expand(WdUnits.wdLine); // 全选表格上方一行
                             selection.MoveStart(WdUnits.wdLine, -5); // 选区向上扩大5行
 
-                            // 定义表格上方标题正则表达式变量，匹配模式为：从开头开始，非“。；;”分页符换行符回车符的字符1-60个，“表单册录执”或“form,table”，中文数字阿拉伯数字“（(”，非“。；;”分页符换行符回车符的字符0-20个，换行符回车符
-                            Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)[^。；;\f\n\r]{1,60}(?:[表单册录执]|form|table)[ |\t]*[一二三四五六七八九十零〇\d（\(][^。；;\f\n\r]{0,20}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                            // 定义表格上方标题正则表达式变量，匹配模式为：从开头开始，非“。；;”分页符换行符回车符的字符1-60个，“表单册录执”或“form,table”，中文数字阿拉伯数字“（）()”0-6个，换行符回车符
+                            Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)[^。；;\f\n\r]{1,60}(?:[表单册录执]|form|table)[ |\t]*[一二三四五六七八九十零〇\d（）\(\)]{0,6}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
                             MatchCollection matchesTableTitles = regExTableTitle.Matches(selection.Text); // 获取选区文字经过表格上方标题正则表达式匹配的结果
 

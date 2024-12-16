@@ -102,6 +102,10 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - **Documents with columns, complex tables, or mixed text and images are not applicable!**
 
+#### **Convert Markdown into Word**
+
+- Converts Markdown text into Word documents, mostly keeps all the formats and styles as the original.
+ 
 #### **Export Document Table into Word Document (Only works for Chinese Documents)**
 
 - Exports the contents of a document table into a Word document, automatically numbers headings at all levels, and formats them according to Chinese government document standards.
