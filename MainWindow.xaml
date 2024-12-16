@@ -36,6 +36,7 @@
 
                 <MenuItem Header="Document" ToolTip="Document Table only works for Chinese documents.">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
+                    <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="mnuConvertMarkdownIntoWord_Click"  />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
                     <MenuItem x:Name="mnuImportTextIntoDocumentTableAndWord" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
                 </MenuItem>

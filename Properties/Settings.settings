@@ -107,5 +107,8 @@
     <Setting Name="enLineSpace" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">24</Value>
     </Setting>
+    <Setting Name="pandocPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files\pandoc\pandoc.exe</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

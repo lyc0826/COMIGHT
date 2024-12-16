@@ -442,5 +442,17 @@ namespace COMIGHT.Properties {
                 this["enLineSpace"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files\\pandoc\\pandoc.exe")]
+        public string pandocPath {
+            get {
+                return ((string)(this["pandocPath"]));
+            }
+            set {
+                this["pandocPath"] = value;
+            }
+        }
     }
 }

@@ -40,6 +40,17 @@ namespace COMIGHT
             lblIntro.Content = $"An AI-Powered Multi-Tool. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
 
+        private void mnuSettings_Click(object sender, RoutedEventArgs e)
+        {
+            SettingDialog settingDialog = new SettingDialog();
+            settingDialog.ShowDialog();
+        }
+
+        private void mnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
+        {
+            ConvertMarkdownIntoWord();
+        }
+
         private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
         {
             await ExportDocumentTableIntoWordAsync();
@@ -796,6 +807,79 @@ namespace COMIGHT
 
         }
 
+        private void ConvertMarkdownIntoWord()
+        {
+            try
+            {
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be comverted", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+
+                string MDText = inputDialog.Answer;
+                //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+                List<string> lstParagraphs = MDText
+                    .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
+                {
+                    throw new Exception("No Valid Text Found!");
+                }
+
+                string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
+                string targetFileMainName = CleanName(lstParagraphs[0], 40); // 获取目标文件主名
+
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath);
+                }
+                //导入目标Markdown文档
+                string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
+                File.WriteAllText(targetMDFilePath, MDText); //将导出文本框内的markdown文字导入目标Markdown文档
+
+                //将目标Markdown文档转换为目标Markdown Word文档
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
+
+                string? pandocPath = Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
+                if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)
+                    || !pandocPath.ToLower().EndsWith(".exe")) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，或没有以exe结尾，则抛出异常
+                {
+                    throw new Exception("Pandoc Setting Error!");
+                }
+
+                ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                {
+                    FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
+                                           //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
+                    Arguments = $"-f markdown -t docx \"{targetMDFilePath}\" -o \"{targetWordFilePath}\"",
+                    RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
+                    UseShellExecute = false, //设定使用操作系统shell执行程序为false
+                    CreateNoWindow = true, //设定不创建窗口
+                };
+
+                //启动新进程
+                using (Process process = Process.Start(startInfo)!)
+                {
+                    process.WaitForExit(); //等待进程结束
+                    if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
+                    {
+                        throw new Exception("Converting Failed!");
+                    }
+                }
+                File.Delete(targetMDFilePath); //删除目标Markdown文件
+
+                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
         public async Task BatchConvertOfficeFilesTypes()
         {
             MSExcel.Application? msExcelApp = null;
@@ -990,7 +1074,7 @@ namespace COMIGHT
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
                 {
-                    throw new Exception("No Valid Data Found!");
+                    throw new Exception("No Valid Text Found!");
                 }
 
                 string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
@@ -1108,6 +1192,7 @@ namespace COMIGHT
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
 
         private void MakeFileList()
         {
@@ -1582,10 +1667,8 @@ namespace COMIGHT
             //MessageBox.Show("标题提前后：" + result);
         }
 
-        private void mnuSettings_Click(object sender, RoutedEventArgs e)
-        {
-            SettingDialog settingDialog = new SettingDialog();
-            settingDialog.ShowDialog();
-        }
+        
+
+        
     }
 }

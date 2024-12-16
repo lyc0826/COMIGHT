@@ -55,6 +55,8 @@ namespace COMIGHT
                 settingTable.Rows.Add("English Heading Font Size", Default.enHeadingFontSize);
                 settingTable.Rows.Add("Chinese Line Space", Default.cnLineSpace);
                 settingTable.Rows.Add("English Line Space", Default.enLineSpace);
+                settingTable.Rows.Add("Pandoc Application", Default.pandocPath);
+
 
                 // 设置 "Item" 列为主键以方便查找
                 settingTable.PrimaryKey = new[] { settingTable.Columns["Item"]! };
@@ -113,6 +115,8 @@ namespace COMIGHT
                 if (row != null) Default.cnLineSpace = Convert.ToInt32(row["Value"]);
                 row = settingTable.Rows.Find("English Line Space");
                 if (row != null) Default.enLineSpace = Convert.ToInt32(row["Value"]);
+                row = settingTable.Rows.Find("Pandoc Application");
+                if (row != null) Default.pandocPath = (string)row["Value"];
 
                 Default.Save(); // 保存默认设置
 
