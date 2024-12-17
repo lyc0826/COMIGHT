@@ -38,9 +38,14 @@
     <Setting Name="latestSplitWorksheetOption" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+	  
     <Setting Name="savingFolderPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\COMIGHT Files</Value>
     </Setting>
+	<Setting Name="pandocPath" Type="System.String" Scope="User">
+		<Value Profile="(Default)">C:\Program Files\pandoc\pandoc.exe</Value>
+	</Setting>
+	  
     <Setting Name="cnTitleFontName" Type="System.String" Scope="User">
       <Value Profile="(Default)">华文中宋</Value>
     </Setting>
@@ -107,8 +112,6 @@
     <Setting Name="enLineSpace" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">24</Value>
     </Setting>
-    <Setting Name="pandocPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Program Files\pandoc\pandoc.exe</Value>
-    </Setting>
+    
   </Settings>
 </SettingsFile>
