@@ -13,13 +13,37 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <DataGrid x:Name="dtgrdSettings" Grid.Row="0" Grid.Column="0" Margin="0,5,0,5" AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" 
-                  ItemsSource="{Binding dtgrdSettings}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <TabControl Grid.Row="0" Grid.Column="0" Margin="0,5,0,5">
+            
+            <TabItem Header="General">
+                <DataGrid x:Name="dtgrdGeneralSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Chinese Document">
+                <DataGrid x:Name="dtgrdCnDocumentSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="English Document">
+                <DataGrid x:Name="dtgrdEnDocumentSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+        </TabControl>
+        
         <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogSave" Content="Save" Width="50" Height="30" Click="btnDialogSave_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30"  />

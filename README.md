@@ -18,6 +18,8 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 ### Start
 
+- **Settings:** Set parameters for this application.
+
 - **Help:** Opens this user manual.
 
 - **Exit:** Closes all windows and exits the program.
@@ -104,7 +106,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Convert Markdown into Word**
 
-- Converts Markdown text into Word documents, mostly keeps all the formats and styles as the original.
+- Converts Markdown text into Word documents, keeping formats and styles as the original.
  
 #### **Export Document Table into Word Document (Only works for Chinese Documents)**
 

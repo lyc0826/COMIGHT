@@ -289,34 +289,46 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Times New Roman")]
-        public string enHeadingFontName {
+        [global::System.Configuration.DefaultSettingValueAttribute("Arial")]
+        public string enHeading1FontName {
             get {
-                return ((string)(this["enHeadingFontName"]));
+                return ((string)(this["enHeading1FontName"]));
             }
             set {
-                this["enHeadingFontName"] = value;
+                this["enHeading1FontName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Times New Roman")]
-        public string footerFontName {
+        public string enHeading2FontName {
             get {
-                return ((string)(this["footerFontName"]));
+                return ((string)(this["enHeading2FontName"]));
             }
             set {
-                this["footerFontName"] = value;
+                this["enHeading2FontName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Times New Roman")]
+        public string enHeading3_4FontName {
+            get {
+                return ((string)(this["enHeading3_4FontName"]));
+            }
+            set {
+                this["enHeading3_4FontName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("22")]
-        public int cnTitleFontSize {
+        public double cnTitleFontSize {
             get {
-                return ((int)(this["cnTitleFontSize"]));
+                return ((double)(this["cnTitleFontSize"]));
             }
             set {
                 this["cnTitleFontSize"] = value;
@@ -326,9 +338,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public int cnBodyFontSize {
+        public double cnBodyFontSize {
             get {
-                return ((int)(this["cnBodyFontSize"]));
+                return ((double)(this["cnBodyFontSize"]));
             }
             set {
                 this["cnBodyFontSize"] = value;
@@ -338,9 +350,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public int cnHeading0FontSize {
+        public double cnHeading0FontSize {
             get {
-                return ((int)(this["cnHeading0FontSize"]));
+                return ((double)(this["cnHeading0FontSize"]));
             }
             set {
                 this["cnHeading0FontSize"] = value;
@@ -350,9 +362,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public int cnHeading1FontSize {
+        public double cnHeading1FontSize {
             get {
-                return ((int)(this["cnHeading1FontSize"]));
+                return ((double)(this["cnHeading1FontSize"]));
             }
             set {
                 this["cnHeading1FontSize"] = value;
@@ -362,9 +374,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public int cnHeading2FontSize {
+        public double cnHeading2FontSize {
             get {
-                return ((int)(this["cnHeading2FontSize"]));
+                return ((double)(this["cnHeading2FontSize"]));
             }
             set {
                 this["cnHeading2FontSize"] = value;
@@ -374,9 +386,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public int cnHeading3_4FontSize {
+        public double cnHeading3_4FontSize {
             get {
-                return ((int)(this["cnHeading3_4FontSize"]));
+                return ((double)(this["cnHeading3_4FontSize"]));
             }
             set {
                 this["cnHeading3_4FontSize"] = value;
@@ -386,9 +398,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public int enTitleFontSize {
+        public double enTitleFontSize {
             get {
-                return ((int)(this["enTitleFontSize"]));
+                return ((double)(this["enTitleFontSize"]));
             }
             set {
                 this["enTitleFontSize"] = value;
@@ -398,9 +410,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("14")]
-        public int enBodyFontSize {
+        public double enBodyFontSize {
             get {
-                return ((int)(this["enBodyFontSize"]));
+                return ((double)(this["enBodyFontSize"]));
             }
             set {
                 this["enBodyFontSize"] = value;
@@ -409,34 +421,46 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("14")]
-        public int enHeadingFontSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("18")]
+        public double enHeading1FontSize {
             get {
-                return ((int)(this["enHeadingFontSize"]));
+                return ((double)(this["enHeading1FontSize"]));
             }
             set {
-                this["enHeadingFontSize"] = value;
+                this["enHeading1FontSize"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("14")]
-        public int footerFontSize {
+        public double enHeading2FontSize {
             get {
-                return ((int)(this["footerFontSize"]));
+                return ((double)(this["enHeading2FontSize"]));
             }
             set {
-                this["footerFontSize"] = value;
+                this["enHeading2FontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("14")]
+        public double enHeading3_4FontSize {
+            get {
+                return ((double)(this["enHeading3_4FontSize"]));
+            }
+            set {
+                this["enHeading3_4FontSize"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("28")]
-        public int cnLineSpace {
+        public double cnLineSpace {
             get {
-                return ((int)(this["cnLineSpace"]));
+                return ((double)(this["cnLineSpace"]));
             }
             set {
                 this["cnLineSpace"] = value;
@@ -446,9 +470,9 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("24")]
-        public int enLineSpace {
+        public double enLineSpace {
             get {
-                return ((int)(this["enLineSpace"]));
+                return ((double)(this["enLineSpace"]));
             }
             set {
                 this["enLineSpace"] = value;
