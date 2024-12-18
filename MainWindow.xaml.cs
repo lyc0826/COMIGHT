@@ -972,7 +972,7 @@ namespace COMIGHT
                 InstalledFontCollection installedFontCollention = new InstalledFontCollection();
                 List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
 
-                string latestFontName = Default.latestFontName; //读取设置中保存的字体名称
+                string latestFontName = Default.latestNameCardFontName; //读取设置中保存的字体名称
                 InputDialog inputDialog = new InputDialog(question: "Select the font", defaultAnswer: latestFontName, options: lstFontNames); //弹出对话框，输入字体名称
 
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
@@ -980,7 +980,7 @@ namespace COMIGHT
                     return;
                 }
                 string fontName = inputDialog.Answer;
-                Default.latestFontName = fontName; // 将对话框返回的字体名称存入设置
+                Default.latestNameCardFontName = fontName; // 将对话框返回的字体名称存入设置
                 Default.Save();
 
                 using (ExcelPackage sourceExcelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开源数据Excel工作簿，赋值给源数据Excel包变量（源数据Excel工作簿）

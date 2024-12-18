@@ -29,7 +29,7 @@
     <Setting Name="latestKeyDataColumnName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="latestFontName" Type="System.String" Scope="User">
+    <Setting Name="latestNameCardFontName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="latestBatchProcessWorkbookOption" Type="System.String" Scope="User">

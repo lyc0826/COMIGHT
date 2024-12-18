@@ -63,7 +63,6 @@ namespace COMIGHT
             txtbxAnswer.Focus(); //答案文本框获取焦点
         }
 
-
         public string Answer
         {
             get 

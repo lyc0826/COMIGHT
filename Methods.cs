@@ -1162,6 +1162,7 @@ namespace COMIGHT
                             Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:(?:[A-Z]+\.)|(?:\d+\.?))(?:\d+\.?){0,3})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline);
                             MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
+                            //List<string> lstFontName  = new List<string>() { enHeading1FontName, enHeading2FontName, enHeading3_4FontName };
                             foreach (Match matchEnHeading in matchesEnHeadings)
                             {
                                 find.Text = matchEnHeading.Value;
@@ -1171,22 +1172,32 @@ namespace COMIGHT
                                         .Where(s => !string.IsNullOrWhiteSpace(s)) // 
                                         .ToList().Count;
 
-                                switch (enHeadingNumsCount)
+                                // 根据小标题编号中的数字组数进行字体设置
+                                (font.Name, font.Size) = enHeadingNumsCount switch
                                 {
-                                    case 1:
-                                        font.Name = enHeading1FontName;
-                                        font.Size = enHeading1FontSize;
-                                        break;
-                                    case 2:
-                                        font.Name = enHeading2FontName;
-                                        font.Size = enHeading2FontSize;
-                                        break;
-                                    case 3:
-                                    case 4:
-                                        font.Name = enHeading3_4FontName;
-                                        font.Size = enHeading3_4FontSize;
-                                        break;
-                                }
+                                    1 => (enHeading1FontName, enHeading1FontSize),
+                                    2 => (enHeading2FontName, enHeading2FontSize),
+                                    3 => (enHeading3_4FontName, enHeading3_4FontSize),
+                                    _ => (enHeading3_4FontName, enHeading3_4FontSize),
+                                };
+
+                                //switch (enHeadingNumsCount) // 根据小标题编号中的数字组数进行字体设置
+                                //{
+                                //    case 1: // 如果小标题编号中的数字组数为1组，则设置字体为英文1级标题
+                                //        font.Name = enHeading1FontName;
+                                //        font.Size = enHeading1FontSize;
+                                //        break;
+                                //    case 2:
+                                //        font.Name = enHeading2FontName;
+                                //        font.Size = enHeading2FontSize;
+                                //        break;
+                                //    case 3:
+                                //    case 4:
+                                //        font.Name = enHeading3_4FontName;
+                                //        font.Size = enHeading3_4FontSize;
+                                //        break;
+                                //}
+
                                 font.Bold = 1;
 
                                 if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
