@@ -28,7 +28,7 @@ namespace COMIGHT
         private DataTable generalSettingsTable = new DataTable("generalSettingsTable");
         private DataTable cnSettingsTable = new DataTable("cnSettingsTable");
         private DataTable enSettingsTable = new DataTable("enSettingsTable");
-        private DataSet settingsDataSet = new DataSet();
+        private DataSet dataSet = new DataSet();
 
         // 定义设置记录类型
         private record Setting(string TableName, string TableItem, string PropertiesSettingItem);
@@ -72,8 +72,8 @@ namespace COMIGHT
             {
                 // 定义设置DataTable数组
                 DataTable[] dataTables = new DataTable[] { generalSettingsTable, cnSettingsTable, enSettingsTable };
-                settingsDataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
-                settingsDataSet.AcceptChanges();
+                dataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
+                dataSet.AcceptChanges();
                 // 遍历设置DataTable数组，为每个DataTable添加列，并设置主键便于快速查找
                 foreach (DataTable dataTable in dataTables)
                 {
@@ -111,7 +111,7 @@ namespace COMIGHT
                 {
                     PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
                     object? value = propertyInfo.GetValue(Default); // 获取对应属性的值
-                    if (value != null) settingsDataSet.Tables[setting.TableName]!.Rows.Add(setting.TableItem, value); // 如果值不为null，则向当前设置DataTable中添加DataTable设置项和值
+                    if (value != null) dataSet.Tables[setting.TableName]!.Rows.Add(setting.TableItem, value); // 如果值不为null，则向当前设置DataTable中添加DataTable设置项和值
                 }
 
             }
@@ -140,10 +140,10 @@ namespace COMIGHT
                 foreach (var setting in lstSettings)
                 {
 
-                    DataRow? row = settingsDataSet.Tables[setting.TableName]!.Rows.Find(setting.TableItem); // 查找当前DataTable设置项对应的数据行
+                    DataRow? row = dataSet.Tables[setting.TableName]!.Rows.Find(setting.TableItem); // 查找当前DataTable设置项对应的数据行
                     if (row != null && row["Value"] != DBNull.Value) // 如果数据行存在且值不为数据库空值
                     {
-                        var propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem); // 获取Properties.Settings中当前设置项的属性
+                        PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
                         if (propertyInfo != null && propertyInfo.CanWrite) // 如果属性不为null且可写入
                         {
                             object valueToSet = Convert.ChangeType(row["Value"], propertyInfo.PropertyType); // 将数据行值转换为属性类型
