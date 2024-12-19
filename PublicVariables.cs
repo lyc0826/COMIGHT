@@ -17,10 +17,6 @@ namespace COMIGHT
 
         public enum FileType { Excel, Word, Convertible, All } //定义文件类型枚举
 
-
-        //定义中文小标题文字正则表达式变量，匹配模式为：从开头开始，非“。；;分页符换行符回车符”的字符2-40个；后方出现：“。”换行符回车符或结尾标记
-        //public static Regex regExCnHeadingText = new Regex(@"^[^。；;\f\n\r]{2,40}(?=。|\n|\r|$)", RegexOptions.Multiline);
-
         //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
         public static Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
 
