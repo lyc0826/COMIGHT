@@ -1,5 +1,4 @@
-﻿using COMIGHT.Properties;
-using System.IO;
+﻿using System.IO;
 using System.Text.RegularExpressions;
 using static COMIGHT.Properties.Settings;
 

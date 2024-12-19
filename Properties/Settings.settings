@@ -3,40 +3,40 @@
   <Profiles />
   <Settings>
     <Setting Name="latestFolderPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">C:\</Value>
     </Setting>
     <Setting Name="latestURL" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">www.microsoft.com</Value>
     </Setting>
     <Setting Name="latestStockDataColumnNamesStr" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="lastestHeaderAndFooterRowCountStr" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">1,0</Value>
     </Setting>
     <Setting Name="latestKeyColumnLetter" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">A</Value>
     </Setting>
     <Setting Name="latestExcelWorksheetIndexesStr" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">1-1</Value>
     </Setting>
     <Setting Name="latestExcelWorksheetName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Sheet1</Value>
     </Setting>
     <Setting Name="latestOperatingRangeAddresses" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">B2:C3</Value>
     </Setting>
     <Setting Name="latestKeyDataColumnName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">ID</Value>
     </Setting>
     <Setting Name="latestNameCardFontName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">宋体</Value>
     </Setting>
     <Setting Name="latestBatchProcessWorkbookOption" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="latestSplitWorksheetOption" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="savingFolderPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\COMIGHT Files</Value>

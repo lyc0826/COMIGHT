@@ -25,7 +25,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\")]
         public string latestFolderPath {
             get {
                 return ((string)(this["latestFolderPath"]));
@@ -37,7 +37,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("www.microsoft.com")]
         public string latestURL {
             get {
                 return ((string)(this["latestURL"]));
@@ -61,7 +61,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1,0")]
         public string lastestHeaderAndFooterRowCountStr {
             get {
                 return ((string)(this["lastestHeaderAndFooterRowCountStr"]));
@@ -73,7 +73,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("A")]
         public string latestKeyColumnLetter {
             get {
                 return ((string)(this["latestKeyColumnLetter"]));
@@ -85,7 +85,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1-1")]
         public string latestExcelWorksheetIndexesStr {
             get {
                 return ((string)(this["latestExcelWorksheetIndexesStr"]));
@@ -97,7 +97,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Sheet1")]
         public string latestExcelWorksheetName {
             get {
                 return ((string)(this["latestExcelWorksheetName"]));
@@ -109,7 +109,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("B2:C3")]
         public string latestOperatingRangeAddresses {
             get {
                 return ((string)(this["latestOperatingRangeAddresses"]));
@@ -121,7 +121,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("ID")]
         public string latestKeyDataColumnName {
             get {
                 return ((string)(this["latestKeyDataColumnName"]));
@@ -133,7 +133,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("宋体")]
         public string latestNameCardFontName {
             get {
                 return ((string)(this["latestNameCardFontName"]));
@@ -145,7 +145,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public string latestBatchProcessWorkbookOption {
             get {
                 return ((string)(this["latestBatchProcessWorkbookOption"]));
@@ -157,7 +157,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public string latestSplitWorksheetOption {
             get {
                 return ((string)(this["latestSplitWorksheetOption"]));
