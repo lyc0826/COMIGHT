@@ -14,7 +14,7 @@ namespace COMIGHT
 
         public static string manualUrl = @"https://github.com/lyc0826/COMIGHT/"; //定义用户手册网址
 
-        public enum FileType { Excel, Word, Convertible, All } //定义文件类型枚举
+        public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
 
         //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
         public static Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");

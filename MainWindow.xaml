@@ -43,6 +43,7 @@
 
                 <MenuItem Header="Tools">
                     <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFilesTypes_Click" />
+                    <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "Merge Documents And Tables" Click="MnuMergeDocumentsAndTables_Click"  />
                     <MenuItem x:Name="mnuMakeFileList" Header= "Make File List" Click="MnuMakeFileList_Click" />
                     <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
