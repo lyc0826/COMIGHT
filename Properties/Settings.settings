@@ -9,7 +9,7 @@
       <Value Profile="(Default)">www.microsoft.com</Value>
     </Setting>
     <Setting Name="latestStockDataColumnNamesStr" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Symbol,Name,Sector,Price,PB,PE</Value>
     </Setting>
     <Setting Name="lastestHeaderAndFooterRowCountStr" Type="System.String" Scope="User">
       <Value Profile="(Default)">1,0</Value>
@@ -69,7 +69,7 @@
       <Value Profile="(Default)">Times New Roman</Value>
     </Setting>
     <Setting Name="enHeading1FontName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Arial</Value>
+      <Value Profile="(Default)">Times New Roman</Value>
     </Setting>
     <Setting Name="enHeading2FontName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Times New Roman</Value>
@@ -102,7 +102,7 @@
       <Value Profile="(Default)">14</Value>
     </Setting>
     <Setting Name="enHeading1FontSize" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">18</Value>
+      <Value Profile="(Default)">14</Value>
     </Setting>
     <Setting Name="enHeading2FontSize" Type="System.Double" Scope="User">
       <Value Profile="(Default)">14</Value>

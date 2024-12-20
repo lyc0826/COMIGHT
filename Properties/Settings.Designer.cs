@@ -49,7 +49,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Symbol,Name,Sector,Price,PB,PE")]
         public string latestStockDataColumnNamesStr {
             get {
                 return ((string)(this["latestStockDataColumnNamesStr"]));
@@ -289,7 +289,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Arial")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Times New Roman")]
         public string enHeading1FontName {
             get {
                 return ((string)(this["enHeading1FontName"]));
@@ -421,7 +421,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("18")]
+        [global::System.Configuration.DefaultSettingValueAttribute("14")]
         public double enHeading1FontSize {
             get {
                 return ((double)(this["enHeading1FontSize"]));

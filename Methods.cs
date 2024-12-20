@@ -13,24 +13,24 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Interop;
 using Xceed.Words.NET;
+using static COMIGHT.Properties.Settings;
+using static COMIGHT.PublicVariables;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
 using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
-using Paragraph = Microsoft.Office.Interop.Word.Paragraph;
-using Section = Microsoft.Office.Interop.Word.Section;
-using Table = Microsoft.Office.Interop.Word.Table;
+using MSWordParagraph = Microsoft.Office.Interop.Word.Paragraph;
+using MSWordSection = Microsoft.Office.Interop.Word.Section;
+using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using static COMIGHT.PublicVariables;
-using static COMIGHT.Properties.Settings;
 
 
 namespace COMIGHT
 {
     public static partial class Methods
     {
-        
+
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
@@ -360,7 +360,7 @@ namespace COMIGHT
         public static string? GetKeyColumnLetter()
         {
             string latestColumnLetter = Default.latestKeyColumnLetter; //读取设置中保存的主键列符
-            InputDialog inputDialog = new InputDialog(question:"Input the key column letter (e.g. \"A\"）", defaultAnswer:latestColumnLetter); //弹出对话框，输入主键列符
+            InputDialog inputDialog = new InputDialog(question: "Input the key column letter (e.g. \"A\"）", defaultAnswer: latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
@@ -377,7 +377,7 @@ namespace COMIGHT
             try
             {
                 string lastestHeaderFooterRowCountStr = Default.lastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
-                InputDialog inputDialog = new InputDialog(question:"Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer:lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
+                InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
                     headerRowCount = 0;
@@ -750,7 +750,7 @@ namespace COMIGHT
 
         public static async Task FormatWordDocumentsAsync(List<string> filePaths)
         {
-            Task task = Task.Run(() => process());
+            Task task = Task.Run(() => process()); // 创建一个异步任务，执行过程为process()
             void process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
@@ -787,7 +787,7 @@ namespace COMIGHT
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
                         float lineSpace = (float)(isCnDocument ? Default.cnLineSpace : Default.enLineSpace); // 行间距
-                        
+
                         string titleFontName = isCnDocument ? Default.cnTitleFontName : Default.enTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
                         string bodyFontName = isCnDocument ? Default.cnBodyFontName : Default.enBodyFontName; // 正文字体
                         string cnHeading0FontName = Default.cnHeading0FontName; // 中文0级小标题
@@ -797,12 +797,12 @@ namespace COMIGHT
                         string enHeading1FontName = Default.enHeading1FontName; ; // 英文1级小标题
                         string enHeading2FontName = Default.enHeading2FontName; // 英文2级小标题
                         string enHeading3_4FontName = Default.enHeading3_4FontName; // 英文3-4小标题
-                        
+
                         string tableTitleFontName = bodyFontName; // 表格标题字体
                         string tableBodyFontName = bodyFontName; // 表格正文字体
-                        
+
                         string footerFontName = "Times New Roman"; // 页脚字体
-                        
+
 
                         float titleFontSize = (float)(isCnDocument ? Default.cnTitleFontSize : Default.enTitleFontSize); // 大标题字号：如果为中文文档，则字号为二号；否则为20
                         float bodyFontSize = (float)(isCnDocument ? Default.cnBodyFontSize : Default.enBodyFontSize); // 正文字号：如果为中文文档，则字号为三号；否则为14
@@ -1143,7 +1143,7 @@ namespace COMIGHT
                                 find.Execute();
                                 if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
                                 {
-                                    foreach (Paragraph paragraph in selection.Paragraphs) // 遍历所有落款中的段落
+                                    foreach (MSWordParagraph paragraph in selection.Paragraphs) // 遍历所有落款中的段落
                                     {
                                         float rightIndentation = Math.Max(0, 10 - paragraph.Range.Text.Length / 2); // 计算右缩进量，如果小于0，则限定为0
                                         paragraph.Format.CharacterUnitRightIndent = rightIndentation; // 右缩进设为之前计算值
@@ -1181,23 +1181,6 @@ namespace COMIGHT
                                     3 => (enHeading3_4FontName, enHeading3_4FontSize),
                                     _ => (enHeading3_4FontName, enHeading3_4FontSize),
                                 };
-
-                                //switch (enHeadingNumsCount) // 根据小标题编号中的数字组数进行字体设置
-                                //{
-                                //    case 1: // 如果小标题编号中的数字组数为1组，则设置字体为英文1级标题
-                                //        font.Name = enHeading1FontName;
-                                //        font.Size = enHeading1FontSize;
-                                //        break;
-                                //    case 2:
-                                //        font.Name = enHeading2FontName;
-                                //        font.Size = enHeading2FontSize;
-                                //        break;
-                                //    case 3:
-                                //    case 4:
-                                //        font.Name = enHeading3_4FontName;
-                                //        font.Size = enHeading3_4FontSize;
-                                //        break;
-                                //}
 
                                 font.Bold = 1;
 
@@ -1264,7 +1247,7 @@ namespace COMIGHT
                         // 设置表格格式
 
                         // 遍历所有表格
-                        foreach (Table table in msWordDocument.Tables)
+                        foreach (MSWordTable table in msWordDocument.Tables)
                         {
                             // 表格上方标题、注释设置
                             table.Cell(1, 1).Select(); // 选择第1行第1列的单元格
@@ -1281,7 +1264,7 @@ namespace COMIGHT
                             {
                                 find.Text = matchesTableTitles[0].Value;
                                 find.Execute();
-                                paragraphFormat.CharacterUnitFirstLineIndent = 0;                                
+                                paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                 paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0);
                                 paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                                 font.Name = tableTitleFontName;
@@ -1360,7 +1343,7 @@ namespace COMIGHT
                         }
 
                         // 页脚页码设置
-                        foreach (Section section in msWordDocument.Sections) // 遍历所有节
+                        foreach (MSWordSection section in msWordDocument.Sections) // 遍历所有节
                         {
                             section.PageSetup.DifferentFirstPageHeaderFooter = 0;     // “首页页眉页脚不同”设为否
                             section.PageSetup.OddAndEvenPagesHeaderFooter = 0;        // “奇偶页页眉页脚不同”设为否
@@ -1398,6 +1381,7 @@ namespace COMIGHT
                 }
 
             }
+
             await task;
         }
 

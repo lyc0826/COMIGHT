@@ -9,26 +9,24 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using Xceed.Words.NET;
 using static COMIGHT.Methods;
+using static COMIGHT.Properties.Settings;
 using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
 using MSExcel = Microsoft.Office.Interop.Excel;
 using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
 using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
-using Task = System.Threading.Tasks.Task;
-using Window = System.Windows.Window;
-using static COMIGHT.Properties.Settings;
-using System.Text;
-using System.Windows.Documents;
-using Xceed.Words.NET;
-using Xceed.Document.NET;
 using Paragraph = Xceed.Document.NET.Paragraph;
 using Table = Xceed.Document.NET.Table;
 using TableCell = Xceed.Document.NET.Cell;
 using TableRow = Xceed.Document.NET.Row;
+using Task = System.Threading.Tasks.Task;
+using Window = System.Windows.Window;
 
 namespace COMIGHT
 {
@@ -839,7 +837,7 @@ namespace COMIGHT
 
                 string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
                 // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-                string targetFileMainName = CleanName(lstParagraphs[0].RemoveMarkDownMarks(), 40); 
+                string targetFileMainName = CleanName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
@@ -1427,7 +1425,7 @@ namespace COMIGHT
                                 table.Remove(); // 移除当前表格
                             }
 
-                            lstFullText.Add ($"{fileName}"); // 全文本列表中追加当前Word文件主名
+                            lstFullText.Add($"{fileName}"); // 全文本列表中追加当前Word文件主名
                             //将文本添加到全文本列表
                             foreach (Paragraph paragraph in wordDocument.Paragraphs) // 遍历所有段落
                             {
@@ -1481,7 +1479,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = Default.latestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Code, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Symbol, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1757,22 +1755,7 @@ namespace COMIGHT
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {
-            //InputDialog inputDialog = new InputDialog("字符串1", "我是谁"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            //string str1 = inputDialog.Answer;
-            //inputDialog = new InputDialog("字符串2", "我是谁"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            //string str2 = inputDialog.Answer;
-            //double result = GetTextRelevance(str1, str2);
-            //MessageBox.Show("字符串相关度为：" + result.ToString());
-
-            //InputDialog inputDialog = new InputDialog("数字", "1000"); //弹出功能选择对话框
+            //InputDialog inputDialog = new InputDialog("Number", "1000"); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
             //{
             //    return;
@@ -1781,27 +1764,8 @@ namespace COMIGHT
             //string result = ConvertArabicNumberIntoChinese(numbers);
             //MessageBox.Show("转换后的中文数字为：" + result);
 
-            //MessageBox.Show(txtbxInText.Text.RemoveFormatMarksAndEmptyLines());
-
-            //InputDialog inputDialog = new InputDialog("年份", "二零二五"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            //string yearStr = inputDialog.Answer; //获取对话框返回的功能选项
-            //string result = GetArabicYear(yearStr);
-            //MessageBox.Show("数字年份为：" + result);
-
-            //InputDialog inputDialog = new InputDialog("原文", ""); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            //string inText = inputDialog.Answer; //获取对话框返回的功能选项
-            //string result = inText.PutHeadingSentenceFirst();
-            //MessageBox.Show("标题提前后：" + result);
         }
 
-        
+
     }
 }
