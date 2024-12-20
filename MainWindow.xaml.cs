@@ -119,6 +119,23 @@ namespace COMIGHT
             MergeDocumentsAndTables();
         }
 
+        private void mnuOpenSavingFolder_Click(object sender, RoutedEventArgs e)
+        {
+            string savingFolderPath = targetBaseFolderPath; // 获取目标保存文件夹路径
+            if (!Directory.Exists(savingFolderPath)) // 如果目标文件夹不存在，则提示并结束本过程
+            {
+                MessageBox.Show("Folder Doesn't Exist!", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // 使用Process.Start()方法打开目标文件夹
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"\"{savingFolderPath}\""
+            }); 
+        }
+
         private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
         {
             ScreenStocks();
@@ -1029,8 +1046,8 @@ namespace COMIGHT
                         cellABStyle.Font.Name = fontName; //设置字体
 
                         int charLimit = IsChineseText(name) ? 10 : 20; // 计算字符上限：如果是中文名称，则得到10；否则得到20
-                        cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 100)
-                            * (1 - (name.Length - charLimit) * 0.035).Clamp(0.5, 1)); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
+                        cellABStyle.Font.Size = (float)( (!name.Contains('\n') ? 160 : 100)
+                            * (1 - (name.Length - charLimit) * 0.035).Clamp(0.5, 1) ); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
@@ -1766,6 +1783,6 @@ namespace COMIGHT
 
         }
 
-
+        
     }
 }

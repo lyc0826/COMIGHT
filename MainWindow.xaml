@@ -20,6 +20,7 @@
         <DockPanel Grid.Row="0" Grid.Column="0" >
             <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
                 <MenuItem Header="Start">
+                    <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="mnuOpenSavingFolder_Click" />
                     <MenuItem x:Name="mnuSettings" Header="Settings" Click="mnuSettings_Click"  />
                     <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
