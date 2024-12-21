@@ -128,12 +128,14 @@ namespace COMIGHT
                 return;
             }
 
-            // 使用Process.Start()方法打开目标文件夹
-            Process.Start(new ProcessStartInfo
+            // 创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+            ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                FileName = "explorer.exe",
-                Arguments = $"\"{savingFolderPath}\""
-            }); 
+                FileName = $"\"{savingFolderPath}\"", //指定需要打开的文件夹路径
+                UseShellExecute = true //设定使用操作系统shell执行程序
+            };
+            //启动新的进程
+            Process.Start(startInfo);
         }
 
         private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
@@ -141,7 +143,7 @@ namespace COMIGHT
             ScreenStocks();
         }
 
-        private void mnuSettings_Click(object sender, RoutedEventArgs e)
+        private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
             SettingDialog settingDialog = new SettingDialog();
             settingDialog.ShowDialog();
