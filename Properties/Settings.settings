@@ -68,6 +68,9 @@
     <Setting Name="enBodyFontName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Times New Roman</Value>
     </Setting>
+    <Setting Name="enHeading0FontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Times New Roman</Value>
+    </Setting>
     <Setting Name="enHeading1FontName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Times New Roman</Value>
     </Setting>
@@ -99,6 +102,9 @@
       <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="enBodyFontSize" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">14</Value>
+    </Setting>
+    <Setting Name="enHeading0FontSize" Type="System.Double" Scope="User">
       <Value Profile="(Default)">14</Value>
     </Setting>
     <Setting Name="enHeading1FontSize" Type="System.Double" Scope="User">

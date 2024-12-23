@@ -90,7 +90,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   | Heading Level | Chinese Heading Number Format | English Heading Number Format |
   |---|---|---|
-  | 0 | 第一部分 第二部分 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| N.A. |
+  | 0 | 第一部分 第二部分 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| Part 1 Part 2 Part 3 ("Part" can be replaced with "Chapter" "Section" |
   | 1 | 一、 二、 三、... | A. B. C. or 1. 2. 3. ... (with a space behind) |
   | 2 | （一） （二） （三） ... | A.1 B.1 C.1 or 1.1 2.1 3.1 ... (with a space behind) |
   | 3 | 1. 2. 3. ...| A.1.1 B.1.1 C.1.1 or 1.1.1 2.1.1 3.1.1 ... (with a space behind) |

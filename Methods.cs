@@ -791,10 +791,11 @@ namespace COMIGHT
                         string titleFontName = isCnDocument ? Default.cnTitleFontName : Default.enTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
                         string bodyFontName = isCnDocument ? Default.cnBodyFontName : Default.enBodyFontName; // 正文字体
                         string cnHeading0FontName = Default.cnHeading0FontName; // 中文0级小标题
-                        string cnHeading1FontName = Default.cnHeading1FontName; ; // 中文1级小标题
-                        string cnHeading2FontName = Default.cnHeading2FontName; ; // 中文2级小标题
-                        string cnHeading3_4FontName = Default.cnHeading3_4FontName; ; // 通用小标题
-                        string enHeading1FontName = Default.enHeading1FontName; ; // 英文1级小标题
+                        string cnHeading1FontName = Default.cnHeading1FontName; // 中文1级小标题
+                        string cnHeading2FontName = Default.cnHeading2FontName;  // 中文2级小标题
+                        string cnHeading3_4FontName = Default.cnHeading3_4FontName;  // 通用小标题
+                        string enHeading0FontName = Default.enHeading0FontName; // 英文0级小标题
+                        string enHeading1FontName = Default.enHeading1FontName;  // 英文1级小标题
                         string enHeading2FontName = Default.enHeading2FontName; // 英文2级小标题
                         string enHeading3_4FontName = Default.enHeading3_4FontName; // 英文3-4小标题
 
@@ -810,6 +811,7 @@ namespace COMIGHT
                         float cnHeading1FontSize = (float)Default.cnHeading1FontSize; // 中文1级小标题
                         float cnHeading2FontSize = (float)Default.cnHeading2FontSize; // 中文2级小标题
                         float cnHeading3_4FontSize = (float)Default.cnHeading3_4FontSize; // 中文3-4级小标题
+                        float enHeading0FontSize = (float)Default.enHeading0FontSize; // 英文0级小标题
                         float enHeading1FontSize = (float)Default.enHeading1FontSize; // 英文1级小标题
                         float enHeading2FontSize = (float)Default.enHeading2FontSize; // 英文2级小标题
                         float enHeading3_4FontSize = (float)Default.enHeading3_4FontSize; // 英文3-4级小标题
@@ -848,7 +850,7 @@ namespace COMIGHT
                         // 清除段首、段尾多余空格和制表符，段落自动编号转文本
                         for (int i = msWordDocument.Paragraphs.Count; i >= 1; i--) // 从末尾往开头遍历所有段落
                         {
-                            MSWord.Paragraph paragraph = msWordDocument.Paragraphs[i];
+                            MSWordParagraph paragraph = msWordDocument.Paragraphs[i];
 
                             //正则表达式匹配模式设为：前方出现开头标记、换行符回车符，空格或制表符；如果段落文字被匹配成功，则继续循环
                             while (Regex.IsMatch(paragraph.Range.Text, @"(?<=^|\n|\r)[ |\t]"))
@@ -1159,29 +1161,36 @@ namespace COMIGHT
                             //设置英文小标题格式
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，小标题编号【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组】，空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
-                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:(?:[A-Z]+\.)|(?:\d+\.?))(?:\d+\.?){0,3})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline);
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记（捕获组1），【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组2】，空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
+                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:part|chapter|section)[ |\t]+)?((?:(?:[A-Z]+\.)|(?:\d+\.?))(?:\d+\.?){0,3})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                             MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
-                            //List<string> lstFontName  = new List<string>() { enHeading1FontName, enHeading2FontName, enHeading3_4FontName };
                             foreach (Match matchEnHeading in matchesEnHeadings)
                             {
                                 find.Text = matchEnHeading.Value;
                                 find.Execute();
-                                // 计算小标题编号中含有几组数字：使用正则表达式以"."分割小标题编号字符串（捕获组1），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
-                                int enHeadingNumsCount = Regex.Split(matchEnHeading.Groups[1].Value, @"\.")
-                                        .Where(s => !string.IsNullOrWhiteSpace(s)) // 
-                                        .ToList().Count;
+                                
+                                // 计算小标题编号中含有几组数字：使用正则表达式以"."分割小标题编号字符串（捕获组2），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
+                                int enHeadingNumsCount = Regex.Split(matchEnHeading.Groups[2].Value, @"\.")
+                                    .Where(s => !string.IsNullOrWhiteSpace(s)) // 
+                                    .ToList().Count;
 
-                                // 根据小标题编号中的数字组数进行字体设置
-                                (font.Name, font.Size) = enHeadingNumsCount switch
+                                if (matchEnHeading.Groups[1].Success) // 如果英文小标题正则表达式捕获组1匹配成功（以“part、charpter、section”开头），则设置字体为0级标题
                                 {
-                                    1 => (enHeading1FontName, enHeading1FontSize),
-                                    2 => (enHeading2FontName, enHeading2FontSize),
-                                    3 => (enHeading3_4FontName, enHeading3_4FontSize),
-                                    _ => (enHeading3_4FontName, enHeading3_4FontSize),
-                                };
-
+                                    (font.Name, font.Size) = (enHeading0FontName, enHeading0FontSize);
+                                }
+                                else // 否则
+                                {
+                                    // 根据小标题编号中的数字组数进行字体设置（有几组数字，就为几级标题）
+                                    (font.Name, font.Size) = enHeadingNumsCount switch
+                                    {
+                                        1 => (enHeading1FontName, enHeading1FontSize),
+                                        2 => (enHeading2FontName, enHeading2FontSize),
+                                        3 => (enHeading3_4FontName, enHeading3_4FontSize),
+                                        _ => (enHeading3_4FontName, enHeading3_4FontSize),
+                                    };
+                                }
+                                
                                 font.Bold = 1;
 
                                 if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符

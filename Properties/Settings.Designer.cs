@@ -12,7 +12,7 @@ namespace COMIGHT.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.12.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -290,6 +290,18 @@ namespace COMIGHT.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Times New Roman")]
+        public string enHeading0FontName {
+            get {
+                return ((string)(this["enHeading0FontName"]));
+            }
+            set {
+                this["enHeading0FontName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Times New Roman")]
         public string enHeading1FontName {
             get {
                 return ((string)(this["enHeading1FontName"]));
@@ -416,6 +428,18 @@ namespace COMIGHT.Properties {
             }
             set {
                 this["enBodyFontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("14")]
+        public double enHeading0FontSize {
+            get {
+                return ((double)(this["enHeading0FontSize"]));
+            }
+            set {
+                this["enHeading0FontSize"] = value;
             }
         }
         

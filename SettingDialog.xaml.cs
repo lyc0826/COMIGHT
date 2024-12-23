@@ -24,14 +24,30 @@ namespace COMIGHT
             dtgrdEnDocumentSettings.ItemsSource = enSettingsTable!.DefaultView;
         }
 
+        private void btnDialogSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveSettings();
+        }
+
         // 定义设置DataTable和DataSet
         private DataTable generalSettingsTable = new DataTable("generalSettingsTable");
         private DataTable cnSettingsTable = new DataTable("cnSettingsTable");
         private DataTable enSettingsTable = new DataTable("enSettingsTable");
         private DataSet dataSet = new DataSet();
 
-        // 定义设置记录类型
-        private record Setting(string TableName, string TableItem, string PropertiesSettingItem);
+        private class Setting // 定义设置类
+        {
+            public string DataTableName { get; }
+            public string DataTableItem { get; }
+            public string PropertiesSettingItem { get; }
+
+            public Setting(string dataTableName, string dataTableItem, string propertiesSettingItem)
+            {
+                DataTableName = dataTableName;
+                DataTableItem = dataTableItem;
+                PropertiesSettingItem = propertiesSettingItem;
+            }
+        }
 
         // 定义设置记录列表
         private List<Setting> lstSettings = new List<Setting>
@@ -57,6 +73,8 @@ namespace COMIGHT
                 new Setting ("enSettingsTable", "English Title Font Size", "enTitleFontSize"),
                 new Setting ("enSettingsTable", "English Body Text Font Name", "enBodyFontName"),
                 new Setting ("enSettingsTable", "English Body Text Font Size", "enBodyFontSize"),
+                new Setting ("enSettingsTable", "English Heading Lv0 Font Name", "enHeading0FontName"),
+                new Setting ("enSettingsTable", "English Heading Lv0 Font Size", "enHeading0FontSize"),
                 new Setting ("enSettingsTable", "English Heading Lv1 Font Name", "enHeading1FontName"),
                 new Setting ("enSettingsTable", "English Heading Lv1 Font Size", "enHeading1FontSize"),
                 new Setting ("enSettingsTable", "English Heading Lv2 Font Name", "enHeading2FontName"),
@@ -65,6 +83,17 @@ namespace COMIGHT
                 new Setting ("enSettingsTable", "English Heading Lv3-4 Font Size", "enHeading3_4FontSize"),
                 new Setting ("enSettingsTable", "English Line Space", "enLineSpace")
             };
+
+        private object GetDataTableValue(DataTable dataTable, string dataTableKeyField, string datatableValueField, string key, Type targetType)
+        {
+            if (dataTable.PrimaryKey == null ||
+                (!dataTable.PrimaryKey.Any(pk => pk == dataTable.Columns[dataTableKeyField]))) // 如果主键不存在，或者没有包含指定数据列字段，则将指定数据列字段添加进主键
+            {
+                dataTable.PrimaryKey = new[] { dataTable.Columns[dataTableKeyField]! };
+            }
+
+            return Convert.ChangeType(dataTable.Rows.Find(key)?[datatableValueField] ?? "", targetType);
+        }
 
         private void LoadSettings()
         {
@@ -77,59 +106,26 @@ namespace COMIGHT
                 // 遍历设置DataTable数组，为每个DataTable添加列，并设置主键便于快速查找
                 foreach (DataTable dataTable in dataTables)
                 {
-                    //dataTable.Reset();
-                    //DataColumn[] columnsToAdd = new[]
-                    //{
-                    //    new DataColumn("Item", typeof(string)),
-                    //    new DataColumn("Value", typeof(object))
-                    //};
-
-                    //// 遍历要添加的列，并检查是否存在；如果不存在则添加
-                    //foreach (DataColumn column in columnsToAdd)
-                    //{
-                    //    if (!dataTable.Columns.Contains(column.ColumnName))
-                    //    {
-                    //        dataTable.Columns.Add(column);
-                    //    }
-                    //}
-
-                    //if (!dataTable.PrimaryKey.Any()) // 如果主键不存在，则添加主键
-                    //{
-                    //    dataTable.PrimaryKey = new[] { dataTable.Columns["Item"]! };
-                    //}
-
                     dataTable.Columns.AddRange(new DataColumn[]
                     {
                         new DataColumn("Item", typeof(string)),
                         new DataColumn("Value", typeof(object)),
                     });
-                    dataTable.PrimaryKey = new[] { dataTable.Columns["Item"]! };
                 }
 
                 // 将Properties.Settings中设置项的值填入对应的设置DataTable中
                 foreach (var setting in lstSettings) // 遍历设置记录列表
                 {
                     PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
-                    object? value = propertyInfo.GetValue(Default); // 获取对应属性的值
-                    if (value != null) dataSet.Tables[setting.TableName]!.Rows.Add(setting.TableItem, value); // 如果值不为null，则向当前设置DataTable中添加DataTable设置项和值
+                    object? value = propertyInfo.GetValue(Default); // 获取当前属性的值
+                    if (value != null) dataSet.Tables[setting.DataTableName]!.Rows.Add(setting.DataTableItem, value); // 如果值不为null，则向当前设置DataTable中添加DataTable设置项和值
                 }
-
             }
 
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-        }
-
-        private void btnDialogSave_Click(object sender, RoutedEventArgs e)
-        {
-            SaveSettings();
-        }
-
-        private T GetSettingValue<T>(DataTable datatable, string dataTableKeyField, string datatableValueField)
-        {
-            return (T)Convert.ChangeType(datatable.Rows.Find(dataTableKeyField)?[datatableValueField] ?? "", typeof(T));
         }
 
         private void SaveSettings()
@@ -140,16 +136,11 @@ namespace COMIGHT
                 foreach (var setting in lstSettings)
                 {
 
-                    DataRow? row = dataSet.Tables[setting.TableName]!.Rows.Find(setting.TableItem); // 查找当前DataTable设置项对应的数据行
-                    if (row != null && row["Value"] != DBNull.Value) // 如果数据行存在且值不为数据库空值
+                    PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
+                    if (propertyInfo != null && propertyInfo.CanWrite) // 如果属性不为null且可写入
                     {
-                        PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
-                        if (propertyInfo != null && propertyInfo.CanWrite) // 如果属性不为null且可写入
-                        {
-                            object valueToSet = Convert.ChangeType(row["Value"], propertyInfo.PropertyType); // 将数据行值转换为属性类型
-                            propertyInfo.SetValue(Default, valueToSet); // 将值设置到属性中
-
-                        }
+                        object valueToSet = GetDataTableValue(dataSet.Tables[setting.DataTableName]!, "Item", "Value", setting.DataTableItem, propertyInfo.PropertyType); // 将数据行值转换为属性类型
+                        propertyInfo.SetValue(Default, valueToSet); // 将值设置到属性中
                     }
                 }
 
