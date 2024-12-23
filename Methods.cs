@@ -1641,10 +1641,10 @@ namespace COMIGHT
                                     }
                                 }
 
-                                // 如果基准行小标题编号单元格为空，且文字字数少于50字（视为多余的纯小标题）
+                                // 如果基准行小标题编号单元格为空，且文字字数少于50字（视为多余的纯小标题），则将当前行（基准小标题行）小标题编号单元格赋值为“X”（忽略行）
                                 if (bodyTextsWorksheet.Cells[i, 2].Text == "" && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50)
                                 {
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "X"; // 将当前行（基准小标题行）小标题编号单元格赋值为“X”（忽略行）
+                                    bodyTextsWorksheet.Cells[i, 2].Value = "X"; 
                                 }
                             }
                         }
@@ -1658,13 +1658,12 @@ namespace COMIGHT
 
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++)  // 遍历“主体”工作表第2行到最末行的所有行
                     {
-                        //string headingText = ""; // 小标题文字变量赋值为空
 
                         if (bodyTextsWorksheet.Cells[i, 2].Text != "X")  // 如果当前行没有"X"标记（非忽略行）
                         {
                             //将当前行的小标题编号和小标题正文文字添加到完整文章列表
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
-                            if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表
+                            if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表（末尾增加一个元素）
                             {
                                 lstFullTexts.Add(paragraphText);
                             }
