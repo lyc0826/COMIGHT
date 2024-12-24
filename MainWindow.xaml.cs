@@ -620,7 +620,7 @@ namespace COMIGHT
                                         string prefixes = string.Join(' ', lstPrefixes); //合并前缀列表中的字符串，当中用空格分隔
                                         excelPackage.Dispose(); //关闭当前被处理Excel工作簿
                                                                 //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
-                                        string renamedExcelFileName = CleanName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
+                                        string renamedExcelFileName = CleanFileAndFolderName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
                                         string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
                                         File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
                                     }
@@ -856,7 +856,7 @@ namespace COMIGHT
 
                 string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
                 // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-                string targetFileMainName = CleanName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
+                string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
 
                 //创建目标文件夹
                 if (!Directory.Exists(targetFolderPath))
@@ -1029,7 +1029,7 @@ namespace COMIGHT
                         string name = sourceExcelWorksheet.Cells[i, 1].Text; // 将A列当前行单元格的文字赋值给名称变量
 
                         // 在目标工作簿中添加一个工作表，表名为编号i加名称后截取前10个字符，赋值给目标Excel工作表变量
-                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanName(i.ToString() + name, 10));
+                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanFileAndFolderName(i.ToString() + name, 10));
 
                         // 在目标工作表中插入名称并设置样式
                         targetExcelWorksheet.Cells["A1:A2"].Merge = true; //合并A1、A2单元格
@@ -1114,7 +1114,7 @@ namespace COMIGHT
                 }
 
                 //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
-                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanName(lstParagraphs[0], 40)}.xlsx");
+                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName(lstParagraphs[0], 40)}.xlsx");
                 ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
                 MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1156,7 +1156,7 @@ namespace COMIGHT
                     string newPathStr = ""; //每下移一个数据行，新文件夹路径字符串变量清零
                     for (int j = 0; j < dataTable.Columns.Count; j++) //遍历所有数据列
                     {
-                        dataTable.Rows[i][j] = CleanName(Convert.ToString(dataTable.Rows[i][j])!, 40); //去除DataTable当前数据行当前数据列数据的文件夹名中不可用于文件夹名的字符，截取指定数量的字符
+                        dataTable.Rows[i][j] = CleanFileAndFolderName(Convert.ToString(dataTable.Rows[i][j])!, 40); //去除DataTable当前数据行当前数据列数据的文件夹名中不可用于文件夹名的字符，截取指定数量的字符
                         newPathStr = newPathStr + Convert.ToString(dataTable.Rows[i][j]); //每右移一个数据列，新文件夹路径字符串延长一级（包含当前文件夹名和所有上级文件夹名），赋值给新文件夹路径字符串变量
                         if (i >= 1 && newPathStr == "") //如果当前数据行索引号大于等于1（从第2个记录行起），且新文件夹路径字符串变量为空，则将DataTable当前数据行当前数据列的元素填充为上一行同数据列的文件夹名
                         {
@@ -1349,7 +1349,7 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
 
                     string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
-                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"List_{CleanName(folderPath, 40)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"List_{CleanFileAndFolderName(folderPath, 40)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                     targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
                 }
 
@@ -1645,7 +1645,7 @@ namespace COMIGHT
                 {
                     return;
                 }
-                string targetFileMainName = CleanName(inputDialog.Answer, 40); //获取对话框返回的目标Excel工作簿文件主名
+                string targetFileMainName = CleanFileAndFolderName(inputDialog.Answer, 40); //获取对话框返回的目标Excel工作簿文件主名
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) // 打开Excel工作簿，赋值给Excel包变量
                 {
@@ -1722,7 +1722,7 @@ namespace COMIGHT
                                 foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) //遍历所有字典数据
                                 {
                                     // 新建Excel工作表，表名为键名去掉不能作为工作表名的字符并截取指定数量字符后的字符串，赋值给目标工作表变量
-                                    ExcelWorksheet targetExcelWorksheet = targetExcelWorkbook.Worksheets.Add(CleanName(pair.Key, 40));
+                                    ExcelWorksheet targetExcelWorksheet = targetExcelWorkbook.Worksheets.Add(CleanFileAndFolderName(pair.Key, 40));
 
                                     // 将表头复制到目标Excel工作表
                                     if (headerRowCount >= 1) //如果表头行数大于等于1，复制表头

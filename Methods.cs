@@ -30,15 +30,13 @@ namespace COMIGHT
 {
     public static partial class Methods
     {
-
-
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
             //赋值给函数返回值：如果输入值比最小值小，则得到最小值；如果比最大值大，则得到最大值；否则，得到输入值
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanName(string inputName, int targetLength)
+        public static string CleanFileAndFolderName(string inputName, int targetLength)
         {
             string cleanedName = inputName.Trim(); //'去除非打印字符和首尾空格
             //正则表达式匹配模式为：制表符“\/:*?<>|"”换行符回车符等1个及以上（不能用于文件名的字符）；将匹配到的字符串替换为下划线
