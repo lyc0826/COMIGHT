@@ -1256,16 +1256,16 @@ namespace COMIGHT
                     {new DataColumn("Index"), new DataColumn("Path"), new DataColumn("Subpath"),
                     new DataColumn("Item"), new DataColumn("Type"), new DataColumn("Date", typeof(DateTime)) }); //向DataTable添加列
 
-                //计算指定级数文件夹路径的总分隔符数：将第一级文件夹路径中的'\'计数加上子路径的'\'计数（总分隔符计数等于文件夹路径的级数）
-                //（逐一比较每个字符是否为'\'，如果是则"c=>"Lambda表达式返回true，用Count方法计数true的数量，即得到当前字符串中一共包含多少个'\'）
-                int separatorsCount = folderPath.Count(c => c == '\\') + subPathDepth;
+                //计算指定级数文件夹路径的总分隔符数：将第一级文件夹路径中的路径分隔符计数加上子路径的路径分隔符计数（总分隔符计数等于文件夹路径的级数）
+                //（逐一比较每个字符是否为路径分隔符，如果是则"c=>"Lambda表达式返回true，用Count方法计数true的数量，即得到当前字符串中一共包含多少个路径分隔符）
+                int separatorsCount = folderPath.Count(c => c == Path.DirectorySeparatorChar) + subPathDepth;
 
                 GetFolderFiles(folderPath, separatorsCount, dataTable); //获取文件夹内的文件和下级文件夹信息，并存入DataTable
 
-                void GetFolderFiles(string folderPath, int separatorsCount, DataTable dataTable)
+                void GetFolderFiles(string folderPath, int separatorsCount, DataTable dataTable) // 定义方法，获取文件夹内的文件和下级文件夹信息
                 {
-                    //如果输入文件夹路径所包含的分隔符数大于指定总分隔符数（文件夹路径级数大于指定级数），则结束本过程
-                    if (folderPath.Count(c => c == '\\') > separatorsCount)
+                    //如果输入文件夹路径所包含的路径分隔符数大于指定总路径分隔符数（文件夹路径级数大于指定级数），则结束本过程
+                    if (folderPath.Count(c => c == Path.DirectorySeparatorChar) > separatorsCount)
                     {
                         return;
                     }
@@ -1310,7 +1310,7 @@ namespace COMIGHT
                             dataRow["Date"] = subdirectorySystemDate; //将当前子文件夹系统日期赋值给DataTable的新数据行的"日期"列
                             dataTable.Rows.Add(dataRow);
 
-                            GetFolderFiles(subdirectory.FullName, separatorsCount, dataTable); //迭代调用自身过程，将当前子路径作为参数传入
+                            GetFolderFiles(subdirectory.FullName, separatorsCount, dataTable); //递归调用自身过程，将当前子路径作为参数传入
                         }
                     }
                 }
@@ -1339,10 +1339,10 @@ namespace COMIGHT
                         pathCell.Style.Font.UnderLine = true; //将当前行路径单元格文字加下划线
                         pathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行路径单元格文字颜色设为蓝色
 
-                        //将当前行路径单元格中第一级文件夹路径替换为空，去除首尾'\'，以中间'\'为分隔符拆分成数组，转换成列表，赋值给子路径列表
-                        List<string> lstSubPath = pathCell.Text.Replace(folderPath, "").Trim('\\').Split('\\').ToList();
+                        //将当前行路径单元格中第一级文件夹路径替换为空，去除首尾路径分隔符，剩下的部分以路径分隔符为分隔拆分成数组，转换成列表，赋值给子路径列表
+                        List<string> lstSubPath = pathCell.Text.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).ToList();
                         lstSubPath.RemoveAt(lstSubPath.Count - 1); //删去子路径列表中最末一个元素（最末级文件夹名或文件名）
-                        targetExcelWorksheet.Cells[i, 3].Value = string.Join('\\', lstSubPath); //将子路径列表所有元素合并成字符串，赋值给当前行的子路径（第3）列单元格
+                        targetExcelWorksheet.Cells[i, 3].Value = string.Join(Path.DirectorySeparatorChar, lstSubPath); //将子路径列表所有元素以路径分隔符为分隔合并成字符串，赋值给当前行的子路径（第3）列单元格
 
                     }
 
