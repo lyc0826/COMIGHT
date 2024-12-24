@@ -44,7 +44,7 @@ namespace COMIGHT
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
 
             lblStatus.DataContext = taskManager;
-            lblIntro.Content = $"A Multi-Tool for Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
+            lblIntro.Content = $"For Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
 
         private async void MnuBatchConvertOfficeFilesTypes_Click(object sender, RoutedEventArgs e)
