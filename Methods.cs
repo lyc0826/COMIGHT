@@ -667,7 +667,7 @@ namespace COMIGHT
 
             string initialDirectory = Default.latestFolderPath; //获取保存在设置中的文件夹路径
             //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
-            initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : @"C:\";
+            initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
             OpenFileDialog openFileDialog = new OpenFileDialog() //打开文件选择对话框
             {
                 Multiselect = isMultiselect, //是否可多选
