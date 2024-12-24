@@ -41,9 +41,9 @@ namespace COMIGHT
             InitializeComponent();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
-            DataContext = taskManager;
-
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
+
+            lblStatus.DataContext = taskManager;
             lblIntro.Content = $"A Multi-Tool for Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
 

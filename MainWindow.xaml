@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" >
-            <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
+            <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding Path=FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
                 <MenuItem Header="Start">
                     <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="mnuOpenSavingFolder_Click" />
                     <MenuItem x:Name="mnuSettings" Header="Settings" Click="MnuSettings_Click"  />
@@ -54,7 +54,7 @@
             </Menu>
         </DockPanel>
 
-        <Label x:Name="lblStatus" Height="30" Grid.Row="1" Grid.Column="0" Content ="{Binding StatusText}"/>
+        <Label x:Name="lblStatus" Height="30" Grid.Row="1" Grid.Column="0" Content ="{Binding Path=StatusText}"/>
         <Label x:Name="lblIntro" Height="30" Grid.Row="2" Grid.Column="0" />
 
     </Grid>
