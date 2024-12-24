@@ -24,6 +24,7 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
+using static COMIGHT.TaskManager;
 
 
 namespace COMIGHT
@@ -1695,7 +1696,7 @@ namespace COMIGHT
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
                 if (MessageBox.Show("Do you want to format the document?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    await FormatWordDocumentsAsync(new List<string> { targetWordFilePath });
+                    await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(new List<string> { targetWordFilePath }));
                 }
 
             }

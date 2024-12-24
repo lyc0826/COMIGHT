@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
         Title="COMIGHT Assistant" Width="480" SizeToContent="Height" FontSize="14" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" ResizeMode="CanMinimize"  >
 
@@ -13,6 +12,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -54,8 +54,8 @@
             </Menu>
         </DockPanel>
 
-        <Label x:Name="lblIntro" Height="30" Grid.Row="1" Grid.Column="0" />
-        <!-- <TextBox x:Name="txtbxExportableText" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" AcceptsReturn="True" FontSize="14" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxExportableText_MouseDoubleClick" /> -->
+        <Label x:Name="lblStatus" Height="30" Grid.Row="1" Grid.Column="0" Content ="{Binding StatusText}"/>
+        <Label x:Name="lblIntro" Height="30" Grid.Row="2" Grid.Column="0" />
 
     </Grid>
 

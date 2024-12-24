@@ -41,6 +41,8 @@ namespace COMIGHT
             InitializeComponent();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
+            DataContext = taskManager;
+
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
             lblIntro.Content = $"A Multi-Tool for Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
@@ -184,7 +186,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await FormatWordDocumentsAsync(filePaths);
+                await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行FormatWordDocumentsAsync过程
                 MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
