@@ -1150,9 +1150,9 @@ namespace COMIGHT
                 {
                     throw new Exception("No valid data found!");
                 }
-                
-                string targetFolderPath = Path.Combine(targetBaseFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
+
                 // 创建目标文件夹路径
+                string targetFolderPath = Path.Combine(targetBaseFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
                 if (!Directory.Exists(targetFolderPath))
                 {
                     Directory.CreateDirectory(targetFolderPath);
