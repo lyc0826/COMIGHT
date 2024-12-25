@@ -1009,7 +1009,7 @@ namespace COMIGHT
                 List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
 
                 string latestFontName = Default.latestNameCardFontName; //读取设置中保存的字体名称
-                InputDialog inputDialog = new InputDialog(question: "Select the font", defaultAnswer: latestFontName, options: lstFontNames); //弹出对话框，输入字体名称
+                InputDialog inputDialog = new InputDialog(question: "Select the font", options: lstFontNames, defaultAnswer: latestFontName ); //弹出对话框，输入字体名称
 
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
@@ -1054,9 +1054,9 @@ namespace COMIGHT
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
                         cellABStyle.Font.Name = fontName; //设置字体
 
-                        int charLimit = IsChineseText(name) ? 10 : 20; // 计算字符上限：如果是中文名称，则得到10；否则得到20
-                        cellABStyle.Font.Size = (float)( (!name.Contains('\n') ? 160 : 100)
-                            * (1 - (name.Length - charLimit) * 0.035).Clamp(0.5, 1) ); //设置字体大小：如果单元格文字不含换行符，为160；否则为100，再乘以一个缩小字体的因子
+                        int charLimit = IsChineseText(name) ? 8 : 16; // 计算字符上限：如果是中文名称，则得到8；否则得到16
+                        cellABStyle.Font.Size = (float)( (!name.Contains('\n') ? 160 : 90)
+                            * (1 - (name.Length - charLimit) * 0.04).Clamp(0.5, 1) ); //设置字体大小：如果单元格文字不含换行符，为160；否则为90。再乘以一个缩小字体的因子
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
@@ -1145,13 +1145,13 @@ namespace COMIGHT
                 }
 
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
-                string targetFolderPath = Path.Combine(targetBaseFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
                 {
                     throw new Exception("No valid data found!");
                 }
-
+                
+                string targetFolderPath = Path.Combine(targetBaseFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
                 // 创建目标文件夹路径
                 if (!Directory.Exists(targetFolderPath))
                 {
