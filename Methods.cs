@@ -496,7 +496,7 @@ namespace COMIGHT
                             excelWorksheet = excelPackage.Workbook.Worksheets[name]; //将指定名称的Excel工作表赋值给Excel工作表变量
                             break;
                         default: //以上均不符合，则抛出异常
-                            throw new Exception("参数错误！");
+                            throw new Exception("Parameter error.");
                     }
 
                     TrimCellsStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
@@ -1498,12 +1498,10 @@ namespace COMIGHT
                     //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中。如果此过程中内容已改变，将true赋值给“内容是否改变”变量；否则赋值为false。
                     bool contentChanged = PreprocessDocumentTexts(bodyTextsWorksheet.Cells[2, 3, (bodyTextsWorksheet.Dimension?.End.Row ?? 2), 3]);
 
-                    if (contentChanged) //如果内容已改变
+                    if (contentChanged) //如果内容已改变，则保存Excel工作簿，并抛出异常
                     {
-                        MessageBox.Show("Document Contents Changed. Check and Rerun.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
                         excelPackage.Save();
-
-                        return; // 结束本过程
+                        throw new Exception("Document contents changed. Check and re-run.");
                     }
 
                     //将下方无正文的小标题行设为隐藏：

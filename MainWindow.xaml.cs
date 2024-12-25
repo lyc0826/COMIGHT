@@ -123,21 +123,28 @@ namespace COMIGHT
 
         private void mnuOpenSavingFolder_Click(object sender, RoutedEventArgs e)
         {
-            string savingFolderPath = targetBaseFolderPath; // 获取目标保存文件夹路径
-            if (!Directory.Exists(savingFolderPath)) // 如果目标文件夹不存在，则提示并结束本过程
+            try
             {
-                MessageBox.Show("Folder Doesn't Exist!", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                string savingFolderPath = targetBaseFolderPath; // 获取目标保存文件夹路径
+                if (!Directory.Exists(savingFolderPath)) // 如果目标文件夹不存在，则抛出异常
+                {
+                    throw new Exception("Folder doesn't exist.");
+                }
+
+                // 创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = $"\"{savingFolderPath}\"", //指定需要打开的文件夹路径
+                    UseShellExecute = true //设定使用操作系统shell执行程序
+                };
+                //启动新的进程
+                Process.Start(startInfo);
             }
 
-            // 创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                FileName = $"\"{savingFolderPath}\"", //指定需要打开的文件夹路径
-                UseShellExecute = true //设定使用操作系统shell执行程序
-            };
-            //启动新的进程
-            Process.Start(startInfo);
+            catch (Exception ex)
+            { 
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
@@ -187,7 +194,7 @@ namespace COMIGHT
                 }
 
                 await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行FormatWordDocumentsAsync过程
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -388,11 +395,10 @@ namespace COMIGHT
                         for (int i = excelWorksheetIndexLower; i <= excelWorksheetIndexUpper; i++) //遍历指定范围内的所有Excel工作表
                         {
                             ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i];
-                            //如果当前Excel工作表为隐藏且使用工作表索引号，弹出提示框并结束本过程
+                            //如果当前Excel工作表为隐藏且使用工作表索引号，则抛出异常
                             if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex)
                             {
-                                MessageBox.Show("Hidden Worksheets Found! Operation Aborted!", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-                                return;
+                                throw new Exception("Hidden worksheets found. Operation aborted.");
                             }
 
                             if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
@@ -670,7 +676,7 @@ namespace COMIGHT
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
                 }
                 templateExcelPackage?.Dispose(); //关闭模板Excel工作簿（仅在模板工作簿已打开的情况下）
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -802,10 +808,9 @@ namespace COMIGHT
 
                 differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable); // 移除差异DataTable中的空数据行和空数据列
 
-                if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
+                if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则抛出异常
                 {
-                    MessageBox.Show("No difference detected.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
+                    throw new Exception("No difference detected.");
                 }
 
                 string targetFolderPath = targetBaseFolderPath; //获取目标文件夹路径
@@ -825,7 +830,7 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.SaveAs(targetExcelFile);
                 }
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -853,7 +858,7 @@ namespace COMIGHT
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
                 {
-                    throw new Exception("No Valid Text Found!");
+                    throw new Exception("No valid text found.");
                 }
 
                 string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
@@ -876,7 +881,7 @@ namespace COMIGHT
                 if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)
                     || !pandocPath.ToLower().EndsWith(".exe")) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，或没有以exe结尾，则抛出异常
                 {
-                    throw new Exception("Pandoc Setting Error!");
+                    throw new Exception("Pandoc setting error.");
                 }
 
                 ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
@@ -895,12 +900,12 @@ namespace COMIGHT
                     process.WaitForExit(); //等待进程结束
                     if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
                     {
-                        throw new Exception("Converting Failed!");
+                        throw new Exception("Conversion failed.");
                     }
                 }
                 File.Delete(targetMDFilePath); //删除目标Markdown文件
 
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -974,7 +979,7 @@ namespace COMIGHT
                 }
                 await task;
 
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1023,7 +1028,7 @@ namespace COMIGHT
                     RemoveWorksheetEmptyRowsAndColumns(sourceExcelWorksheet); //删除源数据Excel工作表内所有空白行和空白列
                     if (sourceExcelWorksheet.Dimension == null) //如果工作表为空，则抛出异常
                     {
-                        throw new Exception("No Valid Data Found!");
+                        throw new Exception("No valid data found.");
                     }
 
                     for (int i = 1; i <= sourceExcelWorksheet.Dimension.End.Row; i++) //遍历源数据工作表所有行
@@ -1077,7 +1082,7 @@ namespace COMIGHT
                     string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
                     string targetFilePath = Path.Combine(targetFolderPath, $"Cards_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
-                    MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
             }
@@ -1104,7 +1109,7 @@ namespace COMIGHT
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
                 {
-                    throw new Exception("No Valid Text Found!");
+                    throw new Exception("No valid text found!");
                 }
 
                 string targetFolderPath = targetBaseFolderPath; // 获取目标文件夹路径
@@ -1119,7 +1124,7 @@ namespace COMIGHT
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName(lstParagraphs[0], 40)}.xlsx");
                 ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1144,7 +1149,7 @@ namespace COMIGHT
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
                 {
-                    throw new Exception("No Valid Data Found!");
+                    throw new Exception("No valid data found!");
                 }
 
                 // 创建目标文件夹路径
@@ -1184,7 +1189,7 @@ namespace COMIGHT
                         }
                     }
                 }
-                MessageBox.Show("Operation Finished", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1214,7 +1219,7 @@ namespace COMIGHT
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
                 await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
 
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1317,10 +1322,9 @@ namespace COMIGHT
                     }
                 }
 
-                if (dataTable.Rows.Count * dataTable.Columns.Count == 0) //如果DataTable的行数或列数有一个为0，则弹出提示框并结束本过程
+                if (dataTable.Rows.Count * dataTable.Columns.Count == 0) //如果DataTable的行数或列数有一个为0，则抛出异常
                 {
-                    MessageBox.Show("Files or Directories Not Found!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
+                    throw new Exception("No valid files or directories found.");
                 }
 
                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
@@ -1355,7 +1359,7 @@ namespace COMIGHT
                     targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
                 }
 
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1522,7 +1526,7 @@ namespace COMIGHT
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
                 {
-                    throw new Exception("No Valid Data Found!");
+                    throw new Exception("No valid data found!");
                 }
 
                 List<string> lstDataColumnNames = new List<string>
@@ -1561,10 +1565,9 @@ namespace COMIGHT
                         return (peRelativePercentage > -100 && peRelativePercentage < -10) && pr >= 10;
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
-                if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则弹出提示框并结束本过程
+                if (targetDataTable.Rows.Count * targetDataTable.Columns.Count == 0) //如果目标DataTable的数据行数或列数有一个为0，则抛出异常
                 {
-                    MessageBox.Show("No Qualified Stocks Found!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
+                    throw new Exception("No qualified stocks found.");
                 }
 
                 targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE_Rel% ASC"; //按行业升序、PE相对百分比升序对数据排序
@@ -1592,7 +1595,7 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.Save(); //保存目标Excel工作簿文件
                 }
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
@@ -1657,7 +1660,7 @@ namespace COMIGHT
                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
                     if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则抛出异常
                     {
-                        throw new Exception("No Valid Data Found!");
+                        throw new Exception("No valid data found!");
                     }
 
                     Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义一个字典来保存拆分的数据
@@ -1753,7 +1756,7 @@ namespace COMIGHT
                             break;
                     }
                 }
-                MessageBox.Show("Operation Completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             catch (Exception ex)
