@@ -43,7 +43,7 @@ namespace COMIGHT
 
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
 
-            lblStatus.DataContext = taskManager;
+            lblStatus.DataContext = taskManager; // 绑定任务管理器数据环境到lblStatus控件
             lblIntro.Content = $"For Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
         }
 

@@ -24,7 +24,6 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using static COMIGHT.TaskManager;
 
 
 namespace COMIGHT
@@ -1168,7 +1167,7 @@ namespace COMIGHT
                             {
                                 find.Text = matchEnHeading.Value;
                                 find.Execute();
-                                
+
                                 // 计算小标题编号中含有几组数字：使用正则表达式以"."分割小标题编号字符串（捕获组2），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
                                 int enHeadingNumsCount = Regex.Split(matchEnHeading.Groups[2].Value, @"\.")
                                     .Where(s => !string.IsNullOrWhiteSpace(s)) // 
@@ -1189,7 +1188,7 @@ namespace COMIGHT
                                         _ => (enHeading3_4FontName, enHeading3_4FontSize),
                                     };
                                 }
-                                
+
                                 font.Bold = 1;
 
                                 if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
@@ -1643,7 +1642,7 @@ namespace COMIGHT
                                 // 如果基准行小标题编号单元格为空，且文字字数少于50字（视为多余的纯小标题），则将当前行（基准小标题行）小标题编号单元格赋值为“X”（忽略行）
                                 if (bodyTextsWorksheet.Cells[i, 2].Text == "" && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50)
                                 {
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "X"; 
+                                    bodyTextsWorksheet.Cells[i, 2].Value = "X";
                                 }
                             }
                         }
