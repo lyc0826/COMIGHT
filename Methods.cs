@@ -144,7 +144,7 @@ namespace COMIGHT
                     {
                         //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于50字（纯小标题），则加粗；否则不加粗
                         excelWorksheet.Cells[i, 1, i, 3].Style.Font.Bold =
-                            (excelWorksheet.Cells[i, 1].Text.EndsWith("级") && excelWorksheet.Cells[i, 3].Text.Length < 50) ? true : false;
+                            (excelWorksheet.Cells[i, 1].Text.Contains("级") && excelWorksheet.Cells[i, 3].Text.Length < 50) ? true : false;
                     }
                 }
             }
