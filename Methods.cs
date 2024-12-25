@@ -300,7 +300,7 @@ namespace COMIGHT
         }
 
 
-        public static string GetTitleLevel(string title)
+        public static string GetHeadingLevel(string title)
         {
             //定义正则表达式变量，匹配模式为各级小标题、编号或文字
             //0级小标题编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，“：:”空格制表符至少一个
@@ -721,7 +721,7 @@ namespace COMIGHT
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++) //遍历从第2行开始往下的所有行
                     {
                         string cellText = bodyTextsWorksheet.Cells[i, 3].Text; //将当前行的小标题正文文字（第3列）单元格的文本赋值给单元格文本变量
-                        bodyTextsWorksheet.Cells[i, 1].Value = GetTitleLevel(cellText); //获取单元格文本的小标题级别，赋值给当前行的小标题级别单元格
+                        bodyTextsWorksheet.Cells[i, 1].Value = GetHeadingLevel(cellText); //获取单元格文本的小标题级别，赋值给当前行的小标题级别单元格
                         bodyTextsWorksheet.Cells[i, 3].Value = RemoveHeadingNum(cellText); //删除单元格文本中的所有小标题编号，赋值给当前行的小标题正文文字单元格
 
                     }
