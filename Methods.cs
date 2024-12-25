@@ -1400,8 +1400,10 @@ namespace COMIGHT
             return nonCnCharsRatio < 0.5 ? true : false; //赋值给函数返回值：如果非中文字符比例小于0.5，得到true；否则，得到false
         }
 
-        public static void PreprocessDocumentTexts(ExcelRange range)
+        public static bool PreprocessDocumentTexts(ExcelRange range)
         {
+            bool contentsChanged = false; // “内容是否改变”变量赋值为false
+
             foreach (ExcelRangeBase cell in range) // 遍历所有单元格
             {
                 if (!cell.EntireRow.Hidden) // 如果当前单元格所在行不是隐藏行
@@ -1409,13 +1411,17 @@ namespace COMIGHT
                     //将当前单元格文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，赋值给拆分后文字列表
                     List<string>? lstSplitTexts = cell.Text.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                         .ToList();
+
                     int lstSplitTextsCount = lstSplitTexts!.Count; //获取拆分后文字列表元素个数
+                    contentsChanged = lstSplitTextsCount > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果拆分后文字列表元素个数大于1，得到true；否则，得到原值
 
                     for (int i = 0; i < lstSplitTextsCount; i++) //遍历拆分后文字列表的所有元素
                     {
                         //将拆分后文字列表当前元素的文字按修订标记字符'^'拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
                         List<string> lstRevisedTexts = lstSplitTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
+
+                        contentsChanged = lstRevisedTexts.Count > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果修订文字列表元素个数大于1，得到true；否则，得到原值
 
                         //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
                         lstSplitTexts[i] = MergeRevision(lstRevisedTexts);
@@ -1432,7 +1438,9 @@ namespace COMIGHT
                                 return lstStrs[0];
                             }
 
-                            //获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合
+                            // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
+                            
+                            // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合（
                             MatchCollection matchesSentences = regExCnSentence.Matches(lstStrs[0]);
 
                             foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
@@ -1468,7 +1476,7 @@ namespace COMIGHT
                     }
                 }
             }
-
+            return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
         }
 
         public static async Task ProcessDocumentTableIntoWordAsync(string documentTableFilePath, string targetWordFilePath)
@@ -1487,8 +1495,16 @@ namespace COMIGHT
                         return;
                     }
 
-                    //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中
-                    PreprocessDocumentTexts(bodyTextsWorksheet.Cells[2, 3, (bodyTextsWorksheet.Dimension?.End.Row ?? 2), 3]);
+                    //在“主体”工作表第2行到最末行（如果工作表为空，则为第2行）的文字（第3）列中，将含有换行符的单元格文字拆分成多段，删除小标题编号，合并修订文字，最后将各段分置于单独的行中。如果此过程中内容已改变，将true赋值给“内容是否改变”变量；否则赋值为false。
+                    bool contentChanged = PreprocessDocumentTexts(bodyTextsWorksheet.Cells[2, 3, (bodyTextsWorksheet.Dimension?.End.Row ?? 2), 3]);
+
+                    if (contentChanged) //如果内容已改变
+                    {
+                        MessageBox.Show("Document Contents Changed. Check and Rerun.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                        excelPackage.Save();
+
+                        return; // 结束本过程
+                    }
 
                     //将下方无正文的小标题行设为隐藏：
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension!.End.Row; i++) //遍历“主体”工作表从第2行到最末行的所有行
