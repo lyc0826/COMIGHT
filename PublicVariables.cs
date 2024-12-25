@@ -6,7 +6,7 @@ namespace COMIGHT
 {
     public static partial class PublicVariables
     {
-        public static TaskManager taskManager = new TaskManager();
+        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
 
         public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
 

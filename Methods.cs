@@ -1432,21 +1432,21 @@ namespace COMIGHT
                                 return lstStrs[0];
                             }
 
-                            //获取字符串列表0号元素经过句子正则表达式匹配后的结果集合
+                            //获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合
                             MatchCollection matchesSentences = regExCnSentence.Matches(lstStrs[0]);
 
-                            foreach (Match matchSentence in matchesSentences) //遍历所有句子正则表达式匹配的结果
+                            foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
                             {
                                 int sameSentenceCount = 0;
                                 for (int i = 1; i < lstStrs.Count; i++) //遍历字符串列表从1号（第2个）元素开始的所有元素
                                 {
-                                    if (lstStrs[i].Contains(matchSentence.Value))  //如果字符串列表当前元素含有当前句子
+                                    if (lstStrs[i].Contains(matchSentence.Value))  //如果字符串列表当前元素含有当前中文句子
                                     {
-                                        lstStrs[i] = lstStrs[i].Replace(matchSentence.Value, ""); //将字符串列表当前元素中的当前句子替换为空（删除重复句）
-                                        sameSentenceCount += 1; //相同句子计数加1
+                                        lstStrs[i] = lstStrs[i].Replace(matchSentence.Value, ""); //将字符串列表当前元素中的当前中文句子替换为空（删除重复句）
+                                        sameSentenceCount += 1; //相同中文句子计数加1
                                     }
                                 }
-                                //重新赋值给字符串列表0号元素：如果相同句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前句子），则得到将0号元素中的当前句子替换为空后的字符串（删除非共有句）；否则得到0号元素原值
+                                //重新赋值给字符串列表0号元素：如果相同中文句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前中文句子），则得到将0号元素中的当前中文句子替换为空后的字符串（删除非共有句）；否则得到0号元素原值
                                 lstStrs[0] = sameSentenceCount < lstStrs.Count - 1 ? lstStrs[0].Replace(matchSentence.Value, "") : lstStrs[0];
                             }
                             return string.Join("", lstStrs);  //合并字符串列表的所有元素，赋值给函数返回值
