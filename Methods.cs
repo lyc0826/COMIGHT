@@ -1179,7 +1179,7 @@ namespace COMIGHT
                                 }
                                 else // 否则
                                 {
-                                    // 根据小标题编号中的数字组数进行字体设置（有几组数字，就为几级标题）
+                                    // 根据小标题编号中的数字组数设置1-4级小标题字体（有几组数字，就为几级标题）
                                     (font.Name, font.Size) = enHeadingNumsCount switch
                                     {
                                         1 => (enHeading1FontName, enHeading1FontSize),
