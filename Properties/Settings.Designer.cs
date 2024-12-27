@@ -133,6 +133,18 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int latestSubpathDepth {
+            get {
+                return ((int)(this["latestSubpathDepth"]));
+            }
+            set {
+                this["latestSubpathDepth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("宋体")]
         public string latestNameCardFontName {
             get {
@@ -145,7 +157,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string latestBatchProcessWorkbookOption {
             get {
                 return ((string)(this["latestBatchProcessWorkbookOption"]));
@@ -157,7 +169,7 @@ namespace COMIGHT.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string latestSplitWorksheetOption {
             get {
                 return ((string)(this["latestSplitWorksheetOption"]));

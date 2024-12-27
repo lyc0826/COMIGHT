@@ -29,14 +29,17 @@
     <Setting Name="latestKeyDataColumnName" Type="System.String" Scope="User">
       <Value Profile="(Default)">ID</Value>
     </Setting>
+	<Setting Name="latestSubpathDepth" Type="System.Int32" Scope="User">
+		<Value Profile="(Default)">1</Value>
+	</Setting>
     <Setting Name="latestNameCardFontName" Type="System.String" Scope="User">
       <Value Profile="(Default)">宋体</Value>
     </Setting>
     <Setting Name="latestBatchProcessWorkbookOption" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="latestSplitWorksheetOption" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="savingFolderPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\COMIGHT Files</Value>
@@ -122,5 +125,6 @@
     <Setting Name="enLineSpace" Type="System.Double" Scope="User">
       <Value Profile="(Default)">24</Value>
     </Setting>
+
   </Settings>
 </SettingsFile>

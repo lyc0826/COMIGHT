@@ -1235,7 +1235,7 @@ namespace COMIGHT
             {
                 string initialDirectory = Default.latestFolderPath; //读取设置中保存的文件夹路径
                 //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
-                initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : @"C:\";
+                initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog() //定义文件夹选择对话框
                 {
                     Multiselect = false,
@@ -1249,13 +1249,18 @@ namespace COMIGHT
                 string folderPath = openFolderDialog.FolderName; //将选择的文件夹路径赋值给第一级文件夹路径变量
                 Default.latestFolderPath = folderPath; //将第一级文件夹路径存入设置
                 Default.Save();
+                
 
-                InputDialog inputDialog = new InputDialog(question: "Input the level of subdirectories", defaultAnswer: "1"); //弹出功能选择对话框
+                int latestSubpathDepth = Default.latestSubpathDepth;
+                InputDialog inputDialog = new InputDialog(question: "Input the depth(level) of subdirectories", defaultAnswer: latestSubpathDepth.ToString()); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
-                int subPathDepth = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的子路径深度
+                int subpathDepth = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的子路径深度
+                Default.latestSubpathDepth = subpathDepth; // 将子路径深度存入设置
+                Default.Save();
+
 
                 DataTable dataTable = new DataTable(); //定义DataTable，赋值给DataTable变量
 
@@ -1265,7 +1270,7 @@ namespace COMIGHT
 
                 //计算指定级数文件夹路径的总分隔符数：将第一级文件夹路径中的路径分隔符计数加上子路径的路径分隔符计数（总分隔符计数等于文件夹路径的级数）
                 //（逐一比较每个字符是否为路径分隔符，如果是则"c=>"Lambda表达式返回true，用Count方法计数true的数量，即得到当前字符串中一共包含多少个路径分隔符）
-                int separatorsCount = folderPath.Count(c => c == Path.DirectorySeparatorChar) + subPathDepth;
+                int separatorsCount = folderPath.Count(c => c == Path.DirectorySeparatorChar) + subpathDepth;
 
                 GetFolderFiles(folderPath, separatorsCount, dataTable); //获取文件夹内的文件和下级文件夹信息，并存入DataTable
 
