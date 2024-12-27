@@ -1129,29 +1129,7 @@ namespace COMIGHT
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 
-                            // 中文单位和日期落款设置
-                            selection.HomeKey(WdUnits.wdStory);
-
-                            // 定义中文单位和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），单位名称字符串1个及以上，最后为日期
-                            Regex regExCnSignature = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*[年\.\-/][ |\t]*"
-                                  + @"[\d| |\t]{1,2}[^。：:；;，,\f\n\r]{0,5}[\n\r]", RegexOptions.Multiline);
-                            MatchCollection matchesCnSignatures = regExCnSignature.Matches(documentText); // 获取全文文字经过单位和日期落款正则表达式匹配的结果
-
-                            foreach (Match matchCnSignature in matchesCnSignatures)
-                            {
-                                find.Text = matchCnSignature.Value;
-                                find.Execute();
-                                if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
-                                {
-                                    foreach (MSWordParagraph paragraph in selection.Paragraphs) // 遍历所有落款中的段落
-                                    {
-                                        float rightIndentation = Math.Max(0, 10 - paragraph.Range.Text.Length / 2); // 计算右缩进量，如果小于0，则限定为0
-                                        paragraph.Format.CharacterUnitRightIndent = rightIndentation; // 右缩进设为之前计算值
-                                        paragraph.Format.Alignment = WdParagraphAlignment.wdAlignParagraphRight; // 右对齐
-                                    }
-                                }
-                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
-                            }
+                            
                         }
 
                         else // 否则（为英文文档）
@@ -1198,9 +1176,9 @@ namespace COMIGHT
 
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
-
                         }
 
+                        
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
 
                         // 定义清单数字编号正则表达式列表变量
@@ -1348,6 +1326,34 @@ namespace COMIGHT
                             }
                             selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                         }
+
+
+                        // 签名和日期落款设置
+                        selection.HomeKey(WdUnits.wdStory);
+
+                        // 定义中、英文签名和日期落款字符串变量，匹配模式为：签名至少1个，最后为日期
+                        string cnSignature = @"(?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,15}[\n\r]";
+                        string enSignature = @"(?:[a-zA-Z][^：:；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,25}[12]\d{3}[\n\r]";
+                        // 定义中、英文签名和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），中文落款或英文落款
+                        Regex regExCnSignature = new Regex(@$"(?<=^|\n|\r)[\n\r](?:(?:{cnSignature})|(?:{enSignature}))", RegexOptions.Multiline);
+                        MatchCollection matchesCnSignatures = regExCnSignature.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
+
+                        foreach (Match matchCnSignature in matchesCnSignatures)
+                        {
+                            find.Text = matchCnSignature.Value;
+                            find.Execute();
+                            if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
+                            {
+                                foreach (MSWordParagraph paragraph in selection.Paragraphs) // 遍历所有落款中的段落
+                                {
+                                    float rightIndentation = Math.Max(0, 10 - paragraph.Range.Text.Length / 2); // 计算右缩进量，如果小于0，则限定为0
+                                    paragraph.Format.CharacterUnitRightIndent = rightIndentation; // 右缩进设为之前计算值
+                                    paragraph.Format.Alignment = WdParagraphAlignment.wdAlignParagraphRight; // 右对齐
+                                }
+                            }
+                            selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                        }
+
 
                         // 页脚页码设置
                         foreach (MSWordSection section in msWordDocument.Sections) // 遍历所有节
