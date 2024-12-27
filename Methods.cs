@@ -317,7 +317,7 @@ namespace COMIGHT
             Regex regExCnShiNum = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*是[ |\t]*", RegexOptions.Multiline);
             // 中文“第X条”编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条”，“：:”空格制表符至少一个
             Regex regExCnItemNum = new Regex(@"^[ |\t]*第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*条[：:| |\t]+", RegexOptions.Multiline);
-            // 英文小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记（捕获组1），【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组2】，空格制表符至少一个
+            // 英文小标题编号，匹配模式为：从开头开始，空格制表符任意多个，“part、charpter、section”标记（捕获组1），【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组2】，空格制表符至少一个
             Regex regExEnHeadingNum = new Regex(@"^[ |\t]*((?:part|chapter|section)[ |\t]+)?((?:[A-Z]+\.|\d+\.?)(?:\d+\.?){0,3})[ |\t]+", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
             if (isChineseText) // 如果是中文文本
@@ -382,11 +382,6 @@ namespace COMIGHT
             }
         }
             
-
-
-            
-
-
 
         //public static string GetHeadingLevel(string title)
         //{
@@ -735,8 +730,9 @@ namespace COMIGHT
         {
             //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
             string cnHeadingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
+            // 定义英文标题编号正则表达式字符串：空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾如果是数字，后面可以省略句点），空格制表符至少一个
             string enHeadingNumRegEx = @"^[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:[A-Z]+\.|\d+\.?)(?:\d+\.?)*[ |\t]+";
-            //定义小标题编号正则表达式变量，匹配模式为：开头标记和小标题编号两个正则表达式字符串的合并字符串
+            //定义小标题编号正则表达式变量，匹配模式为：开头标记或“。：:；;”，中文小标题编号或英文小标题编号
             Regex regExHeadingNum = new Regex(@$"(?<= ^|[。：:；;]){cnHeadingNumRegEx}|{enHeadingNumRegEx}", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
@@ -809,7 +805,7 @@ namespace COMIGHT
                         new List<object[]>
                             {
                                 new object[] { "大标题" },
-                                new object[] { "落款" },
+                                new object[] { "签名" },
                                 new object[] { "日期" }
                             } :
                         new List<object[]>
