@@ -119,7 +119,7 @@ namespace COMIGHT
                     //第一个Address表示数据验证规则所应用的单元格区域地址，第二个Address表示前述单元格区域地址的字符串表达形式，如“A2:Axx”
                     ExcelDataValidationList? existingValidation = excelWorksheet.DataValidations.OfType<ExcelDataValidationList>()
                         .FirstOrDefault(v => v.Address.Address == rangeStr);
-                    string[] arrValidations = new string[] { "0级", "1级", "2级", "3级", "4级", "条", "是", "接上段" }; //将数据验证项赋值给数据验证数组
+                    string[] arrValidations = new string[] { "Lv0", "Lv1", "Lv2", "Lv3", "Lv4", "Enum.", "Itm.", "Immed." }; //将数据验证项赋值给数据验证数组
 
                     if (existingValidation == null) // 如果不存在数据验证，则添加新的数据验证
                     {
@@ -144,7 +144,7 @@ namespace COMIGHT
                     {
                         //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于50字（纯小标题），则加粗；否则不加粗
                         excelWorksheet.Cells[i, 1, i, 3].Style.Font.Bold =
-                            (excelWorksheet.Cells[i, 1].Text.Contains("级") && excelWorksheet.Cells[i, 3].Text.Length < 50) ? true : false;
+                            (excelWorksheet.Cells[i, 1].Text.Contains("Lv") && excelWorksheet.Cells[i, 3].Text.Length < 50) ? true : false;
                     }
                 }
             }
@@ -322,31 +322,31 @@ namespace COMIGHT
             // 使用正则表达式来匹配小标题编号，并赋值给小标题级别单元格
             if (regExHeading0Num.IsMatch(title)) //如果单元格文本被0级小标题编号正则表达式匹配成功，则将当前行的小标题级别（第1列）单元格赋值为“0级”
             {
-                return "0级";
+                return "Lv0";
             }
             else if (regExHeading1Num.IsMatch(title))
             {
-                return "1级";
+                return "Lv1";
             }
             else if (regExHeading2Num.IsMatch(title))
             {
-                return "2级";
+                return "Lv2";
             }
             else if (regExHeading3Num.IsMatch(title))
             {
-                return "3级";
+                return "Lv3";
             }
             else if (regExHeading4Num.IsMatch(title))
             {
-                return "4级";
+                return "Lv4";
             }
             else if (regExShiNum.IsMatch(title))
             {
-                return "是";
+                return "Enum.";
             }
             else if (regExItemNum.IsMatch(title))
             {
-                return "条";
+                return "Itm.";
             }
             else
             {
@@ -1516,7 +1516,7 @@ namespace COMIGHT
                         if (!bodyTextsWorksheet.Rows[i].Hidden) //如果当前行不是隐藏行
                         {
                             int paragraphsCount = 0;
-                            if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("级") && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50) //如果当前行文字含小标题且字数小于50字（纯小标题行，基准小标题行）
+                            if (bodyTextsWorksheet.Cells[i, 1].Text.Contains("Lv") && bodyTextsWorksheet.Cells[i, 3].Text.Length < 50) //如果当前行文字含小标题且字数小于50字（纯小标题行，基准小标题行）
                             {
                                 if (i == bodyTextsWorksheet.Dimension.Rows)  //如果当前行（基准小标题行）为最后一行
                                 {
@@ -1529,12 +1529,12 @@ namespace COMIGHT
                                         if (!bodyTextsWorksheet.Rows[k].Hidden)  //如果当前比较行不是隐藏行
                                         {
                                             //如果当前比较行文字含小标题且小标题级别数小于等于基准小标题行（小标题级别更高或相同），则退出循环
-                                            if (bodyTextsWorksheet.Cells[k, 1].Text.Contains("级") && Val(bodyTextsWorksheet.Cells[k, 1].Text) <= Val(bodyTextsWorksheet.Cells[i, 1].Text))
+                                            if (bodyTextsWorksheet.Cells[k, 1].Text.Contains("Lv") && Val(bodyTextsWorksheet.Cells[k, 1].Text) <= Val(bodyTextsWorksheet.Cells[i, 1].Text))
                                             {
                                                 break;
                                             }
                                             //否则，如果当前比较行文字不含小标题或者字数大于等于50（视为正文），则正文段落计数加1
-                                            else if (!bodyTextsWorksheet.Cells[k, 1].Text.Contains("级") || bodyTextsWorksheet.Cells[k, 3].Text.Length >= 50)
+                                            else if (!bodyTextsWorksheet.Cells[k, 1].Text.Contains("Lv") || bodyTextsWorksheet.Cells[k, 3].Text.Length >= 50)
                                             {
                                                 paragraphsCount++;
                                             }
@@ -1573,7 +1573,7 @@ namespace COMIGHT
                             bool checkHeadingNecessity = false; // “检查小标题编号必要性”变量初始赋值为False
                             switch (bodyTextsWorksheet.Cells[i, 1].Text) //根据当前行小标题级别进入相应的分支，将对应级别的小标题编号分别赋值给小标题编号单元格
                             {
-                                case "0级": //如果为0级小标题
+                                case "Lv0": //如果为0级小标题
                                     bodyTextsWorksheet.Cells[i, 2].Value = "第" + ConvertArabicNumberIntoChinese(Convert.ToInt32(heading0Num)) + "部分 "; //将0级小标题编号赋值给小标题编号单元格
                                     checkHeadingNecessity = heading0Num == 1 ? true : false; // 获取“检查小标题编号必要性”值：如果编号为1，则得到true；否则，得到false（防止同级编号只有1没有2）
                                     heading0Num++; //0级小标题计数加1
@@ -1583,7 +1583,7 @@ namespace COMIGHT
                                     heading4Num = 1;
                                     headingShiNum = 1;
                                     break;
-                                case "1级":
+                                case "Lv1":
                                     bodyTextsWorksheet.Cells[i, 2].Value = ConvertArabicNumberIntoChinese(Convert.ToInt32(heading1Num)) + "、";
                                     checkHeadingNecessity = heading1Num == 1 ? true : false;
                                     heading1Num++;
@@ -1592,7 +1592,7 @@ namespace COMIGHT
                                     heading4Num = 1;
                                     headingShiNum = 1;
                                     break;
-                                case "2级":
+                                case "Lv2":
                                     bodyTextsWorksheet.Cells[i, 2].Value = "（" + ConvertArabicNumberIntoChinese(Convert.ToInt32(heading2Num)) + "）";
                                     checkHeadingNecessity = heading2Num == 1 ? true : false;
                                     heading2Num++;
@@ -1600,7 +1600,7 @@ namespace COMIGHT
                                     heading4Num = 1;
                                     headingShiNum = 1;
                                     break;
-                                case "3级":
+                                case "Lv3":
                                     bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
                                     bodyTextsWorksheet.Cells[i, 2].Value = heading3Num + ".";
                                     checkHeadingNecessity = heading3Num == 1 ? true : false;
@@ -1608,19 +1608,19 @@ namespace COMIGHT
                                     heading4Num = 1;
                                     headingShiNum = 1;
                                     break;
-                                case "4级":
+                                case "Lv4":
                                     bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
                                     bodyTextsWorksheet.Cells[i, 2].Value = "(" + heading4Num + ")";
                                     checkHeadingNecessity = heading4Num == 1 ? true : false;
                                     heading4Num++;
                                     headingShiNum = 1;
                                     break;
-                                case "是":
+                                case "Enum.":
                                     bodyTextsWorksheet.Cells[i, 2].Value = ConvertArabicNumberIntoChinese(Convert.ToInt32(headingShiNum)) + "是";
                                     checkHeadingNecessity = headingShiNum == 1 ? true : false;
                                     headingShiNum++;
                                     break;
-                                case "条":
+                                case "Itm.":
                                     bodyTextsWorksheet.Cells[i, 2].Value = "第" + ConvertArabicNumberIntoChinese(Convert.ToInt32(headingItemNum)) + "条 ";
                                     checkHeadingNecessity = headingItemNum == 1 ? true : false;
                                     headingItemNum++;
@@ -1642,7 +1642,7 @@ namespace COMIGHT
                                         if (!bodyTextsWorksheet.Rows[k].Hidden)  // 如果当前比较行不是隐藏行
                                         {
                                             // 如果当前比较行文字含小标题且小标题级别数小于基准行（小标题级别更高），则退出循环
-                                            if (bodyTextsWorksheet.Cells[k, 1].Text.Contains("级") && Val(bodyTextsWorksheet.Cells[k, 1].Text) < Val(bodyTextsWorksheet.Cells[i, 1].Text))
+                                            if (bodyTextsWorksheet.Cells[k, 1].Text.Contains("Lv") && Val(bodyTextsWorksheet.Cells[k, 1].Text) < Val(bodyTextsWorksheet.Cells[i, 1].Text))
                                             {
                                                 break;
                                             }
@@ -1681,7 +1681,7 @@ namespace COMIGHT
                         {
                             //将当前行的小标题编号和小标题正文文字添加到完整文章列表
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
-                            if (bodyTextsWorksheet.Cells[i, 1].Text != "接上段") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表（末尾增加一个元素）
+                            if (bodyTextsWorksheet.Cells[i, 1].Text != "Immed.") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表（末尾增加一个元素）
                             {
                                 lstFullTexts.Add(paragraphText);
                             }
