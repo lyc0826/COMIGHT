@@ -644,7 +644,7 @@ namespace COMIGHT
 
         public static string RemoveHeadingNum(string inText, bool keepLeadingNum = false)
         {
-            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”最多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
+            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
             string headingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
             //定义开头标记正则表达式字符串：如果“保留开头小标题编号”为false，则为：前方出现开头标记或“。：:；;”；否则为：前方出现“。：:；;”
             string leadingMarksRegEx = !keepLeadingNum ? @"(?<=^|[。：:；;])" : @"(?<=[。：:；;])";
@@ -1335,7 +1335,7 @@ namespace COMIGHT
                         string cnSignature = @"(?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,15}[\n\r]";
                         string enSignature = @"(?:[a-zA-Z][^：:；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,25}[12]\d{3}[\n\r]";
                         // 定义中、英文签名和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），中文落款或英文落款
-                        Regex regExCnSignature = new Regex(@$"(?<=^|\n|\r)[\n\r](?:(?:{cnSignature})|(?:{enSignature}))", RegexOptions.Multiline);
+                        Regex regExCnSignature = new Regex(@$"(?<=^|\n|\r)[\n\r](?:{cnSignature}|{enSignature})", RegexOptions.Multiline);
                         MatchCollection matchesCnSignatures = regExCnSignature.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
 
                         foreach (Match matchCnSignature in matchesCnSignatures)

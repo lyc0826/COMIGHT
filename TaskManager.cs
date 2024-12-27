@@ -11,11 +11,11 @@ namespace COMIGHT
         private readonly List<Task> lstTasks = new List<Task>(); // 定义任务列表变量
         private int _activeTasksCount; // 定义当前激活的任务数量变量
 
-        public event PropertyChangedEventHandler PropertyChanged; // 定义属性变更事件变量
+        public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件变量
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null) // 定义属性变更事件处理方法
         {
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(name)); // 触发属性变更
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); // 触发属性变更
         }
 
         public int ActiveTasksCount // 定义激活任务数量属性
@@ -32,7 +32,7 @@ namespace COMIGHT
             }
         }
 
-        public string StatusText => ActiveTasksCount > 0 ? "Operation In Progress..." : "Idle"; // 设置状态文本属性的值：如果激活任务数量大于0，显示"Operation In Progress..."；否则，显示"Idle"
+        public string StatusText => ActiveTasksCount > 0 ? "Operation in progress..." : "Idle"; // 设置状态文本属性的值：如果激活任务数量大于0，显示"Operation In Progress..."；否则，显示"Idle"
 
         public TaskManager()
         {
