@@ -1532,7 +1532,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string> lstFullTexts = new List<string>(); //定义完整文章列表变量
+                List<string> lstFullTexts = new List<string>(); //定义全文本列表变量
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(documentTableFilePath))) //打开结构化文档表Excel工作簿，赋值给Excel包变量
                 {
@@ -1743,32 +1743,32 @@ namespace COMIGHT
 
                     ExcelRange titleCells = titleWorksheet.Cells[titleWorksheet.Dimension.Address]; //将“大标题”工作表单元格赋值给大标题工作表单元格变量
 
-                    lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "" }); //将大标题、空行添加到完整文章列表中
+                    lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "" }); //将大标题、空行添加到全文本列表中
 
                     for (int i = 2; i <= bodyTextsWorksheet.Dimension.End.Row; i++)  // 遍历“主体”工作表第2行到最末行的所有行
                     {
 
                         if (bodyTextsWorksheet.Cells[i, 2].Text != "X")  // 如果当前行没有"X"标记（非忽略行）
                         {
-                            //将当前行的小标题编号和小标题正文文字添加到完整文章列表
+                            //将当前行的小标题编号和小标题正文文字添加到全文本列表
                             string paragraphText = bodyTextsWorksheet.Cells[i, 2].Text + bodyTextsWorksheet.Cells[i, 3].Text; //将当前行小标题编号和文字合并，赋值给段落文字变量
-                            if (bodyTextsWorksheet.Cells[i, 1].Text != "Immed.") //如果当前行没有“接上段”的标记，则将段落文字添加到完整文章列表（末尾增加一个元素）
+                            if (bodyTextsWorksheet.Cells[i, 1].Text != "Immed.") //如果当前行没有“接上段”的标记，则将段落文字添加到全文本列表（末尾增加一个元素）
                             {
                                 lstFullTexts.Add(paragraphText);
                             }
-                            else  //否则，将段落文字累加到完整文章列表最后一个元素的文字的末尾
+                            else  //否则，将段落文字累加到全文本列表最后一个元素的文字的末尾
                             {
                                 lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
                             }
 
-                            if (!isChineseDocument) lstFullTexts.Add(""); // 如果不是中文文档，则将空行添加到完整文章列表中（英文文档段中需要空行）
+                            if (!isChineseDocument) lstFullTexts.Add(""); // 如果不是中文文档，则将空行添加到全文本列表中（英文文档段中需要空行）
                         }
                     }
 
                     // 获取日期单元格的日期值并转换为字符串：如果是中文文档，则转换为“yyyy年M月d日”格式；否则，转换为“MMM-d yyyy”格式
                     string dateStr = titleCells["C4"].GetValue<DateTime>().ToString(isChineseDocument ? "yyyy年M月d日" : "MMM-d yyyy", CultureInfo.CreateSpecificCulture("en-US"));
 
-                    //将空行、签名、日期依次添加到完整文章列表中
+                    //将空行、签名、日期依次添加到全文本列表中
                     lstFullTexts.AddRange(new string[] { "", titleCells["C3"].Text, dateStr });
 
                     FormatDocumentTable(excelPackage.Workbook); // 格式化结构化文档表中的所有工作表
@@ -1777,9 +1777,9 @@ namespace COMIGHT
 
                 using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档
                 {
-                    XWPFDocument targetWordDocument = new XWPFDocument(); // 创建XWPFDocument对象，赋值给目标Word文档变量
+                    XWPFDocument targetWordDocument = new XWPFDocument(); // 创建Word文档对象，赋值给目标Word文档变量
 
-                    // 遍历完整文章列表中的所有元素
+                    // 遍历全文本列表中的所有元素
                     foreach (string paragraphText in lstFullTexts)
                     {
                         // 插入段落
@@ -1787,9 +1787,7 @@ namespace COMIGHT
                         XWPFRun run = paragraph.CreateRun(); // 创建段落文本块
                         run.SetText(paragraphText); // 将当前元素的段落文字插入段落文本块中
                     }
-
-                    // 将文档写入文件流
-                    targetWordDocument.Write(fileStream);
+                    targetWordDocument.Write(fileStream); // 写入文件流
                 }
 
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
