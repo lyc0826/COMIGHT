@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
+using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
@@ -12,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Interop;
-using Xceed.Words.NET;
 using static COMIGHT.Properties.Settings;
 using static COMIGHT.PublicVariables;
 using Application = System.Windows.Application;
@@ -142,9 +142,9 @@ namespace COMIGHT
 
                     for (int i = 2; i <= excelWorksheet.Dimension.End.Row; i++) //遍历Excel工作表从第2行开始到末尾的所有行
                     {
-                        //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于50字（纯小标题），则加粗；否则不加粗
+                        //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于100字（纯小标题），则加粗；否则不加粗
                         excelWorksheet.Cells[i, 1, i, 3].Style.Font.Bold =
-                            (excelWorksheet.Cells[i, 1].Text.Contains("Lv") && excelWorksheet.Cells[i, 3].Text.Length < 50) ? true : false;
+                            (excelWorksheet.Cells[i, 1].Text.Contains("Lv") && excelWorksheet.Cells[i, 3].Text.Length < 100) ? true : false;
                     }
                 }
             }
@@ -376,67 +376,11 @@ namespace COMIGHT
                     return "Lv0";
                 }
                 else // 否则
-                { 
+                {
                     return "Lv" + enHeadingNumsCount.ToString(); // 将"Lv"和小标题级别合并（编号中有几组数字就为几级标题）并赋值给函数返回值
                 }
             }
         }
-            
-
-        //public static string GetHeadingLevel(string title)
-        //{
-        //    //定义正则表达式变量，匹配模式为各级小标题、编号或文字
-        //    //0级小标题编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，“：:”空格制表符至少一个
-        //    Regex regExHeading0Num = new Regex(@"^[ |\t]*第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[：:| |\t]+", RegexOptions.Multiline);
-        //    // 1级小标题编号：从开头开始，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-        //    Regex regExHeading1Num = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
-        //    // 2级小标题编号：从开头开始，空格制表符任意多个，“（(”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-        //    Regex regExHeading2Num = new Regex(@"^[ |\t]*[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
-        //    // 3级小标题编号：从开头开始，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-        //    Regex regExHeading3Num = new Regex(@"^[ |\t]*\d+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
-        //    // 4级小标题编号：从开头开始，空格制表符任意多个，“（(”，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-        //    Regex regExHeading4Num = new Regex(@"^[ |\t]*[（\(][ |\t]*\d+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
-        //    // “X是”编号：从开头开始，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”，空格制表符任意多个
-        //    Regex regExShiNum = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*是[ |\t]*", RegexOptions.Multiline);
-        //    // “第X条”编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条”，“：:”空格制表符至少一个
-        //    Regex regExItemNum = new Regex(@"^[ |\t]*第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*条[：:| |\t]+", RegexOptions.Multiline);
-
-
-        //    // 使用正则表达式来匹配小标题编号，并赋值给小标题级别单元格
-        //    if (regExHeading0Num.IsMatch(title)) //如果单元格文本被0级小标题编号正则表达式匹配成功，则将当前行的小标题级别（第1列）单元格赋值为“0级”
-        //    {
-        //        return "Lv0";
-        //    }
-        //    else if (regExHeading1Num.IsMatch(title))
-        //    {
-        //        return "Lv1";
-        //    }
-        //    else if (regExHeading2Num.IsMatch(title))
-        //    {
-        //        return "Lv2";
-        //    }
-        //    else if (regExHeading3Num.IsMatch(title))
-        //    {
-        //        return "Lv3";
-        //    }
-        //    else if (regExHeading4Num.IsMatch(title))
-        //    {
-        //        return "Lv4";
-        //    }
-        //    else if (regExShiNum.IsMatch(title))
-        //    {
-        //        return "Enum.";
-        //    }
-        //    else if (regExItemNum.IsMatch(title))
-        //    {
-        //        return "Itm.";
-        //    }
-        //    else
-        //    {
-        //        return "";
-        //    }
-
-        //}
 
         public static string? GetKeyColumnLetter()
         {
@@ -451,7 +395,6 @@ namespace COMIGHT
             Default.Save();
             return columnLetter; //将列符赋值给函数返回值
         }
-
 
         public static void GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount)
         {
@@ -737,17 +680,6 @@ namespace COMIGHT
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
-        //public static string RemoveHeadingNum(string inText, bool keepLeadingNum = false)
-        //{
-        //    //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
-        //    string cnHeadingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
-        //    //定义开头标记正则表达式字符串：如果“保留开头小标题编号”为false，则为：前方出现开头标记或“。：:；;”；否则为：前方出现“。：:；;”
-        //    string leadingMarksRegEx = !keepLeadingNum ? @"(?<=^|[。：:；;])" : @"(?<=[。：:；;])";
-        //    //定义小标题编号正则表达式变量，匹配模式为：开头标记和小标题编号两个正则表达式字符串的合并字符串
-        //    Regex regExHeadingNum = new Regex(leadingMarksRegEx + cnHeadingNumRegEx, RegexOptions.Multiline);
-        //    return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
-        //}
-
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
             string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
@@ -795,9 +727,10 @@ namespace COMIGHT
                     ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets.Add("Title");
                     ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets.Add("Body");
 
-                    bool isChineseDocument = IsChineseText(lstParagraphs?[0] ?? "");
+                    bool isChineseDocument = IsChineseText(lstParagraphs?[0] ?? ""); // 根据段落数组0号（第1个）元素即大标题判断是否为中文文档，并赋值给“是否为中文文档”变量
+
                     // 定义大标题工作表表头列表：如果输入文字是中文，则表头为“项目、编号、文字”；否则为“Item、Index、Content”
-                    List<object[]> lstTitleWorksheetHeader = new List<object[]> { isChineseDocument ? new object[] { "项目", "编号", "文字" } : new object[] { "Item", "Index", "Content" } } ;
+                    List<object[]> lstTitleWorksheetHeader = new List<object[]> { isChineseDocument ? new object[] { "项目", "编号", "内容" } : new object[] { "Item", "Index", "Content" } };
                     titleWorksheet.Cells["A1:C1"].LoadFromArrays(lstTitleWorksheetHeader); // 将表头列表加载到大标题工作表
 
                     // 定义大标题工作表项目列表：如果输入文字是中文，则项目为“大标题、落款、日期”；否则为“Title、Signature、Date”
@@ -817,10 +750,10 @@ namespace COMIGHT
                     titleWorksheet.Cells["A2:A4"].LoadFromArrays(lstTitleWorksheetItems);
 
                     // 定义主体工作表表头列表：如果输入文字是中文，则表头为“小标题级别、小标题编号、文字、完成时限、责任部门（人）、分类”；否则为“Heading Level、Heading Index、Content、Deadline、Responsible Subject、Category”
-                    List<object[]> lstBodyWorksheetHeading = new List<object[]> { isChineseDocument ? new object[] { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类" } : new object[] { "Heading Level", "Heading Index", "Content", "Deadline", "Responsible Subject", "Category" } } ;
+                    List<object[]> lstBodyWorksheetHeading = new List<object[]> { isChineseDocument ? new object[] { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类" } : new object[] { "Heading Level", "Heading Index", "Content", "Deadline", "Responsible Subject", "Category" } };
                     bodyTextsWorksheet.Cells["A1:F1"].LoadFromArrays(lstBodyWorksheetHeading);
 
-                    // 将Word文档数组内容从1号（第2个）元素即正文第一段开始，赋值给“主体”工作表内容列的单元格
+                    // 将段落数组内容从1号（第2个）元素即正文第一段开始，赋值给“主体”工作表内容列的单元格
                     for (int i = 1; i < lstParagraphs!.Count; i++) //遍历数组所有元素
                     {
                         bodyTextsWorksheet.Cells[i + 1, 3].Value = lstParagraphs[i]; //将当前数组元素赋值给第3列的第i+1行的单元格
@@ -834,14 +767,14 @@ namespace COMIGHT
                         bodyTextsWorksheet.Cells[i, 3].Value = RemoveHeadingNum(cellText); //删除单元格文本中的所有小标题编号，赋值给当前行的小标题正文文字单元格
                     }
 
-                    // 在“大标题落款”工作表中，给大标题、落款、日期单元格赋值
-                    titleWorksheet.Cells["C2"].Value = lstParagraphs[0]; // 将Word文档数组0号（第1个）元素即大标题值赋值给“大标题落款”工作表的“大标题”单元格
-                    
+                    // 在“大标题”工作表中，给大标题、签名、日期单元格赋值
+                    titleWorksheet.Cells["C2"].Value = lstParagraphs[0]; // 将段落数组0号（第1个）元素即大标题值赋值给“大标题落款”工作表的“大标题”单元格
+
                     titleWorksheet.Cells["C3"].Value = isChineseDocument ? "签名" : "Signature"; // 给签名单元格赋值：如果输入文字是中文，则落款为“签名”；否则为“Signature”
 
                     // 给日期单元格赋值：如果输入文字是中文，则日期为当前日期的“yyyy年M月d日”格式；否则为“MMM-dd yyyy”美国格式
-                    titleWorksheet.Cells["C4"].Value = isChineseDocument ? DateTime.Now.ToString("yyyy年M月d日") : 
-                        DateTime.Now.ToString("MMM-dd yyyy", CultureInfo.CreateSpecificCulture("en-US")); 
+                    titleWorksheet.Cells["C4"].Value = isChineseDocument ? DateTime.Now.ToString("yyyy年M月d日") :
+                        DateTime.Now.ToString("MMM-dd yyyy", CultureInfo.CreateSpecificCulture("en-US"));
 
                     TrimCellsStrings(bodyTextsWorksheet); //删除“主体”Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(bodyTextsWorksheet); //删除“主体”Excel工作表内所有空白行和空白列
@@ -889,7 +822,6 @@ namespace COMIGHT
                         string documentText = msWordDocument.Content.Text; // 全文文字变量赋值
 
                         bool isCnDocument = IsChineseText(documentText); // 判断是否为中文文档，赋值给“是否为中文文档”变量
-
 
                         // 定义页边距、行距、字体、字号等的值
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
@@ -1045,7 +977,7 @@ namespace COMIGHT
                         // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-120个，换行符回车符，后方出现：换行符回车符
                         Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,120}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-                        // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，换行符回车符
+                        // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
                         Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
 
                         int referencePageNum = 0; //参考页码赋值为0
@@ -1266,7 +1198,7 @@ namespace COMIGHT
                                     (font.Name, font.Size) = (enHeading0FontName, enHeading0FontSize);
                                 }
                                 else // 否则
-                                {
+                                {  
                                     // 根据小标题编号中的数字组数设置1-4级小标题字体（有几组数字，就为几级标题）
                                     (font.Name, font.Size) = enHeadingNumsCount switch
                                     {
@@ -1276,7 +1208,6 @@ namespace COMIGHT
                                         _ => (enHeading3_4FontName, enHeading3_4FontSize),
                                     };
                                 }
-
                                 font.Bold = 1;
 
                                 if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
@@ -1288,7 +1219,6 @@ namespace COMIGHT
                             }
                         }
 
-                        
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
 
                         // 定义清单数字编号正则表达式列表变量
@@ -1300,7 +1230,7 @@ namespace COMIGHT
                         }
                         else // 否则，正则表达式列表中的匹配模式为英文1-4级小标题编号
                         {
-                            listNums = new List<string>() { @"(?:(?:[A-Z]+\.)|(?:\d+\.?))(?:\d+\.?){0,3}" };
+                            listNums = new List<string>() { @"(?:[A-Z]+\.|\d+\.?)(?:\d+\.?){0,3}" };
                         }
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
@@ -1308,25 +1238,25 @@ namespace COMIGHT
                             selection.HomeKey(WdUnits.wdStory);
 
                             // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符至少一个，换行符回车符），以上字符串（捕获组）2个及以上
-                            Regex regExListGroup = new Regex(@"((?<=^|\n|\r)" + listNum + @"[^\f\n\r]+[\n\r]){2,}", RegexOptions.Multiline);
+                            Regex regExListBlock = new Regex(@"((?<=^|\n|\r)" + listNum + @"[^\f\n\r]+[\n\r]){2,}", RegexOptions.Multiline);
 
-                            MatchCollection matchesListGroups = regExListGroup.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
+                            MatchCollection matchesListBlocks = regExListBlock.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
 
-                            foreach (Match matchListGroup in matchesListGroups) // 遍历数字编号清单正则表达式匹配结果集合
+                            foreach (Match matchListBlock in matchesListBlocks) // 遍历数字编号清单正则表达式匹配结果集合
                             {
                                 //如果数字编号清单正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档80，英文文档200），则不视为清单条目，直接跳过当前循环并进入下一个循环
-                                if (matchListGroup.Value.Length / (matchListGroup.Groups[1].Captures.Count) >= (isCnDocument ? 80 : 200))
+                                if (matchListBlock.Value.Length / (matchListBlock.Groups[1].Captures.Count) >= (isCnDocument ? 80 : 200))
                                 {
                                     continue;
                                 }
 
                                 // 文本片段正则表达式匹配模式设为：含换行符回车符的任意字符的字符1-255个；获取当前数字编号清单字符串经匹配后的第一个结果（截取前部最多255个字符，避免超出Interop库Find方法的限制）
-                                Match matchTextSection = Regex.Match(matchListGroup.Value, @"(?:.|[\n\r]){1,255}", RegexOptions.Multiline);
+                                Match matchTextSection = Regex.Match(matchListBlock.Value, @"(?:.|[\n\r]){1,255}", RegexOptions.Multiline);
 
                                 find.Text = matchTextSection.Value;
                                 find.Execute();
 
-                                selection.MoveEnd(WdUnits.wdCharacter, matchListGroup.Value.Length - matchTextSection.Value.Length); //将搜索结果选区的末尾向后扩展至数字编号清单的末尾
+                                selection.MoveEnd(WdUnits.wdCharacter, matchListBlock.Value.Length - matchTextSection.Value.Length); //将搜索结果选区的末尾向后扩展至数字编号清单的末尾
                                 paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将选区所在段落的大纲级别设为正文级别
 
                                 //将选区设为正文文字格式
@@ -1438,19 +1368,19 @@ namespace COMIGHT
                         }
 
 
-                        // 签名和日期落款设置
+                        // 落款设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义中、英文签名和日期落款字符串变量，匹配模式为：签名至少1个，最后为日期
-                        string cnSignature = @"(?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,15}[\n\r]";
-                        string enSignature = @"(?:[a-zA-Z][^：:；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,25}[12]\d{3}[\n\r]";
-                        // 定义中、英文签名和日期落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），中文落款或英文落款
-                        Regex regExCnSignature = new Regex(@$"(?<=^|\n|\r)[\n\r](?:{cnSignature}|{enSignature})", RegexOptions.Multiline);
-                        MatchCollection matchesCnSignatures = regExCnSignature.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
+                        // 定义中、英文落款字符串变量，匹配模式为：签名至少1个，最后为日期
+                        string cnSignOff = @"(?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]";
+                        string enSignOff = @"(?:[a-zA-Z][^：:；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,20}[12]\d{3}[\n\r]";
+                        // 定义中、英文落款正则表达式变量，匹配模式为：前方出现开头符号、换行符回车符，换行符回车符（一个空行），中文落款或英文落款
+                        Regex regExSignOff = new Regex(@$"(?<=^|\n|\r)[\n\r](?:{cnSignOff}|{enSignOff})", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                        MatchCollection matchesSignOffs = regExSignOff.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
 
-                        foreach (Match matchCnSignature in matchesCnSignatures)
+                        foreach (Match matchSignOff in matchesSignOffs)
                         {
-                            find.Text = matchCnSignature.Value;
+                            find.Text = matchSignOff.Value;
                             find.Execute();
                             if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
                             {
@@ -1514,6 +1444,7 @@ namespace COMIGHT
             if (inText.Length == 0) return false; // 如果全文长度为0，则将false赋值给函数返回值
 
             int nonCnCharsCount = Regex.Matches(inText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
+            //int nonCnCharsCount = Regex.Matches(inText, @"[a-zA-Z| ]").Count; //获取全文非中文字符数量
             double nonCnCharsRatio = nonCnCharsCount / inText.Length; // 计算非中文字符占全文的比例
             return nonCnCharsRatio < 0.5 ? true : false; //赋值给函数返回值：如果非中文字符比例小于0.5，得到true；否则，得到false
         }
@@ -1557,7 +1488,7 @@ namespace COMIGHT
                             }
 
                             // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
-                            
+
                             // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合（
                             MatchCollection matchesSentences = regExCnSentence.Matches(lstStrs[0]);
 
@@ -1605,7 +1536,7 @@ namespace COMIGHT
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(documentTableFilePath))) //打开结构化文档表Excel工作簿，赋值给Excel包变量
                 {
-
+                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets["Title"]; //将“大标题”工作表赋值给大标题工作表变量
                     ExcelWorksheet bodyTextsWorksheet = excelPackage.Workbook.Worksheets["Body"]; //将“主体”工作表赋值给“主体”工作表变量
                     RemoveWorksheetEmptyRowsAndColumns(bodyTextsWorksheet); //删除“主体”工作表内所有空白行和空白列
                     if ((bodyTextsWorksheet.Dimension?.Rows ?? 0) <= 1) // 如果“主体”工作表已使用行数小于等于1（如果工作表为空，则为0），只有表头无有效数据，则结束本过程
@@ -1662,14 +1593,16 @@ namespace COMIGHT
                         }
                     }
 
+                    bool isChineseDocument = IsChineseText(titleWorksheet.Cells["C2"].Text); // 根据大标题工作表中C2单元格文字，判断文档是否为中文文档，赋值给“是否为中文文档”变量
+
                     //初始化小标题编号变量
-                    int heading0Num = 1;
-                    int heading1Num = 1;
-                    int heading2Num = 1;
-                    int heading3Num = 1;
-                    int heading4Num = 1;
-                    int headingShiNum = 1;
-                    int headingItemNum = 1;
+                    int heading0Num = 0;
+                    int heading1Num = 0;
+                    int heading2Num = 0;
+                    int heading3Num = 0;
+                    int heading4Num = 0;
+                    int headingShiNum = 0;
+                    int headingItemNum = 0;
 
                     bodyTextsWorksheet.Cells[2, 2, bodyTextsWorksheet.Dimension.End.Row, 2].Clear(); // 清除第2列旧小标题编号
 
@@ -1686,56 +1619,83 @@ namespace COMIGHT
                             switch (bodyTextsWorksheet.Cells[i, 1].Text) //根据当前行小标题级别进入相应的分支，将对应级别的小标题编号分别赋值给小标题编号单元格
                             {
                                 case "Lv0": //如果为0级小标题
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "第" + ConvertArabicNumberIntoChinese(Convert.ToInt32(heading0Num)) + "部分 "; //将0级小标题编号赋值给小标题编号单元格
-                                    checkHeadingNecessity = heading0Num == 1 ? true : false; // 获取“检查小标题编号必要性”值：如果编号为1，则得到true；否则，得到false（防止同级编号只有1没有2）
                                     heading0Num++; //0级小标题计数加1
-                                    heading1Num = 1;
-                                    heading2Num = 1;
-                                    heading3Num = 1;
-                                    heading4Num = 1;
-                                    headingShiNum = 1;
+                                    heading1Num = 0;
+                                    heading2Num = 0;
+                                    heading3Num = 0;
+                                    heading4Num = 0;
+                                    headingShiNum = 0;
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        "第" + ConvertArabicNumberIntoChinese(Convert.ToInt32(heading0Num)) + "部分 "
+                                        : "Part " + heading0Num + " "; //将0级小标题编号赋值给小标题编号单元格
+                                    checkHeadingNecessity = heading0Num == 1 ? true : false; // 获取“检查小标题编号必要性”值：如果编号为1，则得到true；否则，得到false（防止同级编号只有1没有2）
+
                                     break;
+
                                 case "Lv1":
-                                    bodyTextsWorksheet.Cells[i, 2].Value = ConvertArabicNumberIntoChinese(Convert.ToInt32(heading1Num)) + "、";
-                                    checkHeadingNecessity = heading1Num == 1 ? true : false;
                                     heading1Num++;
-                                    heading2Num = 1;
-                                    heading3Num = 1;
-                                    heading4Num = 1;
-                                    headingShiNum = 1;
+                                    heading2Num = 0;
+                                    heading3Num = 0;
+                                    heading4Num = 0;
+                                    headingShiNum = 0;
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        ConvertArabicNumberIntoChinese(Convert.ToInt32(heading1Num)) + "、"
+                                        : heading1Num + " ";
+                                    checkHeadingNecessity = heading1Num == 1 ? true : false;
+
                                     break;
+
                                 case "Lv2":
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "（" + ConvertArabicNumberIntoChinese(Convert.ToInt32(heading2Num)) + "）";
-                                    checkHeadingNecessity = heading2Num == 1 ? true : false;
                                     heading2Num++;
-                                    heading3Num = 1;
-                                    heading4Num = 1;
-                                    headingShiNum = 1;
+                                    heading3Num = 0;
+                                    heading4Num = 0;
+                                    headingShiNum = 0;
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        "（" + ConvertArabicNumberIntoChinese(Convert.ToInt32(heading2Num)) + "）"
+                                        : string.Join(".", new object[] { heading1Num, heading2Num }) + " ";
+                                    checkHeadingNecessity = heading2Num == 1 ? true : false;
+
                                     break;
+
                                 case "Lv3":
-                                    bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
-                                    bodyTextsWorksheet.Cells[i, 2].Value = heading3Num + ".";
-                                    checkHeadingNecessity = heading3Num == 1 ? true : false;
                                     heading3Num++;
-                                    heading4Num = 1;
-                                    headingShiNum = 1;
-                                    break;
-                                case "Lv4":
+                                    heading4Num = 0;
+                                    headingShiNum = 0;
                                     bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "(" + heading4Num + ")";
-                                    checkHeadingNecessity = heading4Num == 1 ? true : false;
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        heading3Num + "."
+                                        : string.Join(".", new object[] { heading1Num, heading2Num, heading3Num }) + " ";
+                                    checkHeadingNecessity = heading3Num == 1 ? true : false;
+
+                                    break;
+
+                                case "Lv4":
                                     heading4Num++;
-                                    headingShiNum = 1;
+                                    headingShiNum = 0;
+                                    bodyTextsWorksheet.Cells[i, 2].Style.Numberformat.Format = "@";
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        "(" + heading4Num + ")"
+                                        : string.Join(".", new object[] { heading1Num, heading2Num, heading3Num, heading4Num }) + " ";
+                                    checkHeadingNecessity = heading4Num == 1 ? true : false;
+
                                     break;
+
                                 case "Enum.":
-                                    bodyTextsWorksheet.Cells[i, 2].Value = ConvertArabicNumberIntoChinese(Convert.ToInt32(headingShiNum)) + "是";
-                                    checkHeadingNecessity = headingShiNum == 1 ? true : false;
                                     headingShiNum++;
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        ConvertArabicNumberIntoChinese(Convert.ToInt32(headingShiNum)) + "是"
+                                        : "";
+                                    checkHeadingNecessity = headingShiNum == 1 ? true : false;
+
                                     break;
+
                                 case "Itm.":
-                                    bodyTextsWorksheet.Cells[i, 2].Value = "第" + ConvertArabicNumberIntoChinese(Convert.ToInt32(headingItemNum)) + "条 ";
-                                    checkHeadingNecessity = headingItemNum == 1 ? true : false;
                                     headingItemNum++;
+                                    bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
+                                        "第" + ConvertArabicNumberIntoChinese(Convert.ToInt32(headingItemNum)) + "条 "
+                                        : "";
+                                    checkHeadingNecessity = headingItemNum == 1 ? true : false;
+
                                     break;
                             }
 
@@ -1781,7 +1741,6 @@ namespace COMIGHT
 
                     }
 
-                    ExcelWorksheet titleWorksheet = excelPackage.Workbook.Worksheets["Title"]; //将“大标题”工作表赋值给大标题工作表变量
                     ExcelRange titleCells = titleWorksheet.Cells[titleWorksheet.Dimension.Address]; //将“大标题”工作表单元格赋值给大标题工作表单元格变量
 
                     lstFullTexts.AddRange(new string[] { titleCells["C2"].Text, "" }); //将大标题、空行添加到完整文章列表中
@@ -1801,28 +1760,37 @@ namespace COMIGHT
                             {
                                 lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
                             }
+
+                            if (!isChineseDocument) lstFullTexts.Add(""); // 如果不是中文文档，则将空行添加到完整文章列表中（英文文档段中需要空行）
                         }
                     }
 
-                    // 获取日期单元格的日期值并转换为字符串
-                    string dateStr = titleCells["C4"].GetValue<DateTime>().ToString("yyyy年M月d日");
+                    // 获取日期单元格的日期值并转换为字符串：如果是中文文档，则转换为“yyyy年M月d日”格式；否则，转换为“MMM-d yyyy”格式
+                    string dateStr = titleCells["C4"].GetValue<DateTime>().ToString(isChineseDocument ? "yyyy年M月d日" : "MMM-d yyyy", CultureInfo.CreateSpecificCulture("en-US"));
 
-                    //将空行、落款方、日期依次添加到完整文章列表中
+                    //将空行、签名、日期依次添加到完整文章列表中
                     lstFullTexts.AddRange(new string[] { "", titleCells["C3"].Text, dateStr });
 
                     FormatDocumentTable(excelPackage.Workbook); // 格式化结构化文档表中的所有工作表
                     excelPackage.Save(); //保存Excel工作簿
                 }
 
-                DocX targetWordDocument = DocX.Create(targetWordFilePath); //新建Word文档，赋值给目标Word文档变量
-
-                for (int i = 0; i < lstFullTexts.Count; i++)  //遍历完整文章列表中的所有元素
+                using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档
                 {
-                    targetWordDocument.InsertParagraph(lstFullTexts[i]); //将当前元素的段落文字插入目标Word文档
-                }
+                    XWPFDocument targetWordDocument = new XWPFDocument(); // 创建XWPFDocument对象，赋值给目标Word文档变量
 
-                targetWordDocument.Save(); //保存目标Word文档
-                targetWordDocument.Dispose(); //关闭目标Word文档
+                    // 遍历完整文章列表中的所有元素
+                    foreach (string paragraphText in lstFullTexts)
+                    {
+                        // 插入段落
+                        XWPFParagraph paragraph = targetWordDocument.CreateParagraph(); // 创建段落
+                        XWPFRun run = paragraph.CreateRun(); // 创建段落文本块
+                        run.SetText(paragraphText); // 将当前元素的段落文字插入段落文本块中
+                    }
+
+                    // 将文档写入文件流
+                    targetWordDocument.Write(fileStream);
+                }
 
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
                 if (MessageBox.Show("Do you want to format the document?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)

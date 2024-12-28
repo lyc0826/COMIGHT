@@ -68,6 +68,7 @@
     <PackageReference Include="EPPlus" Version="7.5.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NPOI" Version="2.7.2" />
   </ItemGroup>
 
   <ItemGroup>
