@@ -108,7 +108,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Converts Markdown text into Word documents, keeping formats and styles as the original.
  
-#### **Export Document Table into Word Document (Only works for Chinese Documents)**
+#### **Export Document Table into Word Document**
 
 - Exports the contents of a document table into a Word document, automatically numbers headings at all levels, and formats them according to Chinese government document standards.
 
@@ -116,21 +116,23 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - A document table template is provided with this program, with instructions for filling it in. The "Text" column in the "Title" worksheet and the "Heading Level" and "Text" columns in the "Body" worksheet are mandatory and serve as the source of the output document content; the other columns are optional for notes, filtering, etc. 
 
-  - "Heading Level" shall be selected from the dropdown box, within the options of "0级", "1级", "2级", "3级", "4级", "是", "条", respectively. In the exported document, heading numbers will be presented in the formats as follows: 
+  - "Heading Level" shall be selected from the dropdown box, within the options of "Lv0", "Lv1", "Lv2", "Lv3", "Lv4", "Enum.", "Itm.", "Immed.", respectively. In the exported document, heading numbers will be presented in the formats as follows: 
 
-    | Heading Level | Heading Number Format |
-    |---|---| 
-    | 0级 | 第一部分 第二部分 第三部分... |
-    | 1级 | 一、 二、 三、... |
-    | 2级 | （一） （二） （三） ... |
-    | 3级 | 1. 2. 3. ...|
-    | 4级 | (1) (2) (3) ... |
-    | 是 | 一是  二是  三是 ... |
-    | 条 | 第一条  第二条  第三条 ... |
+    | Heading Level | Chinese Heading Number Format | English Heading Number Format |
+    |---|---|---|
+    | 0级 | 第一部分 第二部分 第三部分... |Part 1 Part 2 Part 3...|
+    | 1级 | 一、 二、 三、... |1. 2. 3.|
+    | 2级 | （一） （二） （三） ... |1.1 2.1 3.1...|
+    | 3级 | 1. 2. 3. ...|1.1.1 2.1.1 3.1.1...|
+    | 4级 | (1) (2) (3) ... |1.1.1.1 2.1.1.1 3.1.1.1...|
+    | 是 | 一是  二是  三是 ... |N.A.|
+    | 条 | 第一条  第二条  第三条 ... |N.A.|
 
+  - The "Immed." stands for "Immediately following the above paragraph", that means the corresponding text will be deemed as a part of the above paragraph (as a whole, instead of a new paragraph).
+  
   - **None of the 2 worksheets can be renamed, deleted, or have their column structure changed. Any rows that are hidden or filtered out will not be exported.**
 
-#### **Import Text into Document Table (Only works for Chinese Documents)**
+#### **Import Text into Document Table**
 
 - Imports the content of the text box in the dialog box into a document table, saved on the Windows desktop.
 

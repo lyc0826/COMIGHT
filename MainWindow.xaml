@@ -35,7 +35,7 @@
                     <MenuItem x:Name="mnuScreenStocks" Header= "Screen Stocks" Click="MnuScreenStocks_Click" />
                 </MenuItem>
 
-                <MenuItem Header="Document" ToolTip="Document Table only works for Chinese documents.">
+                <MenuItem Header="Document">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
                     <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="mnuConvertMarkdownIntoWord_Click"  />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />

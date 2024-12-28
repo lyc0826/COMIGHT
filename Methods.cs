@@ -1640,7 +1640,7 @@ namespace COMIGHT
                                     headingShiNum = 0;
                                     bodyTextsWorksheet.Cells[i, 2].Value = isChineseDocument ?
                                         ConvertArabicNumberIntoChinese(Convert.ToInt32(heading1Num)) + "、"
-                                        : heading1Num + " ";
+                                        : heading1Num + ". ";
                                     checkHeadingNecessity = heading1Num == 1 ? true : false;
 
                                     break;
