@@ -9,6 +9,7 @@ namespace COMIGHT
         public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
 
         public static string dataBaseFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.xlsx"); //获取数据库Excel工作簿文件路径全名
+        public static string appPath = AppDomain.CurrentDomain.BaseDirectory; //获取程序所在文件夹路径
 
         //public static string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
         //public static string targetBaseFolderPath = Path.Combine(desktopPath, "COMIGHT Files"); //获取目标基文件夹路径

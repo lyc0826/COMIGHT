@@ -67,6 +67,7 @@
     <PackageReference Include="DocX" Version="3.0.1" />
     <PackageReference Include="EPPlus" Version="7.5.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,6 +80,9 @@
 
   <ItemGroup>
     <None Update="Prompts.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Websites.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="使用说明和模板\COMIGHT Assistant使用说明.docx">
