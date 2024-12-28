@@ -59,9 +59,9 @@ namespace COMIGHT
             webView2.Reload(); //重新载入网址
         }
 
-        private void CmbUrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CmbbxUrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string? url = cmbURL.SelectedItem.ToString(); //将组合框被选项的文字赋值给网址变量
+            string? url = cmbbxUrl.SelectedItem.ToString(); //将组合框被选项的文字赋值给网址变量
             WebView_OpenNewUrl(url); //打开网址
         }
 
@@ -96,47 +96,41 @@ namespace COMIGHT
 
         private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e) //WebView初始化完成后，执行此过程
         {
-
-            // 假设JSON文件与exe文件在同一目录下
-            string jsonFilePath = Path.Combine(appPath, "Websites.json");
-
-            // 检查文件是否存在
-            if (!File.Exists(jsonFilePath))
+            try
             {
-                MessageBox.Show("JSON文件不存在！");
-                return;
+                // 检查网址Json文件是否存在
+                if (!File.Exists(websiteJsonFilePath)) // 如果网址Json文件不存在，则抛出异常
+                {
+                    throw new Exception("JSON file not found.");
+                }
+
+                string jsonContent = File.ReadAllText(websiteJsonFilePath); // 读取网址Json文件内容
+
+                // 解析网址Json内容
+                dynamic? parsedJson = JsonConvert.DeserializeObject(jsonContent);
+                dynamic? urls = parsedJson?.urls;
+
+                if (urls != null) // 如果网址Json内容不为空
+                {
+                    // 将网址添加到网址组合框中
+                    foreach (var url in urls)
+                    {
+                        cmbbxUrl.Items.Add(url);
+                    }
+                }
+
+                cmbbxUrl.SelectedIndex = 0; //网址组合框选择0号（第1）项
+                string startupUrl = cmbbxUrl.SelectedItem?.ToString() ?? "";  // 将网址组合框被选项的文字赋值给URL变量
+                WebView_OpenNewUrl(startupUrl); //打开起始URL
+
+                //添加webView事件响应过程
+                webView2.NavigationCompleted += WebView_NavigationCompleted; //打开网站完成后，触发WebView_NavigationCompleted过程
+                webView2.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested; //出现新建浏览窗口请求时，触发CoreWebView2_NewWindowRequested过程
             }
-
-            // 读取JSON文件内容
-            string jsonContent = File.ReadAllText(jsonFilePath);
-
-            // 解析JSON内容
-            dynamic parsedJson = JsonConvert.DeserializeObject(jsonContent);
-            var urls = parsedJson.urls;
-
-            // 将网址添加到ComboBox中
-            foreach (var url in urls)
+            catch (Exception ex)
             {
-                cmbURL.Items.Add(url);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
-            //DataTable? dataTable = ReadExcelWorksheetIntoDataTable(dataBaseFilePath, "Websites"); //读取数据库Excel工作簿的“网址”工作表，赋值给DataTable变量
-
-            //if (dataTable != null) //如果DataTable变量不为null
-            //{
-            //    foreach (DataRow dataRow in dataTable.Rows) //遍历所有数据行
-            //    {
-            //        cmbURL.Items.Add(Convert.ToString(dataRow["Website"]));  //将当前数据行的"Website"数据列的数据添加到网址组合框
-            //    }
-            //}
-
-            cmbURL.SelectedIndex = 0; //网址列表组合框选择0号（第1）项
-            string startupURL = cmbURL.SelectedItem?.ToString() ?? "";  //Convert.ToString(dataTable!.Rows[0]["Website"])!; //将DataTable第0行的"Website"数据赋值给起始URL变量
-            WebView_OpenNewUrl(startupURL); //打开起始URL
-
-            //添加webView事件响应过程
-            webView2.NavigationCompleted += WebView_NavigationCompleted; //打开网站完成后，触发WebView_NavigationCompleted过程
-            webView2.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested; //出现新建浏览窗口请求时，触发CoreWebView2_NewWindowRequested过程
         }
 
         private async void WebView_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e) //网站加载完成后，执行此过程
