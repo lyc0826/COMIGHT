@@ -158,5 +158,4 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - This browser allows you to directly copy entire paragraphs of text from most web pages without having to drag the mouse and hold the Shift key to select and copy. Copied text does not contain any markdown symbols or HTML tags.
 
-- Move the mouse pointer over the text. When a light green border appears around the text block, double-click the mouse. The border will briefly turn pink, indicating that the text has been copied. The Database.xlsx file in the program's folder contains website addresses that are automatically loaded into the browser's favorites dropdown menu upon startup.  You can edit this file as needed (the website list must be in the "Websites" worksheet, and the header cannot be changed).
-
+- Move the mouse pointer over the text. When a light green border appears around the text block, double-click the mouse. The border will briefly turn pink, indicating that the text has been copied. The "Websites.json" file in the program's folder contains website addresses that are automatically loaded into the browser's dropdown menu upon startup. You can edit this file as needed.
