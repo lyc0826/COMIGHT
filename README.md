@@ -90,11 +90,11 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   | Heading Level | Chinese Heading Number Format | English Heading Number Format |
   |---|---|---|
-  | 0 | 第一部分 第二部分 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| Part 1  Part 2  Part 3 ("Part" can be replaced with "Chapter" "Section" |
-  | 1 | 一、 二、 三、... | 1.  2.  3. ... (with a space behind) |
-  | 2 | （一） （二） （三） ... | 1.1  2.1  3.1 ... (with a space behind) |
-  | 3 | 1. 2. 3. ...| 1.1.1  2.1.1  3.1.1 ... (with a space behind) |
-  | 4 | (1) (2) (3) ... | 1.1.1.1  2.1.1.1  3.1.1.1 ... (with a space behind) |
+  | 0 | 第一部分 / 第二部分 / 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| Part 1 / Part 2 / Part 3 ... <br> ("Part" can be replaced with "Chapter" "Section" |
+  | 1 | 一、 / 二、 / 三、... | 1. / 2. / 3. ... (with a space behind) |
+  | 2 | （一） / （二） / （三） ... | 1.1 / 2.1 / 3.1 ... (with a space behind) |
+  | 3 | 1. / 2. / 3. ...| 1.1.1 / 2.1.1 / 3.1.1 ... (with a space behind) |
+  | 4 | (1) / (2) / (3) ... | 1.1.1.1 / 2.1.1.1 / 3.1.1.1 ... (with a space behind) |
 
   - For English documents, blank lines shall be placed between different levels of headings, between a heading and its body paragraph, and between paragraphs.
 
@@ -120,13 +120,13 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
     | Heading Level | Chinese Heading Number Format | English Heading Number Format |
     |---|---|---|
-    | Lv0 | 第一部分 第二部分 第三部分... | Part 1  Part 2  Part 3... |
-    | Lv1 | 一、 二、 三、... | 1.  2.  3. |
-    | Lv2 | （一） （二） （三） ... | 1.1  2.1  3.1 ... |
-    | Lv3 | 1. 2. 3. ...| 1.1.1  2.1.1  3.1.1 ... |
-    | Lv4 | (1) (2) (3) ... | 1.1.1.1  2.1.1.1  3.1.1.1 ... |
-    | Enum. | 一是  二是  三是 ... | N.A. |
-    | Itm. | 第一条  第二条  第三条 ... | N.A. |
+    | Lv0 | 第一部分 / 第二部分 / 第三部分 ... | Part 1 / Part 2 / Part 3 ... |
+    | Lv1 | 一、 / 二、 / 三、 ... | 1. / 2. / 3. ... |
+    | Lv2 | （一） / （二） / （三） ... | 1.1 / 2.1 / 3.1 ... |
+    | Lv3 | 1. / 2. / 3. ...| 1.1.1 / 2.1.1 / 3.1.1 ... |
+    | Lv4 | (1) / (2) / (3) ... | 1.1.1.1 / 2.1.1.1 / 3.1.1.1 ... |
+    | Enum. | 一是 / 二是 / 三是 ... | N.A. |
+    | Itm. | 第一条 / 第二条 / 第三条 ... | N.A. |
 
   - The "Immed." stands for "Immediately following the above paragraph", which means the corresponding text will be deemed as a part of the above paragraph (as a whole, instead of a new paragraph).
   
