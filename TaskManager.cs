@@ -7,9 +7,9 @@ namespace COMIGHT
 {
     public class TaskManager : INotifyPropertyChanged
     {
-        private readonly DispatcherTimer timer = new DispatcherTimer(); // 定义一个 DispatcherTimer变量
+        private readonly DispatcherTimer timer = new DispatcherTimer(); // 定义定时器变量
         private readonly List<Task> lstTasks = new List<Task>(); // 定义任务列表变量
-        private int _activeTasksCount; // 定义当前激活的任务数量变量
+        private int _activeTasksCount; // 定义当前激活任务数量变量
 
         public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件变量
 
@@ -32,7 +32,7 @@ namespace COMIGHT
             }
         }
 
-        public string StatusText => ActiveTasksCount > 0 ? "Operation in progress..." : "Idle"; // 设置状态文本属性的值：如果激活任务数量大于0，显示"Operation In Progress..."；否则，显示"Idle"
+        public string StatusText => ActiveTasksCount > 0 ? "Operation in progress..." : "Idle"; // 设置状态文本属性的值：如果激活任务数量大于0，显示"Operation in Progress..."；否则，显示"Idle"
 
         public TaskManager()
         {

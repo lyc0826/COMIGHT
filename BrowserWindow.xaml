@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="Browser" Width="1080" Height="720" Loaded="BrowserWindow_Loaded">
+        Title="Browser" Width="1200" Height="800" Loaded="BrowserWindow_Loaded">
 
     <Grid Margin="3,0,3,3" >
         <Grid.ColumnDefinitions>

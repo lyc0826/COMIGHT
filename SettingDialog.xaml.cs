@@ -37,9 +37,9 @@ namespace COMIGHT
 
         private class Setting // 定义设置类
         {
-            public string DataTableName { get; }
-            public string DataTableItem { get; }
-            public string PropertiesSettingItem { get; }
+            public string DataTableName { get; } // 定义DataTable名称属性
+            public string DataTableItem { get; } // 定义DataTable项属性
+            public string PropertiesSettingItem { get; } // 定义设置属性
 
             public Setting(string dataTableName, string dataTableItem, string propertiesSettingItem)
             {
@@ -92,18 +92,19 @@ namespace COMIGHT
                 dataTable.PrimaryKey = new[] { dataTable.Columns[dataTableKeyField]! };
             }
 
-            return Convert.ChangeType(dataTable.Rows.Find(key)?[datatableValueField] ?? "", targetType);
+            return Convert.ChangeType(dataTable.Rows.Find(key)?[datatableValueField] ?? "", targetType); // 将指定数据行指定数据列的值转换为指定类型，并赋值给函数返回值
         }
 
         private void LoadSettings()
         {
             try
             {
-                // 定义设置DataTable数组
+                // 定义设置DataTable数组，并添加到设置DataSet
                 DataTable[] dataTables = new DataTable[] { generalSettingsTable, cnSettingsTable, enSettingsTable };
                 dataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
                 dataSet.AcceptChanges();
-                // 遍历设置DataTable数组，为每个DataTable添加列，并设置主键便于快速查找
+
+                // 遍历设置DataTable数组，为每个DataTable添加列
                 foreach (DataTable dataTable in dataTables)
                 {
                     dataTable.Columns.AddRange(new DataColumn[]
@@ -118,7 +119,13 @@ namespace COMIGHT
                 {
                     PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
                     object? value = propertyInfo.GetValue(Default); // 获取当前属性的值
-                    if (value != null) dataSet.Tables[setting.DataTableName]!.Rows.Add(setting.DataTableItem, value); // 如果值不为null，则向当前设置DataTable中添加DataTable设置项和值
+                    if (value != null)
+                    {
+                        DataRow newDataRow = dataSet.Tables[setting.DataTableName]!.NewRow(); // 创建一个新数据行
+                        newDataRow["Item"] = setting.DataTableItem; // 设置新数据行"Item"、"Value"数据列的值
+                        newDataRow["Value"] = value;
+                        dataSet.Tables[setting.DataTableName]!.Rows.Add(newDataRow); // 向当前设置DataTable添加新数据行
+                    }
                 }
             }
 

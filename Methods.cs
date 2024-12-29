@@ -299,7 +299,6 @@ namespace COMIGHT
             view.PageLayoutView = false; // 将页面布局视图设为false（即普通视图）
         }
 
-
         public static string GetHeadingLevel(string heading, bool isChineseText)
         {
             // 定义各级小标题编号正则表达式变量
@@ -567,12 +566,6 @@ namespace COMIGHT
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
             {
-                //如果当前数据行所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
-                //if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
-                //{
-                //    dataTable.Rows[i].Delete();
-                //}
-
                 // 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
                 int nonNullCount = dataTable.Rows[i].ItemArray.Count(value =>
                     value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
@@ -667,7 +660,6 @@ namespace COMIGHT
             }
 
         }
-
 
         public static string RemoveHeadingNum(string inText)
         {
@@ -789,7 +781,6 @@ namespace COMIGHT
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
 
         public static async Task FormatWordDocumentsAsync(List<string> filePaths)
         {
@@ -1513,7 +1504,7 @@ namespace COMIGHT
 
                     if (lstSplitTextsCount >= 2) // 如果拆分后文字列表的元素个数大于等于2个
                     {
-                        int insertedRowsCount = lstSplitTextsCount - 1; // 计算需要插入的行数：列表元素数-1
+                        int insertedRowsCount = lstSplitTextsCount - 1; // 计算需要插入的行数：拆分后文字列表元素数-1
                         cell.Worksheet.InsertRow(cell.Start.Row + 1, insertedRowsCount); // 从被拆分单元格的下一个单元格开始，插入行
                     }
 
@@ -1593,7 +1584,7 @@ namespace COMIGHT
                         }
                     }
 
-                    bool isChineseDocument = IsChineseText(titleWorksheet.Cells["C2"].Text); // 根据大标题工作表中C2单元格文字，判断文档是否为中文文档，赋值给“是否为中文文档”变量
+                    bool isChineseDocument = IsChineseText(titleWorksheet.Cells["C2"].Text); // 根据大标题工作表中C2单元格文字即大标题文字，判断文档是否为中文文档，赋值给“是否为中文文档”变量
 
                     //初始化小标题编号变量
                     int heading0Num = 0;
