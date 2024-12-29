@@ -317,8 +317,8 @@ namespace COMIGHT
             Regex regExCnShiNum = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*是[ |\t]*", RegexOptions.Multiline);
             // 中文“第X条”编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条”，“：:”空格制表符至少一个
             Regex regExCnItemNum = new Regex(@"^[ |\t]*第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*条[：:| |\t]+", RegexOptions.Multiline);
-            // 英文小标题编号，匹配模式为：从开头开始，空格制表符任意多个，“part、charpter、section”标记（捕获组1），【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组2】，空格制表符至少一个
-            Regex regExEnHeadingNum = new Regex(@"^[ |\t]*((?:part|chapter|section)[ |\t]+)?((?:[A-Z]+\.|\d+\.?)(?:\d+\.?){0,3})[ |\t]+", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            // 英文小标题编号，匹配模式为：从开头开始，空格制表符任意多个，“part、charpter、section”标记（捕获组1），【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组2】，空格制表符至少一个
+            Regex regExEnHeadingNum = new Regex(@"^[ |\t]*((?:part|chapter|section)[ |\t]+)?((?:\d+\.?){1,4})[ |\t]+", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
             if (isChineseText) // 如果是中文文本
             {
@@ -673,8 +673,8 @@ namespace COMIGHT
         {
             //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
             string cnHeadingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
-            // 定义英文标题编号正则表达式字符串：空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾如果是数字，后面可以省略句点），空格制表符至少一个
-            string enHeadingNumRegEx = @"^[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:[A-Z]+\.|\d+\.?)(?:\d+\.?)*[ |\t]+";
+            // 定义英文标题编号正则表达式字符串：空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾可以省略句点），空格制表符至少一个
+            string enHeadingNumRegEx = @"^[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:\d+\.?)*[ |\t]+";
             //定义小标题编号正则表达式变量，匹配模式为：开头标记或“。：:；;”，中文小标题编号或英文小标题编号
             Regex regExHeadingNum = new Regex(@$"(?<= ^|[。：:；;]){cnHeadingNumRegEx}|{enHeadingNumRegEx}", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
@@ -1179,8 +1179,8 @@ namespace COMIGHT
                             //设置英文小标题格式
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记（捕获组1），【模式为"A./A.1./A.1.2./A.1.2.3."或"1./1.2./1.2.3./1.2.3.4."（最末尾如果是数字，后面可以省略句点），作为捕获组2】，空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
-                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:part|chapter|section)[ |\t]+)?((?:[A-Z]+\.|\d+\.?)(?:\d+\.?){0,3})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记（捕获组1），【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组2】，空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
+                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:part|chapter|section)[ |\t]+)?((?:\d+\.?){1,4})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                             MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
                             foreach (Match matchEnHeading in matchesEnHeadings)
@@ -1230,7 +1230,7 @@ namespace COMIGHT
                         }
                         else // 否则，正则表达式列表中的匹配模式为英文1-4级小标题编号
                         {
-                            listNums = new List<string>() { @"(?:[A-Z]+\.|\d+\.?)(?:\d+\.?){0,3}" };
+                            listNums = new List<string>() { @"(?:\d+\.?){1,4}" };
                         }
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表

@@ -2,9 +2,10 @@
 using System.Text.RegularExpressions;
 using static COMIGHT.Properties.Settings;
 
+
 namespace COMIGHT
 {
-    public static partial class PublicVariables
+    public partial class PublicVariables
     {
         public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
 
