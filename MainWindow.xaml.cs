@@ -102,6 +102,26 @@ namespace COMIGHT
             ImportTextIntoDocumentTable();
         }
 
+        private void MnuHelp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = manualUrl, //指定需要打开的网址
+                    UseShellExecute = true //设定使用操作系统shell执行程序
+                };
+                //启动新的进程
+                Process.Start(startInfo);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
         private void MnuMakeFileList_Click(object sender, RoutedEventArgs e)
         {
             MakeFileList();
@@ -159,23 +179,12 @@ namespace COMIGHT
             SplitExcelWorksheet();
         }
 
-        private void MnuHelp_Click(object sender, RoutedEventArgs e)
+        private void MnuSubConverter_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (GetInstanceCountByHandle<SubConverterWindow>() < 1) //如果被打开的浏览器窗口数量小于1个，则新建一个浏览器窗口实例并显示
             {
-                //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = manualUrl, //指定需要打开的网址
-                    UseShellExecute = true //设定使用操作系统shell执行程序
-                };
-                //启动新的进程
-                Process.Start(startInfo);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                SubConverterWindow subConverterWindow = new SubConverterWindow();
+                subConverterWindow.Show();
             }
         }
 

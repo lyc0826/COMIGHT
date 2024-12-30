@@ -50,7 +50,10 @@
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
                 </MenuItem>
 
-                <MenuItem x:Name="mnuBrowser" Header="Browser" Click="MnuBrowser_Click" />
+                <MenuItem Header="Web">
+                    <MenuItem x:Name="mnuBrowser" Header="Browser" Click="MnuBrowser_Click" />
+                    <MenuItem x:Name="mnuSubConverter" Header="SubConverter" Click="MnuSubConverter_Click"  />
+                </MenuItem>
             </Menu>
         </DockPanel>
 
