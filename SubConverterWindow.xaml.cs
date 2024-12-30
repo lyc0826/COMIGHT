@@ -22,11 +22,11 @@ namespace COMIGHT
         public SubConverterWindow()
         {
             InitializeComponent();
-            cmbbxConversionType.ItemsSource = new List<string> { "Clash", "Clashr", "Loon", "SS", "SSR", "surfboard", "Surge&ver=2", "Surge&ver=3", "Surge&ver=4", "Trojan", "V2Ray", "Mixed", "Auto" };
+            cmbbxConversionType.ItemsSource = new List<string> { "Clash", "ClashR", "Loon", "SS", "SSR", "Surfboard", "Surge&ver=2", "Surge&ver=3", "Surge&ver=4", "Trojan", "V2Ray", "Mixed", "Auto" };
             cmbbxConversionType.SelectedIndex = 0;
         }
 
-        private void btnConvert_Click(object sender, RoutedEventArgs e)
+        private void BtnConvert_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -41,7 +41,9 @@ namespace COMIGHT
                 string convertedUrl = $"http://127.0.0.1:25500/sub?target={targetType}&url={encodedUrl}"; // 拼接转换后的链接
 
                 txtbxConvertedSubscription.Text = convertedUrl; // 将转换后的链接赋值给转换后链接文本框
-                Clipboard.SetText(convertedUrl); // 复制链接到剪贴板
+                txtbxConvertedSubscription.SelectAll(); //全选转换后链接文本框文字
+                txtbxConvertedSubscription.Focus(); //转换后链接文本框获取焦点
+
             }
             catch (Exception ex) 
             {
@@ -49,9 +51,15 @@ namespace COMIGHT
             }
         }
 
-        private void btnExit_Click(object sender, RoutedEventArgs e)
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void TxtbxConvertedSubscription_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Clipboard.SetText(txtbxConvertedSubscription.Text); // 复制链接到剪贴板
+            MessageBox.Show("Converted subscription copied to the clipboard.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
