@@ -837,6 +837,44 @@ namespace COMIGHT
 
         }
 
+        private static void ConvertDocumentByPandoc(string fromType, string toType, string fromFilePath, string toFilePath)
+        {
+            try
+            {
+                string? pandocPath = Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
+                if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)
+                    || !pandocPath.ToLower().EndsWith(".exe")) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，或没有以exe结尾，则抛出异常
+                {
+                    throw new Exception("Pandoc setting error.");
+                }
+
+                ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                {
+                    FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
+                                           //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
+                    Arguments = $"-f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
+                    RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
+                    UseShellExecute = false, //设定使用操作系统shell执行程序为false
+                    CreateNoWindow = true, //设定不创建窗口
+                };
+
+                //启动新进程
+                using (Process process = Process.Start(startInfo)!)
+                {
+                    process.WaitForExit(); //等待进程结束
+                    if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
+                    {
+                        throw new Exception("Conversion failed.");
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
         private void ConvertMarkDownIntoWord()
         {
             try
@@ -870,36 +908,11 @@ namespace COMIGHT
                 string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
                 File.WriteAllText(targetMDFilePath, MDText); //将导出文本框内的markdown文字导入目标Markdown文档
 
-                //将目标Markdown文档转换为目标Markdown Word文档
+                //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
 
-                string? pandocPath = Default.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
-                if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)
-                    || !pandocPath.ToLower().EndsWith(".exe")) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，或没有以exe结尾，则抛出异常
-                {
-                    throw new Exception("Pandoc setting error.");
-                }
-
-                ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                {
-                    FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
-                                           //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
-                    Arguments = $"-f markdown -t docx \"{targetMDFilePath}\" -o \"{targetWordFilePath}\"",
-                    RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
-                    UseShellExecute = false, //设定使用操作系统shell执行程序为false
-                    CreateNoWindow = true, //设定不创建窗口
-                };
-
-                //启动新进程
-                using (Process process = Process.Start(startInfo)!)
-                {
-                    process.WaitForExit(); //等待进程结束
-                    if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
-                    {
-                        throw new Exception("Conversion failed.");
-                    }
-                }
-                File.Delete(targetMDFilePath); //删除目标Markdown文件
+                ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
+                File.Delete(targetMDFilePath); //删除Markdown文件
 
                 MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }

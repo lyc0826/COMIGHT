@@ -12,11 +12,15 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Extract all files into one folder and double-click COMIGHT.EXE to run. 
 
-- Select a function from the menu at the top of the main window. Follow the on-screen prompts to select a sub-function and files or folders to be processed in the dialog box, and enter the necessary parameters. The generated files and folders are located in the "COMIGHT Files" folder on the Desktop.
+- Select a function from the menu at the top of the main window. Follow the on-screen prompts to select a sub-function and files or folders to be processed in the dialog box, and enter the necessary parameters.
+ 
+- Newly created files will be saved in the folder as designated in the Settings.
 
 ## Function Introduction
 
 ### Start
+
+- **Open Saving Folder:** Opens the folder where output files are saved.
 
 - **Settings:** Set parameters for this application.
 
@@ -134,7 +138,8 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Import Text into Document Table**
 
-- Imports the content of the text box in the dialog box into a document table, saved on the Windows desktop.
+- Imports the content of the text box in the dialog box into a document table.
+  - **The Pandoc application is necessary for this function.**
 
 ### Tools
 
