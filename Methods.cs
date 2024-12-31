@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Interop;
-using static COMIGHT.Properties.Settings;
+using static COMIGHT.MainWindow;
 using static COMIGHT.PublicVariables;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
@@ -29,7 +29,11 @@ using Window = System.Windows.Window;
 namespace COMIGHT
 {
     public static partial class Methods
+
     {
+        static SettingsManager<AppSettings> settingsManager = new SettingsManager<AppSettings>(settingsJsonFilePath);
+        static SettingsManager<LatestRecords> recordsManager = new SettingsManager<LatestRecords>(recordsJsonFilePath);
+
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
             //赋值给函数返回值：如果输入值比最小值小，则得到最小值；如果比最大值大，则得到最大值；否则，得到输入值
@@ -383,15 +387,15 @@ namespace COMIGHT
 
         public static string? GetKeyColumnLetter()
         {
-            string latestColumnLetter = Default.latestKeyColumnLetter; //读取设置中保存的主键列符
+            string latestColumnLetter = latestRecords.LatestKeyColumnLetter; //读取设置中保存的主键列符
             InputDialog inputDialog = new InputDialog(question: "Input the key column letter (e.g. \"A\"）", defaultAnswer: latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
             string columnLetter = inputDialog.Answer;
-            Default.latestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
-            Default.Save();
+            latestRecords.LatestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
+            recordsManager.SaveSettings(latestRecords);
             return columnLetter; //将列符赋值给函数返回值
         }
 
@@ -399,7 +403,7 @@ namespace COMIGHT
         {
             try
             {
-                string lastestHeaderFooterRowCountStr = Default.lastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
+                string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
                 InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
@@ -408,8 +412,8 @@ namespace COMIGHT
                     return;
                 }
                 string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-                Default.lastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
-                Default.Save();
+                latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+                recordsManager.SaveSettings(latestRecords);
                 //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
                 List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
                 //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
@@ -672,6 +676,7 @@ namespace COMIGHT
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
+
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
             string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
@@ -683,7 +688,7 @@ namespace COMIGHT
                 _ => "All Files(*.*)|*.*"
             };
 
-            string initialDirectory = Default.latestFolderPath; //获取保存在设置中的文件夹路径
+            string initialDirectory = latestRecords.LatestFolderPath; //获取保存在设置中的文件夹路径
             //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
             initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
             OpenFileDialog openFileDialog = new OpenFileDialog() //打开文件选择对话框
@@ -696,13 +701,45 @@ namespace COMIGHT
 
             if (openFileDialog.ShowDialog() == true) //如果对话框返回true（选择了OK）
             {
-                Default.latestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0]); // 将本次选择的文件的文件夹路径保存到设置中
-                Default.Save(); //
+                latestRecords.LatestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0])!; // 将本次选择的文件的文件夹路径保存到设置中
+                recordsManager.SaveSettings(latestRecords);
 
                 return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
             }
             return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
         }
+
+        //public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
+        //{
+        //    string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
+        //    {
+        //        FileType.Excel => "Excel Files(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|All Files(*.*)|*.*",
+        //        FileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
+        //        FileType.WordAndExcel => "Word And Excel Files(*.docx;*.xlsx;*.docm;*.xlsm)|*.docx;*.xlsx;*.docm;*.xlsm|All Files(*.*)|*.*",
+        //        FileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
+        //        _ => "All Files(*.*)|*.*"
+        //    };
+
+        //    string initialDirectory = Default.latestFolderPath; //获取保存在设置中的文件夹路径
+        //    //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
+        //    initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
+        //    OpenFileDialog openFileDialog = new OpenFileDialog() //打开文件选择对话框
+        //    {
+        //        Multiselect = isMultiselect, //是否可多选
+        //        Title = dialogTitle, //对话框标题
+        //        Filter = filter, //文件类型和相应扩展名的过滤项
+        //        InitialDirectory = initialDirectory //初始文件夹路径
+        //    };
+
+        //    if (openFileDialog.ShowDialog() == true) //如果对话框返回true（选择了OK）
+        //    {
+        //        Default.latestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0]); // 将本次选择的文件的文件夹路径保存到设置中
+        //        Default.Save(); //
+
+        //        return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
+        //    }
+        //    return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
+        //}
 
         public static void ProcessParagraphsIntoDocumentTable(List<string>? lstParagraphs, string targetExcelFilePath)
         {
@@ -819,18 +856,18 @@ namespace COMIGHT
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
                         double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
-                        float lineSpace = (float)(isCnDocument ? Default.cnLineSpace : Default.enLineSpace); // 行间距
+                        float lineSpace = (float)(isCnDocument ? appSettings.CnLineSpace : appSettings.EnLineSpace); // 行间距
 
-                        string titleFontName = isCnDocument ? Default.cnTitleFontName : Default.enTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
-                        string bodyFontName = isCnDocument ? Default.cnBodyFontName : Default.enBodyFontName; // 正文字体
-                        string cnHeading0FontName = Default.cnHeading0FontName; // 中文0级小标题
-                        string cnHeading1FontName = Default.cnHeading1FontName; // 中文1级小标题
-                        string cnHeading2FontName = Default.cnHeading2FontName;  // 中文2级小标题
-                        string cnHeading3_4FontName = Default.cnHeading3_4FontName;  // 通用小标题
-                        string enHeading0FontName = Default.enHeading0FontName; // 英文0级小标题
-                        string enHeading1FontName = Default.enHeading1FontName;  // 英文1级小标题
-                        string enHeading2FontName = Default.enHeading2FontName; // 英文2级小标题
-                        string enHeading3_4FontName = Default.enHeading3_4FontName; // 英文3-4小标题
+                        string titleFontName = isCnDocument ? appSettings.CnTitleFontName : appSettings.EnTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
+                        string bodyFontName = isCnDocument ? appSettings.CnBodyFontName : appSettings.EnBodyFontName; // 正文字体
+                        string cnHeading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
+                        string cnHeading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
+                        string cnHeading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
+                        string cnHeading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
+                        string enHeading0FontName = appSettings.EnHeading0FontName; // 英文0级小标题
+                        string enHeading1FontName = appSettings.EnHeading1FontName;  // 英文1级小标题
+                        string enHeading2FontName = appSettings.EnHeading2FontName; // 英文2级小标题
+                        string enHeading3_4FontName = appSettings.EnHeading3_4FontName; // 英文3-4小标题
 
                         string tableTitleFontName = bodyFontName; // 表格标题字体
                         string tableBodyFontName = bodyFontName; // 表格正文字体
@@ -838,16 +875,16 @@ namespace COMIGHT
                         string footerFontName = "Times New Roman"; // 页脚字体
 
 
-                        float titleFontSize = (float)(isCnDocument ? Default.cnTitleFontSize : Default.enTitleFontSize); // 大标题字号：如果为中文文档，则字号为二号；否则为20
-                        float bodyFontSize = (float)(isCnDocument ? Default.cnBodyFontSize : Default.enBodyFontSize); // 正文字号：如果为中文文档，则字号为三号；否则为14
-                        float cnHeading0FontSize = (float)Default.cnHeading0FontSize; // 中文0级小标题
-                        float cnHeading1FontSize = (float)Default.cnHeading1FontSize; // 中文1级小标题
-                        float cnHeading2FontSize = (float)Default.cnHeading2FontSize; // 中文2级小标题
-                        float cnHeading3_4FontSize = (float)Default.cnHeading3_4FontSize; // 中文3-4级小标题
-                        float enHeading0FontSize = (float)Default.enHeading0FontSize; // 英文0级小标题
-                        float enHeading1FontSize = (float)Default.enHeading1FontSize; // 英文1级小标题
-                        float enHeading2FontSize = (float)Default.enHeading2FontSize; // 英文2级小标题
-                        float enHeading3_4FontSize = (float)Default.enHeading3_4FontSize; // 英文3-4级小标题
+                        float titleFontSize = (float)(isCnDocument ? appSettings.CnTitleFontSize : appSettings.EnTitleFontSize); // 大标题字号：如果为中文文档，则字号为二号；否则为20
+                        float bodyFontSize = (float)(isCnDocument ? appSettings.CnBodyFontSize : appSettings.EnBodyFontSize); // 正文字号：如果为中文文档，则字号为三号；否则为14
+                        float cnHeading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
+                        float cnHeading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
+                        float cnHeading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
+                        float cnHeading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
+                        float enHeading0FontSize = (float)appSettings.EnHeading0FontSize; // 英文0级小标题
+                        float enHeading1FontSize = (float)appSettings.EnHeading1FontSize; // 英文1级小标题
+                        float enHeading2FontSize = (float)appSettings.EnHeading2FontSize; // 英文2级小标题
+                        float enHeading3_4FontSize = (float)appSettings.EnHeading3_4FontSize; // 英文3-4级小标题
 
                         float tableTitleFontSize = bodyFontSize; // 表格标题字号
                         float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
@@ -1189,7 +1226,7 @@ namespace COMIGHT
                                     (font.Name, font.Size) = (enHeading0FontName, enHeading0FontSize);
                                 }
                                 else // 否则
-                                {  
+                                {
                                     // 根据小标题编号中的数字组数设置1-4级小标题字体（有几组数字，就为几级标题）
                                     (font.Name, font.Size) = enHeadingNumsCount switch
                                     {

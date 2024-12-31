@@ -1,14 +1,12 @@
 ﻿using Microsoft.Web.WebView2.Core;
+using Newtonsoft.Json;
 using OfficeOpenXml;
-using System.Data;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static COMIGHT.Methods;
 using static COMIGHT.PublicVariables;
-using Newtonsoft.Json;
-using System.IO;
 
 
 namespace COMIGHT

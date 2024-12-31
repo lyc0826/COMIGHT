@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Reflection;
 using System.Windows;
-using static COMIGHT.Properties.Settings;
+using static COMIGHT.MainWindow;
 
 
 namespace COMIGHT
@@ -18,54 +18,55 @@ namespace COMIGHT
         private DataTable enSettingsTable = new DataTable("enSettingsTable");
         private DataSet dataSet = new DataSet();
 
-        private class Setting // 定义设置类
+        private class SettingRelation // 定义设置对应关系类
         {
             public string DataTableName { get; } // 定义DataTable名称属性
-            public string DataTableItem { get; } // 定义DataTable项属性
-            public string PropertiesSettingItem { get; } // 定义设置属性
+            public string DataTableItem { get; } // 定义DataTable设置项属性
+            public string AppSettingItem { get; } // 定义应用设置项属性
 
-            public Setting(string dataTableName, string dataTableItem, string propertiesSettingItem)
+            public SettingRelation(string dataTableName, string dataTableItem, string appSettingItem)
             {
                 DataTableName = dataTableName;
                 DataTableItem = dataTableItem;
-                PropertiesSettingItem = propertiesSettingItem;
+                AppSettingItem = appSettingItem;
             }
         }
 
-        // 定义设置记录列表
-        private List<Setting> lstSettings = new List<Setting>
+
+        private List<SettingRelation> lstSettings = new List<SettingRelation>
             {
-                new Setting ("generalSettingsTable", "Saving Folder Path", "savingFolderPath"),
-                new Setting ("generalSettingsTable", "Pandoc Application Path", "pandocPath"),
+                new SettingRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
+                new SettingRelation ("generalSettingsTable", "Pandoc Application Path", "PandocPath"),
 
-                new Setting ("cnSettingsTable", "Chinese Title Font Name", "cnTitleFontName"),
-                new Setting ("cnSettingsTable", "Chinese Title Font Size", "cnTitleFontSize"),
-                new Setting ("cnSettingsTable", "Chinese Body Text Font Name", "cnBodyFontName"),
-                new Setting ("cnSettingsTable", "Chinese Body Text Font Size", "cnBodyFontSize"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv0 Font Name", "cnHeading0FontName"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv0 Font Size", "cnHeading0FontSize"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv1 Font Name", "cnHeading1FontName"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv1 Font Size", "cnHeading1FontSize"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv2 Font Name", "cnHeading2FontName"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv2 Font Size", "cnHeading2FontSize"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv3-4 Font Name", "cnHeading3_4FontName"),
-                new Setting ("cnSettingsTable", "Chinese Heading Lv3-4 Font Size", "cnHeading3_4FontSize"),
-                new Setting ("cnSettingsTable", "Chinese Line Space", "cnLineSpace"),
+                new SettingRelation ("cnSettingsTable", "Chinese Title Font Name", "CnTitleFontName"),
+                new SettingRelation ("cnSettingsTable", "Chinese Title Font Size", "CnTitleFontSize"),
+                new SettingRelation ("cnSettingsTable", "Chinese Body Text Font Name", "CnBodyFontName"),
+                new SettingRelation ("cnSettingsTable", "Chinese Body Text Font Size", "CnBodyFontSize"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv0 Font Name", "CnHeading0FontName"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv0 Font Size", "CnHeading0FontSize"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv1 Font Name", "CnHeading1FontName"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv1 Font Size", "CnHeading1FontSize"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv2 Font Name", "CnHeading2FontName"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv2 Font Size", "CnHeading2FontSize"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv3-4 Font Name", "CnHeading3_4FontName"),
+                new SettingRelation ("cnSettingsTable", "Chinese Heading Lv3-4 Font Size", "CnHeading3_4FontSize"),
+                new SettingRelation ("cnSettingsTable", "Chinese Line Space", "CnLineSpace"),
 
-                new Setting ("enSettingsTable", "English Title Font Name", "enTitleFontName"),
-                new Setting ("enSettingsTable", "English Title Font Size", "enTitleFontSize"),
-                new Setting ("enSettingsTable", "English Body Text Font Name", "enBodyFontName"),
-                new Setting ("enSettingsTable", "English Body Text Font Size", "enBodyFontSize"),
-                new Setting ("enSettingsTable", "English Heading Lv0 Font Name", "enHeading0FontName"),
-                new Setting ("enSettingsTable", "English Heading Lv0 Font Size", "enHeading0FontSize"),
-                new Setting ("enSettingsTable", "English Heading Lv1 Font Name", "enHeading1FontName"),
-                new Setting ("enSettingsTable", "English Heading Lv1 Font Size", "enHeading1FontSize"),
-                new Setting ("enSettingsTable", "English Heading Lv2 Font Name", "enHeading2FontName"),
-                new Setting ("enSettingsTable", "English Heading Lv2 Font Size", "enHeading2FontSize"),
-                new Setting ("enSettingsTable", "English Heading Lv3-4 Font Name", "enHeading3_4FontName"),
-                new Setting ("enSettingsTable", "English Heading Lv3-4 Font Size", "enHeading3_4FontSize"),
-                new Setting ("enSettingsTable", "English Line Space", "enLineSpace")
+                new SettingRelation ("enSettingsTable", "English Title Font Name", "EnTitleFontName"),
+                new SettingRelation ("enSettingsTable", "English Title Font Size", "EnTitleFontSize"),
+                new SettingRelation ("enSettingsTable", "English Body Text Font Name", "EnBodyFontName"),
+                new SettingRelation ("enSettingsTable", "English Body Text Font Size", "EnBodyFontSize"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv0 Font Name", "EnHeading0FontName"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv0 Font Size", "EnHeading0FontSize"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv1 Font Name", "EnHeading1FontName"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv1 Font Size", "EnHeading1FontSize"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv2 Font Name", "EnHeading2FontName"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv2 Font Size", "EnHeading2FontSize"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv3-4 Font Name", "EnHeading3_4FontName"),
+                new SettingRelation ("enSettingsTable", "English Heading Lv3-4 Font Size", "EnHeading3_4FontSize"),
+                new SettingRelation ("enSettingsTable", "English Line Space", "EnLineSpace")
             };
+
 
         public SettingDialog()
         {
@@ -99,6 +100,7 @@ namespace COMIGHT
         {
             try
             {
+                appSettings = settingsManager.GetSettings();
                 // 定义设置DataTable数组，并添加到设置DataSet
                 DataTable[] dataTables = new DataTable[] { generalSettingsTable, cnSettingsTable, enSettingsTable };
                 dataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
@@ -117,8 +119,8 @@ namespace COMIGHT
                 // 将Properties.Settings中设置项的值填入对应的设置DataTable中
                 foreach (var setting in lstSettings) // 遍历设置记录列表
                 {
-                    PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
-                    object? value = propertyInfo.GetValue(Default); // 获取当前属性的值
+                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(setting.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
+                    object? value = propertyInfo?.GetValue(appSettings); // 获取当前属性的值
                     if (value != null)
                     {
                         DataRow newDataRow = dataSet.Tables[setting.DataTableName]!.NewRow(); // 创建一个新数据行
@@ -142,16 +144,16 @@ namespace COMIGHT
                 // 遍历设置记录列表，从设置DataTable中读取设置值并保存到Properties.Settings中
                 foreach (var setting in lstSettings)
                 {
-
-                    PropertyInfo propertyInfo = Default.GetType().GetProperty(setting.PropertiesSettingItem)!; // 获取Properties.Settings中当前设置项的属性
+                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(setting.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
                     if (propertyInfo != null && propertyInfo.CanWrite) // 如果属性不为null且可写入
                     {
                         object valueToSet = GetDataTableValue(dataSet.Tables[setting.DataTableName]!, "Item", "Value", setting.DataTableItem, propertyInfo.PropertyType); // 将数据行值转换为属性类型
-                        propertyInfo.SetValue(Default, valueToSet); // 将值设置到属性中
+                        propertyInfo.SetValue(appSettings, valueToSet); // 将值设置到属性中
                     }
                 }
 
-                Default.Save();
+                //settingsManager.UpdateSettings(appSettings);
+                settingsManager.SaveSettings(appSettings);
 
                 MessageBox.Show("Settings saved successfully.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
