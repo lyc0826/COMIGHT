@@ -12,23 +12,6 @@ namespace COMIGHT
     public partial class SettingDialog : Window
     {
 
-        public SettingDialog()
-        {
-            InitializeComponent();
-
-            LoadSettings();
-
-            // 将设置DataTable绑定到设置DataGrid上
-            dtgrdGeneralSettings.ItemsSource = generalSettingsTable!.DefaultView;
-            dtgrdCnDocumentSettings.ItemsSource = cnSettingsTable!.DefaultView;
-            dtgrdEnDocumentSettings.ItemsSource = enSettingsTable!.DefaultView;
-        }
-
-        private void btnDialogSave_Click(object sender, RoutedEventArgs e)
-        {
-            SaveSettings();
-        }
-
         // 定义设置DataTable和DataSet
         private DataTable generalSettingsTable = new DataTable("generalSettingsTable");
         private DataTable cnSettingsTable = new DataTable("cnSettingsTable");
@@ -83,6 +66,23 @@ namespace COMIGHT
                 new Setting ("enSettingsTable", "English Heading Lv3-4 Font Size", "enHeading3_4FontSize"),
                 new Setting ("enSettingsTable", "English Line Space", "enLineSpace")
             };
+
+        public SettingDialog()
+        {
+            InitializeComponent();
+
+            LoadSettings();
+
+            // 将设置DataTable绑定到设置DataGrid上
+            dtgrdGeneralSettings.ItemsSource = generalSettingsTable!.DefaultView;
+            dtgrdCnDocumentSettings.ItemsSource = cnSettingsTable!.DefaultView;
+            dtgrdEnDocumentSettings.ItemsSource = enSettingsTable!.DefaultView;
+        }
+
+        private void btnDialogSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveSettings();
+        }
 
         private object GetDataTableValue(DataTable dataTable, string dataTableKeyField, string datatableValueField, string key, Type targetType)
         {

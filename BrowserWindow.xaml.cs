@@ -39,6 +39,12 @@ namespace COMIGHT
 
         }
 
+        private void BrowserWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Top = 20.0;
+            this.Left = 50.0;
+        }
+
         private void BtnBack_Click(object sender, RoutedEventArgs e)
         {
             webView2.GoBack(); //后退一个网页
@@ -106,16 +112,16 @@ namespace COMIGHT
 
                 string jsonContent = File.ReadAllText(websiteJsonFilePath); // 读取网址Json文件内容
 
-                // 解析网址Json内容
+                // 解析网址Json内容，赋值给解析后Json动态对象变量
                 dynamic? parsedJson = JsonConvert.DeserializeObject(jsonContent);
-                dynamic? urls = parsedJson?.urls;
+                dynamic? urls = parsedJson?.urls; // 从解析后Json动态对象获取网址动态对象
 
-                if (urls != null) // 如果网址Json内容不为空
+                if (urls != null) // 如果网址动态对象不为空
                 {
                     // 将网址添加到网址组合框中
-                    foreach (var url in urls)
+                    foreach (Object url in urls) // 遍历网址动态对象
                     {
-                        cmbbxUrl.Items.Add(url);
+                        cmbbxUrl.Items.Add(url.ToString()); // 将当前对象转换成字符串，并添加到网址组合框中
                     }
                 }
 
@@ -222,13 +228,6 @@ namespace COMIGHT
 
             }
         }
-
-        private void BrowserWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Top = 20.0;
-            this.Left = 50.0;
-        }
-
 
     }
 }
