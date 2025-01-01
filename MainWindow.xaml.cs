@@ -33,6 +33,8 @@ namespace COMIGHT
     public partial class MainWindow : Window
     {
 
+        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
+
         // 定义应用设置管理器、用户使用记录管理器对象，以及应用设置类、用户使用记录类，用于读取和保存设置
         public static SettingsManager<AppSettings> settingsManager = new SettingsManager<AppSettings>(settingsJsonFilePath);
         public static SettingsManager<LatestRecords> recordsManager = new SettingsManager<LatestRecords>(recordsJsonFilePath);
@@ -180,7 +182,7 @@ namespace COMIGHT
 
         private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingDialog settingDialog = new SettingDialog();
+            SettingsDialog settingDialog = new SettingsDialog();
             settingDialog.ShowDialog();
         }
 

@@ -41,11 +41,13 @@ namespace COMIGHT
         private void btnDialogOk_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true; //对话框返回值设为true
+            this.Close();
         }
 
         private void btnDialogCancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false; //对话框返回值设为false
+            this.Close();
         }
 
         private void txtbxAnswer_MouseDoubleClick(object sender, MouseButtonEventArgs e)

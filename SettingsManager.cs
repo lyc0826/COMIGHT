@@ -22,7 +22,7 @@ namespace COMIGHT
             if (File.Exists(_settingsFilePath)) // 如果JSON文件存在
             {
                 string json = File.ReadAllText(_settingsFilePath);
-                _settings = JsonConvert.DeserializeObject<T>(json) ?? new T(); //则读取文件内容并反序列化成对象
+                _settings = JsonConvert.DeserializeObject<T>(json) ?? new T(); //读取文件内容并反序列化成对象：如果反序列化失败，则返回一个默认初始化的对象
             }
             else
             {

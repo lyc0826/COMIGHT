@@ -5,7 +5,7 @@ namespace COMIGHT
 {
     public partial class PublicVariables
     {
-        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
+        //public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
 
         public static string appPath = AppDomain.CurrentDomain.BaseDirectory; //获取程序所在文件夹路径
 
