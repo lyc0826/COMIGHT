@@ -34,7 +34,7 @@ namespace COMIGHT
         }
 
 
-        private List<SettingsRelation> lstSettings = new List<SettingsRelation>
+        private List<SettingsRelation> lstSettingsRelations = new List<SettingsRelation>
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
                 new SettingsRelation ("generalSettingsTable", "Pandoc Application Path", "PandocPath"),
@@ -118,16 +118,16 @@ namespace COMIGHT
                 }
 
                 // 将Properties.Settings中设置项的值填入对应的设置DataTable中
-                foreach (var setting in lstSettings) // 遍历设置记录列表
+                foreach (var settingRelation in lstSettingsRelations) // 遍历设置记录列表
                 {
-                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(setting.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
+                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(settingRelation.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
                     object? value = propertyInfo?.GetValue(appSettings); // 获取当前属性的值
                     if (value != null)
                     {
-                        DataRow newDataRow = dataSet.Tables[setting.DataTableName]!.NewRow(); // 创建一个新数据行
-                        newDataRow["Item"] = setting.DataTableItem; // 设置新数据行"Item"、"Value"数据列的值
+                        DataRow newDataRow = dataSet.Tables[settingRelation.DataTableName]!.NewRow(); // 创建一个新数据行
+                        newDataRow["Item"] = settingRelation.DataTableItem; // 设置新数据行"Item"、"Value"数据列的值
                         newDataRow["Value"] = value;
-                        dataSet.Tables[setting.DataTableName]!.Rows.Add(newDataRow); // 向当前设置DataTable添加新数据行
+                        dataSet.Tables[settingRelation.DataTableName]!.Rows.Add(newDataRow); // 向当前设置DataTable添加新数据行
                     }
                 }
             }
@@ -143,7 +143,7 @@ namespace COMIGHT
             try
             {
                 // 遍历设置记录列表，从设置DataTable中读取设置值并保存到Properties.Settings中
-                foreach (var setting in lstSettings)
+                foreach (var setting in lstSettingsRelations)
                 {
                     PropertyInfo propertyInfo = appSettings.GetType().GetProperty(setting.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
                     if (propertyInfo != null && propertyInfo.CanWrite) // 如果属性不为null且可写入
