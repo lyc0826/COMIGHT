@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="SubConverter" Height="300" Width="600" FontSize="12" WindowStartupLocation="CenterScreen">
+        Title="SubConverter" Height="300" Width="600" FontSize="13" WindowStartupLocation="CenterScreen">
     
     <Grid Margin="3,0,3,3">
         <Grid.RowDefinitions>
@@ -28,8 +28,8 @@
         <TextBox Name="txtbxConvertedSubscription" Grid.Row="5" IsReadOnly="True" Margin="0,5,0,5" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubscription_MouseDoubleClick"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="6" >
-            <Button Name="btnConvert" Content="Convert" Width="50" Height="30" Click="BtnConvert_Click" />
-            <Button Name="btnExit" Content="Exit" Width="50" Height="30" Click="BtnExit_Click" />
+            <Button Name="btnConvert" Content="Convert" Width="60" Height="30" Click="BtnConvert_Click" />
+            <Button Name="btnExit" Content="Exit" Width="60" Height="30" Click="BtnExit_Click" />
         </StackPanel>
     </Grid>
 </Window>

@@ -1,7 +1,7 @@
 {
   "LatestFolderPath": "C:\\",
   "LatestURL": null,
-  "LatestStockDataColumnNamesStr": null,
+  "LatestStockDataColumnNamesStr": "代码,名称,所属行业,现价,市净率,市盈(动)",
   "LastestHeaderAndFooterRowCountStr": null,
   "LatestKeyColumnLetter": "G",
   "LatestExcelWorksheetIndexesStr": null,
