@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="SubConverter" Height="300" Width="600" FontSize="13" WindowStartupLocation="CenterScreen">
+        Title="SubConverter" Width="600" SizeToContent="Height" FontSize="13" WindowStartupLocation="CenterScreen" >
     
     <Grid Margin="3,0,3,3">
         <Grid.RowDefinitions>
@@ -16,18 +16,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Label Content="Conversion Type:" Grid.Row="0"/>
         <ComboBox Name="cmbbxConversionType" Grid.Row="1"/>
 
-        <Label Content="Original Subscription:" Grid.Row="2"/>
-        <TextBox Name="txtbxOriginalSubscription" Grid.Row="3" Margin="0,5,0,5" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        <Label Content="SubConverter Back-End Url: [e.g. http(s)://127.0.0.1:25500/]" Grid.Row="2"/>
+        <TextBox Name="txtbxConverterBackEndURL" Grid.Row="3" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
 
-        <Label Content="Converted Subscription:" Grid.Row="4"/>
-        <TextBox Name="txtbxConvertedSubscription" Grid.Row="5" IsReadOnly="True" Margin="0,5,0,5" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubscription_MouseDoubleClick"/>
+        <Label Content="Original Subscription Urls (separated by '|' for multiple Urls):" Grid.Row="4"/>
+        <TextBox Name="txtbxOriginalSubUrls" Grid.Row="5" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="60"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="6" >
+        <Label Content="Converted Subscription Url:" Grid.Row="6"/>
+        <TextBox Name="txtbxConvertedSubUrl" Grid.Row="7" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" Height="60"/>
+
+        <StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right"  >
             <Button Name="btnConvert" Content="Convert" Width="60" Height="30" Click="BtnConvert_Click" />
             <Button Name="btnExit" Content="Exit" Width="60" Height="30" Click="BtnExit_Click" />
         </StackPanel>

@@ -1,6 +1,5 @@
 {
   "LatestFolderPath": "C:\\",
-  "LatestURL": "https://www.microsoft.com",
   "LatestStockDataColumnNamesStr": "代码,名称,所属行业,现价,市净率,市盈(动)",
   "LastestHeaderAndFooterRowCountStr": "1,0",
   "LatestKeyColumnLetter": "A",
@@ -11,5 +10,8 @@
   "LatestSubpathDepth": 0,
   "LatestNameCardFontName": "宋体",
   "LatestBatchProcessWorkbookOption": "0-Cancel",
-  "LatestSplitWorksheetOption": "0-Cancel"
+  "LatestSplitWorksheetOption": "0-Cancel",
+  "LatestURL": "https://www.microsoft.com",
+  "LatestSubConverterBackEndUrl": "http://127.0.0.1:25500/",
+  "LatestSubUrls": "http://example.com"
 }

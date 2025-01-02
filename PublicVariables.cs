@@ -63,7 +63,6 @@ namespace COMIGHT
         public class LatestRecords
         {
             public string LatestFolderPath { get; set; } = string.Empty;
-            public string LatestURL { get; set; } = string.Empty;
             public string LatestStockDataColumnNamesStr { get; set; } = string.Empty;
             public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
             public string LatestKeyColumnLetter { get; set; } = string.Empty;
@@ -75,6 +74,9 @@ namespace COMIGHT
             public string LatestNameCardFontName { get; set; } = string.Empty;
             public string LatestBatchProcessWorkbookOption { get; set; } = string.Empty;
             public string LatestSplitWorksheetOption { get; set; } = string.Empty;
+            public string LatestURL { get; set; } = string.Empty;
+            public string LatestSubConverterBackEndUrl { get; set; } = string.Empty;
+            public string LatestOriginalSubUrls { get; set; } = string.Empty;
         }
 
     }

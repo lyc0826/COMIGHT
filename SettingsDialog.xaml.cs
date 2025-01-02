@@ -153,7 +153,7 @@ namespace COMIGHT
                     }
                 }
 
-                settingsManager.SaveSettings(appSettings);
+                settingsManager.SaveSettings(appSettings); // 保存设置
 
                 MessageBox.Show("Settings saved successfully.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 

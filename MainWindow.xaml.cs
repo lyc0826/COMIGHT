@@ -269,15 +269,15 @@ namespace COMIGHT
                 List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
                     "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cell Data", "7-Adjust Worksheet Format for Printing"};
 
-                string latestBatchProcessWorkbookOption = latestRecords.LatestBatchProcessWorkbookOption; //读取设置中保存的批量处理Excel工作簿功能选项字符串
+                string latestBatchProcessWorkbookOption = latestRecords.LatestBatchProcessWorkbookOption; //读取用户使用记录中保存的批量处理Excel工作簿功能选项字符串
                 InputDialog inputDialog = new InputDialog(question: "Select the function", options: lstFunctions, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
                 string batchProcessWorkbookOption = inputDialog.Answer;
-                latestRecords.LatestBatchProcessWorkbookOption = batchProcessWorkbookOption; //将对话框返回的批量处理Excel工作簿功能选项字符串存入设置
-                recordsManager.SaveSettings(latestRecords);
+                latestRecords.LatestBatchProcessWorkbookOption = batchProcessWorkbookOption; //将对话框返回的批量处理Excel工作簿功能选项字符串赋值给用户使用记录
+                recordsManager.SaveSettings(latestRecords); //保存用户使用记录
 
                 int functionNum = lstFunctions.Contains(batchProcessWorkbookOption) ? lstFunctions.IndexOf(batchProcessWorkbookOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
 
@@ -301,7 +301,7 @@ namespace COMIGHT
                 int footerRowCount = 0;
                 List<string>? lstOperatingRangeAddresses = null;
 
-                string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取设置中保存的Excel工作表索引号范围字符串
+                string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
                 inputDialog = new InputDialog(question: "Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
@@ -311,8 +311,8 @@ namespace COMIGHT
                 string excelWorksheetIndexesStr = inputDialog.Answer; //获取对话框返回的Excel工作表索引号范围字符串
                 if (!string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串不为null或全空白字符
                 {
-                    latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串存入设置
-                    recordsManager.SaveSettings(latestRecords);
+                    latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
+                    recordsManager.SaveSettings(latestRecords); //保存用户使用记录
                     //将Excel索引号字符串拆分成数组，转换成列表，并移除每个元素的首尾空白字符
                     List<string> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => e.Trim());
                     excelWorksheetIndexLower = Convert.ToInt32(lstExcelWorksheetIndexesStr[0]) - 1; //获取Excel工作表索引号范围起始值（Excel工作表索引号从1开始，EPPlus从0开始）
@@ -321,15 +321,15 @@ namespace COMIGHT
                 }
                 else
                 {
-                    string latestExcelWorksheetName = latestRecords.LatestExcelWorksheetName; //读取设置中保存的Excel工作表名称
+                    string latestExcelWorksheetName = latestRecords.LatestExcelWorksheetName; //读取用户使用记录中保存的Excel工作表名称
                     inputDialog = new InputDialog(question: "Input the worksheet name (one worksheet per operation)", defaultAnswer: latestExcelWorksheetName); //弹出对话框，输入工作表名称
                     if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                     {
                         return;
                     }
                     excelWorksheetName = inputDialog.Answer;
-                    latestRecords.LatestExcelWorksheetName = excelWorksheetName; // 将对话框返回的Excel工作表名称存入设置
-                    recordsManager.SaveSettings(latestRecords);
+                    latestRecords.LatestExcelWorksheetName = excelWorksheetName; // 将对话框返回的Excel工作表名称赋值给用户使用记录
+                    recordsManager.SaveSettings(latestRecords); //保存用户使用记录
                     useExcelWorksheetIndex = false; //“使用工作表索引号”变量赋值为false
                 }
 
@@ -345,15 +345,15 @@ namespace COMIGHT
                     case 4:
                     case 5:
                     case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表, 6-提取单元格数据给工作簿文件名加前缀
-                        string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取设置中保存的操作区域
+                        string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
                         inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
                         if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                         {
                             return;
                         }
                         string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
-                        latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域存入设置
-                        recordsManager.SaveSettings(latestRecords);
+                        latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
+                        recordsManager.SaveSettings(latestRecords); //保存用户使用记录
                         //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
                         lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
                         break;
@@ -860,8 +860,7 @@ namespace COMIGHT
         {
             try
             {
-                //string? pandocPath = latestRecords.pandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
-                string? pandocPath = appSettings.PandocPath;
+                string? pandocPath = appSettings.PandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
                 if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)
                     || !pandocPath.ToLower().EndsWith(".exe")) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，或没有以exe结尾，则抛出异常
                 {
@@ -1037,7 +1036,7 @@ namespace COMIGHT
                 InstalledFontCollection installedFontCollention = new InstalledFontCollection();
                 List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
 
-                string latestFontName = latestRecords.LatestNameCardFontName; //读取设置中保存的字体名称
+                string latestFontName = latestRecords.LatestNameCardFontName; //读取用户使用记录中保存的字体名称
                 InputDialog inputDialog = new InputDialog(question: "Select the font", options: lstFontNames, defaultAnswer: latestFontName); //弹出对话框，输入字体名称
 
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
@@ -1045,8 +1044,8 @@ namespace COMIGHT
                     return;
                 }
                 string fontName = inputDialog.Answer;
-                latestRecords.LatestNameCardFontName = fontName; // 将对话框返回的字体名称存入设置
-                recordsManager.SaveSettings(latestRecords);
+                latestRecords.LatestNameCardFontName = fontName; // 将对话框返回的字体名称赋值给用户使用记录
+                recordsManager.SaveSettings(latestRecords); //保存用户使用记录
 
                 using (ExcelPackage sourceExcelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开源数据Excel工作簿，赋值给源数据Excel包变量（源数据Excel工作簿）
                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量（目标Excel工作簿）
@@ -1262,7 +1261,7 @@ namespace COMIGHT
         {
             try
             {
-                string initialDirectory = latestRecords.LatestFolderPath; //读取设置中保存的文件夹路径
+                string initialDirectory = latestRecords.LatestFolderPath; //读取用户使用记录中保存的文件夹路径
                 //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
                 initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog() //定义文件夹选择对话框
@@ -1276,18 +1275,18 @@ namespace COMIGHT
                     return;
                 }
                 string folderPath = openFolderDialog.FolderName; //将选择的文件夹路径赋值给第一级文件夹路径变量
-                latestRecords.LatestFolderPath = folderPath; //将第一级文件夹路径存入设置
-                recordsManager.SaveSettings(latestRecords);
+                latestRecords.LatestFolderPath = folderPath; //将第一级文件夹路径赋值给用户使用记录
+                recordsManager.SaveSettings(latestRecords); //保存用户使用记录
 
 
-                int latestSubpathDepth = latestRecords.LatestSubpathDepth;
+                int latestSubpathDepth = latestRecords.LatestSubpathDepth; //读取用户使用记录中保存的子路径深度
                 InputDialog inputDialog = new InputDialog(question: "Input the depth(level) of subdirectories", defaultAnswer: latestSubpathDepth.ToString()); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
                 int subpathDepth = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的子路径深度
-                latestRecords.LatestSubpathDepth = subpathDepth; // 将子路径深度存入设置
+                latestRecords.LatestSubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
                 recordsManager.SaveSettings(latestRecords);
 
 
@@ -1546,14 +1545,14 @@ namespace COMIGHT
                     return;
                 }
 
-                string latestStockDataColumnNamesStr = latestRecords.LatestStockDataColumnNamesStr; //读取设置中保存的列名称字符串
+                string latestStockDataColumnNamesStr = latestRecords.LatestStockDataColumnNamesStr; //读取用户使用记录中保存的列名称字符串
                 InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Symbol, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
                 string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
-                latestRecords.LatestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串存入设置
+                latestRecords.LatestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串赋值给用户使用记录
                 recordsManager.SaveSettings(latestRecords);
 
                 //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
@@ -1657,14 +1656,14 @@ namespace COMIGHT
 
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
 
-                string latestSplitWorksheetOption = latestRecords.LatestSplitWorksheetOption; //读取设置中保存的拆分Excel工作表功能选项字符串
+                string latestSplitWorksheetOption = latestRecords.LatestSplitWorksheetOption; //读取用户使用记录中保存的拆分Excel工作表功能选项字符串
                 inputDialog = new InputDialog(question: "Select the function", options: lstFunctions, defaultAnswer: latestSplitWorksheetOption); //弹出功能选择对话框
                 if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
                 string splitWorksheetOption = inputDialog.Answer; // 获取对话框返回的拆分Excel工作表功能选项字符串
-                latestRecords.LatestSplitWorksheetOption = splitWorksheetOption; //将对话框返回的拆分Excel工作表功能选项字符串存入设置
+                latestRecords.LatestSplitWorksheetOption = splitWorksheetOption; //将对话框返回的拆分Excel工作表功能选项字符串赋值给用户使用记录
                 recordsManager.SaveSettings(latestRecords);
 
                 int functionNum = lstFunctions.Contains(splitWorksheetOption) ? lstFunctions.IndexOf(splitWorksheetOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1

@@ -39,9 +39,17 @@ namespace COMIGHT
         // 保存设置
         public void SaveSettings(T newSettings)
         {
-            _settings = newSettings; // 将外部调用者传递的设置赋值给内部对象
-            var json = JsonConvert.SerializeObject(_settings, Formatting.Indented); // 序列化对象为JSON字符串
-            File.WriteAllText(_settingsFilePath, json); // 将JSON字符串写入文件
+            // 将当前设置和新设置序列化为JSON字符串
+            string currentSettingsJson = JsonConvert.SerializeObject(_settings, Formatting.None);
+            string newSettingsJson = JsonConvert.SerializeObject(newSettings, Formatting.None);
+
+            // 如果当前设置和新设置的字符串不同
+            if (currentSettingsJson != newSettingsJson)
+            {
+                _settings = newSettings; // 将新设置赋值给内部对象
+                string json = JsonConvert.SerializeObject(_settings, Formatting.Indented); // 序列化对象为JSON字符串
+                File.WriteAllText(_settingsFilePath, json); // 将JSON字符串写入文件
+            }
         }
 
     }
