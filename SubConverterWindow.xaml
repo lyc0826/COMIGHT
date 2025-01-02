@@ -21,10 +21,10 @@
         </Grid.RowDefinitions>
 
         <Label Content="Conversion Type:" Grid.Row="0"/>
-        <ComboBox Name="cmbbxConversionType" Grid.Row="1"/>
+        <ComboBox Name="cmbbxConversionType" Grid.Row="1" MinHeight="30"/>
 
         <Label Content="SubConverter Back-End Url: [e.g. http(s)://127.0.0.1:25500/]" Grid.Row="2"/>
-        <TextBox Name="txtbxConverterBackEndURL" Grid.Row="3" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Name="txtbxConverterBackEndURL" Grid.Row="3" MinHeight="30" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 
         <Label Content="Original Subscription Urls (separated by '|' for multiple Urls):" Grid.Row="4"/>
         <TextBox Name="txtbxOriginalSubUrls" Grid.Row="5" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="60"/>

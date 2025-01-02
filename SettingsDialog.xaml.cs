@@ -37,8 +37,8 @@ namespace COMIGHT
         private List<SettingsRelation> lstSettingsRelations = new List<SettingsRelation>
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
-                new SettingsRelation ("generalSettingsTable", "Pandoc Application Path", "PandocPath"),
-                new SettingsRelation ("generalSettingsTable", "SubConverter Application Path", "SubConverterPath"),
+                new SettingsRelation ("generalSettingsTable", "Pandoc App Path", "PandocPath"),
+                new SettingsRelation ("generalSettingsTable", "SubConverter App Path", "SubConverterPath"),
 
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Name", "CnTitleFontName"),
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Size", "CnTitleFontSize"),

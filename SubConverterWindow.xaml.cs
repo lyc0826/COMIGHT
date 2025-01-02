@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using static COMIGHT.MainWindow;
 using static COMIGHT.ExternalAppManager;
+using System.Text.RegularExpressions;
 
 namespace COMIGHT
 {
@@ -44,13 +45,19 @@ namespace COMIGHT
 
             string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
             _externalAppManager = new ExternalAppManager(appPath); // 创建 AppMonitor 类的实例，并将应用程序路径传递给构造函数
+
+            if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127\.0\.0\.1|localhost"))
+            {
+                _externalAppManager.StartApp();
+            }
+            
         }
 
-        protected override void OnClosed(EventArgs e) // 重写 OnClosed 方法，该方法在窗口关闭时调用
-        {
-            base.OnClosed(e); // 调用基类的 OnClosed 方法
-            _externalAppManager.StopMonitoring(); // 调用 _appMonitor 的 StopMonitoring 方法，停止监控任务
-        }
+        //protected override void OnClosed(EventArgs e) // 重写 OnClosed 方法，该方法在窗口关闭时调用
+        //{
+        //    base.OnClosed(e); // 调用基类的 OnClosed 方法
+        //    _externalAppManager.StopMonitoring(); // 调用 _appMonitor 的 StopMonitoring 方法，停止监控任务
+        //}
 
 
         private void BtnConvert_Click(object sender, RoutedEventArgs e)
