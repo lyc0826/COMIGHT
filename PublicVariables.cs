@@ -30,6 +30,7 @@ namespace COMIGHT
         {
             public string SavingFolderPath { get; set; } = string.Empty;
             public string PandocPath { get; set; } = string.Empty;
+            public string SubConverterPath { get; set; } = string.Empty;
             public string CnTitleFontName { get; set; } = string.Empty;
             public double CnTitleFontSize { get; set; }
             public string CnBodyFontName { get; set; } = string.Empty;

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using static COMIGHT.MainWindow;
+using static COMIGHT.ExternalAppManager;
 
 namespace COMIGHT
 {
@@ -27,6 +28,8 @@ namespace COMIGHT
                 { "Auto", "auto" }
             };
 
+        private ExternalAppManager _externalAppManager;
+
         public SubConverterWindow()
         {
             InitializeComponent();
@@ -39,6 +42,13 @@ namespace COMIGHT
             txtbxConverterBackEndURL.Text = latestRecords.LatestSubConverterBackEndUrl; // 将用户使用记录中的订阅转换器后端URL赋值给订阅转换器后端URL文本框
             txtbxOriginalSubUrls.Text = latestRecords.LatestOriginalSubUrls; // 将用户使用记录中的订阅URL赋值给源订阅URL文本框
         }
+
+        protected override void OnClosed(EventArgs e) // 重写 OnClosed 方法，该方法在窗口关闭时调用
+        {
+            base.OnClosed(e); // 调用基类的 OnClosed 方法
+            _externalAppManager.StopMonitoring(); // 调用 _appMonitor 的 StopMonitoring 方法，停止监控任务
+        }
+
 
         private void BtnConvert_Click(object sender, RoutedEventArgs e)
         {
@@ -80,6 +90,18 @@ namespace COMIGHT
         {
             Clipboard.SetText(txtbxConvertedSubUrl.Text); // 复制链接到剪贴板
             MessageBox.Show("Converted subscription copied to the clipboard.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void btnStartSubConverter_Click(object sender, RoutedEventArgs e)
+        {
+            string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
+            _externalAppManager = new ExternalAppManager(appPath); // 创建 AppMonitor 类的实例，并将应用程序路径传递给构造函数
+            _externalAppManager.StartMonitoring(); // 调用 _appMonitor 的 StartMonitoring 方法，启动监控任务
+        }
+
+        private void btnStopSubConverter_Click(object sender, RoutedEventArgs e)
+        {
+            _externalAppManager.StopApp(); // 调用 _appMonitor 的 StopApp 方法，结束程序
         }
     }
 }

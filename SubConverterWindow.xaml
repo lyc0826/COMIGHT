@@ -32,6 +32,11 @@
         <Label Content="Converted Subscription Url:" Grid.Row="6"/>
         <TextBox Name="txtbxConvertedSubUrl" Grid.Row="7" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" Height="60"/>
 
+        <StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left"  >
+            <Button Name="btnStartSubConverter" Content="Start" Width="60" Height="30" Click="btnStartSubConverter_Click"  />
+            <Button Name="btnStopSubConverter" Content="Stop" Width="60" Height="30" Click="btnStopSubConverter_Click"  />
+        </StackPanel>
+
         <StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right"  >
             <Button Name="btnConvert" Content="Convert" Width="60" Height="30" Click="BtnConvert_Click" />
             <Button Name="btnExit" Content="Exit" Width="60" Height="30" Click="BtnExit_Click" />

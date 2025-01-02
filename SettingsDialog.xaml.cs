@@ -38,6 +38,7 @@ namespace COMIGHT
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
                 new SettingsRelation ("generalSettingsTable", "Pandoc Application Path", "PandocPath"),
+                new SettingsRelation ("generalSettingsTable", "SubConverter Application Path", "SubConverterPath"),
 
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Name", "CnTitleFontName"),
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Size", "CnTitleFontSize"),
