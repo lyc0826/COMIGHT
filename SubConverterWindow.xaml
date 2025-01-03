@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="SubConverter" Width="600" SizeToContent="Height" FontSize="13" WindowStartupLocation="CenterScreen" >
     
-    <Grid Margin="3,0,3,3">
+    <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -21,21 +21,21 @@
         </Grid.RowDefinitions>
 
         <Label Content="Conversion Type:" Grid.Row="0"/>
-        <ComboBox Name="cmbbxConversionType" Grid.Row="1" MinHeight="30"/>
+        <ComboBox Name="cmbbxConversionType" Grid.Row="1" />
 
         <Label Content="SubConverter Back-End Url: [e.g. http(s)://127.0.0.1:25500/]" Grid.Row="2"/>
-        <TextBox Name="txtbxConverterBackEndURL" Grid.Row="3" MinHeight="30" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+        <TextBox Name="txtbxConverterBackEndURL" Grid.Row="3" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 
         <Label Content="Original Subscription Urls (separated by '|' for multiple Urls):" Grid.Row="4"/>
-        <TextBox Name="txtbxOriginalSubUrls" Grid.Row="5" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="60"/>
+        <TextBox Name="txtbxOriginalSubUrls" Grid.Row="5" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 
         <Label Content="Converted Subscription Url:" Grid.Row="6"/>
-        <TextBox Name="txtbxConvertedSubUrl" Grid.Row="7" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" Height="60"/>
+        <TextBox Name="txtbxConvertedSubUrl" Grid.Row="7" Height="60" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" />
 
-        <StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left"  >
+        <!--<StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left"  >
             <Button Name="btnStartSubConverter" Content="Start" Width="60" Height="30" Click="btnStartSubConverter_Click"  />
             <Button Name="btnStopSubConverter" Content="Stop" Width="60" Height="30" Click="btnStopSubConverter_Click"  />
-        </StackPanel>
+        </StackPanel> -->
 
         <StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right"  >
             <Button Name="btnConvert" Content="Convert" Width="60" Height="30" Click="BtnConvert_Click" />

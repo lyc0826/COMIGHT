@@ -861,11 +861,6 @@ namespace COMIGHT
             try
             {
                 string? pandocPath = appSettings.PandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
-                if (string.IsNullOrWhiteSpace(pandocPath) || !File.Exists(pandocPath)
-                    || !pandocPath.ToLower().EndsWith(".exe")) //如果Pandoc程序文件路径全名为null或全空白字符，或文件不存在，或没有以exe结尾，则抛出异常
-                {
-                    throw new Exception("Pandoc setting error.");
-                }
 
                 ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
                 {
@@ -1510,9 +1505,10 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath);
                 }
 
+                //写入目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"Mrg_{targetFileMainName}.docx"); //获取目标Word文件的路径全名
 
-                using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档
+                using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档，赋值给文件流变量
                 {
                     XWPFDocument targetWordDocument = new XWPFDocument(); // 创建Word文件对象，赋值给目标Word文档变量
 
@@ -1523,6 +1519,17 @@ namespace COMIGHT
                         run.SetText(paragraphText); // 将当前元素的段落文字插入段落文本块中
                     }
                     targetWordDocument.Write(fileStream); // 写入文件流
+                }
+
+                // 写入目标文本文档
+                string targetTxtFilePath = Path.Combine(targetFolderPath, $"Mrg_{targetFileMainName}.txt"); // 获取目标文本文件的路径全名
+
+                using (StreamWriter writer = new StreamWriter(targetTxtFilePath, false, Encoding.UTF8)) // 创建文本写入器对象（新建或覆盖目标文件，编码为UTF-8），赋值给文本写入器对象
+                {
+                    foreach (string paragraphText in lstFullText) // 遍历全文本列表的所有元素
+                    {
+                        writer.WriteLine(paragraphText); // 将当前元素的段落文字写入文本文件中，并换行
+                    }
                 }
 
                 MessageBox.Show("Operation Completed", "Result", MessageBoxButton.OK, MessageBoxImage.Information);

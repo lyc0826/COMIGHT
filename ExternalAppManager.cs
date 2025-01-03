@@ -15,18 +15,18 @@ namespace COMIGHT
             _appPath = appPath; // 将传入的应用程序路径赋值给 _appPath字段
         }
 
-        public void StartMonitoring() // 定义公共方法StartMonitoring，用于启动监控任务
+        public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
         {
             _cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
             Task.Run(() => MonitorApp(_cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
         }
 
-        public void StopMonitoring() // 定义公共方法 StopMonitoring，用于停止监控任务
+        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
         {
             _cancellationTokenSource?.Cancel(); // 如果 _cancellationTokenSource 不为空，则调用其 Cancel 方法，触发取消操作
         }
 
-        private async Task MonitorApp(CancellationToken cancellationToken) // 定义私有异步方法 MonitorApp，接收取消令牌作为参数
+        private async Task MonitorApp(CancellationToken cancellationToken) // 定义MonitorApp异步方法，接收取消令牌作为参数
         {
             while (!cancellationToken.IsCancellationRequested) // 循环检查取消令牌的IsCancellationRequested属性，如果未请求取消，则继续循环
             {

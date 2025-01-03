@@ -59,7 +59,6 @@ namespace COMIGHT
         //    _externalAppManager.StopMonitoring(); // 调用 _appMonitor 的 StopMonitoring 方法，停止监控任务
         //}
 
-
         private void BtnConvert_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -102,16 +101,14 @@ namespace COMIGHT
             MessageBox.Show("Converted subscription copied to the clipboard.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void btnStartSubConverter_Click(object sender, RoutedEventArgs e)
-        {
-            //string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
-            //_externalAppManager = new ExternalAppManager(appPath); // 创建 AppMonitor 类的实例，并将应用程序路径传递给构造函数
-            _externalAppManager.StartMonitoring(); // 调用 _appMonitor 的 StartMonitoring 方法，启动监控任务
-        }
+        //private void btnStartSubConverter_Click(object sender, RoutedEventArgs e)
+        //{
+        //    _externalAppManager.StartMonitoring(); // 调用 _appMonitor 的 StartMonitoring 方法，启动监控任务
+        //}
 
-        private void btnStopSubConverter_Click(object sender, RoutedEventArgs e)
-        {
-            _externalAppManager.StopApp(); // 调用 _appMonitor 的 StopApp 方法，结束程序
-        }
+        //private void btnStopSubConverter_Click(object sender, RoutedEventArgs e)
+        //{
+        //    _externalAppManager.StopApp(); // 调用 _appMonitor 的 StopApp 方法，结束程序
+        //}
     }
 }
