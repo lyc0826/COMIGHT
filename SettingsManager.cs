@@ -46,10 +46,10 @@ namespace COMIGHT
             string newSettingsJson = JsonConvert.SerializeObject(newSettings, Formatting.None);
 
             // 如果当前设置和新设置序列化后的JSON字符串不同
-            //if (currentSettingsJson != newSettingsJson)
+            if (currentSettingsJson != newSettingsJson)
             {
-                _settings = newSettings; // 将新设置对象赋值给内部设置对象
-                string json = JsonConvert.SerializeObject(_settings, Formatting.Indented); // 序列化内部设置对象为JSON字符串
+                _settings = JsonConvert.DeserializeObject<T>(newSettingsJson) ?? new T(); // 将新设置对象的JSON字符串反序列化，形成深拷贝（与原对象无引用关系），赋值给内部设置对象（如果反序列化失败，则得到默认初始化对象）
+                string json = JsonConvert.SerializeObject(_settings, Formatting.Indented); // 将内部设置对象序列化为JSON字符串
                 File.WriteAllText(_settingsFilePath, json); // 将JSON字符串写入文件
             }
         }
