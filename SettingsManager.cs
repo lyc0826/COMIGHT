@@ -46,7 +46,7 @@ namespace COMIGHT
             string newSettingsJson = JsonConvert.SerializeObject(newSettings, Formatting.None);
 
             // 如果当前设置和新设置序列化后的JSON字符串不同
-            if (currentSettingsJson != newSettingsJson)
+            //if (currentSettingsJson != newSettingsJson)
             {
                 _settings = newSettings; // 将新设置对象赋值给内部设置对象
                 string json = JsonConvert.SerializeObject(_settings, Formatting.Indented); // 序列化内部设置对象为JSON字符串
