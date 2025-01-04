@@ -1,7 +1,7 @@
 {
   "SavingFolderPath": "C:\\COMIGHT Files",
-  "PandocPath": "D:\\Program Files\\Pandoc\\pandoc.exe",
-  "SubConverterPath": "D:\\Program Files\\SubtitleEdit\\SubConverter.exe",
+  "PandocPath": "C:\\Program Files\\Pandoc\\pandoc.exe",
+  "SubConverterPath": "C:\\Program Files\\SubConverter\\SubConverter.exe",
   "CnTitleFontName": "华文中宋",
   "CnTitleFontSize": 22,
   "CnBodyFontName": "仿宋",
