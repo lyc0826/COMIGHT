@@ -78,6 +78,7 @@ namespace COMIGHT
             public string LatestURL { get; set; } = string.Empty;
             public string LatestSubConverterBackEndUrl { get; set; } = string.Empty;
             public string LatestOriginalSubUrls { get; set; } = string.Empty;
+            public string LatestExternalConfigUrl { get; set; } = string.Empty;
         }
 
     }

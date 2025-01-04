@@ -12,32 +12,39 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Label Content="Conversion Type:" Grid.Row="0"/>
-        <ComboBox Name="cmbbxConversionType" Grid.Row="1" />
+        <StackPanel Grid.Row="0" Orientation="Vertical">
+            <Label Content="Conversion Type:"/>
+            <ComboBox Name="cmbbxConversionType" />
+        </StackPanel>
 
-        <Label Content="SubConverter Back-End Url: [e.g. http(s)://127.0.0.1:25500/]" Grid.Row="2"/>
-        <TextBox Name="txtbxConverterBackEndURL" Grid.Row="3" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Label Content="SubConverter Back-End Url: [e.g. http(s)://127.0.0.1:25500/]"/>
+            <TextBox Name="txtbxConverterBackEndURL" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+        </StackPanel>
 
-        <Label Content="Original Subscription Urls (separated by '|' for multiple Urls):" Grid.Row="4"/>
-        <TextBox Name="txtbxOriginalSubUrls" Grid.Row="5" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+        <StackPanel Grid.Row="2" Orientation="Vertical">
+            <Label Content="Original Subscription Urls (separated by '|' for multiple Urls):"/>
+            <TextBox Name="txtbxOriginalSubUrls" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+        </StackPanel>
 
-        <Label Content="Converted Subscription Url:" Grid.Row="6"/>
-        <TextBox Name="txtbxConvertedSubUrl" Grid.Row="7" Height="60" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" />
+        <StackPanel Grid.Row="3" Orientation="Vertical">
+            <Label Content="External Config Url:"/>
+            <TextBox Name="txtbxExternalConfigUrl" Height="40" Margin="0,5,0,5" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+        </StackPanel>
 
-        <!--<StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left"  >
-            <Button Name="btnStartSubConverter" Content="Start" Width="60" Height="30" Click="btnStartSubConverter_Click"  />
-            <Button Name="btnStopSubConverter" Content="Stop" Width="60" Height="30" Click="btnStopSubConverter_Click"  />
-        </StackPanel> -->
+        <StackPanel Grid.Row="4" Orientation="Vertical">
+            <Label Content="Converted Subscription Url:"/>
+            <TextBox Name="txtbxConvertedSubUrl" Height="100" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" />
+        </StackPanel>
 
-        <StackPanel Grid.Row="8" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right"  >
+        
+
+        <StackPanel Grid.Row="5" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="btnConvert" Content="Convert" Width="60" Height="30" Click="BtnConvert_Click" />
             <Button Name="btnExit" Content="Exit" Width="60" Height="30" Click="BtnExit_Click" />
         </StackPanel>

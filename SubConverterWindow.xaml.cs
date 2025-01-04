@@ -42,11 +42,12 @@ namespace COMIGHT
             
             txtbxConverterBackEndURL.Text = latestRecords.LatestSubConverterBackEndUrl; // 将用户使用记录中的订阅转换器后端URL赋值给订阅转换器后端URL文本框
             txtbxOriginalSubUrls.Text = latestRecords.LatestOriginalSubUrls; // 将用户使用记录中的订阅URL赋值给源订阅URL文本框
+            txtbxExternalConfigUrl.Text = latestRecords.LatestExternalConfigUrl; // 将用户使用记录中的外部配置URL赋值给外部配置URL文本框
 
             string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
-            _externalAppManager = new ExternalAppManager(appPath); // 创建 AppMonitor 类的实例，并将应用程序路径传递给构造函数
+            _externalAppManager = new ExternalAppManager(appPath); // 创建外部应用程序管理器对象，并赋值给外部应用程序管理器对象变量
 
-            if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127\.0\.0\.1|localhost"))
+            if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127\.0\.0\.1|localhost")) // 如果订阅转换器后端URL包含 "127.0.0.1" 或 "localhost"，则启动订阅转换器程序
             {
                 _externalAppManager.StartApp();
             }
@@ -65,19 +66,28 @@ namespace COMIGHT
             {
                 string subConverterBackEndUrl = txtbxConverterBackEndURL.Text.Trim(); // 获取订阅转换器后端URL
                 string originalSubUrls = txtbxOriginalSubUrls.Text.Trim(); // 获取源订阅Url
-                if (string.IsNullOrWhiteSpace(subConverterBackEndUrl) || string.IsNullOrWhiteSpace(originalSubUrls) || cmbbxConversionType.SelectedItem == null) // 如果订阅转换器后端Url、源订阅Url或转换类型组合框已选项有一个为null，则抛出异常
+                string externalConfigUrl = txtbxExternalConfigUrl.Text.Trim(); // 获取外部配置Url
+                
+                if (cmbbxConversionType.SelectedItem == null || string.IsNullOrWhiteSpace(subConverterBackEndUrl) || string.IsNullOrWhiteSpace(originalSubUrls) ) // 如果订阅转换器后端Url、源订阅Url或转换类型组合框已选项有一个为null，则抛出异常
                 {
                     throw new Exception("Invalid Url or conversion type.");
                 }
 
                 latestRecords.LatestSubConverterBackEndUrl = subConverterBackEndUrl; // 将用户输入的订阅转换器后端URL赋值给用户使用记录
                 latestRecords.LatestOriginalSubUrls = originalSubUrls; // 将用户输入的订阅URL赋值给用户使用记录
+                latestRecords.LatestExternalConfigUrl = externalConfigUrl; // 将用户输入的外部配置URL赋值给用户使用记录
+
                 recordsManager.SaveSettings(latestRecords); // 保存用户使用记录
 
-                string encodedOriginalSubUrls = Uri.EscapeDataString(originalSubUrls); // 获取经Url编码后的源订阅Url
                 string targetType = dicConversionTypes[cmbbxConversionType.SelectedItem.ToString()!]; // 从转换类型字典中获取对应的转换类型代码
+                string encodedOriginalSubUrls = Uri.EscapeDataString(originalSubUrls); // 获取经Url编码后的源订阅Url
+                string encodedExternalConfigUrl = Uri.EscapeDataString(externalConfigUrl); // 获取经Url编码后的外部配置Url
 
                 string convertedSubUrl = $"{subConverterBackEndUrl}sub?target={targetType}&url={encodedOriginalSubUrls}"; // 拼接生成转换后的订阅链接
+                if (!string.IsNullOrWhiteSpace(encodedExternalConfigUrl)) // 如果经Url编码后的外部配置Url不为null或全空白字符，则将该段Url拼接到订阅链接最后
+                {
+                    convertedSubUrl += $"&config={encodedExternalConfigUrl}"; // 拼接生成转换后的订阅链接
+                }
 
                 txtbxConvertedSubUrl.Text = convertedSubUrl; // 将转换后的链接赋值给转换后链接文本框
                 txtbxConvertedSubUrl.SelectAll(); //全选转换后链接文本框文字
