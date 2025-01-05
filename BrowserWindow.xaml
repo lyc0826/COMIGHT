@@ -35,7 +35,7 @@
                 <Button x:Name="btnClean" Content="Clean" Width="50" Height="30" Click="BtnClean_Click" />
             </WrapPanel>
 
-            <TextBox x:Name="txtbxURL" Text="Starting Page" Height="30" Grid.Row ="0" Grid.Column="1" VerticalContentAlignment="Center" KeyDown="TxtbxURL_KeyDown" MouseDoubleClick="TxtbxURL_MouseDoubleClick" />
+            <TextBox x:Name="txtbxUrl" Text="Starting Page" Height="30" Grid.Row ="0" Grid.Column="1" VerticalContentAlignment="Center" KeyDown="TxtbxUrl_KeyDown" MouseDoubleClick="TxtbxURL_MouseDoubleClick" />
             <ComboBox x:Name="cmbbxUrl" Height="30" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" SelectionChanged="CmbbxUrl_SelectionChanged" />
         </Grid>
 

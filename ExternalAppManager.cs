@@ -15,15 +15,9 @@ namespace COMIGHT
             _appPath = appPath; // 将传入的应用程序路径赋值给 _appPath字段
         }
 
-        public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
+        private bool IsAppRunning() // 定义IsAppRunning方法，用于检查应用程序是否正在运行
         {
-            _cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
-            Task.Run(() => MonitorApp(_cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
-        }
-
-        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
-        {
-            _cancellationTokenSource?.Cancel(); // 如果 _cancellationTokenSource 不为空，则调用其 Cancel 方法，触发取消操作
+            return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_appPath)).Length > 0; // 获取_appPath的文件主名（不包含扩展名），再获取其对应进程名的所有进程，最后检查获取到的进程数量是否大于0，如果大于0，则得到true，表示应用程序正在运行；否则得到false；将结果赋值给函数返回值
         }
 
         private async Task MonitorApp(CancellationToken cancellationToken) // 定义MonitorApp异步方法，接收取消令牌作为参数
@@ -47,6 +41,7 @@ namespace COMIGHT
                 {
                     break; // 如果任务被取消，则跳出循环
                 }
+
                 catch (Exception ex) // 捕获其他类型的异常
                 {
                     Application.Current.Dispatcher.Invoke(() => 
@@ -55,11 +50,6 @@ namespace COMIGHT
                     await Task.Delay(10000, cancellationToken); // 暂停10秒，并传入取消令牌，允许在等待期间响应取消请求
                 }
             }
-        }
-
-        private bool IsAppRunning() // 定义IsAppRunning方法，用于检查应用程序是否正在运行
-        {
-            return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_appPath)).Length > 0; // 获取_appPath的文件主名（不包含扩展名），再获取其对应进程名的所有进程，最后检查获取到的进程数量是否大于0，如果大于0，则得到true，表示应用程序正在运行；否则得到false；将结果赋值给函数返回值
         }
 
         public void StartApp() // 定义StartApp方法，用于启动应用程序
@@ -81,12 +71,19 @@ namespace COMIGHT
 
                 Process.Start(startInfo); // 使用指定的启动信息启动进程
             }
+
             catch (Exception ex) // 捕获异常
             {
                 Application.Current.Dispatcher.Invoke(() => 
                     MessageBox.Show($"Starting application failed: {ex.Message}") 
                 );
             }
+        }
+
+        public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
+        {
+            _cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
+            Task.Run(() => MonitorApp(_cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
         }
 
         public void StopApp() // 定义StopApp方法，用于停止应用程序
@@ -111,7 +108,10 @@ namespace COMIGHT
                         );
                     }
                 }
+                
+                StopMonitoring();
             }
+
             catch (Exception ex)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -119,6 +119,13 @@ namespace COMIGHT
                 );
             }
         }
+        
+
+        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
+        {
+            _cancellationTokenSource?.Cancel(); // 如果 _cancellationTokenSource 不为空，则调用其 Cancel 方法，触发取消操作
+        }
+
 
     }
 }

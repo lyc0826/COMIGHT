@@ -49,7 +49,7 @@ namespace COMIGHT
 
             if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127\.0\.0\.1|localhost")) // 如果订阅转换器后端URL包含 "127.0.0.1" 或 "localhost"，则启动订阅转换器程序
             {
-                _externalAppManager.StartApp();
+                _externalAppManager.StartMonitoring();
             }
             
         }

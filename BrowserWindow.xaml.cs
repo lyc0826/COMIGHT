@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static COMIGHT.PublicVariables;
+using static COMIGHT.MainWindow;
 
 
 namespace COMIGHT
@@ -65,13 +66,13 @@ namespace COMIGHT
 
         private void CmbbxUrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string? url = cmbbxUrl.SelectedItem.ToString(); //将组合框被选项的文字赋值给网址变量
+            string? url = cmbbxUrl.SelectedItem?.ToString() ?? ""; //将组合框被选项的文字赋值给网址变量
             WebView_OpenNewUrl(url); //打开网址
         }
 
-        private void TxtbxURL_KeyDown(object sender, KeyEventArgs e)
+        private void TxtbxUrl_KeyDown(object sender, KeyEventArgs e)
         {
-            string url = txtbxURL.Text;
+            string url = txtbxUrl.Text;
             if (e.Key == Key.Enter) //如果按下的是回车键，则打开网址
             {
                 WebView_OpenNewUrl(url);
@@ -80,7 +81,7 @@ namespace COMIGHT
 
         private void TxtbxURL_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            txtbxURL.SelectAll();
+            txtbxUrl.SelectAll();
         }
 
         private async Task CleanCache()
@@ -123,9 +124,10 @@ namespace COMIGHT
                     }
                 }
 
-                cmbbxUrl.SelectedIndex = 0; //网址组合框选择0号（第1）项
-                string startupUrl = cmbbxUrl.SelectedItem?.ToString() ?? "";  // 将网址组合框被选项的文字赋值给URL变量
-                WebView_OpenNewUrl(startupUrl); //打开起始URL
+                // 获取起始网址：如果用户使用记录中的最近打开网址不为null或全空白字符，则得到该网址；否则，如果网址组合框的选项数大于0且0号选项字符串不为null或全空白字符，则获取该0号项目字符串
+                string? startupUrl = !string.IsNullOrWhiteSpace(latestRecords.LatestUrl) ? latestRecords.LatestUrl : ( cmbbxUrl.Items.Count > 0 && !string.IsNullOrWhiteSpace(cmbbxUrl.Items[0].ToString()) ) ? cmbbxUrl.Items[0].ToString() : string.Empty;
+
+                WebView_OpenNewUrl(startupUrl); //打开起始网址
 
                 //添加webView事件响应过程
                 webView2.NavigationCompleted += WebView_NavigationCompleted; //打开网站完成后，触发WebView_NavigationCompleted过程
@@ -139,7 +141,7 @@ namespace COMIGHT
 
         private async void WebView_NavigationCompleted(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e) //网站加载完成后，执行此过程
         {
-            txtbxURL.Text = webView2.Source.ToString(); //将正打开的网址赋值给网址文本框
+            txtbxUrl.Text = webView2.Source.ToString(); //将正打开的网址赋值给网址文本框
 
             /*添加JS代码：
               向网页添加鼠标悬停事件响应，如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；
@@ -222,7 +224,9 @@ namespace COMIGHT
                     url = "http://" + url;
                 }
                 webView2.CoreWebView2.Navigate(url); //打开网址，WebView.Source = new Uri(url) 
-                txtbxURL.Text = url; //将正打开的网址赋值给网址文本框 
+                txtbxUrl.Text = url; //将正打开的网址赋值给网址文本框
+                latestRecords.LatestUrl = url; // 将正打开的网址保存到用户使用记录中
+                recordsManager.SaveSettings(latestRecords); // 保存用户使用记录
 
             }
         }
