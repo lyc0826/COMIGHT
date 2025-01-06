@@ -104,12 +104,12 @@ namespace COMIGHT
             try
             {
                 // 检查网址Json文件是否存在
-                if (!File.Exists(websiteJsonFilePath)) // 如果网址Json文件不存在，则抛出异常
+                if (!File.Exists(websitesJsonFilePath)) // 如果网址Json文件不存在，则抛出异常
                 {
                     throw new Exception("JSON file not found.");
                 }
 
-                string jsonContent = File.ReadAllText(websiteJsonFilePath); // 读取网址Json文件内容
+                string jsonContent = File.ReadAllText(websitesJsonFilePath); // 读取网址Json文件内容
 
                 // 解析网址Json内容，赋值给解析后Json动态对象变量
                 dynamic? parsedJson = JsonConvert.DeserializeObject(jsonContent);

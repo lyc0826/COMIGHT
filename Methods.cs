@@ -670,9 +670,9 @@ namespace COMIGHT
             //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
             string cnHeadingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
             // 定义英文标题编号正则表达式字符串：空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾可以省略句点），空格制表符至少一个
-            string enHeadingNumRegEx = @"^[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:\d+\.?)*[ |\t]+";
-            //定义小标题编号正则表达式变量，匹配模式为：开头标记或“。：:；;”，中文小标题编号或英文小标题编号
-            Regex regExHeadingNum = new Regex(@$"(?<= ^|[。：:；;]){cnHeadingNumRegEx}|{enHeadingNumRegEx}", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            string enHeadingNumRegEx = @"[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:\d+\.?)*[ |\t]+";
+            //定义小标题编号正则表达式变量，匹配模式为：前方出现开头标记或“。：:；;”，中文小标题编号或英文小标题编号
+            Regex regExHeadingNum = new Regex(@$"(?<=^|[。：:；;])(?:{cnHeadingNumRegEx}|{enHeadingNumRegEx})", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
@@ -1490,6 +1490,7 @@ namespace COMIGHT
                         .ToList();
 
                     int lstSplitTextsCount = lstSplitTexts!.Count; //获取拆分后文字列表元素个数
+                    
                     contentsChanged = lstSplitTextsCount > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果拆分后文字列表元素个数大于1，得到true；否则，得到原值
 
                     for (int i = 0; i < lstSplitTextsCount; i++) //遍历拆分后文字列表的所有元素
@@ -1499,6 +1500,43 @@ namespace COMIGHT
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
 
                         contentsChanged = lstRevisedTexts.Count > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果修订文字列表元素个数大于1，得到true；否则，得到原值
+
+                        ////合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
+                        //if ((lstRevisedTexts?.Count ?? 0) == 0) //如果字符串列表的元素数（如果字符串列表为null，则得到0）为0，则将空字符串赋值给函数返回值
+                        //{
+                        //    lstSplitTexts[i] = string.Empty;
+                        //}
+
+                        //else if (lstRevisedTexts?.Count > 1) //如果字符串列表的元素数为1，则将0号元素赋值给函数返回值
+                        //{
+
+                        //    // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
+
+                        //    //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
+                        //    Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
+
+                        //    // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合（
+                        //    MatchCollection matchesSentences = regExCnSentence.Matches(lstRevisedTexts[0]);
+
+                        //    foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
+                        //    {
+                        //        int sameSentenceCount = 0;
+                        //        for (int j = 1; j < lstRevisedTexts.Count; j++) //遍历字符串列表从1号（第2个）元素开始的所有元素
+                        //        {
+                        //            if (lstRevisedTexts[j].Contains(matchSentence.Value))  //如果字符串列表当前元素含有当前中文句子
+                        //            {
+                        //                lstRevisedTexts[j] = lstRevisedTexts[j].Replace(matchSentence.Value, ""); //将字符串列表当前元素中的当前中文句子替换为空（删除重复句）
+                        //                sameSentenceCount += 1; //相同中文句子计数加1
+                        //            }
+                        //        }
+
+                        //        //重新赋值给字符串列表0号元素：如果相同中文句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前中文句子），则得到将0号元素中的当前中文句子替换为空后的字符串（删除非共有句）；否则得到0号元素原值
+                        //        lstRevisedTexts[0] = sameSentenceCount < lstRevisedTexts.Count - 1 ? lstRevisedTexts[0].Replace(matchSentence.Value, "") : lstRevisedTexts[0];
+                        //    }
+
+                        //    lstSplitTexts[i] = string.Join("", lstRevisedTexts);  //合并字符串列表的所有元素，赋值给函数返回值
+                        //}
+
 
                         //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
                         lstSplitTexts[i] = MergeRevision(lstRevisedTexts);
@@ -1517,6 +1555,9 @@ namespace COMIGHT
 
                             // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
 
+                            //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
+                            Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
+
                             // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合（
                             MatchCollection matchesSentences = regExCnSentence.Matches(lstStrs[0]);
 
@@ -1531,6 +1572,7 @@ namespace COMIGHT
                                         sameSentenceCount += 1; //相同中文句子计数加1
                                     }
                                 }
+
                                 //重新赋值给字符串列表0号元素：如果相同中文句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前中文句子），则得到将0号元素中的当前中文句子替换为空后的字符串（删除非共有句）；否则得到0号元素原值
                                 lstStrs[0] = sameSentenceCount < lstStrs.Count - 1 ? lstStrs[0].Replace(matchSentence.Value, "") : lstStrs[0];
                             }

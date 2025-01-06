@@ -2,6 +2,7 @@
   "SavingFolderPath": "C:\\COMIGHT Files",
   "PandocPath": "C:\\Program Files\\Pandoc\\pandoc.exe",
   "SubConverterPath": "C:\\Program Files\\SubConverter\\SubConverter.exe",
+  "UserManualUrl": "https://github.com/lyc0826/COMIGHT/",
   "CnTitleFontName": "华文中宋",
   "CnTitleFontSize": 22,
   "CnBodyFontName": "仿宋",

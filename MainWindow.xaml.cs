@@ -121,7 +121,7 @@ namespace COMIGHT
                 //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    FileName = manualUrl, //指定需要打开的网址
+                    FileName = appSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
                     UseShellExecute = true //设定使用操作系统shell执行程序
                 };
                 //启动新的进程
