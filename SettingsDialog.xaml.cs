@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Windows;
 using static COMIGHT.MainWindow;
-using static COMIGHT.PublicVariables;
 
 
 namespace COMIGHT
@@ -21,8 +20,8 @@ namespace COMIGHT
 
         private class SettingsRelation // 定义设置对应关系类
         {
-            public string DataTableName { get; } // 定义DataTable名称属性
-            public string DataTableItem { get; } // 定义DataTable设置项属性
+            public string DataTableName { get; } // 定义设置DataTable名称属性
+            public string DataTableItem { get; } // 定义设置DataTable设置项属性
             public string AppSettingItem { get; } // 定义应用设置项属性
 
             public SettingsRelation(string dataTableName, string dataTableItem, string appSettingItem)
@@ -34,7 +33,7 @@ namespace COMIGHT
         }
 
 
-        private List<SettingsRelation> lstSettingsRelations = new List<SettingsRelation>
+        private List<SettingsRelation> lstSettingsRelations = new List<SettingsRelation> // 定义设置对应关系列表
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
                 new SettingsRelation ("generalSettingsTable", "Pandoc App Path", "PandocPath"),
@@ -108,7 +107,7 @@ namespace COMIGHT
                 dataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
                 dataSet.AcceptChanges();
 
-                // 遍历设置DataTable数组，为每个DataTable添加列
+                // 遍历设置DataTable，为每个DataTable添加列
                 foreach (DataTable dataTable in dataTables)
                 {
                     dataTable.Columns.AddRange(new DataColumn[]
@@ -118,15 +117,16 @@ namespace COMIGHT
                     });
                 }
 
-                // 将Properties.Settings中设置项的值填入对应的设置DataTable中
-                foreach (var settingRelation in lstSettingsRelations) // 遍历设置记录列表
+                // 将应用程序设置赋值到对应的设置DataTable中
+                foreach (var settingRelation in lstSettingsRelations) // 遍历设置对应关系列表
                 {
-                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(settingRelation.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
-                    object? value = propertyInfo?.GetValue(appSettings); // 获取当前属性的值
+                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(settingRelation.AppSettingItem)!; // 获取应用程序设置中当前设置项属性
+                    object? value = propertyInfo?.GetValue(appSettings); // 获取当前设置项属性的值
                     if (value != null)
                     {
                         DataRow newDataRow = dataSet.Tables[settingRelation.DataTableName]!.NewRow(); // 创建一个新数据行
-                        newDataRow["Item"] = settingRelation.DataTableItem; // 设置新数据行"Item"、"Value"数据列的值
+                        // 将设置DataTable中与当前设置项属性相对应的项名和值分别赋值给新数据行的"Item"、"Value"数据列
+                        newDataRow["Item"] = settingRelation.DataTableItem;
                         newDataRow["Value"] = value;
                         dataSet.Tables[settingRelation.DataTableName]!.Rows.Add(newDataRow); // 向当前设置DataTable添加新数据行
                     }
@@ -143,14 +143,14 @@ namespace COMIGHT
         {
             try
             {
-                // 遍历设置记录列表，从设置DataTable中读取设置值并保存到Properties.Settings中
-                foreach (var setting in lstSettingsRelations)
+                // 将设置DataTable中的设置值保存到对应的应用程序设置中
+                foreach (var settingRelation in lstSettingsRelations) // 遍历设置对应关系列表
                 {
-                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(setting.AppSettingItem)!; // 获取Properties.Settings中当前设置项的属性
-                    if (propertyInfo != null && propertyInfo.CanWrite) // 如果属性不为null且可写入
+                    PropertyInfo propertyInfo = appSettings.GetType().GetProperty(settingRelation.AppSettingItem)!; // 获取应用程序设置中当前设置项属性
+                    if (propertyInfo != null && propertyInfo.CanWrite) // 如果设置项属性不为null且可写入
                     {
-                        object valueToSet = GetDataTableValue(dataSet.Tables[setting.DataTableName]!, "Item", "Value", setting.DataTableItem, propertyInfo.PropertyType); // 将数据行值转换为属性类型
-                        propertyInfo.SetValue(appSettings, valueToSet); // 将值设置到属性中
+                        object valueToSet = GetDataTableValue(dataSet.Tables[settingRelation.DataTableName]!, "Item", "Value", settingRelation.DataTableItem, propertyInfo.PropertyType); // 将设置DataTable中与当前设置项属性相对应的数据行的Value值转换为设置项属性的类型
+                        propertyInfo.SetValue(appSettings, valueToSet); // 将值设置到设置项属性中
                     }
                 }
 

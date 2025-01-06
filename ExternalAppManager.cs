@@ -26,13 +26,20 @@ namespace COMIGHT
             {
                 try
                 {
-                    if (!IsAppRunning()) // 调用IsAppRunning方法检查应用程序是否正在运行，如果未运行，则执行以下代码
+                    if (IsAppRunning()) // 调用IsAppRunning方法检查应用程序是否正在运行，如果已运行，则直接跳过进入下一个循环
                     {
-                        //Application.Current.Dispatcher.Invoke(() => // 使用 Application.Current.Dispatcher.Invoke 在 UI 线程上执行操作
-                        //    MessageBox.Show($"应用程序 {_appPath} 已停止运行，正在重新启动...") // 在 UI 线程上显示消息框，提示应用程序已停止并正在重新启动
-                        //);
-                        StartApp(); // 调用StartApp方法重新启动应用程序
+                        continue;
                     }
+
+                    ProcessStartInfo startInfo = new ProcessStartInfo // 创建ProcessStartInfo对象，用于配置进程启动信息，赋值给startInfo字段
+                    {
+                        FileName = _appPath, // 设置要启动的应用程序的文件名
+                        UseShellExecute = false, // 设置为false，表示不使用操作系统shell启动进程，允许更精细的控制
+                        CreateNoWindow = true, // 设置为true，表示不创建新窗口
+                        WindowStyle = ProcessWindowStyle.Hidden //设置窗口样式为隐藏
+                    };
+
+                    Process.Start(startInfo); // 使用指定的启动信息启动进程
 
                     await Task.Delay(5000, cancellationToken); // 异步等待 5 秒 (5000 毫秒)，并传入取消令牌，允许在等待期间响应取消请求
                 }
@@ -44,50 +51,26 @@ namespace COMIGHT
 
                 catch (Exception ex) // 捕获其他类型的异常
                 {
-                    Application.Current.Dispatcher.Invoke(() => 
+                    //StopMonitoring(); // 停止监控
+                    Application.Current.Dispatcher.Invoke(() =>
                         MessageBox.Show($"Monitoring application failed: {ex.Message}") // 在UI线程上显示消息框，提示监控进程失败，并显示异常信息
                     );
                     await Task.Delay(10000, cancellationToken); // 暂停10秒，并传入取消令牌，允许在等待期间响应取消请求
+                    break; // 退出循环
                 }
             }
         }
 
-        public void StartApp() // 定义StartApp方法，用于启动应用程序
-        {
-            try 
-            {
-                if (IsAppRunning()) // 如果应用程序正在运行，结束本过程
-                {
-                    return; 
-                }
-
-                ProcessStartInfo startInfo = new ProcessStartInfo // 创建ProcessStartInfo对象，用于配置进程启动信息，赋值给startInfo字段
-                {
-                    FileName = _appPath, // 设置要启动的应用程序的文件名
-                    UseShellExecute = false, // 设置为false，表示不使用操作系统shell启动进程，允许更精细的控制
-                    CreateNoWindow = true, // 设置为true，表示不创建新窗口
-                    WindowStyle = ProcessWindowStyle.Hidden //设置窗口样式为隐藏
-                };
-
-                Process.Start(startInfo); // 使用指定的启动信息启动进程
-            }
-
-            catch (Exception ex) // 捕获异常
-            {
-                Application.Current.Dispatcher.Invoke(() => 
-                    MessageBox.Show($"Starting application failed: {ex.Message}") 
-                );
-            }
-        }
-
-        public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
+         public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
         {
             _cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
             Task.Run(() => MonitorApp(_cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
         }
 
-        public void StopApp() // 定义StopApp方法，用于停止应用程序
+        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
         {
+            _cancellationTokenSource?.Cancel(); // 如果_cancellationTokenSource不为null，则调用其Cancel 方法，触发取消操作
+
             try
             {
                 // 获取所有与指定应用程序名称匹配的进程
@@ -97,19 +80,15 @@ namespace COMIGHT
                 foreach (Process process in processes)
                 {
                     process.Kill(); // 强制终止进程
-                                    
+
                     process.WaitForExit(5000); // 等待进程退出，最多等待 5 秒
 
-                    // 检查进程是否已退出
+                    // 检查进程是否已退出，如果没有退出，则抛出异常
                     if (!process.HasExited)
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                            MessageBox.Show($"Cannot stop application: {process.ProcessName} (ID: {process.Id})")
-                        );
+                        throw new Exception($"Stopping application failed: {process.ProcessName} (ID: {process.Id})");
                     }
                 }
-                
-                StopMonitoring();
             }
 
             catch (Exception ex)
@@ -119,13 +98,7 @@ namespace COMIGHT
                 );
             }
         }
-        
-
-        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
-        {
-            _cancellationTokenSource?.Cancel(); // 如果 _cancellationTokenSource 不为空，则调用其 Cancel 方法，触发取消操作
-        }
-
 
     }
 }
+
