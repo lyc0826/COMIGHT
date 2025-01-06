@@ -667,15 +667,16 @@ namespace COMIGHT
 
         public static string RemoveHeadingNum(string inText)
         {
-            //定义小标题编号正则表达式字符串：空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
-            string cnHeadingNumRegEx = @"[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
-            // 定义英文标题编号正则表达式字符串：空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾可以省略句点），空格制表符至少一个
-            string enHeadingNumRegEx = @"[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:\d+\.?)*[ |\t]+";
-            //定义小标题编号正则表达式变量，匹配模式为：前方出现开头标记或“。：:；;”，中文小标题编号或英文小标题编号
-            Regex regExHeadingNum = new Regex(@$"(?<=^|[。：:；;])(?:{cnHeadingNumRegEx}|{enHeadingNumRegEx})", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            // 定义英文标题编号正则表达式字符串：前方出现开头标记或“：:；;”，空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾可以省略句点），空格制表符至少一个
+            string enHeadingNumRegEx = @"(?<=^|[：:；;])[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:\d+\.?)*[ |\t]+";
+
+            //定义小标题编号正则表达式字符串：前方出现开头标记或“。：:；;”，空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
+            string cnHeadingNumRegEx = @"(?<=^|[。：:；;])[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
+
+            //定义小标题编号正则表达式变量，匹配模式为：英文小标题编号或中文小标题编号（先按英文小标题编号模式匹配，如果先按中文小标题编号模式匹配，会造成英文2级及以下小标题编号只匹配到第一节段数字，造成替换不全）
+            Regex regExHeadingNum = new Regex($"(?:{enHeadingNumRegEx})|(?:{cnHeadingNumRegEx})", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
-
 
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
