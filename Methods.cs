@@ -144,11 +144,14 @@ namespace COMIGHT
                         }
                     }
 
-                    for (int i = 2; i <= excelWorksheet.Dimension.End.Row; i++) //遍历Excel工作表从第2行开始到末尾的所有行
+                    // 纯标题行设置文字加粗
+、                  for (int i = 2; i <= excelWorksheet.Dimension.End.Row; i++) //遍历Excel工作表从第2行开始到末尾的所有行
                     {
-                        //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于100字（纯小标题），则加粗；否则不加粗
+                        int headingCharLimit = IsChineseText(excelWorksheet.Cells[i, 3].Text) ? 50 : 125; // 计算小标题字数上限：如果当前行文字为中文，则得到50；否则，得到125
+
+                        //设置当前行1至3列字体加粗：如果当前行含小标题且文字字数少于小标题字数上限（纯小标题），则加粗；否则不加粗
                         excelWorksheet.Cells[i, 1, i, 3].Style.Font.Bold =
-                            (excelWorksheet.Cells[i, 1].Text.Contains("Lv") && excelWorksheet.Cells[i, 3].Text.Length < 100) ? true : false;
+                            excelWorksheet.Cells[i, 1].Text.Contains("Lv") && excelWorksheet.Cells[i, 3].Text.Length < headingCharLimit ? true : false;
                     }
                 }
             }
@@ -1266,26 +1269,26 @@ namespace COMIGHT
                         {
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义数字编号清单正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符至少一个，换行符回车符），以上字符串（捕获组）2个及以上
+                            // 定义数字编号清单块正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符至少一个，换行符回车符），以上字符串（捕获组）2个及以上
                             Regex regExListBlock = new Regex(@"((?<=^|\n|\r)" + listNum + @"[^\f\n\r]+[\n\r]){2,}", RegexOptions.Multiline);
 
-                            MatchCollection matchesListBlocks = regExListBlock.Matches(documentText); // 获取全文文字经过数字编号清单正则表达式匹配的结果
+                            MatchCollection matchesListBlocks = regExListBlock.Matches(documentText); // 获取全文文字经过数字编号清单块正则表达式匹配的结果
 
-                            foreach (Match matchListBlock in matchesListBlocks) // 遍历数字编号清单正则表达式匹配结果集合
+                            foreach (Match matchListBlock in matchesListBlocks) // 遍历数字编号清单块正则表达式匹配结果集合
                             {
-                                //如果数字编号清单正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档100，英文文档250），则不视为清单条目，直接跳过当前循环并进入下一个循环
+                                //如果数字编号清单块正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档100，英文文档250），则不视为清单条目，直接跳过当前循环并进入下一个循环
                                 if (matchListBlock.Value.Length / (matchListBlock.Groups[1].Captures.Count) >= (isCnDocument ? 100 : 250))
                                 {
                                     continue;
                                 }
 
-                                // 文本片段正则表达式匹配模式设为：含换行符回车符的任意字符的字符1-255个；获取当前数字编号清单字符串经匹配后的第一个结果（截取前部最多255个字符，避免超出Interop库Find方法的限制）
+                                // 文本片段正则表达式匹配模式设为：含换行符回车符的任意字符的字符1-255个；获取当前数字编号清单块字符串经匹配后的第一个结果（截取前部最多255个字符，避免超出Interop库Find方法的限制）
                                 Match matchTextSection = Regex.Match(matchListBlock.Value, @"(?:.|[\n\r]){1,255}", RegexOptions.Multiline);
 
                                 find.Text = matchTextSection.Value;
                                 find.Execute();
 
-                                selection.MoveEnd(WdUnits.wdCharacter, matchListBlock.Value.Length - matchTextSection.Value.Length); //将搜索结果选区的末尾向后扩展至数字编号清单的末尾
+                                selection.MoveEnd(WdUnits.wdCharacter, matchListBlock.Value.Length - matchTextSection.Value.Length); //将搜索结果选区的末尾向后扩展至数字编号清单块的末尾
                                 paragraphs.OutlineLevel = WdOutlineLevel.wdOutlineLevelBodyText; // 将选区所在段落的大纲级别设为正文级别
 
                                 //将选区设为正文文字格式
