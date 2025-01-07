@@ -156,7 +156,7 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; 
+                            event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; // 内阴影，水平偏移0，垂直偏移0，模糊半径0，颜色rgba(80, 255, 80, 0.8)
                         }  
                     });
 
@@ -176,6 +176,9 @@ namespace COMIGHT
                         {
                             var originalBoxShadow = event.target.style.boxShadow;
                             var textToCopy = event.target.innerText;
+
+                            textToCopy = textToCopy.replace(/^\s*[\r\n]/gm, '')  // 移除空白段落
+                                                   .replace(/^\s+|\s+$/gm, '');   // 移除每行首尾空白 （全局+多行模式）
 
                             var textArea = document.createElement('textarea');
                             textArea.value = textToCopy;
