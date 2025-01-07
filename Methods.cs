@@ -145,7 +145,7 @@ namespace COMIGHT
                     }
 
                     // 纯标题行设置文字加粗
-、                  for (int i = 2; i <= excelWorksheet.Dimension.End.Row; i++) //遍历Excel工作表从第2行开始到末尾的所有行
+                    for (int i = 2; i <= excelWorksheet.Dimension.End.Row; i++) //遍历Excel工作表从第2行开始到末尾的所有行
                     {
                         int headingCharLimit = IsChineseText(excelWorksheet.Cells[i, 3].Text) ? 50 : 125; // 计算小标题字数上限：如果当前行文字为中文，则得到50；否则，得到125
 
@@ -855,6 +855,8 @@ namespace COMIGHT
 
                         bool isCnDocument = IsChineseText(documentText); // 判断是否为中文文档，赋值给“是否为中文文档”变量
 
+                        // 根据是否为中文文档，设置Word文档正文、小标题、表格等的样式
+
                         // 定义页边距、行距、字体、字号等的值
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
@@ -896,6 +898,8 @@ namespace COMIGHT
                         float footerFontSize = 14; // 页脚字号为四号
 
 
+                        // 清除原文格式，替换空格、换行符等
+
                         // 设置查找模式
                         MSWord.Selection selection = msWordApp.Selection; //将选区赋值给选区变量
                         MSWord.Find find = msWordApp.Selection.Find; //将选区查找赋值给查找变量
@@ -906,7 +910,7 @@ namespace COMIGHT
                         find.MatchByte = false; // 区分全角半角为False
                         find.MatchWildcards = false; // 使用通配符为False
 
-                        // 全文空格替换为半角空格，制表符替换为空格，换行符替换为回车符
+                        // 全文空格替换为半角空格，换行符替换为回车符
                         selection.WholeStory();
 
                         find.Text = " "; // 查找空格
@@ -947,15 +951,6 @@ namespace COMIGHT
                             }
                         }
 
-                        // 对齐缩进
-                        selection.WholeStory();
-                        selection.ClearFormatting(); // 清除全部格式、样式
-                        MSWord.ParagraphFormat paragraphFormat = msWordApp.Selection.ParagraphFormat; //将选区段落格式赋值给段落格式变量
-                        paragraphFormat.Reset(); // 段落格式清除
-                        paragraphFormat.CharacterUnitFirstLineIndent = (isCnDocument ? 2 : 0); // 设置首行缩进：如果为中文文档，则缩进2个字符；否则为0个字符
-                        paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0pt
-                        paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphJustify; // 对齐方式设为两端对齐
-                        //paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
 
                         // 清除文首和文末的空白段
                         while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为回车符，则继续循环
@@ -968,6 +963,18 @@ namespace COMIGHT
                         {
                             msWordDocument.Paragraphs[msWordDocument.Paragraphs.Count].Range.Delete(); // 删除最后一段
                         }
+
+
+                        // 对齐缩进
+                        selection.WholeStory();
+                        selection.ClearFormatting(); // 清除全部格式、样式
+                        MSWord.ParagraphFormat paragraphFormat = msWordApp.Selection.ParagraphFormat; //将选区段落格式赋值给段落格式变量
+                        paragraphFormat.Reset(); // 段落格式清除
+                        paragraphFormat.CharacterUnitFirstLineIndent = (isCnDocument ? 2 : 0); // 设置首行缩进：如果为中文文档，则缩进2个字符；否则为0个字符
+                        paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0pt
+                        paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphJustify; // 对齐方式设为两端对齐
+                        //paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
+
 
                         // 全文格式初始化
                         selection.WholeStory(); // 选择word所有文档
