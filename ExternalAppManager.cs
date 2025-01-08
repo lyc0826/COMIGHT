@@ -26,7 +26,8 @@ namespace COMIGHT
             {
                 try
                 {
-                    if (IsAppRunning()) // 调用IsAppRunning方法检查应用程序是否正在运行，如果已运行，则直接跳过进入下一个循环
+
+                    if (!File.Exists(_appPath) || IsAppRunning()) // 如果应用程序不存在，或经IsAppRunning方法检查发现应用程序正在运行，则直接跳过进入下一个循环
                     {
                         continue;
                     }
@@ -35,9 +36,10 @@ namespace COMIGHT
                     {
                         FileName = _appPath, // 设置要启动的应用程序的文件名
                         UseShellExecute = false, // 设置为false，表示不使用操作系统shell启动进程，允许更精细的控制
+                        Verb = "runas", // 设置为"runas"，表示以管理员权限运行进程
                         CreateNoWindow = true, // 设置为true，表示不创建新窗口
                         WindowStyle = ProcessWindowStyle.Hidden //设置窗口样式为隐藏
-                    };
+                    }; 
 
                     Process.Start(startInfo); // 使用指定的启动信息启动进程
 
@@ -51,7 +53,6 @@ namespace COMIGHT
 
                 catch (Exception ex) // 捕获其他类型的异常
                 {
-                    //StopMonitoring(); // 停止监控
                     Application.Current.Dispatcher.Invoke(() =>
                         MessageBox.Show($"Monitoring application failed: {ex.Message}") // 在UI线程上显示消息框，提示监控进程失败，并显示异常信息
                     );
