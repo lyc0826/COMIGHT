@@ -1453,7 +1453,7 @@ namespace COMIGHT
 
                     else if (fileExtension.ToLower().Contains("doc")) // 如果当前文件扩展名转换为小写后含有“doc”（Word文件，docx、docm）
                     {
-                        using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) // 创建文件流，以打开Word文档
+                        using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) // 创建文件流，以打开Word文档，赋值给文件流变量
                         {
                             XWPFDocument wordDocument = new XWPFDocument(fileStream); // 打开Word文档文件流，赋值给Word文档变量
 
@@ -1505,21 +1505,21 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath);
                 }
 
-                //写入目标Word文档
-                string targetWordFilePath = Path.Combine(targetFolderPath, $"Mrg_{targetFileMainName}.docx"); //获取目标Word文件的路径全名
+                ////写入目标Word文档
+                //string targetWordFilePath = Path.Combine(targetFolderPath, $"Mrg_{targetFileMainName}.docx"); //获取目标Word文件的路径全名
 
-                using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档，赋值给文件流变量
-                {
-                    XWPFDocument targetWordDocument = new XWPFDocument(); // 创建Word文件对象，赋值给目标Word文档变量
+                //using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档，赋值给文件流变量
+                //{
+                //    XWPFDocument targetWordDocument = new XWPFDocument(); // 创建Word文件对象，赋值给目标Word文档变量
 
-                    foreach (string paragraphText in lstFullText) // 遍历全文本列表的所有元素
-                    {
-                        XWPFParagraph paragraph = targetWordDocument.CreateParagraph(); // 创建段落
-                        XWPFRun run = paragraph.CreateRun(); // 创建段落文本块
-                        run.SetText(paragraphText); // 将当前元素的段落文字插入段落文本块中
-                    }
-                    targetWordDocument.Write(fileStream); // 写入文件流
-                }
+                //    foreach (string paragraphText in lstFullText) // 遍历全文本列表的所有元素
+                //    {
+                //        XWPFParagraph paragraph = targetWordDocument.CreateParagraph(); // 创建段落
+                //        XWPFRun run = paragraph.CreateRun(); // 创建段落文本块
+                //        run.SetText(paragraphText); // 将当前元素的段落文字插入段落文本块中
+                //    }
+                //    targetWordDocument.Write(fileStream); // 写入文件流
+                //}
 
                 // 写入目标文本文档
                 string targetTxtFilePath = Path.Combine(targetFolderPath, $"Mrg_{targetFileMainName}.txt"); // 获取目标文本文件的路径全名

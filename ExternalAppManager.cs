@@ -7,17 +7,17 @@ namespace COMIGHT
 {
     internal class ExternalAppManager
     {
-        private readonly string _appPath; // 定义应用程序路径字段
-        private CancellationTokenSource? _cancellationTokenSource; // 定义取消令牌源字段，用于创建和管理取消令牌
+        private readonly string appPath; // 定义应用程序路径字段
+        private CancellationTokenSource? cancellationTokenSource; // 定义取消令牌源字段，用于创建和管理取消令牌
 
         public ExternalAppManager(string appPath) // 定义公共构造函数，接收应用程序路径作为参数
         {
-            _appPath = appPath; // 将传入的应用程序路径赋值给 _appPath字段
+            this.appPath = appPath; // 将传入的应用程序路径赋值给 appPath字段
         }
 
         private bool IsAppRunning() // 定义IsAppRunning方法，用于检查应用程序是否正在运行
         {
-            return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_appPath)).Length > 0; // 获取_appPath的文件主名（不包含扩展名），再获取其对应进程名的所有进程，最后检查获取到的进程数量是否大于0，如果大于0，则得到true，表示应用程序正在运行；否则得到false；将结果赋值给函数返回值
+            return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0; // 获取应用程序的文件主名（不包含扩展名），再获取其对应进程名的所有进程，最后检查获取到的进程数量是否大于0，如果大于0，则得到true，表示应用程序正在运行；否则得到false；将结果赋值给函数返回值
         }
 
         private async Task MonitorApp(CancellationToken cancellationToken) // 定义MonitorApp异步方法，接收取消令牌作为参数
@@ -27,14 +27,14 @@ namespace COMIGHT
                 try
                 {
 
-                    if (!File.Exists(_appPath) || IsAppRunning()) // 如果应用程序不存在，或经IsAppRunning方法检查发现应用程序正在运行，则直接跳过进入下一个循环
+                    if (!File.Exists(appPath) || IsAppRunning()) // 如果应用程序不存在，或经IsAppRunning方法检查发现应用程序正在运行，则直接跳过进入下一个循环
                     {
                         continue;
                     }
 
                     ProcessStartInfo startInfo = new ProcessStartInfo // 创建ProcessStartInfo对象，用于配置进程启动信息，赋值给startInfo字段
                     {
-                        FileName = _appPath, // 设置要启动的应用程序的文件名
+                        FileName = appPath, // 设置要启动的应用程序的文件名
                         UseShellExecute = false, // 设置为false，表示不使用操作系统shell启动进程，允许更精细的控制
                         Verb = "runas", // 设置为"runas"，表示以管理员权限运行进程
                         CreateNoWindow = true, // 设置为true，表示不创建新窗口
@@ -64,18 +64,18 @@ namespace COMIGHT
 
          public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
         {
-            _cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
-            Task.Run(() => MonitorApp(_cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
+            cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
+            Task.Run(() => MonitorApp(cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
         }
 
         public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
         {
-            _cancellationTokenSource?.Cancel(); // 如果_cancellationTokenSource不为null，则调用其Cancel 方法，触发取消操作
+            cancellationTokenSource?.Cancel(); // 如果_cancellationTokenSource不为null，则调用其Cancel 方法，触发取消操作
 
             try
             {
                 // 获取所有与指定应用程序名称匹配的进程
-                Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_appPath));
+                Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath));
 
                 // 遍历每个进程
                 foreach (Process process in processes)

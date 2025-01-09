@@ -9,7 +9,7 @@ namespace COMIGHT
     {
         private readonly DispatcherTimer timer = new DispatcherTimer(); // 定义定时器变量
         private readonly List<Task> lstTasks = new List<Task>(); // 定义任务列表变量
-        private int _activeTasksCount; // 定义当前激活任务数量变量
+        private int activeTasksCount; // 定义当前激活任务数量变量
 
         public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件变量
 
@@ -20,12 +20,12 @@ namespace COMIGHT
 
         public int ActiveTasksCount // 定义激活任务数量属性
         {
-            get => _activeTasksCount;
+            get => activeTasksCount;
             private set // 当前激活的任务数量发生变化时，更新属性并触发属性变更
             {
-                if (_activeTasksCount != value)
+                if (activeTasksCount != value)
                 {
-                    _activeTasksCount = value;
+                    activeTasksCount = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(StatusText));  // 触发StatusText属性变更
                 }
