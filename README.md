@@ -149,7 +149,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Merge Documents and Tables**
 
-- Merges multiple Word documents and Excel spreadsheets into a single file (docx and txt format), for easy uploading to AI chat clients.
+- Merges multiple Word documents and Excel spreadsheets into a text file for easy uploading to AI chat clients.
 
 #### **Make File List**
 
@@ -167,12 +167,12 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Browser**
 
-- This browser allows you to directly copy entire paragraphs of text from most web pages without having to drag the mouse and hold the Shift key to select and copy. Copied text does not contain any markdown symbols or HTML tags.
+- This browser allows you to directly copy entire paragraphs of text from most web pages without having to drag the mouse and hold the Shift key to select and copy. Copied text does not contain any markdown symbols or HTML tags, and is free of blank lines or white spaces before or after each paragraph.
 
 - Move the mouse pointer over the text. When a light green border appears around the text block, double-click the mouse. The border will briefly turn pink, indicating that the text has been copied. The "Websites.json" file in the program's folder contains website addresses that are automatically loaded into the browser's dropdown menu upon startup. You can edit this file as needed.
 
 #### **SubConverter**
 
-- Converts proxy-tunnel subscriptions between different formats, including: Clash, Loon, SS, SSR, Surfboard, Surge, Trojan, and V2Ray.
+- Converts proxy-tunnel client subscriptions between different formats, including: Clash, Loon, SS, SSR, Surfboard, Surge, Trojan, and V2Ray.
 
-  - **It's recommended to use a local SubConverter back-end application (https://github.com/tindy2013/subconverter). The path of SubConverter executable file shall be set correctly in the Settings.**
+  - **It's recommended to use a local SubConverter back-end application (https://github.com/tindy2013/subconverter). Once the path of the SubConverter executable file is set correctly in the Settings, the SubConverter will automatically start up and keep running. **
