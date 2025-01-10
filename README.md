@@ -149,7 +149,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Merge Documents and Tables**
 
-- Merges multiple Word documents and Excel spreadsheets into a text file for easy uploading to AI chat clients.
+- Merges multiple Word documents and Excel spreadsheets into one file (txt, pdf) for easy uploading to AI chat clients.
 
 #### **Make File List**
 
