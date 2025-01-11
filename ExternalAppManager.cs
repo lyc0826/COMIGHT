@@ -22,6 +22,7 @@ namespace COMIGHT
 
         private async Task MonitorApp(CancellationToken cancellationToken) // 定义MonitorApp异步方法，接收取消令牌作为参数
         {
+            
             while (!cancellationToken.IsCancellationRequested) // 循环检查取消令牌的IsCancellationRequested属性，如果未请求取消，则继续循环
             {
                 try
@@ -65,13 +66,13 @@ namespace COMIGHT
          public void StartMonitoring() // 定义StartMonitoring方法，用于启动监控任务
         {
             cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
+            
+            StopApp(); // 调用StopApp方法，先停止应用程序，以便后期再以管理员权限重新启动
             Task.Run(() => MonitorApp(cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
         }
 
-        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
+        private void StopApp()
         {
-            cancellationTokenSource?.Cancel(); // 如果_cancellationTokenSource不为null，则调用其Cancel 方法，触发取消操作
-
             try
             {
                 // 获取所有与指定应用程序名称匹配的进程
@@ -100,6 +101,14 @@ namespace COMIGHT
             }
         }
 
+        public void StopMonitoring() // 定义StopMonitoring方法，用于停止监控任务
+        {
+            cancellationTokenSource?.Cancel(); // 如果_cancellationTokenSource不为null，则调用其Cancel 方法，触发取消操作
+            
+            StopApp(); // 调用StopApp方法，停止应用程序
+        }
+
+        
     }
 }
 
