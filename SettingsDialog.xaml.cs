@@ -36,8 +36,8 @@ namespace COMIGHT
         private List<SettingsRelation> lstSettingsRelations = new List<SettingsRelation> // 定义设置对应关系列表
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
-                new SettingsRelation ("generalSettingsTable", "Pandoc App Path", "PandocPath"),
-                new SettingsRelation ("generalSettingsTable", "SubConverter App Path", "SubConverterPath"),
+                new SettingsRelation ("generalSettingsTable", "Pandoc Path", "PandocPath"),
+                new SettingsRelation ("generalSettingsTable", "SubConverter Path", "SubConverterPath"),
 
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Name", "CnTitleFontName"),
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Size", "CnTitleFontSize"),
@@ -101,7 +101,7 @@ namespace COMIGHT
         {
             try
             {
-                appSettings = settingsManager.GetSettings();
+                appSettings = settingsManager.GetSettings(); // 获取应用设置对象
                 // 定义设置DataTable数组，并添加到设置DataSet
                 DataTable[] dataTables = new DataTable[] { generalSettingsTable, cnSettingsTable, enSettingsTable };
                 dataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
@@ -122,7 +122,7 @@ namespace COMIGHT
                 {
                     PropertyInfo propertyInfo = appSettings.GetType().GetProperty(settingRelation.AppSettingItem)!; // 获取应用程序设置中当前设置项属性
                     object? value = propertyInfo?.GetValue(appSettings); // 获取当前设置项属性的值
-                    if (value != null)
+                    if (value != null) // 如果当前设置项属性的值不为null
                     {
                         DataRow newDataRow = dataSet.Tables[settingRelation.DataTableName]!.NewRow(); // 创建一个新数据行
                         // 将设置DataTable中与当前设置项属性相对应的项名和值分别赋值给新数据行的"Item"、"Value"数据列
