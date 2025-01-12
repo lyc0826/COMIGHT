@@ -51,7 +51,7 @@ namespace COMIGHT
 
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
 
-            lblStatus.DataContext = taskManager; // 绑定任务管理器数据环境到lblStatus控件
+            lblStatus.DataContext = taskManager; // 将状态标签控件的数据环境设为任务管理器对象
             lblIntro.Content = $"For Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
 
             appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置

@@ -1,23 +1,54 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 
 namespace COMIGHT
 {
-    internal class ExternalAppManager
+    internal class ExternalAppManager : INotifyPropertyChanged
     {
         private readonly string appPath; // 定义应用程序路径字段
         private CancellationTokenSource? cancellationTokenSource; // 定义取消令牌源字段，用于创建和管理取消令牌
+        private string appName; // 定义应用程序名称字段
+        private bool isAppRunning; // 定义“应用程序是否运行”字段
+
+        public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件变量
+
+        protected void OnPropertyChanged([CallerMemberName] string? name = null) // 定义属性变更事件处理方法
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); // 触发属性变更
+        }
+
+        private bool IsAppRunning // 定义“应用程序是否运行”私有属性
+        {
+            get => isAppRunning;
+            set // 当前应用程序运行状态发生变化时，更新属性并触发属性变更
+            {
+                if (isAppRunning != value)
+                {
+                    isAppRunning = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(StatusText));  // 触发StatusText属性变更
+                }
+            }
+        }
+
+        public string StatusText => 
+            $"{appName} is{(IsAppRunning ? "" : " not")} running"; // 设置状态文本属性的值：如果激活任务数量大于0，显示"Operation in Progress..."；否则，显示"Idle"
+
 
         public ExternalAppManager(string appPath) // 定义公共构造函数，接收应用程序路径作为参数
         {
-            this.appPath = appPath; // 将传入的应用程序路径赋值给 appPath字段
+            this.appPath = appPath; // 将参数传入的应用程序路径赋值给appPath字段
+
+            appName = Path.GetFileNameWithoutExtension(appPath); // 将应用程序的文件主名赋值给appName字段
         }
 
-        private bool IsAppRunning() // 定义IsAppRunning方法，用于检查应用程序是否正在运行
+        private bool CheckAppState() // 定义CheckAppState()方法，用于检查应用程序是否正在运行
         {
-            return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(appPath)).Length > 0; // 获取应用程序的文件主名（不包含扩展名），再获取其对应进程名的所有进程，最后检查获取到的进程数量是否大于0，如果大于0，则得到true，表示应用程序正在运行；否则得到false；将结果赋值给函数返回值
+            return Process.GetProcessesByName(appName).Length > 0; // 检查应用程序进程数量是否大于0，如果大于0，则得到true；否则得到false；将结果赋值给函数返回值
         }
 
         private async Task MonitorApp(CancellationToken cancellationToken) // 定义MonitorApp异步方法，接收取消令牌作为参数
@@ -27,8 +58,10 @@ namespace COMIGHT
             {
                 try
                 {
-
-                    if (!File.Exists(appPath) || IsAppRunning()) // 如果应用程序不存在，或经IsAppRunning方法检查发现应用程序正在运行，则直接跳过进入下一个循环
+                    
+                    IsAppRunning = CheckAppState(); // 更新应用程序运行状态属性
+                    
+                    if (!File.Exists(appPath) || CheckAppState()) // 如果应用程序不存在，或经IsAppRunning方法检查发现应用程序正在运行，则直接跳过进入下一个循环
                     {
                         continue;
                     }
@@ -43,8 +76,9 @@ namespace COMIGHT
                     }; 
 
                     Process.Start(startInfo); // 使用指定的启动信息启动进程
-
+                    
                     await Task.Delay(5000, cancellationToken); // 异步等待 5 秒 (5000 毫秒)，并传入取消令牌，允许在等待期间响应取消请求
+ 
                 }
 
                 catch (TaskCanceledException) // 捕获TaskCanceledException异常，该异常在任务被取消时抛出
@@ -67,7 +101,8 @@ namespace COMIGHT
         {
             cancellationTokenSource = new CancellationTokenSource(); // 创建一个取消令牌源，赋值给_cancellationTokenSource字段
             
-            StopApp(); // 调用StopApp方法，先停止应用程序，以便后期再以管理员权限重新启动
+            //StopApp(); // 调用StopApp方法，先停止应用程序，以便后期再以管理员权限重新启动
+            
             Task.Run(() => MonitorApp(cancellationTokenSource.Token)); // 使用Task.Run启动一个新的后台任务，执行MonitorApp方法，并传递取消令牌
         }
 

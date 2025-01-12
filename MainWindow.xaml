@@ -57,7 +57,7 @@
             </Menu>
         </DockPanel>
 
-        <Label x:Name="lblStatus" Height="30" Grid.Row="1" Grid.Column="0" Content ="{Binding Path=StatusText}"/>
+        <Label x:Name="lblStatus" Height="30" Grid.Row="1" Grid.Column="0" Content ="{Binding Path=StatusText, Mode=Default}"/>
         <Label x:Name="lblIntro" Height="30" Grid.Row="2" Grid.Column="0" />
 
     </Grid>

@@ -42,6 +42,8 @@
             <TextBox Name="txtbxConvertedSubUrl" Height="100" Margin="0,5,0,5" IsReadOnly="True" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="TxtbxConvertedSubUrl_MouseDoubleClick" />
         </StackPanel>
 
+        <Label Grid.Row="5" Name="lblStatus" Content="{Binding Path=StatusText, Mode=Default}"/>
+        
         <StackPanel Grid.Row="5" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="btnConvert" Content="Convert" Width="60" Height="30" Click="BtnConvert_Click" />
             <Button Name="btnExit" Content="Exit" Width="60" Height="30" Click="BtnExit_Click" />

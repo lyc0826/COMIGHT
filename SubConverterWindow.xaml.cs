@@ -46,8 +46,10 @@ namespace COMIGHT
 
             string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
             externalAppManager = new ExternalAppManager(appPath); // 创建外部应用程序管理器对象，并赋值给外部应用程序管理器对象变量
+            
+            lblStatus.DataContext = externalAppManager; // 将状态标签控件的数据环境设为外部应用程序管理器对象
 
-            if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127\.0\.0\.1|localhost")) // 如果订阅转换器后端URL包含 "127.0.0.1" 或 "localhost"，则启动订阅转换器程序
+            if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127.0.0.1|localhost")) // 如果订阅转换器后端URL包含 "127.0.0.1" 或 "localhost"，则启动订阅转换器程序
             {
                 externalAppManager.StartMonitoring();
             }

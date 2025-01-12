@@ -18,10 +18,10 @@ namespace COMIGHT
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); // 触发属性变更
         }
 
-        public int ActiveTasksCount // 定义激活任务数量属性
+        private int ActiveTasksCount // 定义激活任务数量属性
         {
             get => activeTasksCount;
-            private set // 当前激活的任务数量发生变化时，更新属性并触发属性变更
+            set // 当前激活的任务数量发生变化时，更新属性并触发属性变更
             {
                 if (activeTasksCount != value)
                 {
@@ -49,7 +49,7 @@ namespace COMIGHT
 
         private void UpdateActiveTasksCount()
         {
-            ActiveTasksCount = lstTasks.Count(t => !t.IsCompleted); // 设置当前激活的任务数量的值，等于任务列表的元素数量
+            ActiveTasksCount = lstTasks.Count(t => !t.IsCompleted); // 设置当前激活任务数量属性的值，等于任务列表的元素数量
         }
 
         public async Task RunTaskAsync(Func<Task> taskFunc) // 定义一个异步方法，接收一个异步任务函数作为参数
