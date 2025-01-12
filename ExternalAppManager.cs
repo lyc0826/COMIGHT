@@ -59,7 +59,7 @@ namespace COMIGHT
                 try
                 {
                     
-                    IsAppRunning = CheckAppState(); // 更新应用程序运行状态属性
+                    IsAppRunning = CheckAppState(); // 更新“应用程序是否运行”属性，等于CheckAppState()方法返回的结果
                     
                     if (!File.Exists(appPath) || CheckAppState()) // 如果应用程序不存在，或经IsAppRunning方法检查发现应用程序正在运行，则直接跳过进入下一个循环
                     {
