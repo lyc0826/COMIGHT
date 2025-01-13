@@ -3,6 +3,7 @@ using iText.Kernel.Pdf;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
+using NPOI.HSSF.Record.CF;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -1572,7 +1573,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = latestRecords.LatestStockDataColumnNamesStr; //读取用户使用记录中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Symbol, Name, Sector, Price, PB, and PE (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Symbol, Name, Sector, Price, PB, PE and Market Capital (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1590,6 +1591,7 @@ namespace COMIGHT
                 string prDataColumnName = lstDataColumnNamesStr[3];
                 string pbDataColumnName = lstDataColumnNamesStr[4];
                 string peDataColumnName = lstDataColumnNamesStr[5];
+                string marketCapDataColumnName = lstDataColumnNamesStr[6];
 
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
@@ -1598,7 +1600,7 @@ namespace COMIGHT
                 }
 
                 List<string> lstDataColumnNames = new List<string>
-                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
+                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName, marketCapDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
 
                 for (int i = dataTable.Columns.Count - 1; i >= 0; i--) // 遍历DataTable的所有数据列
                 {
@@ -1617,7 +1619,7 @@ namespace COMIGHT
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
                     pb = Val((string?)dataRow[pbDataColumnName]).Clamp<double>(2.7183, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
                     pe = Val((string?)dataRow[peDataColumnName]); //将当前数据行的PE数据列数据转换成数值型，赋值给PE变量
-                    double peThreshold = pb / (Math.Log(pb) / 5.3158); //计算PE阈值
+                    double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
                     dataRow["PE_Rel%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算PE相对百分比，保留2位小数，赋值给当前行的“PE相对百分比”数据列
                 }
 
@@ -1640,6 +1642,19 @@ namespace COMIGHT
 
                 targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE_Rel% ASC"; //按行业升序、PE相对百分比升序对数据排序
                 targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
+
+
+                // 分别计算市净率、市盈率以总市值为权重的加权平均数，不含市净率、市盈率为0以下的股票
+                EnumerableRowCollection<DataRow> validRows = dataTable.AsEnumerable().Where(row => Val((string?)row[pbDataColumnName]) > 0 && Val((string?)row[peDataColumnName]) > 0);
+
+                double weight = validRows.Sum(row => Val((string?)row[marketCapDataColumnName]));
+
+                double pbWeightedAverage = validRows.Sum(row => Val((string?)row[pbDataColumnName]) * Val((string?)row[marketCapDataColumnName])) / weight;
+                double peWeightedAverage = validRows.Sum(row => Val((string?)row[peDataColumnName]) * Val((string?)row[marketCapDataColumnName])) / weight;
+
+                double peWeightedAverageThreshold = pbWeightedAverage / (Math.Log(pbWeightedAverage) / 4.3006);
+                double peWeightedAverage_Rel = Math.Round((peWeightedAverage - peWeightedAverageThreshold) / peWeightedAverageThreshold * 100, 2);
+                MessageBox.Show($"市场平均PB: {pbWeightedAverage}\n市场平均PE: {peWeightedAverage}\n市场PE相对百分比：{peWeightedAverage_Rel}%");
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
                 {
