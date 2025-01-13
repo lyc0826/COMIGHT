@@ -12,7 +12,7 @@ namespace COMIGHT
     public partial class SubConverterWindow : Window
     {
 
-        Dictionary<string, string> dicConversionTypes = new Dictionary<string, string>() //定义转换类型字典，键名为类型，键值为代码
+        Dictionary<string, string> dicConversionTypes = new Dictionary<string, string>() //定义转换类型字典，键名为类型，键值为代号
             {
                 { "Clash", "clash" },
                 { "ClashR", "clashr" },
@@ -46,20 +46,15 @@ namespace COMIGHT
 
             string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
             externalAppManager = new ExternalAppManager(appPath); // 创建外部应用程序管理器对象，并赋值给外部应用程序管理器对象变量
+            externalAppManager.StartMonitoring(); // 启动应用程序并监控运行状态
             
             lblStatus.DataContext = externalAppManager; // 将状态标签控件的数据环境设为外部应用程序管理器对象
-
-            if (Regex.IsMatch(txtbxConverterBackEndURL.Text, @"127.0.0.1|localhost")) // 如果订阅转换器后端URL包含 "127.0.0.1" 或 "localhost"，则启动订阅转换器程序
-            {
-                externalAppManager.StartMonitoring();
-            }
-            
         }
 
         //protected override void OnClosed(EventArgs e) // 重写 OnClosed 方法，该方法在窗口关闭时调用
         //{
         //    base.OnClosed(e); // 调用基类的 OnClosed 方法
-        //    _externalAppManager.StopMonitoring(); // 调用 _appMonitor 的 StopMonitoring 方法，停止监控任务
+        //    externalAppManager.StopMonitoring(); // 调用 _appMonitor 的 StopMonitoring 方法，停止监控任务
         //}
 
         private void BtnConvert_Click(object sender, RoutedEventArgs e)
@@ -109,7 +104,7 @@ namespace COMIGHT
 
         private void TxtbxConvertedSubUrl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Clipboard.SetText(txtbxConvertedSubUrl.Text); // 复制链接到剪贴板
+            Clipboard.SetText(txtbxConvertedSubUrl.Text); // 将转换后链接文本框的文字复制到剪贴板
             MessageBox.Show("Converted subscription copied to the clipboard.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
