@@ -1591,7 +1591,7 @@ namespace COMIGHT
                 string prDataColumnName = lstDataColumnNamesStr[3];
                 string pbDataColumnName = lstDataColumnNamesStr[4];
                 string peDataColumnName = lstDataColumnNamesStr[5];
-                string marketCapDataColumnName = lstDataColumnNamesStr[6];
+                string totalSharesDataColumnName = lstDataColumnNamesStr[6];
 
                 DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
                 if (dataTable == null) //如果DataTable变量为null，则抛出异常
@@ -1600,7 +1600,7 @@ namespace COMIGHT
                 }
 
                 List<string> lstDataColumnNames = new List<string>
-                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName, marketCapDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
+                    { codeDataColumnName, nameDataColumnName, sectorDataColumnName, prDataColumnName, pbDataColumnName, peDataColumnName, totalSharesDataColumnName }; //将各指标的数据列名称赋值给数据列名列表
 
                 for (int i = dataTable.Columns.Count - 1; i >= 0; i--) // 遍历DataTable的所有数据列
                 {
@@ -1644,16 +1644,50 @@ namespace COMIGHT
                 targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
 
 
-                // 分别计算市净率、市盈率以总市值为权重的加权平均数，不含市净率、市盈率为0以下的股票
-                EnumerableRowCollection<DataRow> validRows = dataTable.AsEnumerable().Where(row => Val((string?)row[pbDataColumnName]) > 0 && Val((string?)row[peDataColumnName]) > 0);
+                // 分别计算市净率、市盈率以总市值为权重的加权平均数
 
-                double weight = validRows.Sum(row => Val((string?)row[marketCapDataColumnName]));
+                // 定义统计计算方法，计算指定列的平均值和标准差
+                (double, double) CalculateStatistics(DataTable dataTable, string columnName)
+                {
+                    // 获取指定列的数据行，并将它们转换为double类型的列表
+                    List<double> values = dataTable.AsEnumerable()
+                                          .Select(row => Val(row[columnName]))
+                                          .ToList();
 
-                double pbWeightedAverage = validRows.Sum(row => Val((string?)row[pbDataColumnName]) * Val((string?)row[marketCapDataColumnName])) / weight;
-                double peWeightedAverage = validRows.Sum(row => Val((string?)row[peDataColumnName]) * Val((string?)row[marketCapDataColumnName])) / weight;
+                    double mean = values.Average(); // 计算均值
+                    double variance = values.Sum(value => Math.Pow(value - mean, 2)) / (values.Count - 1);  // 计算方差（每个数值与均值之差的平方的平均）
+                   
+                    double standardDeviation = Math.Sqrt(variance); // 计算标准差（方差的平方根）
 
-                double peWeightedAverageThreshold = pbWeightedAverage / (Math.Log(pbWeightedAverage) / 4.3006);
-                double peWeightedAverage_Rel = Math.Round((peWeightedAverage - peWeightedAverageThreshold) / peWeightedAverageThreshold * 100, 2);
+                    return (mean, standardDeviation); // 将均值和标准差赋值给函数返回值元组
+                        
+                }
+
+                // 计算所有股票市净率、市盈率的算数均数和标准差
+                (double pbMean, double pbStd) = CalculateStatistics(dataTable, pbDataColumnName);
+                (double peMean, double peStd) = CalculateStatistics(dataTable, peDataColumnName);
+
+                double stdThreshold = 0.6745; // 设定标准差阈值，利用正态分布筛选有效数据
+
+                EnumerableRowCollection<DataRow> validRows = dataTable.AsEnumerable()
+                    .Where(row =>
+                    {
+                        double pb = Val(row[pbDataColumnName]);
+                        double pe = Val(row[peDataColumnName]);
+                        return pb > 0 && pe > 0 &&
+                            //pb >= pbMean - stdThreshold * pbStd && pb <= pbMean + stdThreshold * pbStd &&
+                            pe >= peMean - stdThreshold * peStd && pe <= peMean + stdThreshold * peStd;
+                    }); // 筛选有效数据行，即指市净率、市盈率都大于0，且市净率与市盈率均值差在正态分布的样本数占比范围内，作为计算市场平均指标的样本股
+
+                double weight = validRows.Sum(row => Val(row[totalSharesDataColumnName])); // 计算市场总股本作为权重
+
+                double pbWeightedAverage = (validRows.Sum(row => Val(row[pbDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight); // 计算市场平均PB
+
+                double peWeightedAverage = validRows.Sum(row => Val(row[peDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight; // 计算市场平均PE
+
+                double peWeightedAverageThreshold = pbWeightedAverage / (Math.Log(pbWeightedAverage) / 4.3006); // 计算市场平均PE阈值
+                double peWeightedAverage_Rel = Math.Round((peWeightedAverage - peWeightedAverageThreshold) / peWeightedAverageThreshold * 100, 2); // 计算市场平均PE相对百分比
+
                 MessageBox.Show($"市场平均PB: {pbWeightedAverage}\n市场平均PE: {peWeightedAverage}\n市场PE相对百分比：{peWeightedAverage_Rel}%");
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
