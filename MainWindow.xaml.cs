@@ -1617,8 +1617,8 @@ namespace COMIGHT
                 foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
                 {
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
-                    pb = Val((string?)dataRow[pbDataColumnName]).Clamp<double>(0, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
-                    pe = Val((string?)dataRow[peDataColumnName]); //将当前数据行的PE数据列数据转换成数值型，赋值给PE变量
+                    pb = Val(dataRow[pbDataColumnName]).Clamp<double>(0, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
+                    pe = Val(dataRow[peDataColumnName]); //将当前数据行的PE数据列数据转换成数值型，赋值给PE变量
                     double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
                     dataRow["Prem%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算溢价百分比，保留2位小数，赋值给当前行的“溢价百分比”数据列
                 }
@@ -1628,7 +1628,7 @@ namespace COMIGHT
                     dataRow =>
                     {
                         double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
-                        pr = Val((string?)dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
+                        pr = Val(dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
                         double peRelativePercentage = Convert.ToDouble(dataRow["Prem%"]);  //将当前数据行的溢价百分比数据列数据赋值给溢价百分比变量
                         //筛选溢价百分比大于-100小于-10，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
                         //当PE超过PE阈值（估值过高）时，溢价百分比会大于0；当PE为负（业绩亏损）时，溢价百分比会小于-100；因此溢价百分比仅在-100~0之间时估值较合理（为留有余量，将溢价百分比限定在-100~-10之间）
