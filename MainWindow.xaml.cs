@@ -819,8 +819,8 @@ namespace COMIGHT
                             else //否则
                             {
                                 double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
-                                double percent = startDataValue != 0 ? Math.Round((difference / startDataValue) * 100, 2) : double.NaN; //获取终点和起始数据的变化率百分比：如果起始数值不为零，得到变化率百分比；否则得到NaN
-                                result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({percent}%)"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+                                double diffRate = startDataValue != 0 ? difference / startDataValue : double.NaN; //获取终点和起始数据的变化率：如果起始数值不为零，得到变化率；否则得到NaN
+                                result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({diffRate.ToString("P2", CultureInfo.InvariantCulture)})"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
                             }
                         }
                         differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
@@ -1617,7 +1617,7 @@ namespace COMIGHT
                 foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
                 {
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
-                    pb = Val((string?)dataRow[pbDataColumnName]).Clamp<double>(2.7183, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
+                    pb = Val((string?)dataRow[pbDataColumnName]).Clamp<double>(0, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
                     pe = Val((string?)dataRow[peDataColumnName]); //将当前数据行的PE数据列数据转换成数值型，赋值给PE变量
                     double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
                     dataRow["PE_Rel%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算PE相对百分比，保留2位小数，赋值给当前行的“PE相对百分比”数据列
@@ -1643,53 +1643,6 @@ namespace COMIGHT
                 targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE_Rel% ASC"; //按行业升序、PE相对百分比升序对数据排序
                 targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
 
-
-                // 分别计算市净率、市盈率以总市值为权重的加权平均数
-
-                // 定义统计计算方法，计算指定列的平均值和标准差
-                (double, double) CalculateStatistics(DataTable dataTable, string columnName)
-                {
-                    // 获取指定列的数据行，并将它们转换为double类型的列表
-                    List<double> values = dataTable.AsEnumerable()
-                                          .Select(row => Val(row[columnName]))
-                                          .ToList();
-
-                    double mean = values.Average(); // 计算均值
-                    double variance = values.Sum(value => Math.Pow(value - mean, 2)) / (values.Count - 1);  // 计算方差（每个数值与均值之差的平方的平均）
-                   
-                    double standardDeviation = Math.Sqrt(variance); // 计算标准差（方差的平方根）
-
-                    return (mean, standardDeviation); // 将均值和标准差赋值给函数返回值元组
-                        
-                }
-
-                // 计算所有股票市净率、市盈率的算数均数和标准差
-                (double pbMean, double pbStd) = CalculateStatistics(dataTable, pbDataColumnName);
-                (double peMean, double peStd) = CalculateStatistics(dataTable, peDataColumnName);
-
-                double stdThreshold = 0.6745; // 设定标准差阈值，利用正态分布筛选有效数据
-
-                EnumerableRowCollection<DataRow> validRows = dataTable.AsEnumerable()
-                    .Where(row =>
-                    {
-                        double pb = Val(row[pbDataColumnName]);
-                        double pe = Val(row[peDataColumnName]);
-                        return pb > 0 && pe > 0 &&
-                            //pb >= pbMean - stdThreshold * pbStd && pb <= pbMean + stdThreshold * pbStd &&
-                            pe >= peMean - stdThreshold * peStd && pe <= peMean + stdThreshold * peStd;
-                    }); // 筛选有效数据行，即指市净率、市盈率都大于0，且市净率与市盈率均值差在正态分布的样本数占比范围内，作为计算市场平均指标的样本股
-
-                double weight = validRows.Sum(row => Val(row[totalSharesDataColumnName])); // 计算市场总股本作为权重
-
-                double pbWeightedAverage = (validRows.Sum(row => Val(row[pbDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight); // 计算市场平均PB
-
-                double peWeightedAverage = validRows.Sum(row => Val(row[peDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight; // 计算市场平均PE
-
-                double peWeightedAverageThreshold = pbWeightedAverage / (Math.Log(pbWeightedAverage) / 4.3006); // 计算市场平均PE阈值
-                double peWeightedAverage_Rel = Math.Round((peWeightedAverage - peWeightedAverageThreshold) / peWeightedAverageThreshold * 100, 2); // 计算市场平均PE相对百分比
-
-                MessageBox.Show($"市场平均PB: {pbWeightedAverage}\n市场平均PE: {peWeightedAverage}\n市场PE相对百分比：{peWeightedAverage_Rel}%");
-
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
                 {
                     while (excelPackage.Workbook.Worksheets.Count > 1) //当Excel工作簿中的工作表大于1张，则继续循环，删除最后一张
@@ -1712,6 +1665,58 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.Save(); //保存目标Excel工作簿文件
                 }
+
+
+                // 分别计算市场平均市净率、市盈率（个股市净率、市盈率以总股本为权重的加权平均数）
+
+                // 定义统计计算方法，计算指定列的平均值和标准差
+                (double, double) CalculateStatistics(DataTable dataTable, string columnName)
+                {
+                    // 获取指定列的数据行，并将它们转换为double类型的列表
+                    List<double> values = dataTable.AsEnumerable()
+                                          .Select(row => Val(row[columnName]))
+                                          .ToList();
+
+                    double mean = values.Average(); // 计算均值
+                    double variance = values.Sum(value => Math.Pow(value - mean, 2)) / (values.Count - 1);  // 计算方差（每个数值与均值之差的平方的平均）
+
+                    double standardDeviation = Math.Sqrt(variance); // 计算标准差（方差的平方根）
+
+                    return (mean, standardDeviation); // 将均值和标准差赋值给函数返回值元组
+
+                }
+
+                // 计算所有股票市净率、市盈率的算数均数和标准差
+                (double pbMean, double pbStd) = CalculateStatistics(dataTable, pbDataColumnName);
+                (double peMean, double peStd) = CalculateStatistics(dataTable, peDataColumnName);
+
+                double stdThreshold = 0.6745; // 设定标准差阈值，以便利用正态分布筛选有效数据
+
+                EnumerableRowCollection<DataRow> validRows = dataTable.AsEnumerable()
+                    .Where(row =>
+                    {
+                        double pb = Val(row[pbDataColumnName]);
+                        double pe = Val(row[peDataColumnName]);
+                        return pb > 0 && pe > 0 &&
+                            pb >= pbMean - stdThreshold * pbStd && pb <= pbMean + stdThreshold * pbStd &&
+                            pe >= peMean - stdThreshold * peStd && pe <= peMean + stdThreshold * peStd;
+                    }); // 筛选有效数据行，即指市净率、市盈率都大于0，且市净率与市盈率均值差在正态分布的样本数占比范围内，作为计算市场平均指标的样本股
+
+                double weight = validRows.Sum(row => Val(row[totalSharesDataColumnName])); // 计算样本股的总股本作为权重
+
+                double pbWeightedAverage = (validRows.Sum(row => Val(row[pbDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight); // 计算市场平均PB
+
+                double peWeightedAverage = validRows.Sum(row => Val(row[peDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight; // 计算市场平均PE
+
+                double peWeightedAverageThreshold = pbWeightedAverage / (Math.Log(pbWeightedAverage) / 4.3006); // 计算市场平均PE阈值
+                double peWeightedAverage_Rel = (peWeightedAverage - peWeightedAverageThreshold) / peWeightedAverageThreshold; // 计算市场平均PE相对比
+
+                MessageBox.Show($"市场平均PB: {pbWeightedAverage.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
+                    $"市场平均PE: {peWeightedAverage.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
+                    $"市场平均PE阈值: {peWeightedAverageThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
+                    $"市场PE相对百分比：{peWeightedAverage_Rel.ToString("P2", CultureInfo.InvariantCulture)}");
+
+
                 MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
