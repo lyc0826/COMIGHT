@@ -1573,7 +1573,7 @@ namespace COMIGHT
                 }
 
                 string latestStockDataColumnNamesStr = latestRecords.LatestStockDataColumnNamesStr; //读取用户使用记录中保存的列名称字符串
-                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Symbol, Name, Sector, Price, PB, PE and Market Capital (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
+                InputDialog inputDialog = new InputDialog(question: "Input the column name of Stock Symbol, Name, Sector, Price, PB, PE and Total Shares (separated by commas)", defaultAnswer: latestStockDataColumnNamesStr); //弹出对话框，输入列名称
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1611,16 +1611,16 @@ namespace COMIGHT
                     }
                 }
 
-                dataTable.Columns.Add("PE_Rel%", typeof(double)); //在DataTable中增加“PE相对百分比”数据列
+                dataTable.Columns.Add("Prem%", typeof(double)); //在DataTable中增加“溢价百分比”数据列
 
-                //计算每个股票的PE相对百分比
+                //计算每个股票的溢价百分比
                 foreach (DataRow dataRow in dataTable.Rows) //遍历DataTable每个数据行
                 {
                     double pb = -1, pe = -1; //PB、PE初始赋值为-1（默认为缺失、无效/或亏损状态）
                     pb = Val((string?)dataRow[pbDataColumnName]).Clamp<double>(0, double.MaxValue); //将当前数据行的PB数据列数据转换成数值型（限定为不小于指定值），赋值给PB变量
                     pe = Val((string?)dataRow[peDataColumnName]); //将当前数据行的PE数据列数据转换成数值型，赋值给PE变量
                     double peThreshold = pb / (Math.Log(pb) / 4.3006); //计算PE阈值
-                    dataRow["PE_Rel%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算PE相对百分比，保留2位小数，赋值给当前行的“PE相对百分比”数据列
+                    dataRow["Prem%"] = Math.Round((pe - peThreshold) / peThreshold * 100, 2);  //计算溢价百分比，保留2位小数，赋值给当前行的“溢价百分比”数据列
                 }
 
                 //筛选低估值股票
@@ -1629,9 +1629,9 @@ namespace COMIGHT
                     {
                         double pr = -1; //现价初始赋值为-1（默认为缺失、无效）
                         pr = Val((string?)dataRow[prDataColumnName]); //将当前数据行的现价数据列数据转换成数值型，赋值给现价变量
-                        double peRelativePercentage = Convert.ToDouble(dataRow["PE_Rel%"]);  //将当前数据行的PE相对百分比数据列数据赋值给PE相对百分比变量
-                        //筛选PE相对百分比大于-100小于-10，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
-                        //当PE超过PE阈值（估值过高）时，PE相对百分比会大于0；当PE为负（业绩亏损）时，PE相对百分比会小于-100；因此PE相对百分比仅在-100~0之间时估值较合理（为留有余量，将PE相对百分比限定在-100~-10之间）
+                        double peRelativePercentage = Convert.ToDouble(dataRow["Prem%"]);  //将当前数据行的溢价百分比数据列数据赋值给溢价百分比变量
+                        //筛选溢价百分比大于-100小于-10，现价大于等于10的记录（此时"dataRow =>"lambda表达式函数返回true）
+                        //当PE超过PE阈值（估值过高）时，溢价百分比会大于0；当PE为负（业绩亏损）时，溢价百分比会小于-100；因此溢价百分比仅在-100~0之间时估值较合理（为留有余量，将溢价百分比限定在-100~-10之间）
                         return (peRelativePercentage > -100 && peRelativePercentage < -10) && pr >= 10;
                     }).CopyToDataTable();  //将筛选出的数据行复制到目标DataTable
 
@@ -1640,7 +1640,7 @@ namespace COMIGHT
                     throw new Exception("No qualified stocks found.");
                 }
 
-                targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "PE_Rel% ASC"; //按行业升序、PE相对百分比升序对数据排序
+                targetDataTable.DefaultView.Sort = sectorDataColumnName + " ASC," + "Prem% ASC"; //按行业升序、溢价百分比升序对数据排序
                 targetDataTable = targetDataTable.DefaultView.ToTable(); //将排序后的目标DataTable重新赋值给自身
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开股票数据Excel工作簿，赋值给Excel包变量
@@ -1702,20 +1702,21 @@ namespace COMIGHT
                             pe >= peMean - stdThreshold * peStd && pe <= peMean + stdThreshold * peStd;
                     }); // 筛选有效数据行，即指市净率、市盈率都大于0，且市净率与市盈率均值差在正态分布的样本数占比范围内，作为计算市场平均指标的样本股
 
-                double weight = validRows.Sum(row => Val(row[totalSharesDataColumnName])); // 计算样本股的总股本作为权重
+                double weight = validRows.Sum(row => Val(row[totalSharesDataColumnName])); // 计算样本股的总股本
 
-                double pbWeightedAverage = (validRows.Sum(row => Val(row[pbDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight); // 计算市场平均PB
+                double marketPB = (validRows.Sum(row => Val(row[pbDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight); // 计算市场平均PB（以个股总股本为权重，进行加权平均）
 
-                double peWeightedAverage = validRows.Sum(row => Val(row[peDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight; // 计算市场平均PE
+                double marketPE = validRows.Sum(row => Val(row[peDataColumnName]) * Val(row[totalSharesDataColumnName])) / weight; // 计算市场平均PE
 
-                double peWeightedAverageThreshold = pbWeightedAverage / (Math.Log(pbWeightedAverage) / 4.3006); // 计算市场平均PE阈值
-                double peWeightedAverage_Rel = (peWeightedAverage - peWeightedAverageThreshold) / peWeightedAverageThreshold; // 计算市场平均PE相对比
+                double marketPEThreshold = marketPB / (Math.Log(marketPB) / 4.3006); // 计算市场平均PE阈值
+                double marketPremiumRate = (marketPE - marketPEThreshold) / marketPEThreshold; // 计算市场溢价率
 
-                MessageBox.Show($"市场平均PB: {pbWeightedAverage.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
-                    $"市场平均PE: {peWeightedAverage.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
-                    $"市场平均PE阈值: {peWeightedAverageThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
-                    $"市场PE相对百分比：{peWeightedAverage_Rel.ToString("P2", CultureInfo.InvariantCulture)}");
-
+                string marketIndicators = $"Market Average PB: {marketPB.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
+                    $"Market Average PE: {marketPE.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
+                    $"Market Average PE Threshold: {marketPEThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
+                    $"Market Premium Rate：{marketPremiumRate.ToString("P2", CultureInfo.InvariantCulture)}"; // 生成市场平均指标字符串
+                
+                MessageBox.Show(marketIndicators, "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
             }
