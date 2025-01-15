@@ -1260,12 +1260,12 @@ namespace COMIGHT
         {
             try
             {
-                
+
                 string initialDirectory = latestRecords.LatestFolderPath; // 读取用户使用记录中保存的文件夹路径
                 // 重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
                 initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
 
-                
+
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog() // 打开文件夹选择对话框
                 {
                     Multiselect = false, // 禁用多选
@@ -1281,7 +1281,7 @@ namespace COMIGHT
                 string folderPath = openFolderDialog.FolderName;  // 将选择的文件夹路径赋值给第一级文件夹路径变量
                 latestRecords.LatestFolderPath = folderPath;  // 将第一级文件夹路径赋值给用户使用记录
                 recordsManager.SaveSettings(latestRecords);  // 保存用户使用记录
-                
+
                 int latestSubpathDepth = latestRecords.LatestSubpathDepth;  // 读取用户使用记录中保存的子路径深度
                 // 弹出功能选择对话框，提示用户输入子路径深度
                 InputDialog inputDialog = new InputDialog(question: "Input the depth(level) of subdirectories", defaultAnswer: latestSubpathDepth.ToString());
@@ -1290,13 +1290,13 @@ namespace COMIGHT
                 {
                     return;
                 }
-                
+
                 int subpathDepth = Convert.ToInt32(inputDialog.Answer); // 获取对话框返回的子路径深度
                 latestRecords.LatestSubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
                 recordsManager.SaveSettings(latestRecords);
-                
+
                 DataTable dataTable = new DataTable(); // 定义DataTable，赋值给DataTable变量
-                
+
                 dataTable.Columns.AddRange(new DataColumn[]
                     {
                         new DataColumn("Index"),
@@ -1306,26 +1306,24 @@ namespace COMIGHT
                         new DataColumn("Type"),
                         new DataColumn("Date", typeof(DateTime))
                     });  // 向DataTable添加列
-                
-                int separatorsCount = folderPath.Count(c => c == Path.DirectorySeparatorChar) + subpathDepth; // 计算指定级数文件夹路径的总分隔符数
-                
+
                 Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其深度
-                
-                stack.Push((folderPath, 0)); // 将初始文件夹路径和深度0压入栈
+
+                stack.Push((folderPath, 0)); // 将初始文件夹路径和子路径深度0压入栈
 
                 while (stack.Count > 0) // 当栈不为空时，继续循环
                 {
-                    
-                    var (currentFolderPath, currentDepth) = stack.Pop(); // 从栈中弹出一个文件夹路径及其深度
-                    
-                    if (currentDepth > subpathDepth) // 如果当前深度超过指定的子路径深度，跳过该文件夹
+
+                    var (currentFolderPath, currentSubpathDepth) = stack.Pop(); // 从栈中弹出一个文件夹路径及其子路径深度
+
+                    if (currentSubpathDepth > subpathDepth) // 如果当前子路径深度超过指定的子路径深度，则直接跳过进入下一个循环
                     {
                         continue;
                     }
-                    
+
                     DirectoryInfo directories = new DirectoryInfo(currentFolderPath); // 获取当前文件夹的信息
                     FileInfo[] files = directories.GetFiles(); // 获取当前文件夹中的所有文件信息
-                    
+
                     foreach (FileInfo file in files) // 遍历每个文件信息
                     {
                         FileAttributes attributes = File.GetAttributes(file.FullName); // 获取文件的属性
@@ -1333,9 +1331,9 @@ namespace COMIGHT
                         if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
                             (attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
                         {
-                            
+
                             DataRow dataRow = dataTable.NewRow(); // 创建一个新的数据行
-                            
+
                             DateTime fileSystemDate = file.CreationTime < file.LastWriteTime ? file.CreationTime.Date : file.LastWriteTime.Date; // 获取文件的系统日期：：如果创建日期小于最后修改时间，则得到创建日期；否则，得到最后修改日期
                             dataRow["Path"] = file.FullName; // 将文件路径赋值给数据行的Path列
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Item列
@@ -1344,18 +1342,18 @@ namespace COMIGHT
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
                         }
                     }
-                    
+
                     DirectoryInfo[] subdirectories = directories.GetDirectories(); // 获取当前文件夹中的所有子文件夹信息
                     foreach (DirectoryInfo subdirectory in subdirectories) // 遍历每个子文件夹信息
                     {
-                        
+
                         FileAttributes attributes = File.GetAttributes(subdirectory.FullName); // 获取子文件夹的属性
                         // 如果当前子文件夹不是隐藏或临时文件夹
                         if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
                             (attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
                         {
                             DataRow dataRow = dataTable.NewRow();
-                            
+
                             DateTime subdirectorySystemDate = subdirectory.CreationTime < subdirectory.LastWriteTime ? subdirectory.CreationTime.Date : subdirectory.LastWriteTime.Date; // 获取子文件夹的系统日期：如果创建日期小于最后修改时间，则得到创建日期；否则，得到最后修改日期
                             dataRow["Path"] = subdirectory.FullName; // 将子文件夹路径赋值给数据行的Path列
                             dataRow["Item"] = subdirectory.Name; // 将子文件夹名赋值给数据行的Item列
@@ -1363,7 +1361,7 @@ namespace COMIGHT
                             dataRow["Date"] = subdirectorySystemDate; // 将子文件夹日期赋值给数据行的Date列  
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
 
-                            stack.Push((subdirectory.FullName, currentDepth + 1)); // 将子文件夹路径及其深度压入栈
+                            stack.Push((subdirectory.FullName, currentSubpathDepth + 1)); // 将当前子文件夹路径及其子路径深度累加1后的数值压入栈
                         }
                     }
                 }
@@ -1413,8 +1411,6 @@ namespace COMIGHT
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
-
 
         //private void MakeFileList()
         //{
