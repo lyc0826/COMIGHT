@@ -858,6 +858,7 @@ namespace COMIGHT
                         // 根据是否为中文文档，设置Word文档正文、小标题、表格等的样式
 
                         // 定义页边距、行距、字体、字号等的值
+
                         double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
                         double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                         double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
@@ -866,33 +867,39 @@ namespace COMIGHT
 
                         string titleFontName = isCnDocument ? appSettings.CnTitleFontName : appSettings.EnTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
                         string bodyFontName = isCnDocument ? appSettings.CnBodyFontName : appSettings.EnBodyFontName; // 正文字体
+                        
                         string cnHeading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
                         string cnHeading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
                         string cnHeading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
                         string cnHeading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
+                        string cnItemNumFontName = cnHeading1FontName; // 中文条款项小标题字体
+                        
                         string enHeading0FontName = appSettings.EnHeading0FontName; // 英文0级小标题
                         string enHeading1FontName = appSettings.EnHeading1FontName;  // 英文1级小标题
                         string enHeading2FontName = appSettings.EnHeading2FontName; // 英文2级小标题
                         string enHeading3_4FontName = appSettings.EnHeading3_4FontName; // 英文3-4小标题
 
-                        string tableTitleFontName = bodyFontName; // 表格标题字体
+                        string tableTitleFontName = isCnDocument ? cnHeading1FontName : enHeading1FontName ; // 表格标题字体
                         string tableBodyFontName = bodyFontName; // 表格正文字体
 
                         string footerFontName = "Times New Roman"; // 页脚字体
 
 
-                        float titleFontSize = (float)(isCnDocument ? appSettings.CnTitleFontSize : appSettings.EnTitleFontSize); // 大标题字号：如果为中文文档，则字号为二号；否则为20
-                        float bodyFontSize = (float)(isCnDocument ? appSettings.CnBodyFontSize : appSettings.EnBodyFontSize); // 正文字号：如果为中文文档，则字号为三号；否则为14
+                        float titleFontSize = (float)(isCnDocument ? appSettings.CnTitleFontSize : appSettings.EnTitleFontSize); // 大标题字号：如果为中文文档，则为相应的中文字号；否则，为英文字号
+                        float bodyFontSize = (float)(isCnDocument ? appSettings.CnBodyFontSize : appSettings.EnBodyFontSize); // 正文字号
+                        
                         float cnHeading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
                         float cnHeading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
                         float cnHeading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
                         float cnHeading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
+                        float cnItemNumFontSize = cnHeading1FontSize; // 中文条款项小标题字号
+
                         float enHeading0FontSize = (float)appSettings.EnHeading0FontSize; // 英文0级小标题
                         float enHeading1FontSize = (float)appSettings.EnHeading1FontSize; // 英文1级小标题
                         float enHeading2FontSize = (float)appSettings.EnHeading2FontSize; // 英文2级小标题
                         float enHeading3_4FontSize = (float)appSettings.EnHeading3_4FontSize; // 英文3-4级小标题
 
-                        float tableTitleFontSize = bodyFontSize; // 表格标题字号
+                        float tableTitleFontSize = isCnDocument ? cnHeading1FontSize : enHeading1FontSize; // 表格标题字号
                         float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
 
                         float footerFontSize = 14; // 页脚字号为四号
@@ -1188,6 +1195,8 @@ namespace COMIGHT
                             {
                                 find.Text = matchCnItemNum.Value;
                                 find.Execute();
+                                font.Name = cnItemNumFontName;
+                                font.Size = cnItemNumFontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
