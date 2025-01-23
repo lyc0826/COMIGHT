@@ -18,9 +18,10 @@ namespace COMIGHT
     public partial class BrowserWindow : Window
     {
 
-        internal class WebsiteData // 定义网址数据类
+        private class WebsiteData // 定义网址数据类
         {
-            public List<string> Urls { get; set; } = new List<string>(); // 定义网址列表属性（Json反序列化时，属性访问权限必须为public才能正常访问）
+            [JsonProperty] // 标记内部属性，使其在反序列化时可被访问
+            internal List<string> Urls { get; set; } = new List<string>(); // 定义网址列表属性（Json反序列化时，属性访问权限必须为public才能正常访问）
         }
 
         public BrowserWindow()
