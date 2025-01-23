@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static COMIGHT.PublicVariables;
 using static COMIGHT.MainWindow;
+using static COMIGHT.PublicVariables;
 
 
 namespace COMIGHT
@@ -130,7 +130,7 @@ namespace COMIGHT
                 }
 
                 // 获取起始网址：如果用户使用记录中的最近打开网址不为null或全空白字符，则得到该网址；否则，如果网址组合框的选项数大于0且0号选项字符串不为null或全空白字符，则获取该0号项目字符串
-                string? startupUrl = !string.IsNullOrWhiteSpace(latestRecords.LatestUrl) ? latestRecords.LatestUrl : ( cmbbxUrl.Items.Count > 0 && !string.IsNullOrWhiteSpace(cmbbxUrl.Items[0].ToString()) ) ? cmbbxUrl.Items[0].ToString() : string.Empty;
+                string? startupUrl = !string.IsNullOrWhiteSpace(latestRecords.LatestUrl) ? latestRecords.LatestUrl : (cmbbxUrl.Items.Count > 0 && !string.IsNullOrWhiteSpace(cmbbxUrl.Items[0].ToString())) ? cmbbxUrl.Items[0].ToString() : string.Empty;
 
                 WebView_OpenNewUrl(startupUrl); //打开起始网址
 
@@ -211,7 +211,7 @@ namespace COMIGHT
                 ";
 
             await webView2.ExecuteScriptAsync(jsScript);
-            
+
             //await webView2.ExecuteScriptAsync(@"
 
             //    document.body.addEventListener('mouseover', 
