@@ -17,6 +17,12 @@ namespace COMIGHT
     /// </summary>
     public partial class BrowserWindow : Window
     {
+
+        internal class WebsiteData // 定义网址数据类
+        {
+            public List<string> Urls { get; set; } = new List<string>(); // 定义网址列表属性（Json反序列化时，属性访问权限必须为public才能正常访问）
+        }
+
         public BrowserWindow()
         {
             InitializeComponent();
@@ -111,16 +117,15 @@ namespace COMIGHT
 
                 string jsonContent = File.ReadAllText(websitesJsonFilePath); // 读取网址Json文件内容
 
-                // 解析网址Json内容，赋值给解析后Json动态对象变量
-                dynamic? parsedJson = JsonConvert.DeserializeObject(jsonContent);
-                dynamic? urls = parsedJson?.urls; // 从解析后Json动态对象获取网址动态对象
+                // 反序列化网址Json内容，赋值给网址数据对象变量
+                WebsiteData? websiteData = JsonConvert.DeserializeObject<WebsiteData>(jsonContent);
 
-                if (urls != null) // 如果网址动态对象不为空
+                if (websiteData?.Urls != null && websiteData.Urls.Count > 0) // 如果网址列表属性不为null也不为空
                 {
                     // 将网址添加到网址组合框中
-                    foreach (Object url in urls) // 遍历网址动态对象
+                    foreach (string url in websiteData.Urls) // 遍历网址列表
                     {
-                        cmbbxUrl.Items.Add(url.ToString()); // 将当前对象转换成字符串，并添加到网址组合框中
+                        cmbbxUrl.Items.Add(url); // 将当前网址添加到网址组合框中
                     }
                 }
 
