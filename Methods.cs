@@ -195,9 +195,9 @@ namespace COMIGHT
                 {
                     ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
 
-                    int mergedCellsCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
+                    int mergedCellCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
                     //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellsCount >= headerRowCells.Count() * 0.75 ? true : false;
+                    bool isRowMerged = mergedCellCount >= headerRowCells.Count() * 0.75 ? true : false;
                     //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
                     ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
 
@@ -402,7 +402,8 @@ namespace COMIGHT
             return columnLetter; //将列符赋值给函数返回值
         }
 
-        public static void GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount)
+
+        public static (int headerRowCount, int footerRowCount) GetHeaderAndFooterRowCount()
         {
             try
             {
@@ -410,9 +411,7 @@ namespace COMIGHT
                 InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
-                    headerRowCount = 0;
-                    footerRowCount = 0;
-                    return;
+                    return (0,0);
                 }
                 string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
                 latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
@@ -420,16 +419,44 @@ namespace COMIGHT
                 //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
                 List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
                 //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
-                headerRowCount = Math.Max(0, lstHeaderFooterRowCount[0]);
-                footerRowCount = Math.Max(0, lstHeaderFooterRowCount[1]);
+                return (Math.Max(0, lstHeaderFooterRowCount[0]), Math.Max(0, lstHeaderFooterRowCount[1]));
             }
 
             catch (Exception ex) // 捕获错误
             {
                 MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-                headerRowCount = 0; footerRowCount = 0; //表头、表尾行数变量赋值为0
+                return (0, 0); //表头、表尾行数变量赋值为0
             }
         }
+
+        //public static void GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount)
+        //{
+        //    try
+        //    {
+        //        string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
+        //        InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
+        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
+        //        {
+        //            headerRowCount = 0;
+        //            footerRowCount = 0;
+        //            return;
+        //        }
+        //        string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
+        //        latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+        //        recordsManager.SaveSettings(latestRecords);
+        //        //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
+        //        List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
+        //        //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
+        //        headerRowCount = Math.Max(0, lstHeaderFooterRowCount[0]);
+        //        footerRowCount = Math.Max(0, lstHeaderFooterRowCount[1]);
+        //    }
+
+        //    catch (Exception ex) // 捕获错误
+        //    {
+        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        headerRowCount = 0; footerRowCount = 0; //表头、表尾行数变量赋值为0
+        //    }
+        //}
 
         public static int GetInstanceCountByHandle<T>() where T : Window //泛型参数T，T必须是Window的实例
         {
@@ -474,8 +501,8 @@ namespace COMIGHT
             {
                 ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
 
-                int usedCellsCount = headerRowCells.Count(cell => !string.IsNullOrWhiteSpace(cell.Text)); // 计算当前表头行单元格中不为null或全空白字符的单元格数量，赋值给已使用单元格数量变量
-                if (usedCellsCount <= 1) //如果已使用单元格数量小于等于1
+                int usedCellCount = headerRowCells.Count(cell => !string.IsNullOrWhiteSpace(cell.Text)); // 计算当前表头行单元格中不为null或全空白字符的单元格数量，赋值给已使用单元格数量变量
+                if (usedCellCount <= 1) //如果已使用单元格数量小于等于1
                 {
                     excelWorksheet.DeleteRow(i); //删除当前行
                     headerRowCount--; //表头行数减1
@@ -1493,9 +1520,9 @@ namespace COMIGHT
             //判断是否为中文文档
             if (inText.Length == 0) return false; // 如果全文长度为0，则将false赋值给函数返回值
 
-            int nonCnCharsCount = Regex.Matches(inText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
+            int nonCnCharCount = Regex.Matches(inText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
             //int nonCnCharsCount = Regex.Matches(inText, @"[a-zA-Z| ]").Count; //获取全文非中文字符数量
-            double nonCnCharsRatio = nonCnCharsCount / inText.Length; // 计算非中文字符占全文的比例
+            double nonCnCharsRatio = nonCnCharCount / inText.Length; // 计算非中文字符占全文的比例
             return nonCnCharsRatio < 0.5 ? true : false; //赋值给函数返回值：如果非中文字符比例小于0.5，得到true；否则，得到false
         }
 

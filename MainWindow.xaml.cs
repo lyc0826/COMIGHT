@@ -341,7 +341,7 @@ namespace COMIGHT
                 {
                     case 1: //记录合并
                     case 7: //调整工作表打印版式
-                        GetHeaderAndFooterRowCount(out headerRowCount, out footerRowCount); //获取表头、表尾行数
+                        (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
                         break;
 
                     case 2:
@@ -660,6 +660,7 @@ namespace COMIGHT
                                     TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
+                                    
                                     if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
@@ -720,7 +721,7 @@ namespace COMIGHT
                     return;
                 }
 
-                GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount); //获取表头、表尾行数
+                (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
 
                 string? columnLetter = GetKeyColumnLetter(); //获取主键列符
                 if (columnLetter == null) //如果主键列符为null，则结束本过程
@@ -1915,7 +1916,7 @@ namespace COMIGHT
                     return;
                 }
 
-                GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount); //获取表头、表尾行数
+                (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; //获取表头、表尾行数
 
                 string? columnLetter = GetKeyColumnLetter(); //获取主键列符
                 if (columnLetter == null) //如果主键列符为null，则结束本过程
