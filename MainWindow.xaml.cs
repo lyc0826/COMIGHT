@@ -703,7 +703,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message} at {currentFilePath}。", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"{ex.Message} at {currentFilePath}.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
