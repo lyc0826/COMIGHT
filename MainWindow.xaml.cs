@@ -134,7 +134,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -175,7 +175,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -215,12 +215,12 @@ namespace COMIGHT
                 }
 
                 await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行FormatWordDocumentsAsync过程
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }
@@ -261,7 +261,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -698,7 +698,7 @@ namespace COMIGHT
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
                 }
                 templateExcelPackage?.Dispose(); //关闭模板Excel工作簿（仅在模板工作簿已打开的情况下）
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
@@ -708,6 +708,7 @@ namespace COMIGHT
 
         }
 
+        
 
         private void CompareExcelWorksheets()
         {
@@ -723,8 +724,8 @@ namespace COMIGHT
 
                 (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
 
-                string? columnLetter = GetKeyColumnLetter(); //获取主键列符
-                if (columnLetter == null) //如果主键列符为null，则结束本过程
+                string? keyColumnLetter = GetKeyColumnLetter(); //获取主键列符
+                if (keyColumnLetter == null) //如果主键列符为null，则结束本过程
                 {
                     return;
                 }
@@ -738,7 +739,7 @@ namespace COMIGHT
                 }
 
                 //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
-                string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(columnLetter) - 1].ColumnName;
+                string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(keyColumnLetter) - 1].ColumnName;
 
                 List<string> lstRecordKeys = new List<string>(); //定义记录主键列表
                 List<string> lstDataColumnNames = new List<string>(); //定义数据列名称列表
@@ -852,14 +853,17 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.SaveAs(targetExcelFile);
                 }
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
+
+        
 
         private static void ConvertDocumentByPandoc(string fromType, string toType, string fromFilePath, string toFilePath)
         {
@@ -890,7 +894,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -933,12 +937,12 @@ namespace COMIGHT
                 ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
                 File.Delete(targetMDFilePath); //删除Markdown文件
 
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }
@@ -1007,12 +1011,12 @@ namespace COMIGHT
                 }
                 await task;
 
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
             finally
@@ -1110,14 +1114,14 @@ namespace COMIGHT
                     string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
                     string targetFilePath = Path.Combine(targetFolderPath, $"Cards_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
-                    MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ShowSuccessMessage();
                 }
 
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -1152,12 +1156,12 @@ namespace COMIGHT
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName(lstParagraphs[0], 40)}.xlsx");
                 ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }
@@ -1217,12 +1221,12 @@ namespace COMIGHT
                         }
                     }
                 }
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }
@@ -1247,12 +1251,12 @@ namespace COMIGHT
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
                 await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
 
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -1404,12 +1408,12 @@ namespace COMIGHT
                     targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
                 }
 
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -1548,12 +1552,12 @@ namespace COMIGHT
         //            targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
         //        }
 
-        //        MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        ShowSuccessMessage();
         //    }
 
         //    catch (Exception ex)
         //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        ShowExceptionMessage(ex);
         //    }
 
         //}
@@ -1709,12 +1713,12 @@ namespace COMIGHT
                     }
                 }
 
-                MessageBox.Show("Operation Completed", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }
@@ -1875,12 +1879,12 @@ namespace COMIGHT
                 
                 MessageBox.Show(marketIndicators, "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }
@@ -2035,12 +2039,12 @@ namespace COMIGHT
                             break;
                     }
                 }
-                MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
         }

@@ -424,7 +424,7 @@ namespace COMIGHT
 
             catch (Exception ex) // 捕获错误
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
                 return (0, 0); //表头、表尾行数变量赋值为0
             }
         }
@@ -453,7 +453,7 @@ namespace COMIGHT
 
         //    catch (Exception ex) // 捕获错误
         //    {
-        //        MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        ShowExceptionMessage(ex);
         //        headerRowCount = 0; footerRowCount = 0; //表头、表尾行数变量赋值为0
         //    }
         //}
@@ -589,7 +589,7 @@ namespace COMIGHT
 
             catch (Exception ex) // 捕获错误
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
                 return null; //函数返回值赋值为null
             }
 
@@ -772,6 +772,16 @@ namespace COMIGHT
         //    return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
         //}
 
+        public static void ShowExceptionMessage(Exception ex)
+        {
+            MessageBox.Show(ex.Message + (ex.InnerException?.Message ?? ""), "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public static void ShowSuccessMessage()
+        {
+            MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         public static void ProcessParagraphsIntoDocumentTable(List<string>? lstParagraphs, string targetExcelFilePath)
         {
             try
@@ -846,7 +856,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -1500,7 +1510,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ShowExceptionMessage(ex);
                 }
 
                 finally
@@ -1919,7 +1929,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 

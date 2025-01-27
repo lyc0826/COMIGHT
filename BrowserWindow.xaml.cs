@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using static COMIGHT.MainWindow;
 using static COMIGHT.PublicVariables;
+using static COMIGHT.Methods;
 
 
 namespace COMIGHT
@@ -141,7 +142,7 @@ namespace COMIGHT
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 

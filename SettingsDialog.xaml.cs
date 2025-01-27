@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Windows;
 using static COMIGHT.MainWindow;
+using static COMIGHT.Methods;
 
 
 namespace COMIGHT
@@ -135,7 +136,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
@@ -156,12 +157,13 @@ namespace COMIGHT
 
                 settingsManager.SaveSettings(appSettings); // 保存设置
 
-                MessageBox.Show("Settings saved successfully.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowSuccessMessage();
 
             }
+
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
 
             this.Close();

@@ -3,6 +3,7 @@ using System.Windows.Input;
 using static COMIGHT.MainWindow;
 using static COMIGHT.ExternalAppManager;
 using System.Text.RegularExpressions;
+using static COMIGHT.Methods;
 
 namespace COMIGHT
 {
@@ -93,7 +94,7 @@ namespace COMIGHT
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowExceptionMessage(ex);
             }
         }
 
