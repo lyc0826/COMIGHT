@@ -865,87 +865,7 @@ namespace COMIGHT
 
         
 
-        private static void ConvertDocumentByPandoc(string fromType, string toType, string fromFilePath, string toFilePath)
-        {
-            try
-            {
-                string? pandocPath = appSettings.PandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
-
-                ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                {
-                    FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
-                                           //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
-                    Arguments = $"-f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
-                    RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
-                    UseShellExecute = false, //设定使用操作系统shell执行程序为false
-                    CreateNoWindow = true, //设定不创建窗口
-                };
-
-                //启动新进程
-                using (Process process = Process.Start(startInfo)!)
-                {
-                    process.WaitForExit(); //等待进程结束
-                    if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
-                    {
-                        throw new Exception("Conversion failed.");
-                    }
-                }
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
-        }
-
-        private void ConvertMarkDownIntoWord()
-        {
-            try
-            {
-                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-
-                string MDText = inputDialog.Answer;
-                //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-                List<string> lstParagraphs = MDText
-                    .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-                {
-                    throw new Exception("No valid text found.");
-                }
-
-                string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-                // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-                string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
-
-                //创建目标文件夹
-                if (!Directory.Exists(targetFolderPath))
-                {
-                    Directory.CreateDirectory(targetFolderPath);
-                }
-                //导入目标Markdown文档
-                string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
-                File.WriteAllText(targetMDFilePath, MDText); //将导出文本框内的markdown文字导入目标Markdown文档
-
-                //将目标Markdown文档转换为目标Word文档
-                string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-
-                ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
-                File.Delete(targetMDFilePath); //删除Markdown文件
-
-                ShowSuccessMessage();
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
-
-        }
+        
 
         public async Task BatchConvertOfficeFilesTypes()
         {
@@ -1025,6 +945,56 @@ namespace COMIGHT
             }
 
         }
+
+        private void ConvertMarkDownIntoWord()
+        {
+            try
+            {
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
+                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                {
+                    return;
+                }
+
+                string MDText = inputDialog.Answer;
+                //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+                List<string> lstParagraphs = MDText
+                    .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
+                {
+                    throw new Exception("No valid text found.");
+                }
+
+                string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
+                // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
+                string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
+
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath);
+                }
+                //导入目标Markdown文档
+                string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
+                File.WriteAllText(targetMDFilePath, MDText); //将导出文本框内的markdown文字导入目标Markdown文档
+
+                //将目标Markdown文档转换为目标Word文档
+                string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
+
+                ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
+                File.Delete(targetMDFilePath); //删除Markdown文件
+
+                ShowSuccessMessage();
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
+
+        }
+
 
         public void CreateNameCards()
         {
