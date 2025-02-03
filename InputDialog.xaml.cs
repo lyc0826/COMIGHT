@@ -1,6 +1,7 @@
 ﻿
 using System.Windows;
 using System.Windows.Input;
+using static COMIGHT.Methods;
 
 
 namespace COMIGHT
@@ -53,7 +54,7 @@ namespace COMIGHT
         private void txtbxAnswer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
-            if (MessageBox.Show("Do you want to clear the content?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (ShowMessage("Do you want to clear the content?"))
             {
                 txtbxAnswer.Text = "";
             }

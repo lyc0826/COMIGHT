@@ -419,7 +419,7 @@ namespace COMIGHT
                 recordsManager.SaveSettings(latestRecords);
                 //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
                 List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
-                //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
+                //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后赋值给函数返回值
                 return (Math.Max(0, lstHeaderFooterRowCount[0]), Math.Max(0, lstHeaderFooterRowCount[1]));
             }
 
@@ -429,35 +429,6 @@ namespace COMIGHT
                 return (0, 0); //表头、表尾行数变量赋值为0
             }
         }
-
-        //public static void GetHeaderAndFooterRowCount(out int headerRowCount, out int footerRowCount)
-        //{
-        //    try
-        //    {
-        //        string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
-        //        InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
-        //        {
-        //            headerRowCount = 0;
-        //            footerRowCount = 0;
-        //            return;
-        //        }
-        //        string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-        //        latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
-        //        recordsManager.SaveSettings(latestRecords);
-        //        //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
-        //        List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
-        //        //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后分别赋值给表头、表尾行数变量（引用型）
-        //        headerRowCount = Math.Max(0, lstHeaderFooterRowCount[0]);
-        //        footerRowCount = Math.Max(0, lstHeaderFooterRowCount[1]);
-        //    }
-
-        //    catch (Exception ex) // 捕获错误
-        //    {
-        //        ShowExceptionMessage(ex);
-        //        headerRowCount = 0; footerRowCount = 0; //表头、表尾行数变量赋值为0
-        //    }
-        //}
 
         public static int GetInstanceCountByHandle<T>() where T : Window //泛型参数T，T必须是Window的实例
         {
@@ -779,10 +750,11 @@ namespace COMIGHT
             messageDialog.ShowDialog();
         }
 
-        public static void ShowMessage(string message)
+
+        public static bool ShowMessage(string message)
         {
             MessageDialog messageDialog = new MessageDialog(message);
-            messageDialog.ShowDialog();
+            return messageDialog.ShowDialog() ?? false; // 将对话框返回值（点击OK为true，点击Cancel为false)赋值给函数返回值（如果对话框返回null，则为false)
         }
 
         public static void ShowSuccessMessage()
@@ -1963,7 +1935,7 @@ namespace COMIGHT
                 }
 
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
-                if (MessageBox.Show("Do you want to format the document?", "Inquiry", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (ShowMessage("Do you want to format the document?"))
                 {
                     await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(new List<string> { targetWordFilePath }));
                 }

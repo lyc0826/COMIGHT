@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using static COMIGHT.Methods;
 
 
 namespace COMIGHT
@@ -89,7 +90,7 @@ namespace COMIGHT
                 catch (Exception ex) // 捕获其他类型的异常
                 {
                     Application.Current.Dispatcher.Invoke(() =>
-                        MessageBox.Show($"Monitoring application failed: {ex.Message}") // 在UI线程上显示消息框，提示监控进程失败，并显示异常信息
+                        ShowMessage($"Monitoring application failed: {ex.Message}") // 在UI线程上显示消息框，提示监控进程失败，并显示异常信息
                     );
                     await Task.Delay(10000, cancellationToken); // 暂停10秒，并传入取消令牌，允许在等待期间响应取消请求
                     break; // 退出循环
@@ -131,7 +132,7 @@ namespace COMIGHT
             catch (Exception ex)
             {
                 Application.Current.Dispatcher.Invoke(() =>
-                    MessageBox.Show($"Stopping application failed: {ex.Message}")
+                    ShowMessage($"Stopping application failed: {ex.Message}")
                 );
             }
         }

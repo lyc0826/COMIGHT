@@ -94,8 +94,8 @@ namespace COMIGHT
 
         private async Task CleanCache()
         {
-            MessageBoxResult result = MessageBox.Show("Are you sure to clear all the browsing history and cookies?", "Inquiry", MessageBoxButton.YesNo); //弹出对话框，询问是否确定清理
-            if (result == MessageBoxResult.Yes) //如果对话框返回Yes（选择了“是”）
+            bool result = ShowMessage("Are you sure to clear all the browsing history and cookies?"); //弹出对话框，询问是否确定清理
+            if (result == true) //如果对话框返回Yes（选择了“是”）
             {
                 //清理的数据类型赋值为所有网站和所有Cookies
                 CoreWebView2BrowsingDataKinds dataKinds = CoreWebView2BrowsingDataKinds.AllSite | CoreWebView2BrowsingDataKinds.Cookies;
@@ -105,6 +105,8 @@ namespace COMIGHT
                 DateTime endTime = DateTime.UtcNow;
                 await webView2.CoreWebView2.Profile.ClearBrowsingDataAsync(dataKinds, startTime, endTime); //清理数据
             }
+            
+            ShowSuccessMessage();
         }
 
         private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e) //WebView初始化完成后，执行此过程

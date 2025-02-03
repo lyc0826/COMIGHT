@@ -106,7 +106,7 @@ namespace COMIGHT
         private void TxtbxConvertedSubUrl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText(txtbxConvertedSubUrl.Text); // 将转换后链接文本框的文字复制到剪贴板
-            MessageBox.Show("Converted subscription copied to the clipboard.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            ShowMessage("Converted subscription copied to the clipboard.");
         }
 
     }
