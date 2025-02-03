@@ -1227,15 +1227,14 @@ namespace COMIGHT
             {
 
                 string initialDirectory = latestRecords.LatestFolderPath; // 读取用户使用记录中保存的文件夹路径
-                // 重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
+                // 重新赋值给第一级文件夹路径变量：如果文件夹路径存在，则得到该文件夹路径原值；否则得到C盘根目录
                 initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
-
 
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog() // 打开文件夹选择对话框
                 {
                     Multiselect = false, // 禁用多选
                     Title = "Select the Directory", // 设置对话框标题
-                    RootDirectory = initialDirectory // 根文件夹路径设为初始文件夹路径
+                    RootDirectory = initialDirectory // 根文件夹路径设为第一级文件夹路径
                 };
 
                 if (openFolderDialog.ShowDialog() == false) // 如果对话框返回值为false（点击Cancel），则结束本过程
@@ -1274,12 +1273,12 @@ namespace COMIGHT
 
                 Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其深度
 
-                stack.Push((folderPath, 0)); // 将初始文件夹路径和子路径深度0压入栈
+                stack.Push((folderPath, 0)); // 将第一级文件夹路径和子路径深度0压入栈
 
                 while (stack.Count > 0) // 当栈不为空时，继续循环
                 {
 
-                    var (currentFolderPath, currentSubpathDepth) = stack.Pop(); // 从栈中弹出一个文件夹路径及其子路径深度
+                    var (currentFolderPath, currentSubpathDepth) = stack.Pop(); // 从栈中弹出一个文件夹路径及其相对于第一级文件夹路径的子路径深度
 
                     if (currentSubpathDepth > subpathDepth) // 如果当前子路径深度超过指定的子路径深度，则直接跳过进入下一个循环
                     {
@@ -1326,7 +1325,7 @@ namespace COMIGHT
                             dataRow["Date"] = subdirectorySystemDate; // 将子文件夹日期赋值给数据行的Date列  
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
 
-                            stack.Push((subdirectory.FullName, currentSubpathDepth + 1)); // 将当前子文件夹路径及其子路径深度累加1后的数值压入栈
+                            stack.Push((subdirectory.FullName, currentSubpathDepth + 1)); // 将当前子文件夹路径及其相对于第一级路径的子路径深度累加1后的数值压入栈
                         }
                     }
                 }
@@ -1338,12 +1337,13 @@ namespace COMIGHT
 
                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
                 {
-                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //新建“文件列表”Excel工作表，赋值给目标工作表变量
+                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //新建“文件列表”Excel工作表，赋值给目标Excel工作表变量
                     targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true); //将DataTable数据导入目标工作表（true代表将表头赋给第一行）
                     int endRowIndex = targetExcelWorksheet.Dimension.End.Row; //获取目标Excel工作表最末行的行索引号
                     int dateColumnIndex = dataTable.Columns["Date"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
-                                                                                  //将Excel工作表最末列（时间列）的数据格式设为“年-月-日”
+                    //将目标Excel工作表时间列从第2行到最末行所有单元格的数据格式设为“年-月-日”
                     targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
+                    //targetExcelWorksheet.Column(dateColumnIndex).Style.Numberformat.Format = "yyyy-m-d";
 
                     for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
                     {
@@ -1376,152 +1376,6 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
-
-        //private void MakeFileList()
-        //{
-        //    try
-        //    {
-        //        string initialDirectory = latestRecords.LatestFolderPath; //读取用户使用记录中保存的文件夹路径
-        //        //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
-        //        initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
-        //        OpenFolderDialog openFolderDialog = new OpenFolderDialog() //定义文件夹选择对话框
-        //        {
-        //            Multiselect = false,
-        //            Title = "Select the Directory",
-        //            RootDirectory = initialDirectory //根文件夹路径设为设置中保存的文件夹路径
-        //        };
-        //        if (openFolderDialog.ShowDialog() == false) //如果对话框返回值为false（点击Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        string folderPath = openFolderDialog.FolderName; //将选择的文件夹路径赋值给第一级文件夹路径变量
-        //        latestRecords.LatestFolderPath = folderPath; //将第一级文件夹路径赋值给用户使用记录
-        //        recordsManager.SaveSettings(latestRecords); //保存用户使用记录
-
-
-        //        int latestSubpathDepth = latestRecords.LatestSubpathDepth; //读取用户使用记录中保存的子路径深度
-        //        InputDialog inputDialog = new InputDialog(question: "Input the depth(level) of subdirectories", defaultAnswer: latestSubpathDepth.ToString()); //弹出功能选择对话框
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        int subpathDepth = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的子路径深度
-        //        latestRecords.LatestSubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
-        //        recordsManager.SaveSettings(latestRecords);
-
-
-        //        DataTable dataTable = new DataTable(); //定义DataTable，赋值给DataTable变量
-
-        //        dataTable.Columns.AddRange(new DataColumn[]
-        //            {new DataColumn("Index"), new DataColumn("Path"), new DataColumn("Subpath"),
-        //            new DataColumn("Item"), new DataColumn("Type"), new DataColumn("Date", typeof(DateTime)) }); //向DataTable添加列
-
-        //        //计算指定级数文件夹路径的总分隔符数：将第一级文件夹路径中的路径分隔符计数加上子路径的路径分隔符计数（总分隔符计数等于文件夹路径的级数）
-        //        //（逐一比较每个字符是否为路径分隔符，如果是则"c=>"Lambda表达式返回true，用Count方法计数true的数量，即得到当前字符串中一共包含多少个路径分隔符）
-        //        int separatorsCount = folderPath.Count(c => c == Path.DirectorySeparatorChar) + subpathDepth;
-
-        //        GetFolderFiles(folderPath, separatorsCount, dataTable); //获取文件夹内的文件和下级文件夹信息，并存入DataTable
-
-        //        void GetFolderFiles(string folderPath, int separatorsCount, DataTable dataTable) // 定义方法，获取文件夹内的文件和下级文件夹信息
-        //        {
-        //            //如果输入文件夹路径所包含的路径分隔符数大于指定总路径分隔符数（文件夹路径级数大于指定级数），则结束本过程
-        //            if (folderPath.Count(c => c == Path.DirectorySeparatorChar) > separatorsCount)
-        //            {
-        //                return;
-        //            }
-
-        //            DirectoryInfo directories = new DirectoryInfo(folderPath); //将第一级文件夹路径内的目录信息赋值给目录信息变量
-
-        //            FileInfo[] files = directories.GetFiles(); //将第一级文件夹路径的目录信息中的所有文件信息赋值给文件信息集合变量
-        //            foreach (FileInfo file in files) //遍历文件信息集合中的所有文件
-        //            {
-        //                FileAttributes attributes = File.GetAttributes(file.FullName); //获取当前文件的属性
-        //                if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
-        //                    (attributes & FileAttributes.Temporary) != FileAttributes.Temporary) //如果当前文件的属性不为隐藏也不为临时
-        //                {
-        //                    DataRow dataRow = dataTable.NewRow(); //定义DataTable新数据行
-
-        //                    //获取当前文件系统日期：如果文件创建时间小于最后修改时间，则得到创建日期；否则得到最后修改日期
-        //                    DateTime fileSystemDate = file.CreationTime < file.LastWriteTime ? file.CreationTime.Date : file.LastWriteTime.Date;
-
-        //                    dataRow["Path"] = file.FullName; //将当前文件路径全名赋值给DataTable的新数据行的"路径"列
-        //                    dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); ; //将当前文件主名赋值给DataTable的新数据行的"名称"列
-        //                    dataRow["Type"] = file.Extension; //将当前文件扩展名赋值给DataTable的新数据行的"类型"列
-        //                    dataRow["Date"] = fileSystemDate; //将当前文件系统日期赋值给DataTable的新数据行的"日期"列
-        //                    dataTable.Rows.Add(dataRow); //向DataTable中添加新数据行
-        //                }
-        //            }
-
-        //            DirectoryInfo[] subdirectories = directories.GetDirectories(); //将第一级文件夹路径的目录信息中的所有子文件夹信息赋值给子文件夹信息集合变量
-        //            foreach (DirectoryInfo subdirectory in subdirectories) //遍历子文件夹信息集合中所有的子路径
-        //            {
-        //                FileAttributes attributes = File.GetAttributes(subdirectory.FullName); //获取当前子文件夹的属性
-        //                if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
-        //                    (attributes & FileAttributes.Temporary) != FileAttributes.Temporary) //如果当前子文件夹的属性不为隐藏也不为临时
-        //                {
-        //                    DataRow dataRow = dataTable.NewRow();
-
-        //                    //获取当前子文件夹系统日期：如果子文件夹创建时间小于最后修改时间，则得到创建日期；否则得到最后修改日期
-        //                    DateTime subdirectorySystemDate = subdirectory.CreationTime < subdirectory.LastWriteTime ? subdirectory.CreationTime.Date : subdirectory.LastWriteTime.Date;
-
-        //                    dataRow["Path"] = subdirectory.FullName; //将当前子文件夹路径赋值给DataTable的新数据行的"路径"列
-        //                    dataRow["Item"] = subdirectory.Name; //将当前子文件夹名赋值给DataTable的新数据行的"名称"列
-        //                    dataRow["Type"] = "Directory"; //将"文件夹"字符串赋值给DataTable的新数据行的"类型"列
-        //                    dataRow["Date"] = subdirectorySystemDate; //将当前子文件夹系统日期赋值给DataTable的新数据行的"日期"列
-        //                    dataTable.Rows.Add(dataRow);
-
-        //                    GetFolderFiles(subdirectory.FullName, separatorsCount, dataTable); //递归调用自身过程，将当前子路径作为参数传入
-        //                }
-        //            }
-        //        }
-
-        //        if (dataTable.Rows.Count * dataTable.Columns.Count == 0) //如果DataTable的行数或列数有一个为0，则抛出异常
-        //        {
-        //            throw new Exception("No valid files or directories found.");
-        //        }
-
-        //        using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
-        //        {
-        //            ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //新建“文件列表”Excel工作表，赋值给目标工作表变量
-        //            targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true); //将DataTable数据导入目标工作表（true代表将表头赋给第一行）
-        //            int endRowIndex = targetExcelWorksheet.Dimension.End.Row; //获取目标Excel工作表最末行的行索引号
-        //            int dateColumnIndex = dataTable.Columns["Date"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
-        //            //将Excel工作表最末列（时间列）的数据格式设为“年-月-日”
-        //            targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
-
-        //            for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
-        //            {
-        //                targetExcelWorksheet.Cells[i, 1].Formula = "= ROW() - 1"; //将当前行的序号（第1）列单元格的公式设置为行索引号减1
-
-        //                ExcelRange pathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行路径（第2）列单元格赋值给路径单元格变量
-        //                pathCell.Hyperlink = new Uri($"file:///{pathCell.Text}"); //将当前行路径单元格的超链接设定为单元格内的路径（使用file://协议）
-        //                pathCell.Style.Font.UnderLine = true; //将当前行路径单元格文字加下划线
-        //                pathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行路径单元格文字颜色设为蓝色
-
-        //                //将当前行路径单元格中第一级文件夹路径替换为空，去除首尾路径分隔符，剩下的部分以路径分隔符为分隔拆分成数组，转换成列表，赋值给子路径列表
-        //                List<string> lstSubPath = pathCell.Text.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).ToList();
-        //                lstSubPath.RemoveAt(lstSubPath.Count - 1); //删去子路径列表中最末一个元素（最末级文件夹名或文件名）
-        //                targetExcelWorksheet.Cells[i, 3].Value = string.Join(Path.DirectorySeparatorChar, lstSubPath); //将子路径列表所有元素以路径分隔符为分隔合并成字符串，赋值给当前行的子路径（第3）列单元格
-
-        //            }
-
-        //            FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
-
-        //            string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-        //            FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"List_{CleanFileAndFolderName(folderPath, 40)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-        //            targetExcelPackage.SaveAs(targetExcelFile); //保存目标Excel工作簿文件
-        //        }
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-
-        //}
-
 
         private void MergeDocumentsAndTables()
         {
@@ -1780,8 +1634,9 @@ namespace COMIGHT
                         cell.Value = double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double cellNumVal) ? cellNumVal : cell.Value;
                     }
 
-                    //将目标Excel工作表第2行至最末行所有列单元格的数值格式设为保留两位小数
+                    //将目标Excel工作表从第2行至最末行所有列单元格的数值格式设为保留两位小数
                     targetWorksheet.Cells[2, 1, targetWorksheet.Dimension.End.Row, targetWorksheet.Dimension.End.Column].Style.Numberformat.Format = "0.00";
+                    //targetWorksheet.Cells[targetWorksheet.Dimension.Address].Style.Numberformat.Format = "0.00";
 
                     FormatExcelWorksheet(targetWorksheet, 1, 0); //设置目标Excel工作表格式
                     excelPackage.Save(); //保存目标Excel工作簿文件
@@ -1831,11 +1686,12 @@ namespace COMIGHT
 
                 double marketPEThreshold = marketPB / (Math.Log(marketPB) / 4.3006); // 计算市场平均PE阈值
                 double marketPremiumRate = (marketPE - marketPEThreshold) / marketPEThreshold; // 计算市场溢价率
-
+                
+                // 生成市场平均指标字符串
                 string marketIndicators = $"Market Average PB: {marketPB.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
                     $"Market Average PE: {marketPE.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
                     $"Market Average PE Threshold: {marketPEThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
-                    $"Market Premium Rate：{marketPremiumRate.ToString("P2", CultureInfo.InvariantCulture)}"; // 生成市场平均指标字符串
+                    $"Market Premium Rate: {marketPremiumRate.ToString("P2", CultureInfo.InvariantCulture)}"; 
                 
                 ShowMessage(marketIndicators);
 
