@@ -1012,21 +1012,6 @@ namespace COMIGHT
                     return;
                 }
 
-                //获取已安装的字体名称：读取系统中已安装的字体，赋值给字体名称列表变量
-                InstalledFontCollection installedFontCollention = new InstalledFontCollection();
-                List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
-
-                string latestFontName = latestRecords.LatestNameCardFontName; //读取用户使用记录中保存的字体名称
-                InputDialog inputDialog = new InputDialog(question: "Select the font", options: lstFontNames, defaultAnswer: latestFontName); //弹出对话框，输入字体名称
-
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-                string fontName = inputDialog.Answer;
-                latestRecords.LatestNameCardFontName = fontName; // 将对话框返回的字体名称赋值给用户使用记录
-                recordsManager.SaveSettings(latestRecords); //保存用户使用记录
-
                 using (ExcelPackage sourceExcelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) //打开源数据Excel工作簿，赋值给源数据Excel包变量（源数据Excel工作簿）
                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量（目标Excel工作簿）
                 {
@@ -1060,8 +1045,7 @@ namespace COMIGHT
                         cellB.Style.TextRotation = 90; //设定单元格B文字角度：从X轴开始逆时针旋转，旋转角度为正值，设定值等于旋转角度（最多不超过90°）
 
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
-                        cellABStyle.Font.Name = fontName; //设置字体
-
+                        cellABStyle.Font.Name = appSettings.NameCardFontName; // 获取应用程序设置中的字体名称，设置单元格A、B字体
                         int charLimit = IsChineseText(name) ? 8 : 16; // 计算字符上限：如果是中文名称，则得到8；否则得到16
                         cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 90)
                             * (1 - (name.Length - charLimit) * 0.04).Clamp(0.5, 1)); //设置字体大小：如果单元格文字不含换行符，为160；否则为90。再乘以一个缩小字体的因子

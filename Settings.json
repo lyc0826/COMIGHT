@@ -28,5 +28,8 @@
   "EnHeading2FontSize": 14,
   "EnHeading3_4FontName": "Times New Roman",
   "EnHeading3_4FontSize": 14,
-  "EnLineSpace": 24
+  "EnLineSpace": 24,
+  "WorksheetFontName": "Microsoft YaHei UI",
+  "WorksheetFontSize": 11,
+  "NameCardFontName": "宋体"
 }

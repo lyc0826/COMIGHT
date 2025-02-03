@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Security.RightsManagement;
 using System.Text.RegularExpressions;
 
 namespace COMIGHT
@@ -50,7 +51,9 @@ namespace COMIGHT
             public string EnHeading3_4FontName { get; set; } = string.Empty;
             public double EnHeading3_4FontSize { get; set; }
             public double EnLineSpace { get; set; }
-
+            public string WorksheetFontName { get; set; } = string.Empty;
+            public double WorksheetFontSize { get; set; }
+            public string NameCardFontName { get; set; } = string.Empty;
         }
 
         //定义用户使用记录类

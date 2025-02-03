@@ -163,6 +163,9 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the seat plates must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell.
 
+#### **Show Network Settings**
+- Shows the network settings of the current computer (e.g. IP address, Subnet Mask, Gateway, DHCP Server, DNS server, etc.)
+
 ### Web
 
 #### **Browser**
@@ -175,4 +178,4 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Converts proxy-tunnel client subscriptions between different formats, including: Clash, Loon, SS, SSR, Surfboard, Surge, Trojan, and V2Ray.
 
-  - **It's recommended to use a local SubConverter back-end application (https://github.com/tindy2013/subconverter). Once the path of the SubConverter executable file is set correctly in the Settings, the SubConverter will automatically start up and keep running. **
+  - **It's recommended to use a local SubConverter back-end application (https://github.com/tindy2013/subconverter) for the sake of security. Once the path of the SubConverter executable file is set correctly in the Settings, the SubConverter will automatically start up and keep running. **

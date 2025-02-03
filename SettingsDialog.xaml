@@ -42,8 +42,21 @@
                 </DataGrid>
             </TabItem>
 
+            <TabItem Header="Misc.">
+                <DataGrid x:Name="dtgrdMiscSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
         </TabControl>
-        
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
+            <Button x:Name="btnShowFonts" Content="Show Installed Fonts" Width="150" Height="30" Click="btnShowFonts_Click"  />
+        </StackPanel>
+
         <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogSave" Content="Save" Width="50" Height="30" Click="btnDialogSave_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30"  />

@@ -180,8 +180,8 @@ namespace COMIGHT
                 ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
 
                 // 设置表头区域字体、对齐
-                headerRange.Style.Font.Name = "Microsoft YaHei UI";
-                headerRange.Style.Font.Size = 12;
+                headerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
+                headerRange.Style.Font.Size = (float)appSettings.WorksheetFontSize; // 获取应用程序设置中的字体大小
                 headerRange.Style.Font.Bold = true; //表头区域字体加粗
                 headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                 headerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
@@ -219,8 +219,8 @@ namespace COMIGHT
             ExcelRange recordRange = excelWorksheet.Cells[headerRowCount + 1, 1, excelWorksheet.Dimension.End.Row - footerRowCount, excelWorksheet.Dimension.End.Column];
 
             // 设置记录区域字体、对齐
-            recordRange.Style.Font.Name = "Microsoft YaHei UI";
-            recordRange.Style.Font.Size = 11;
+            recordRange.Style.Font.Name = appSettings.WorksheetFontName;
+            recordRange.Style.Font.Size = (float)appSettings.WorksheetFontSize;
             recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
             recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
             recordRange.Style.WrapText = true; //设置文字自动换行
@@ -780,28 +780,22 @@ namespace COMIGHT
 
                     bool isChineseDocument = IsChineseText(lstParagraphs?[0] ?? ""); // 根据段落数组0号（第1个）元素即大标题判断是否为中文文档，并赋值给“是否为中文文档”变量
 
-                    // 定义大标题工作表表头列表：如果输入文字是中文，则表头为“项目、编号、文字”；否则为“Item、Index、Content”
-                    List<object[]> lstTitleWorksheetHeader = new List<object[]> { isChineseDocument ? new object[] { "项目", "编号", "内容" } : new object[] { "Item", "Index", "Content" } };
+                    // 定义大标题工作表表头列表
+                    List<object[]> lstTitleWorksheetHeader = new List<object[]> { new object[] { "Item", "Index", "Text" } };
                     titleWorksheet.Cells["A1:C1"].LoadFromArrays(lstTitleWorksheetHeader); // 将表头列表加载到大标题工作表
 
-                    // 定义大标题工作表项目列表：如果输入文字是中文，则项目为“大标题、落款、日期”；否则为“Title、Signature、Date”
-                    List<object[]> lstTitleWorksheetItems = isChineseDocument ?
-                        new List<object[]>
-                            {
-                                new object[] { "大标题" },
-                                new object[] { "签名" },
-                                new object[] { "日期" }
-                            } :
+                    // 定义大标题工作表项目列表
+                    List<object[]> lstTitleWorksheetItems = 
                         new List<object[]>
                             {
                                 new object[] { "Title" },
                                 new object[] { "Signature" },
                                 new object[] { "Date" }
                             };
-                    titleWorksheet.Cells["A2:A4"].LoadFromArrays(lstTitleWorksheetItems);
+                    titleWorksheet.Cells["A2:A4"].LoadFromArrays(lstTitleWorksheetItems); // 将项目列表加载到大标题工作表
 
-                    // 定义主体工作表表头列表：如果输入文字是中文，则表头为“小标题级别、小标题编号、文字、完成时限、责任部门（人）、分类”；否则为“Heading Level、Heading Index、Content、Deadline、Responsible Subject、Category”
-                    List<object[]> lstBodyWorksheetHeading = new List<object[]> { isChineseDocument ? new object[] { "小标题级别", "小标题编号", "文字", "完成时限", "责任部门（人）", "分类" } : new object[] { "Heading Level", "Heading Index", "Content", "Deadline", "Responsible Subject", "Category" } };
+                    // 定义主体工作表表头列表“Heading Level、Heading Index、Content、Deadline、Responsible Subject、Category”
+                    List<object[]> lstBodyWorksheetHeading = new List<object[]> { new object[] { "Heading Level", "Heading Index", "Content", "Remark 1", "Remark 2", "Remark 3" } };
                     bodyTextsWorksheet.Cells["A1:F1"].LoadFromArrays(lstBodyWorksheetHeading);
 
                     // 将段落数组内容从1号（第2个）元素即正文第一段开始，赋值给“主体”工作表内容列的单元格
