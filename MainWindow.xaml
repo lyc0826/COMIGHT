@@ -48,6 +48,7 @@
                     <MenuItem x:Name="mnuMakeFileList" Header= "Make File List" Click="MnuMakeFileList_Click" />
                     <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
+                    <MenuItem x:Name="mnuShowNetworkSettings" Header= "Show Network Settings" Click="mnuShowNetworkSettings_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Web">

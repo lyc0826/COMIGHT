@@ -11,7 +11,7 @@ namespace COMIGHT
     public partial class InputDialog : Window
     {
 
-        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptReturn = false )
+        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptsReturn = false )
         {
             InitializeComponent();
 
@@ -33,7 +33,7 @@ namespace COMIGHT
 
                 txtbxAnswer.Text = defaultAnswer; //将默认答案值赋值给答案文本框
                 txtbxAnswer.Height = textboxHeight; //将答案文本框的高度设为输入参数的高度，默认为30
-                txtbxAnswer.AcceptsReturn = acceptReturn; //将答案文本框是否接受回车键设为输入参数的值，默认为false
+                txtbxAnswer.AcceptsReturn = acceptsReturn; //将答案文本框是否接受回车键设为输入参数的值，默认为false
             }
             
         }

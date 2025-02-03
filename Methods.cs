@@ -775,12 +775,20 @@ namespace COMIGHT
 
         public static void ShowExceptionMessage(Exception ex)
         {
-            MessageBox.Show(ex.Message + (ex.InnerException?.Message ?? ""), "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageDialog messageDialog = new MessageDialog(ex.Message + (ex.InnerException?.Message ?? ""));
+            messageDialog.ShowDialog();
+        }
+
+        public static void ShowMessage(string message)
+        {
+            MessageDialog messageDialog = new MessageDialog(message);
+            messageDialog.ShowDialog();
         }
 
         public static void ShowSuccessMessage()
         {
-            MessageBox.Show("Operation completed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageDialog messageDialog = new MessageDialog("Operation completed.");
+            messageDialog.ShowDialog();
         }
 
         public static void ProcessParagraphsIntoDocumentTable(List<string>? lstParagraphs, string targetExcelFilePath)

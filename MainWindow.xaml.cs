@@ -27,6 +27,7 @@ using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Paragraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
+//using System.Management.Automation;
 
 
 namespace COMIGHT
@@ -190,6 +191,11 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
+        private void mnuShowNetworkSettings_Click(object sender, RoutedEventArgs e)
+        {
+            ShowNetworkSettings();
+        }
+
         private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
         {
             SplitExcelWorksheet();
@@ -256,7 +262,7 @@ namespace COMIGHT
                         excelPackage.Save(); //保存Excel工作簿
                     }
                 }
-                MessageBox.Show($"{fileNum} files processed.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowMessage($"{fileNum} files processed.");
             }
 
             catch (Exception ex)
@@ -703,7 +709,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message} at {currentFilePath}.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowMessage($"{ex.Message} at {currentFilePath}.");
             }
 
         }
@@ -950,7 +956,7 @@ namespace COMIGHT
         {
             try
             {
-                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1099,7 +1105,7 @@ namespace COMIGHT
         {
             try
             {
-                InputDialog inputDialog = new InputDialog(question: "Input the text to be imported", defaultAnswer: "", textboxHeight: 300, acceptReturn: true); //弹出对话框，输入功能选项
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be imported", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
@@ -1847,7 +1853,7 @@ namespace COMIGHT
                     $"Market Average PE Threshold: {marketPEThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
                     $"Market Premium Rate：{marketPremiumRate.ToString("P2", CultureInfo.InvariantCulture)}"; // 生成市场平均指标字符串
                 
-                MessageBox.Show(marketIndicators, "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                ShowMessage(marketIndicators);
 
                 ShowSuccessMessage();
             }
@@ -1857,6 +1863,51 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
 
+        }
+
+        private void ShowNetworkSettings()
+        {
+            try
+            {
+                string command = "ipconfig /all"; // 将“ipconfig /all”命令赋值给命令变量
+
+                // 创建一个进程启动信息对象
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe", // 指定启动的程序为命令提示符
+                    Arguments = $"/c \"{command}\"", // 指定参数（使用引号包裹命令，确保含空格的命令被正确解析）
+                    RedirectStandardOutput = true, // 重定向输出流，以便获取命令的输出
+                    RedirectStandardError = true, // 重定向错误流，以便获取命令的错误输出
+                    UseShellExecute = false, // 不使用系统外壳程序启动进程
+                    CreateNoWindow = true // 不创建新窗口
+                };
+
+                // 创建并启动进程
+                using (Process? process = Process.Start(startInfo))
+                {
+                    if (process != null) // 如果进程不为null
+                    {
+                        // 读取输出结果
+                        string output = process.StandardOutput.ReadToEnd();
+                        string error = process.StandardError.ReadToEnd();
+                        
+                        process.WaitForExit();  // 等待进程退出
+
+                        ShowMessage("Local Network Settings:\n" + output);
+
+                        if (!string.IsNullOrEmpty(error)) // 如果错误输出不为空
+                        {
+                            ShowMessage("Error:\n" + error);
+                        }
+                    }
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
 
         public void SplitExcelWorksheet()
@@ -2048,9 +2099,13 @@ namespace COMIGHT
             }
             //获取对话框返回的功能选项
             double result = Val(inputDialog.Answer);
-            MessageBox.Show("提取后的数字为：" + result.ToString());
+            ShowMessage("提取后的数字为：" + result.ToString());
         }
 
-
+        
+    
+        
+    
     }
+
 }
