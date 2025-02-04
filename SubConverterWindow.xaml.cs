@@ -46,7 +46,7 @@ namespace COMIGHT
             txtbxExternalConfigUrl.Text = latestRecords.LatestExternalConfigUrl; // 将用户使用记录中的外部配置URL赋值给外部配置URL文本框
 
             string appPath = appSettings.SubConverterPath; // 获取订阅转换器程序路径
-            externalAppManager = new ExternalAppManager(appPath); // 创建外部应用程序管理器对象，并赋值给外部应用程序管理器对象变量
+            externalAppManager = new ExternalAppManager(appPath); // 创建外部应用程序管理器对象，并赋值给外部应用程序管理器对象变量（打开订阅转换器）
             externalAppManager.StartMonitoring(); // 启动应用程序并监控运行状态
             
             lblStatus.DataContext = externalAppManager; // 将状态标签控件的数据环境设为外部应用程序管理器对象
@@ -68,7 +68,7 @@ namespace COMIGHT
                 
                 if (cmbbxConversionType.SelectedItem == null || string.IsNullOrWhiteSpace(subConverterBackEndUrl) || string.IsNullOrWhiteSpace(originalSubUrls) ) // 如果订阅转换器后端Url、源订阅Url或转换类型组合框已选项有一个为null，则抛出异常
                 {
-                    throw new Exception("Invalid Url or conversion type.");
+                    throw new Exception("Invalid url or conversion type.");
                 }
 
                 latestRecords.LatestSubConverterBackEndUrl = subConverterBackEndUrl; // 将用户输入的订阅转换器后端URL赋值给用户使用记录
@@ -84,7 +84,7 @@ namespace COMIGHT
                 string convertedSubUrl = $"{subConverterBackEndUrl}sub?target={targetType}&url={encodedOriginalSubUrls}"; // 拼接生成转换后的订阅链接
                 if (!string.IsNullOrWhiteSpace(encodedExternalConfigUrl)) // 如果经Url编码后的外部配置Url不为null或全空白字符，则将该段Url拼接到订阅链接最后
                 {
-                    convertedSubUrl += $"&config={encodedExternalConfigUrl}"; // 拼接生成转换后的订阅链接
+                    convertedSubUrl += $"&config={encodedExternalConfigUrl}"; 
                 }
 
                 txtbxConvertedSubUrl.Text = convertedSubUrl; // 将转换后的链接赋值给转换后链接文本框

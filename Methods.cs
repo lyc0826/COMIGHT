@@ -530,7 +530,7 @@ namespace COMIGHT
                             throw new Exception("Parameter error.");
                     }
 
-                    TrimCellsStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
+                    TrimCellStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet!); //删除Excel工作表内所有空白行和空白列
                     if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
                     {
@@ -555,7 +555,11 @@ namespace COMIGHT
                             o.ExcelErrorParsingStrategy = ExcelErrorParsingStrategy.HandleExcelErrorsAsBlankCells;
                             o.AlwaysAllowNull = true;
                         });
-                    return dataTable; //将DataTable赋值给函数返回值
+
+                    dataTable = RemoveDataTableEmptyRowsAndColumns(dataTable); // 删除DataTable内所有空白行和空白列
+                    
+                    //将DataTable赋值给函数返回值：如果DataTable的数据行和列数均不为0，则得到DataTable；否则得到null
+                    return (dataTable.Rows.Count * dataTable.Columns.Count > 0) ? dataTable : null; 
                 }
             }
 
@@ -572,12 +576,18 @@ namespace COMIGHT
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
             {
-                // 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
-                int nonNullCount = dataTable.Rows[i].ItemArray.Count(value =>
-                    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
+                //// 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
+                //int nonNullCount = dataTable.Rows[i].ItemArray.Count(value =>
+                //    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
 
-                // 如果以上数据元素的数量小于等于1（仅含有一个数据的数据行无意义），则删除这一行
-                if (nonNullCount <= 1)
+                //// 如果以上数据元素的数量小于等于1（仅含有一个数据的数据行无意义），则删除这一行
+                //if (nonNullCount <= 1)
+                //{
+                //    dataTable.Rows[i].Delete();
+                //}
+
+                // 如果当前数据行的所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
+                if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
                 {
                     dataTable.Rows[i].Delete();
                 }
@@ -746,7 +756,7 @@ namespace COMIGHT
 
         public static void ShowExceptionMessage(Exception ex)
         {
-            MessageDialog messageDialog = new MessageDialog(ex.Message + (ex.InnerException?.Message ?? ""));
+            MessageDialog messageDialog = new MessageDialog(ex.Message + "\n" + (ex.InnerException?.Message ?? ""));
             messageDialog.ShowDialog();
         }
 
@@ -821,7 +831,7 @@ namespace COMIGHT
                     titleWorksheet.Cells["C4"].Value = isChineseDocument ? DateTime.Now.ToString("yyyy年M月d日") :
                         DateTime.Now.ToString("MMM-dd yyyy", CultureInfo.CreateSpecificCulture("en-US"));
 
-                    TrimCellsStrings(bodyTextsWorksheet); //删除“主体”Excel工作表内所有文本型单元格值的首尾空格
+                    TrimCellStrings(bodyTextsWorksheet); //删除“主体”Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(bodyTextsWorksheet); //删除“主体”Excel工作表内所有空白行和空白列
 
                     FormatDocumentTable(excelPackage.Workbook); //格式化文档表的所有工作表
@@ -1942,7 +1952,7 @@ namespace COMIGHT
             }
         }
 
-        public static void TrimCellsStrings(ExcelWorksheet excelWorksheet, bool covertAllTypesToString = false)
+        public static void TrimCellStrings(ExcelWorksheet excelWorksheet, bool covertAllTypesToString = false)
         {
             if (excelWorksheet.Dimension == null) //如果Excel工作表为空，结束本过程
             {

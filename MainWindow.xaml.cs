@@ -440,7 +440,7 @@ namespace COMIGHT
 
                                     targetExcelWorkbookPrefix = "Mrg"; //目标Excel工作簿类型变量赋值为“合并”
 
-                                    TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                    TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     //如果当前被处理Excel工作表的已使用行数（如果工作表为空，则为0）小于等于表头表尾行数之和，只有表头表尾无有效数据，则直接跳过当前循环并进入下一个循环
                                     if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount)
@@ -663,7 +663,7 @@ namespace COMIGHT
                                     break;
 
                                 case 7: //调整工作表打印版式
-                                    TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                    TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
                                     
@@ -1017,7 +1017,7 @@ namespace COMIGHT
                 {
                     ExcelWorksheet sourceExcelWorksheet = sourceExcelPackage.Workbook.Worksheets[0]; //将工作表1（0号）赋值给源工作表变量
 
-                    TrimCellsStrings(sourceExcelWorksheet); //删除源数据Excel工作表内所有文本型单元格值的首尾空格
+                    TrimCellStrings(sourceExcelWorksheet); //删除源数据Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(sourceExcelWorksheet); //删除源数据Excel工作表内所有空白行和空白列
                     if (sourceExcelWorksheet.Dimension == null) //如果工作表为空，则抛出异常
                     {
@@ -1143,12 +1143,7 @@ namespace COMIGHT
                     throw new Exception("No valid data found!");
                 }
 
-                // 创建目标文件夹路径
-                string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
-                if (!Directory.Exists(targetFolderPath))
-                {
-                    Directory.CreateDirectory(targetFolderPath);
-                }
+                
 
                 for (int i = 0; i < dataTable!.Rows.Count; i++) //遍历DataTable所有数据行
                 {
@@ -1156,12 +1151,19 @@ namespace COMIGHT
                     for (int j = 0; j < dataTable.Columns.Count; j++) //遍历所有数据列
                     {
                         dataTable.Rows[i][j] = CleanFileAndFolderName(Convert.ToString(dataTable.Rows[i][j])!, 40); //去除DataTable当前数据行当前数据列数据的文件夹名中不可用于文件夹名的字符，截取指定数量的字符
-                        newPathStr = newPathStr + Convert.ToString(dataTable.Rows[i][j]); //每右移一个数据列，新文件夹路径字符串延长一级（包含当前文件夹名和所有上级文件夹名），赋值给新文件夹路径字符串变量
-                        if (i >= 1 && newPathStr == "") //如果当前数据行索引号大于等于1（从第2个记录行起），且新文件夹路径字符串变量为空，则将DataTable当前数据行当前数据列的元素填充为上一行同数据列的文件夹名
+                        newPathStr += Convert.ToString(dataTable.Rows[i][j]); //将DataTable当前数据行当前数据列元素的文件夹名累加到新文件夹路径字符串上
+                        if (i >= 1 && newPathStr == "") //如果当前数据行索引号大于等于1（从第2个记录行起），且新文件夹路径字符串变量为空字符串（当前元素及左侧所有元素均为空字符串），则将DataTable当前数据行当前数据列的元素填充为上一行同数据列的文件夹名
                         {
                             dataTable.Rows[i][j] = Convert.ToString(dataTable.Rows[i - 1][j]);
                         }
                     }
+                }
+
+                // 创建目标文件夹路径
+                string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath);
                 }
 
                 // 创建各级文件夹路径
@@ -1181,6 +1183,7 @@ namespace COMIGHT
                         }
                     }
                 }
+
                 ShowSuccessMessage();
             }
 
@@ -1406,7 +1409,7 @@ namespace COMIGHT
                         {
                             foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) // 遍历所有Excel工作表
                             {
-                                TrimCellsStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
+                                TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                 RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                 if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
                                 {
@@ -1723,23 +1726,20 @@ namespace COMIGHT
                 };
 
                 // 创建并启动进程
-                using (Process? process = Process.Start(startInfo))
+                using (Process process = Process.Start(startInfo)!)
                 {
-                    if (process != null) // 如果进程不为null
-                    {
-                        // 读取输出结果
-                        string output = process.StandardOutput.ReadToEnd();
-                        string error = process.StandardError.ReadToEnd();
+                    // 读取输出结果
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
                         
-                        process.WaitForExit();  // 等待进程退出
+                    process.WaitForExit();  // 等待进程退出
 
-                        ShowMessage("Local Network Settings:\n" + output);
-
-                        if (!string.IsNullOrEmpty(error)) // 如果错误输出不为空
-                        {
-                            ShowMessage("Error:\n" + error);
-                        }
+                    if (process.ExitCode != 0) // 如果进程退出时返回的代码为0
+                    {
+                        throw new Exception("Failed to get network status.");
                     }
+
+                    ShowMessage(output + "\n" + error);
                 }
 
             }
@@ -1800,7 +1800,7 @@ namespace COMIGHT
                 {
                     ExcelWorksheet excelWorksheet = excelPackage.Workbook.Worksheets.First(); // 将第一张Excel工作表赋值给Excel工作表变量
 
-                    TrimCellsStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
+                    TrimCellStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
                     if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则抛出异常
                     {
