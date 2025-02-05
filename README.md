@@ -163,8 +163,8 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the seat plates must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell.
 
-#### **Show Network Settings**
-- Shows the network settings of the current computer (e.g. IP address, Subnet Mask, Gateway, DHCP Server, DNS server, etc.)
+#### **Show System Info**
+- Shows the system infomation of the current computer (e.g. hardware info, network settings, BIOS serial number)
 
 ### Web
 
