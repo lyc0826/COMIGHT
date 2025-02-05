@@ -690,6 +690,48 @@ namespace COMIGHT
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
+        public static string RunCommandline(string arguments)
+        {
+            try
+            {
+                // 创建一个进程启动信息对象
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe", // 指定启动的程序为命令提示符
+                    Arguments = $"/c \"{arguments}\"", // 指定参数（使用引号包裹命令，确保含空格的命令被正确解析）
+                    RedirectStandardOutput = true, // 重定向输出流，以便获取命令的输出
+                    RedirectStandardError = true, // 重定向错误流，以便获取命令的错误输出
+                    UseShellExecute = false, // 不使用系统外壳程序启动进程
+                    CreateNoWindow = true // 不创建新窗口
+                };
+
+                // 创建并启动进程
+                using (Process process = Process.Start(startInfo)!)
+                {
+                    // 读取输出结果
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+
+                    process.WaitForExit();  // 等待进程退出
+
+                    if (process.ExitCode != 0) // 如果进程退出时返回的代码为0
+                    {
+                        throw new Exception("Failed to get network status.");
+                    }
+
+                    return (output + "\n" + error);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+                return "";
+            }
+        }
+
+
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
             string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
