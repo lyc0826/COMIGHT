@@ -20,7 +20,7 @@
         <DockPanel Grid.Row="0" Grid.Column="0" >
             <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding Path=FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
                 <MenuItem Header="Start">
-                    <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="mnuOpenSavingFolder_Click" />
+                    <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="MnuOpenSavingFolder_Click" />
                     <MenuItem x:Name="mnuSettings" Header="Settings" Click="MnuSettings_Click"  />
                     <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
@@ -37,18 +37,19 @@
 
                 <MenuItem Header="Document">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
-                    <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="mnuConvertMarkdownIntoWord_Click"  />
+                    <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
-                    <MenuItem x:Name="mnuImportTextIntoDocumentTableAndWord" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
+                    <MenuItem x:Name="mnuImportTextIntoDocumentTable" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
+                    <MenuItem x:Name="mnuMergeDataIntoDocument" Header= "Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
                 </MenuItem>
 
                 <MenuItem Header="Tools">
-                    <MenuItem x:Name="mnuBatchConvertOfficeFilesTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFilesTypes_Click" />
-                    <MenuItem x:Name="mnuMergeDocumentsAndTables" Header= "Merge Documents And Tables" Click="MnuMergeDocumentsAndTables_Click"  />
+                    <MenuItem x:Name="mnuBatchConvertOfficeFileTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
+                    
                     <MenuItem x:Name="mnuMakeFileList" Header= "Make File List" Click="MnuMakeFileList_Click" />
                     <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
-                    <MenuItem x:Name="mnuShowSystemInfo" Header= "Show System Info" Click="mnuShowSystemInfo_Click" />
+                    <MenuItem x:Name="mnuShowSystemInfo" Header= "Show System Info" Click="MnuShowSystemInfo_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Web">

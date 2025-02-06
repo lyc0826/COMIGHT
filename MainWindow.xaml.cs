@@ -61,7 +61,7 @@ namespace COMIGHT
             latestRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录
         }
 
-        private async void MnuBatchConvertOfficeFilesTypes_Click(object sender, RoutedEventArgs e)
+        private async void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
         {
             await BatchConvertOfficeFilesTypes();
         }
@@ -95,7 +95,7 @@ namespace COMIGHT
             CompareExcelWorksheets();
         }
 
-        private void mnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
+        private void MnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
         {
             ConvertMarkDownIntoWord();
         }
@@ -150,12 +150,12 @@ namespace COMIGHT
             MakeFolders();
         }
 
-        private void MnuMergeDocumentsAndTables_Click(object sender, RoutedEventArgs e)
+        private void MnuMergeDataIntoDocument_Click(object sender, RoutedEventArgs e)
         {
-            MergeDocumentsAndTables();
+            MergeDataIntoDocument();
         }
 
-        private void mnuOpenSavingFolder_Click(object sender, RoutedEventArgs e)
+        private void MnuOpenSavingFolder_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -192,7 +192,7 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
-        private void mnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
+        private void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
         {
             ShowSystemInfo();
         }
@@ -1007,7 +1007,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File of Name List"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Name List"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1131,7 +1131,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing Directory Tree Data"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Directory Tree Data"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1381,11 +1381,11 @@ namespace COMIGHT
             }
         }
 
-        private void MergeDocumentsAndTables()
+        private void MergeDataIntoDocument()
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "选择Word文档或Excel工作簿"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "Select Word and Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1545,7 +1545,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing Stocks Data"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Stock Data"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
