@@ -27,7 +27,8 @@ using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Paragraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-//using System.Management.Automation;
+using Hardware.Info;
+using System.Net.NetworkInformation;
 
 
 namespace COMIGHT
@@ -1711,10 +1712,61 @@ namespace COMIGHT
         private void ShowSystemInfo()
         {
             // 运行命令行，获取系统信息、BIOS序列号和网络设置
-            string outputInfo = RunCommandline("systeminfo /fo LIST & echo ========== & wmic bios get serialnumber & echo ========== & ipconfig /all");
-            outputInfo = Regex.Replace(outputInfo, @"\r?\n\s*\r?\n", "\n", RegexOptions.Multiline); //删除空行
-            
-            ShowMessage(outputInfo);
+            //string outputInfo = RunCommandline("systeminfo /fo LIST & echo ========== & wmic bios get serialnumber & echo ========== & ipconfig /all");
+            //outputInfo = Regex.Replace(outputInfo, @"\r?\n\s*\r?\n", "\n", RegexOptions.Multiline); //删除空行
+            try
+            {
+                HardwareInfo hardwareInfo = new HardwareInfo(); // 创建硬件信息对象
+                //hardwareInfo.RefreshBIOSList(); // 刷新BIOS列表
+                //hardwareInfo.RefreshMotherboardList(); // 刷新主板列表
+                //hardwareInfo.RefreshNetworkAdapterList(); // 刷新网络适配器列表
+
+                hardwareInfo.RefreshAll(); // 刷新所有硬件信息
+
+                // 遍历BIOS、主板、网络适配器列表，将信息添加到对应的信息列表中
+
+                List<string> lstBiosInfos = new List<string>();
+                foreach (var bios in hardwareInfo.BiosList)
+                {
+                    lstBiosInfos.Add(bios.ToString());
+                }
+
+                List<string> lstMotherboardInfos = new List<string>();
+                foreach (var board in hardwareInfo.MotherboardList)
+                {
+                    lstMotherboardInfos.Add(board.ToString());
+                }
+
+                List<string> lstNetworkAdapterInfos = new List<string>();
+                foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
+                {
+                    lstNetworkAdapterInfos.Add(networkAdapter.ToString());
+                    
+                    List<string> lstIPAddressInfos = new List<string>();
+                    
+                    // 遍历当前网络适配器的IP地址列表，将地址添加到IP地址列表中，然后合并为字符串并添加到网络适配器信息列表中
+                    foreach (var ipAddress in networkAdapter.IPAddressList) 
+                    {
+                        lstIPAddressInfos.Add(ipAddress.ToString());
+                    }
+                    string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos);
+                    lstNetworkAdapterInfos.Add(ipAddressInfo);
+                }
+
+                // 将信息列表转换为字符串，并显示在消息框中
+                string biosInfo = string.Join("\n\n", lstBiosInfos);
+                string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
+                string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
+
+                string outputInfo = string.Join("\n\n", new string[] { "BIOS:", biosInfo, "==========", "Motherboard:", motherboardInfo, "==========", "Network Adapters:", networkAdapterInfo });
+
+                ShowMessage(outputInfo);
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
 
         public void SplitExcelWorksheet()

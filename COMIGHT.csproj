@@ -65,6 +65,7 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.5.3" />
+    <PackageReference Include="Hardware.Info" Version="101.0.0" />
     <PackageReference Include="itext7" Version="9.0.0" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.0.0" />
     <PackageReference Include="itext7.font-asian" Version="9.0.0" />
