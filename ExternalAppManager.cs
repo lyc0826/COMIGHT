@@ -15,11 +15,11 @@ namespace COMIGHT
         private string appName; // 定义应用程序名称字段
         private bool isAppRunning; // 定义“应用程序是否运行”字段
 
-        public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件变量
+        public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件处理器变量
 
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) // 定义属性变更事件处理方法
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) // 定义属性变更事件处理方法
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); // 触发属性变更
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); // 触发属性变更
         }
 
         private bool IsAppRunning // 定义“应用程序是否运行”私有属性

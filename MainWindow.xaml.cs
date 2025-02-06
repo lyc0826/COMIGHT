@@ -192,9 +192,9 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
-        private void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
+        private async void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
         {
-            ShowSystemInfo();
+            await taskManager.RunTaskAsync(() => ShowSystemInfoAsync()); // // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行ShowSystemInfo过程
         }
 
         private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
@@ -1709,30 +1709,32 @@ namespace COMIGHT
 
         }
 
-
-        private void ShowSystemInfo()
+        private async Task ShowSystemInfoAsync()
         {
             try
             {
                 HardwareInfo hardwareInfo = new HardwareInfo(); // 创建 HardwareInfo 实例
-                hardwareInfo.RefreshAll(); // 刷新硬件信息
+                await Task.Run(() => hardwareInfo.RefreshAll()); // 刷新硬件信息
 
                 // 遍历BIOS、主板、CPU、内存、硬盘、网络适配器列表，将信息添加到对应的信息列表中
 
+                // BIOS
                 List<string> lstBiosInfos = new List<string>();
                 foreach (var bios in hardwareInfo.BiosList) // 遍历BIOS列表
                 {
                     lstBiosInfos.Add(bios.ToString()); // 将BIOS信息添加到BIOS信息列表中
                 }
-                string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串
+                string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
 
+                // 主板
                 List<string> lstMotherboardInfos = new List<string>();
                 foreach (var board in hardwareInfo.MotherboardList)
                 {
                     lstMotherboardInfos.Add(board.ToString());
                 }
                 string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
-             
+
+                // CPU
                 List<string> lstCpuInfos = new List<string>();
                 foreach (var cpu in hardwareInfo.CpuList)
                 {
@@ -1740,6 +1742,7 @@ namespace COMIGHT
                 }
                 string cpuInfo = string.Join("\n\n", lstCpuInfos);
 
+                // 内存
                 List<string> lstMemoryInfos = new List<string>();
                 long totalMemCapacity = 0;
                 foreach (var memory in hardwareInfo.MemoryList)
@@ -1750,16 +1753,18 @@ namespace COMIGHT
                 lstMemoryInfos.Add($"Total Memory Capacity: {(totalMemCapacity / Math.Pow(1024, 3)).ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
                 string memoryInfo = string.Join("\n\n", lstMemoryInfos);
 
+                // 硬盘
                 List<string> lstDiskInfos = new List<string>();
                 foreach (var disk in hardwareInfo.DriveList)
                 {
                     lstDiskInfos.Add(disk.ToString());
                     // 将硬盘容量转换为GB并添加到硬盘信息列表中
-                    long diskSize = (long) (Convert.ToInt64(disk.Size) / Math.Pow(1024, 3) ); 
+                    long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3));
                     lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
                 }
                 string diskInfo = string.Join("\n\n", lstDiskInfos);
 
+                // 网络适配器
                 List<string> lstNetworkAdapterInfos = new List<string>();
                 foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
                 {
@@ -1776,7 +1781,7 @@ namespace COMIGHT
                 string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
 
                 // 将所有信息组合成一个字符串，并显示在消息框中
-                string outputInfo = string.Join("\n\n", new string[] 
+                string outputInfo = string.Join("\n\n", new string[]
                     {
                         "Operating System: ", hardwareInfo.OperatingSystem.ToString(), "==========",
                         "BIOS:", biosInfo, "==========",
@@ -1785,7 +1790,6 @@ namespace COMIGHT
                         "Memory:", memoryInfo, "==========",
                         "Disks:", diskInfo, "==========",
                         "Network Adapters:", networkAdapterInfo,
-                        
                     });
 
                 ShowMessage(outputInfo);

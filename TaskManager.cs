@@ -11,11 +11,11 @@ namespace COMIGHT
         private readonly List<Task> lstTasks = new List<Task>(); // 定义任务列表变量
         private int activeTasksCount; // 定义当前激活任务数量变量
 
-        public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件变量
+        public event PropertyChangedEventHandler? PropertyChanged; // 定义属性变更事件处理器变量
 
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) // 定义属性变更事件处理方法
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) // 定义属性变更事件处理方法
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); // 触发属性变更
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); // 触发属性变更
         }
 
         private int ActiveTasksCount // 定义激活任务数量属性
