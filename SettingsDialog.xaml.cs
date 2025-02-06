@@ -117,7 +117,6 @@ namespace COMIGHT
         {
             try
             {
-                appSettings = settingsManager.GetSettings(); // 获取应用设置对象
                 // 定义设置DataTable数组，并添加到设置DataSet
                 DataTable[] dataTables = new DataTable[] { generalSettingsTable, cnSettingsTable, enSettingsTable, miscSettingsTable };
                 dataSet.Tables.AddRange(dataTables); // 将设置DataTable数组添加到设置DataSet
