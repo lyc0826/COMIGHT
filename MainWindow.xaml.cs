@@ -194,7 +194,7 @@ namespace COMIGHT
 
         private async void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
         {
-            await taskManager.RunTaskAsync(() => ShowSystemInfoAsync()); // // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行ShowSystemInfo过程
+            await ShowSystemInfoAsync(); 
         }
 
         private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
@@ -1713,8 +1713,16 @@ namespace COMIGHT
         {
             try
             {
-                HardwareInfo hardwareInfo = new HardwareInfo(); // 创建 HardwareInfo 实例
-                await Task.Run(() => hardwareInfo.RefreshAll()); // 刷新硬件信息
+                HardwareInfo hardwareInfo = new HardwareInfo(); // 创建HardwareInfo实例
+                //await taskManager.RunTaskAsync(async () => await Task.Run(() => hardwareInfo.RefreshAll())); // 刷新硬件信息
+
+                // 定义异步委托方法，用于刷新硬件信息
+                async Task RefreshHardwareInfoAsync()
+                {
+                    await Task.Run(() => hardwareInfo.RefreshAll());
+                }
+
+                await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行RefreshHardwareInfoAsync方法
 
                 // 遍历BIOS、主板、CPU、内存、硬盘、网络适配器列表，将信息添加到对应的信息列表中
 
