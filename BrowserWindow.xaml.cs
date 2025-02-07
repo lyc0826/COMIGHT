@@ -295,8 +295,7 @@ namespace COMIGHT
                 }
                 webView2.CoreWebView2.Navigate(url); //打开网址，WebView.Source = new Uri(url) 
                 txtbxUrl.Text = url; //将正打开的网址赋值给网址文本框
-                latestRecords.LatestUrl = url; // 将正打开的网址保存到用户使用记录中
-                recordsManager.SaveSettings(latestRecords); // 保存用户使用记录
+                latestRecords.LatestUrl = url; // 将正打开的网址赋值给用户使用记录
 
             }
         }

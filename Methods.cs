@@ -12,7 +12,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Interop;
 using static COMIGHT.MainWindow;
 using static COMIGHT.PublicVariables;
@@ -399,7 +398,7 @@ namespace COMIGHT
             }
             string columnLetter = inputDialog.Answer;
             latestRecords.LatestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
-            recordsManager.SaveSettings(latestRecords);
+
             return columnLetter; //将列符赋值给函数返回值
         }
 
@@ -412,11 +411,11 @@ namespace COMIGHT
                 InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
                 {
-                    return (0,0);
+                    return (0, 0);
                 }
                 string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
                 latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
-                recordsManager.SaveSettings(latestRecords);
+
                 //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
                 List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
                 //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后赋值给函数返回值
@@ -557,9 +556,9 @@ namespace COMIGHT
                         });
 
                     dataTable = RemoveDataTableEmptyRowsAndColumns(dataTable); // 删除DataTable内所有空白行和空白列
-                    
+
                     //将DataTable赋值给函数返回值：如果DataTable的数据行和列数均不为0，则得到DataTable；否则得到null
-                    return (dataTable.Rows.Count * dataTable.Columns.Count > 0) ? dataTable : null; 
+                    return (dataTable.Rows.Count * dataTable.Columns.Count > 0) ? dataTable : null;
                 }
             }
 
@@ -757,44 +756,11 @@ namespace COMIGHT
             if (openFileDialog.ShowDialog() == true) //如果对话框返回true（选择了OK）
             {
                 latestRecords.LatestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0])!; // 将本次选择的文件的文件夹路径保存到设置中
-                recordsManager.SaveSettings(latestRecords);
 
                 return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
             }
             return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
         }
-
-        //public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
-        //{
-        //    string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
-        //    {
-        //        FileType.Excel => "Excel Files(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|All Files(*.*)|*.*",
-        //        FileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
-        //        FileType.WordAndExcel => "Word And Excel Files(*.docx;*.xlsx;*.docm;*.xlsm)|*.docx;*.xlsx;*.docm;*.xlsm|All Files(*.*)|*.*",
-        //        FileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
-        //        _ => "All Files(*.*)|*.*"
-        //    };
-
-        //    string initialDirectory = Default.latestFolderPath; //获取保存在设置中的文件夹路径
-        //    //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
-        //    initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
-        //    OpenFileDialog openFileDialog = new OpenFileDialog() //打开文件选择对话框
-        //    {
-        //        Multiselect = isMultiselect, //是否可多选
-        //        Title = dialogTitle, //对话框标题
-        //        Filter = filter, //文件类型和相应扩展名的过滤项
-        //        InitialDirectory = initialDirectory //初始文件夹路径
-        //    };
-
-        //    if (openFileDialog.ShowDialog() == true) //如果对话框返回true（选择了OK）
-        //    {
-        //        Default.latestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0]); // 将本次选择的文件的文件夹路径保存到设置中
-        //        Default.Save(); //
-
-        //        return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
-        //    }
-        //    return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
-        //}
 
         public static void ShowExceptionMessage(Exception ex)
         {
@@ -837,7 +803,7 @@ namespace COMIGHT
                     titleWorksheet.Cells["A1:C1"].LoadFromArrays(lstTitleWorksheetHeader); // 将表头列表加载到大标题工作表
 
                     // 定义大标题工作表项目列表
-                    List<object[]> lstTitleWorksheetItems = 
+                    List<object[]> lstTitleWorksheetItems =
                         new List<object[]>
                             {
                                 new object[] { "Title" },
@@ -931,19 +897,19 @@ namespace COMIGHT
 
                         string titleFontName = isCnDocument ? appSettings.CnTitleFontName : appSettings.EnTitleFontName; // 大标题字体：如果为中文文档，则字体为相应中文字体；否则为英文字体
                         string bodyFontName = isCnDocument ? appSettings.CnBodyFontName : appSettings.EnBodyFontName; // 正文字体
-                        
+
                         string cnHeading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
                         string cnHeading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
                         string cnHeading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
                         string cnHeading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
                         string cnItemNumFontName = cnHeading1FontName; // 中文条款项小标题字体
-                        
+
                         string enHeading0FontName = appSettings.EnHeading0FontName; // 英文0级小标题
                         string enHeading1FontName = appSettings.EnHeading1FontName;  // 英文1级小标题
                         string enHeading2FontName = appSettings.EnHeading2FontName; // 英文2级小标题
                         string enHeading3_4FontName = appSettings.EnHeading3_4FontName; // 英文3-4小标题
 
-                        string tableTitleFontName = isCnDocument ? cnHeading1FontName : enHeading1FontName ; // 表格标题字体
+                        string tableTitleFontName = isCnDocument ? cnHeading1FontName : enHeading1FontName; // 表格标题字体
                         string tableBodyFontName = bodyFontName; // 表格正文字体
 
                         string footerFontName = "Times New Roman"; // 页脚字体
@@ -951,7 +917,7 @@ namespace COMIGHT
 
                         float titleFontSize = (float)(isCnDocument ? appSettings.CnTitleFontSize : appSettings.EnTitleFontSize); // 大标题字号：如果为中文文档，则为相应的中文字号；否则，为英文字号
                         float bodyFontSize = (float)(isCnDocument ? appSettings.CnBodyFontSize : appSettings.EnBodyFontSize); // 正文字号
-                        
+
                         float cnHeading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
                         float cnHeading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
                         float cnHeading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
@@ -1338,7 +1304,7 @@ namespace COMIGHT
                         if (isCnDocument) // 如果为中文文档，正则表达式列表中的匹配模式为中文1-4级小标题编号
                         {
                             //listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]" , @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
-                                //@"[（\(]?[ |\t]*\d+[ |\t]*[、\.，,）\)]" };
+                            //@"[（\(]?[ |\t]*\d+[ |\t]*[、\.，,）\)]" };
                             listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
                                     @"\d+[ |\t]*[、\.，,）\)]", @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]" };
                         }
@@ -1610,7 +1576,7 @@ namespace COMIGHT
                         .ToList();
 
                     int lstSplitTextsCount = lstSplitTexts!.Count; //获取拆分后文字列表元素个数
-                    
+
                     contentsChanged = lstSplitTextsCount > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果拆分后文字列表元素个数大于1，得到true；否则，得到原值
 
                     for (int i = 0; i < lstSplitTextsCount; i++) //遍历拆分后文字列表的所有元素
@@ -1620,43 +1586,6 @@ namespace COMIGHT
                             .ToList().ConvertAll(e => RemoveHeadingNum(e));
 
                         contentsChanged = lstRevisedTexts.Count > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果修订文字列表元素个数大于1，得到true；否则，得到原值
-
-                        ////合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
-                        //if ((lstRevisedTexts?.Count ?? 0) == 0) //如果字符串列表的元素数（如果字符串列表为null，则得到0）为0，则将空字符串赋值给函数返回值
-                        //{
-                        //    lstSplitTexts[i] = string.Empty;
-                        //}
-
-                        //else if (lstRevisedTexts?.Count > 1) //如果字符串列表的元素数为1，则将0号元素赋值给函数返回值
-                        //{
-
-                        //    // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
-
-                        //    //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
-                        //    Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
-
-                        //    // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合（
-                        //    MatchCollection matchesSentences = regExCnSentence.Matches(lstRevisedTexts[0]);
-
-                        //    foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
-                        //    {
-                        //        int sameSentenceCount = 0;
-                        //        for (int j = 1; j < lstRevisedTexts.Count; j++) //遍历字符串列表从1号（第2个）元素开始的所有元素
-                        //        {
-                        //            if (lstRevisedTexts[j].Contains(matchSentence.Value))  //如果字符串列表当前元素含有当前中文句子
-                        //            {
-                        //                lstRevisedTexts[j] = lstRevisedTexts[j].Replace(matchSentence.Value, ""); //将字符串列表当前元素中的当前中文句子替换为空（删除重复句）
-                        //                sameSentenceCount += 1; //相同中文句子计数加1
-                        //            }
-                        //        }
-
-                        //        //重新赋值给字符串列表0号元素：如果相同中文句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前中文句子），则得到将0号元素中的当前中文句子替换为空后的字符串（删除非共有句）；否则得到0号元素原值
-                        //        lstRevisedTexts[0] = sameSentenceCount < lstRevisedTexts.Count - 1 ? lstRevisedTexts[0].Replace(matchSentence.Value, "") : lstRevisedTexts[0];
-                        //    }
-
-                        //    lstSplitTexts[i] = string.Join("", lstRevisedTexts);  //合并字符串列表的所有元素，赋值给函数返回值
-                        //}
-
 
                         //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
                         lstSplitTexts[i] = MergeRevision(lstRevisedTexts);
@@ -1678,7 +1607,7 @@ namespace COMIGHT
                             //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
                             Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
 
-                            // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合（
+                            // 获取字符串列表0号元素经过中文句子正则表达式匹配后的结果集合
                             MatchCollection matchesSentences = regExCnSentence.Matches(lstStrs[0]);
 
                             foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
@@ -1686,14 +1615,14 @@ namespace COMIGHT
                                 int sameSentenceCount = 0;
                                 for (int i = 1; i < lstStrs.Count; i++) //遍历字符串列表从1号（第2个）元素开始的所有元素
                                 {
-                                    if (lstStrs[i].Contains(matchSentence.Value))  //如果字符串列表当前元素含有当前中文句子
+                                    if (lstStrs[i].Contains(matchSentence.Value))  //如果字符串列表当前元素含有当前中文句子（基准句）
                                     {
-                                        lstStrs[i] = lstStrs[i].Replace(matchSentence.Value, ""); //将字符串列表当前元素中的当前中文句子替换为空（删除重复句）
+                                        lstStrs[i] = lstStrs[i].Replace(matchSentence.Value, ""); //将字符串列表当前元素中的当前基准句替换为空（删除重复句）
                                         sameSentenceCount += 1; //相同中文句子计数加1
                                     }
                                 }
 
-                                //重新赋值给字符串列表0号元素：如果相同中文句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前中文句子），则得到将0号元素中的当前中文句子替换为空后的字符串（删除非共有句）；否则得到0号元素原值
+                                //重新赋值给字符串列表0号元素：如果相同中文句子计数小于字符串列表元素数量减1（除0号元素外的其他元素并不都含有当前基准句），则得到将0号元素中的当前基准句替换为空后的字符串（删除非共有句）；否则得到0号元素原值
                                 lstStrs[0] = sameSentenceCount < lstStrs.Count - 1 ? lstStrs[0].Replace(matchSentence.Value, "") : lstStrs[0];
                             }
                             return string.Join("", lstStrs);  //合并字符串列表的所有元素，赋值给函数返回值

@@ -1,16 +1,15 @@
-﻿using iText.Kernel.Font;
+﻿using Hardware.Info;
+using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
-using NPOI.HSSF.Record.CF;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -27,8 +26,6 @@ using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using Paragraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using Hardware.Info;
-using System.Net.NetworkInformation;
 
 
 namespace COMIGHT
@@ -194,7 +191,7 @@ namespace COMIGHT
 
         private async void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
         {
-            await ShowSystemInfoAsync(); 
+            await ShowSystemInfoAsync();
         }
 
         private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
@@ -288,7 +285,6 @@ namespace COMIGHT
                 }
                 string batchProcessWorkbookOption = inputDialog.Answer;
                 latestRecords.LatestBatchProcessWorkbookOption = batchProcessWorkbookOption; //将对话框返回的批量处理Excel工作簿功能选项字符串赋值给用户使用记录
-                recordsManager.SaveSettings(latestRecords); //保存用户使用记录
 
                 int functionNum = lstFunctions.Contains(batchProcessWorkbookOption) ? lstFunctions.IndexOf(batchProcessWorkbookOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
 
@@ -323,7 +319,7 @@ namespace COMIGHT
                 if (!string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串不为null或全空白字符
                 {
                     latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
-                    recordsManager.SaveSettings(latestRecords); //保存用户使用记录
+
                     //将Excel索引号字符串拆分成数组，转换成列表，并移除每个元素的首尾空白字符
                     List<string> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => e.Trim());
                     excelWorksheetIndexLower = Convert.ToInt32(lstExcelWorksheetIndexesStr[0]) - 1; //获取Excel工作表索引号范围起始值（Excel工作表索引号从1开始，EPPlus从0开始）
@@ -340,7 +336,7 @@ namespace COMIGHT
                     }
                     excelWorksheetName = inputDialog.Answer;
                     latestRecords.LatestExcelWorksheetName = excelWorksheetName; // 将对话框返回的Excel工作表名称赋值给用户使用记录
-                    recordsManager.SaveSettings(latestRecords); //保存用户使用记录
+
                     useExcelWorksheetIndex = false; //“使用工作表索引号”变量赋值为false
                 }
 
@@ -364,7 +360,7 @@ namespace COMIGHT
                         }
                         string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
                         latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
-                        recordsManager.SaveSettings(latestRecords); //保存用户使用记录
+
                         //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
                         lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
                         break;
@@ -667,7 +663,7 @@ namespace COMIGHT
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
-                                    
+
                                     if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
@@ -715,7 +711,7 @@ namespace COMIGHT
 
         }
 
-        
+
 
         private void CompareExcelWorksheets()
         {
@@ -870,9 +866,9 @@ namespace COMIGHT
             }
         }
 
-        
 
-        
+
+
 
         public async Task BatchConvertOfficeFilesTypes()
         {
@@ -1144,7 +1140,7 @@ namespace COMIGHT
                     throw new Exception("No valid data found!");
                 }
 
-                
+
 
                 for (int i = 0; i < dataTable!.Rows.Count; i++) //遍历DataTable所有数据行
                 {
@@ -1248,7 +1244,6 @@ namespace COMIGHT
 
                 string folderPath = openFolderDialog.FolderName;  // 将选择的文件夹路径赋值给第一级文件夹路径变量
                 latestRecords.LatestFolderPath = folderPath;  // 将第一级文件夹路径赋值给用户使用记录
-                recordsManager.SaveSettings(latestRecords);  // 保存用户使用记录
 
                 int latestSubpathDepth = latestRecords.LatestSubpathDepth;  // 读取用户使用记录中保存的子路径深度
                 // 弹出功能选择对话框，提示用户输入子路径深度
@@ -1261,7 +1256,6 @@ namespace COMIGHT
 
                 int subpathDepth = Convert.ToInt32(inputDialog.Answer); // 获取对话框返回的子路径深度
                 latestRecords.LatestSubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
-                recordsManager.SaveSettings(latestRecords);
 
                 DataTable dataTable = new DataTable(); // 定义DataTable，赋值给DataTable变量
 
@@ -1559,7 +1553,6 @@ namespace COMIGHT
                 }
                 string dataColumnNamesStr = inputDialog.Answer; //获取对话框返回的列名称字符串
                 latestRecords.LatestStockDataColumnNamesStr = dataColumnNamesStr; // 将对话框返回的列名称字符串赋值给用户使用记录
-                recordsManager.SaveSettings(latestRecords);
 
                 //将列名称字符串拆分成数组，转换成列表，然后移除每个元素的首尾空白字符
                 List<string> lstDataColumnNamesStr = dataColumnNamesStr.Split(',').ToList().ConvertAll(e => e.Trim());
@@ -1690,13 +1683,13 @@ namespace COMIGHT
 
                 double marketPEThreshold = marketPB / (Math.Log(marketPB) / 4.3006); // 计算市场平均PE阈值
                 double marketPremiumRate = (marketPE - marketPEThreshold) / marketPEThreshold; // 计算市场溢价率
-                
+
                 // 生成市场平均指标字符串
                 string marketIndicators = $"Market Average PB: {marketPB.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
                     $"Market Average PE: {marketPE.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
                     $"Market Average PE Threshold: {marketPEThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n" +
-                    $"Market Premium Rate: {marketPremiumRate.ToString("P2", CultureInfo.InvariantCulture)}"; 
-                
+                    $"Market Premium Rate: {marketPremiumRate.ToString("P2", CultureInfo.InvariantCulture)}";
+
                 ShowMessage(marketIndicators);
 
                 ShowSuccessMessage();
@@ -1825,7 +1818,6 @@ namespace COMIGHT
                 }
                 string splitWorksheetOption = inputDialog.Answer; // 获取对话框返回的拆分Excel工作表功能选项字符串
                 latestRecords.LatestSplitWorksheetOption = splitWorksheetOption; //将对话框返回的拆分Excel工作表功能选项字符串赋值给用户使用记录
-                recordsManager.SaveSettings(latestRecords);
 
                 int functionNum = lstFunctions.Contains(splitWorksheetOption) ? lstFunctions.IndexOf(splitWorksheetOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
 
@@ -1977,7 +1969,10 @@ namespace COMIGHT
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Environment.Exit(0);
+            settingsManager.SaveSettings(appSettings); // 保存应用程序设置到Json文件
+            recordsManager.SaveSettings(latestRecords);  // 保存最近记录到Json文件
+
+            Environment.Exit(0); // 退出程序，关闭所有窗口
         }
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
@@ -2001,10 +1996,6 @@ namespace COMIGHT
             ShowMessage("提取后的数字为：" + result.ToString());
         }
 
-        
-    
-        
-    
     }
 
 }

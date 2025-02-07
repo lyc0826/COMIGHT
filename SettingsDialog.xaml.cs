@@ -80,7 +80,7 @@ namespace COMIGHT
         {
             InitializeComponent();
 
-            LoadSettings();
+            ShowSettings();
 
             // 将设置DataTable绑定到设置DataGrid上
             dtgrdGeneralSettings.ItemsSource = generalSettingsTable!.DefaultView;
@@ -89,9 +89,15 @@ namespace COMIGHT
             dtgrdMiscSettings.ItemsSource = miscSettingsTable!.DefaultView;
         }
 
-        private void btnDialogSave_Click(object sender, RoutedEventArgs e)
+        private void btnDialogCancel_Click(object sender, RoutedEventArgs e)
         {
-            SaveSettings();
+            this.Close();
+        }
+
+        private void btnDialogOK_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeSettings();
+            this.Close();
         }
 
         private void btnShowFonts_Click(object sender, RoutedEventArgs e)
@@ -113,7 +119,7 @@ namespace COMIGHT
             return Convert.ChangeType(dataTable.Rows.Find(key)?[datatableValueField] ?? "", targetType); // 将指定数据行指定数据列的值转换为指定类型，并赋值给函数返回值
         }
 
-        private void LoadSettings()
+        private void ShowSettings()
         {
             try
             {
@@ -154,7 +160,7 @@ namespace COMIGHT
             }
         }
 
-        private void SaveSettings()
+        private void ChangeSettings()
         {
             try
             {
@@ -172,11 +178,6 @@ namespace COMIGHT
                         propertyInfo.SetValue(appSettings, valueToSet); // 将值设置到设置项属性中
                     }
                 }
-
-                settingsManager.SaveSettings(appSettings); // 保存设置
-
-                ShowSuccessMessage();
-
             }
 
             catch (Exception ex)
@@ -184,8 +185,6 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
 
-            this.Close();
         }
-
     }
 }

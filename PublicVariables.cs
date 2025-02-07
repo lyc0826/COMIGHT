@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using System.Security.RightsManagement;
-using System.Text.RegularExpressions;
 
 namespace COMIGHT
 {
