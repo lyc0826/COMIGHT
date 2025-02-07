@@ -21,8 +21,8 @@ namespace COMIGHT
 
         private class WebsiteData // 定义网址数据类
         {
-            [JsonProperty] // 标记内部属性，使其在反序列化时可被访问
-            internal List<string> Urls { get; set; } = new List<string>(); // 定义网址列表属性（Json反序列化时，属性访问权限必须为public才能正常访问）
+            [JsonProperty] // 标记内部属性，使其在反序列化时可被访问（如果不使用本语句，则属性访问权限必须为public才能在Json反序列化时被正常访问）
+            internal List<string> Urls { get; set; } = new List<string>(); // 定义网址列表属性
         }
 
         public BrowserWindow()
@@ -116,7 +116,7 @@ namespace COMIGHT
                 // 检查网址Json文件是否存在
                 if (!File.Exists(websitesJsonFilePath)) // 如果网址Json文件不存在，则抛出异常
                 {
-                    throw new Exception("JSON file not found.");
+                    throw new Exception("Website JSON file not found.");
                 }
 
                 string jsonContent = File.ReadAllText(websitesJsonFilePath); // 读取网址Json文件内容
