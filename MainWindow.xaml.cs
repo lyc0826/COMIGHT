@@ -1717,7 +1717,18 @@ namespace COMIGHT
 
                 await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行RefreshHardwareInfoAsync方法
 
-                // 遍历BIOS、主板、CPU、内存、硬盘、网络适配器列表，将信息添加到对应的信息列表中
+                // 遍历各软硬件属性，将信息添加到对应的信息列表中
+
+                // 操作系统
+                string operatingSystem = hardwareInfo.OperatingSystem.ToString();
+
+                // 计算机系统
+                List<string> lstComputerSystemInfos = new List<string>();
+                foreach (var computerSystem in hardwareInfo.ComputerSystemList)
+                {
+                    lstComputerSystemInfos.Add(computerSystem.ToString());
+                }
+                string computerSystemInfo = string.Join("\n\n", lstComputerSystemInfos);
 
                 // BIOS
                 List<string> lstBiosInfos = new List<string>();
@@ -1749,9 +1760,9 @@ namespace COMIGHT
                 foreach (var memory in hardwareInfo.MemoryList)
                 {
                     lstMemoryInfos.Add(memory.ToString());
-                    totalMemCapacity += Convert.ToInt64(memory.Capacity);  // 将每个内存模块的容量累加到总容量变量中
+                    totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量累加到总容量变量中
                 }
-                lstMemoryInfos.Add($"Total Memory Capacity: {(totalMemCapacity / Math.Pow(1024, 3)).ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
+                lstMemoryInfos.Add($"Total Memory Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
                 string memoryInfo = string.Join("\n\n", lstMemoryInfos);
 
                 // 硬盘
@@ -1764,6 +1775,14 @@ namespace COMIGHT
                     lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
                 }
                 string diskInfo = string.Join("\n\n", lstDiskInfos);
+
+                // 视频控制器
+                List<string> lstVideoControllerInfos = new List<string>();
+                foreach (var videoController in hardwareInfo.VideoControllerList)
+                {
+                    lstVideoControllerInfos.Add(videoController.ToString());
+                }
+                string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
 
                 // 网络适配器
                 List<string> lstNetworkAdapterInfos = new List<string>();
@@ -1784,12 +1803,14 @@ namespace COMIGHT
                 // 将所有信息组合成一个字符串，并显示在消息框中
                 string outputInfo = string.Join("\n\n", new string[]
                     {
-                        "Operating System: ", hardwareInfo.OperatingSystem.ToString(), "==========",
+                        "Operating System: ", operatingSystem, "==========",
+                        "Computer System: ", computerSystemInfo, "==========",
                         "BIOS:", biosInfo, "==========",
                         "Motherboard:", motherboardInfo, "==========",
                         "CPU:", cpuInfo, "==========",
                         "Memory:", memoryInfo, "==========",
                         "Disks:", diskInfo, "==========",
+                        "Video Controllers:", videoControllerInfo, "==========",
                         "Network Adapters:", networkAdapterInfo,
                     });
 
