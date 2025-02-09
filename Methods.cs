@@ -1877,7 +1877,7 @@ namespace COMIGHT
                             }
                             else  //否则，将段落文字累加到全文本列表最后一个元素的文字的末尾
                             {
-                                lstFullTexts[lstFullTexts.Count - 1] = lstFullTexts[lstFullTexts.Count - 1] + paragraphText;
+                                lstFullTexts[lstFullTexts.Count - 1] += paragraphText;
                             }
 
                             if (!isChineseDocument) lstFullTexts.Add(""); // 如果不是中文文档，则将空行添加到全文本列表中（英文文档段中需要空行）
