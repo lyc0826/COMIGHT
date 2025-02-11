@@ -1954,7 +1954,7 @@ namespace COMIGHT
 
             string cellStr = Convert.ToString(cellValue)!;
             //cellStr = Regex.Replace(cellStr, @"[^\d\.+\-]", ""); //移除单元格值中的非数字、小数点或正负号的字符
-            cellStr = Regex.Match(cellStr, @"[+\-]?\d+(?:\.\d*)?")?.Value.ToString() ?? ""; // 正则表达式匹配模式为：正负号，数字至少一个，（小数点，数字任意个）至多一组；将匹配到的字符串赋值给单元格字符串变量
+            cellStr = Regex.Match(cellStr, @"[+\-]?\d+(?:\.\d*)?")?.Value.ToString() ?? ""; // 正则表达式匹配模式为：正负号至多一个，数字至少一个，（小数点，数字任意个）至多一组；将匹配到的字符串赋值给单元格字符串变量
 
             //如果将匹配结果转换为double类型成功，则将转换结果赋值给number变量，然后再将number变量值赋值给函数返回值
             if (double.TryParse(cellStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
