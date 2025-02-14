@@ -866,10 +866,6 @@ namespace COMIGHT
             }
         }
 
-
-
-
-
         public async Task BatchConvertOfficeFilesTypes()
         {
             MSExcel.Application? msExcelApp = null;
@@ -959,9 +955,10 @@ namespace COMIGHT
                     return;
                 }
 
-                string MDText = inputDialog.Answer;
+                string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
+
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-                List<string> lstParagraphs = MDText
+                List<string> lstParagraphs = mdText
                     .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
@@ -980,7 +977,7 @@ namespace COMIGHT
                 }
                 //导入目标Markdown文档
                 string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
-                File.WriteAllText(targetMDFilePath, MDText); //将导出文本框内的markdown文字导入目标Markdown文档
+                File.WriteAllText(targetMDFilePath, mdText); //将导出文本框内的markdown文字导入目标Markdown文档
 
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
