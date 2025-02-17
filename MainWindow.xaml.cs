@@ -1782,6 +1782,14 @@ namespace COMIGHT
                 }
                 string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
 
+                // 音频适配器
+                List<string> lstSoundDeviceInfos = new List<string>();
+                foreach (var soundDevice in hardwareInfo.SoundDeviceList)
+                {
+                    lstSoundDeviceInfos.Add(soundDevice.ToString());
+                }
+                string soundDeviceInfo = string.Join("\n\n", lstSoundDeviceInfos);
+
                 // 网络适配器
                 List<string> lstNetworkAdapterInfos = new List<string>();
                 foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
@@ -1793,7 +1801,7 @@ namespace COMIGHT
                     {
                         lstIPAddressInfos.Add(ipAddress.ToString()); // 将当前IP地址添加到IP地址信息列表中
                     }
-                    string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos); // 将IP地址信息列表转换为字符串
+                    string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos); // 将IP地址信息列表元素合并为字符串
                     lstNetworkAdapterInfos.Add(ipAddressInfo); // 将IP地址信息添加到网络适配器信息列表中
                 }
                 string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
@@ -1809,6 +1817,7 @@ namespace COMIGHT
                         "Memory:", memoryInfo, "==========",
                         "Disks:", diskInfo, "==========",
                         "Video Controllers:", videoControllerInfo, "==========",
+                        "Sound Devices:", soundDeviceInfo, "==========",
                         "Network Adapters:", networkAdapterInfo,
                     });
 
