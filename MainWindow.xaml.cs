@@ -18,12 +18,12 @@ using System.Windows;
 using static COMIGHT.Methods;
 using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
-using Document = iText.Layout.Document;
+using ITextDocument = iText.Layout.Document;
 using MSExcel = Microsoft.Office.Interop.Excel;
 using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
 using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
-using Paragraph = iText.Layout.Element.Paragraph;
+using ITextParagraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
 
@@ -1512,13 +1512,13 @@ namespace COMIGHT
 
                 using (PdfWriter writer = new PdfWriter(targetPdfFilePath)) // 创建PDF写入器对象，赋值给PDF写入器对象
                 using (PdfDocument pdf = new PdfDocument(writer)) // 创建PDF文档对象，赋值给PDF文档对象
-                using (Document document = new Document(pdf)) // 创建文档对象，赋值给文档对象
+                using (ITextDocument document = new ITextDocument(pdf)) // 创建文档对象，赋值给文档对象
                 {
                     PdfFont font = PdfFontFactory.CreateFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED); // 创建pdf字体对象：中文宋体，Adobe-GB1符集UCS-2编码，水平书写，优先嵌入字体
                     // 遍历字符串列表，
                     foreach (string paragraphText in lstFullText)
                     {
-                        Paragraph paragraph = new Paragraph(paragraphText).SetFont(font); // 为当前字符串创建一个段落，使用已定义的字体
+                        ITextParagraph paragraph = new ITextParagraph(paragraphText).SetFont(font); // 为当前字符串创建一个段落，使用已定义的字体
                         document.Add(paragraph); // 将段落添加到文档中
                     }
                 }
