@@ -313,10 +313,11 @@ namespace COMIGHT
                 {
                     latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
 
-                    //将Excel索引号字符串拆分成数组，转换成列表，并移除每个元素的首尾空白字符
-                    List<string> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => e.Trim());
-                    excelWorksheetIndexLower = Convert.ToInt32(lstExcelWorksheetIndexesStr[0]) - 1; //获取Excel工作表索引号范围起始值（Excel工作表索引号从1开始，EPPlus从0开始）
-                    excelWorksheetIndexUpper = Convert.ToInt32(lstExcelWorksheetIndexesStr[1]) - 1; //获取Excel工作表索引号范围结束值
+                    //将Excel索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
+                    List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
+                    excelWorksheetIndexLower = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值
+                    excelWorksheetIndexUpper = lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值
+
                     useExcelWorksheetIndex = true; //“使用工作表索引号”变量赋值为true
                 }
                 else

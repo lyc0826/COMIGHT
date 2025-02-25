@@ -484,10 +484,10 @@ namespace COMIGHT
                 string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
                 latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
 
-                //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，赋值给表头表尾行数列表
-                List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim()));
-                //获取表头表尾行数列表0号、1号元素，如果小于0则限定为0，然后赋值给函数返回值
-                return (Math.Max(0, lstHeaderFooterRowCount[0]), Math.Max(0, lstHeaderFooterRowCount[1]));
+                //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，如果小于0则限定为0，并赋值给表头表尾行数列表
+                List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => Math.Max(0, e));
+                //将表头表尾行数列表0号、1号元素，赋值给函数返回值
+                return (lstHeaderFooterRowCount[0], lstHeaderFooterRowCount[1]);
             }
 
             catch (Exception ex) // 捕获错误
