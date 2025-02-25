@@ -20,7 +20,7 @@ namespace COMIGHT
 
         private int ActiveTasksCount // 定义激活任务数量属性
         {
-            get => activeTasksCount;
+            get => activeTasksCount; // 获取当前激活的任务数量属性的值
             set // 当前激活的任务数量发生变化时，更新属性并触发属性变更
             {
                 if (activeTasksCount != value)

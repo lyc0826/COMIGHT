@@ -1,8 +1,6 @@
 ﻿using Hardware.Info;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
@@ -13,20 +11,15 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.Methods;
+using static COMIGHT.MSOfficeInterop;
 using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
 using ITextDocument = iText.Layout.Document;
-using MSExcel = Microsoft.Office.Interop.Excel;
-using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
-using MSWord = Microsoft.Office.Interop.Word;
-using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using ITextParagraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-
 
 namespace COMIGHT
 {
@@ -60,7 +53,7 @@ namespace COMIGHT
 
         private async void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
         {
-            await BatchConvertOfficeFilesTypes();
+            await BatchConvertOfficeFileTypes();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -866,70 +859,17 @@ namespace COMIGHT
             }
         }
 
-        public async Task BatchConvertOfficeFilesTypes()
+        public async Task BatchConvertOfficeFileTypes()
         {
-            MSExcel.Application? msExcelApp = null;
-            MSWord.Application? msWordApp = null;
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //打开文件选择对话框，选择文件
-                if (filePaths == null) // 如果文件列表为null，则结束本过程
+                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
-                string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
-
-                //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
-                Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
-                //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
-                Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
-
-                Task task = Task.Run(() => process());
-                void process()
-                {
-                    if (filePaths.Any(f => regExExcelFile.IsMatch(f))) //如果文件列表中有任一文件被可用Excel打开的文件正则表达式匹配成功
-                    {
-                        msExcelApp = new MSExcel.Application(); //打开Excel应用程序，赋值给Excel应用程序变量
-                        msExcelApp.Visible = false;
-                        msExcelApp.DisplayAlerts = false;
-                    }
-
-                    if (filePaths.Any(f => regExWordFile.IsMatch(f))) //如果文件列表中有任一文件被可用Word打开的文件正则表达式匹配成功
-                    {
-                        msWordApp = new MSWord.Application(); //打开Word应用程序，赋值给Word应用程序变量
-                        msWordApp.Visible = false;
-                        msWordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
-                    }
-
-                    foreach (string filePath in filePaths) //遍历所有文件
-                    {
-                        if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
-                        {
-                            MSExcelWorkbook msExcelWorkbook = msExcelApp!.Workbooks.Open(filePath); //打开当前Excel工作簿，赋值给Excel工作簿变量
-                            string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
-                            //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
-                            targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
-                                Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx"); //DateTime.Now.ToString("ssfff")
-                            msExcelWorkbook.SaveAs(Filename: targetFilePath, FileFormat: XlFileFormat.xlWorkbookDefault); //目标Excel工作簿另存为xlsx格式
-                            msExcelWorkbook.Close(); //关闭当前Excel工作簿
-                        }
-                        else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
-                        {
-                            MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开当前Word文档，赋值给Word文档变量
-                            string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
-                            //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
-                            targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
-                                Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
-                            //目标Word文件另存为docx格式，使用最新Word版本兼容模式
-                            msWordDocument.SaveAs2(FileName: targetFilePath, FileFormat: WdSaveFormat.wdFormatDocumentDefault, CompatibilityMode: WdCompatibilityMode.wdCurrent);
-                            msWordDocument.Close(); //关闭当前Word文件
-                        }
-                        File.Delete(filePath); //删除当前文件
-                    }
-                }
-                await task;
-
+                await taskManager.RunTaskAsync(() => ConvertOfficeFileTypesAsync(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行ConvertOfficeFileTypesAsync过程
                 ShowSuccessMessage();
             }
 
@@ -937,12 +877,6 @@ namespace COMIGHT
             {
                 ShowExceptionMessage(ex);
             }
-
-            finally
-            {
-                KillOfficeApps(new object[] { msExcelApp!, msWordApp! }); //结束Office应用程序进程
-            }
-
         }
 
         private void ConvertMarkDownIntoWord()
