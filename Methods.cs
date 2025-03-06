@@ -36,7 +36,7 @@ namespace COMIGHT
 
         public static string CleanFileAndFolderName(string inputName, int targetLength)
         {
-            string cleanedName = inputName.Trim(); //'去除非打印字符和首尾空格
+            string cleanedName = inputName.Trim(); //去除首尾空白字符
             //正则表达式匹配模式为：制表符“\/:*?<>|"”换行符回车符等1个及以上（不能用于文件名的字符）；将匹配到的字符串替换为下划线
             //在@字符串（逐字字符串字面量）中，双引号只能用双引号转义
             cleanedName = Regex.Replace(cleanedName, @"[\t\\/:\*\?\<\>\|""\n\r]+", "_");

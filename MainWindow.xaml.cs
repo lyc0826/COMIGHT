@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.Methods;
 using static COMIGHT.MSOfficeInterop;
@@ -892,6 +893,9 @@ namespace COMIGHT
 
                 string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
 
+                // 无序列表符号正则表达式匹配模式为：开头标记，空格或制表符任意多个（捕获组1），“*-”，空格任意多个；将匹配到的字符串替换为换行符和捕获组1（保持每行文字独立分行，且保留原来的缩进）
+                // mdText = Regex.Replace(mdText, @"^([ |\t]*)[\*-][ ]*", "\n$1", RegexOptions.Multiline);
+
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = mdText
                     .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -1578,10 +1582,10 @@ namespace COMIGHT
                 // 定义统计计算方法，计算指定列的平均值和标准差
                 (double, double) CalculateStatistics(DataTable dataTable, string columnName)
                 {
-                    // 获取指定列的数据行，并将它们转换为double类型的列表
+                    // 将指定列所有数据行的数据转换为double类型，赋值给数值列表
                     List<double> values = dataTable.AsEnumerable()
                                           .Select(row => Val(row[columnName]))
-                                          .ToList();
+                                          .ToList(); 
 
                     double mean = values.Average(); // 计算均值
                     double variance = values.Sum(value => Math.Pow(value - mean, 2)) / (values.Count - 1);  // 计算方差（每个数值与均值之差的平方的平均）
