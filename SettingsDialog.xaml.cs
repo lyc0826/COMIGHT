@@ -40,7 +40,6 @@ namespace COMIGHT
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
                 new SettingsRelation ("generalSettingsTable", "Pandoc Path", "PandocPath"),
-                new SettingsRelation ("generalSettingsTable", "SubConverter Path", "SubConverterPath"),
 
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Name", "CnTitleFontName"),
                 new SettingsRelation ("cnSettingsTable", "Chinese Title Font Size", "CnTitleFontSize"),
@@ -80,13 +79,7 @@ namespace COMIGHT
         {
             InitializeComponent();
 
-            ShowSettings();
-
-            // 将设置DataTable绑定到设置DataGrid上
-            dtgrdGeneralSettings.ItemsSource = generalSettingsTable!.DefaultView;
-            dtgrdCnDocumentSettings.ItemsSource = cnSettingsTable!.DefaultView;
-            dtgrdEnDocumentSettings.ItemsSource = enSettingsTable!.DefaultView;
-            dtgrdMiscSettings.ItemsSource = miscSettingsTable!.DefaultView;
+            ShowSettings(); // 显示设置
         }
 
         private void btnDialogCancel_Click(object sender, RoutedEventArgs e)
@@ -152,6 +145,13 @@ namespace COMIGHT
                         dataSet.Tables[settingRelation.DataTableName]!.Rows.Add(newDataRow); // 向当前设置DataTable添加新数据行
                     }
                 }
+
+                // 将设置DataTable绑定到设置DataGrid上
+                dtgrdGeneralSettings.ItemsSource = generalSettingsTable!.DefaultView;
+                dtgrdCnDocumentSettings.ItemsSource = cnSettingsTable!.DefaultView;
+                dtgrdEnDocumentSettings.ItemsSource = enSettingsTable!.DefaultView;
+                dtgrdMiscSettings.ItemsSource = miscSettingsTable!.DefaultView;
+
             }
 
             catch (Exception ex)
