@@ -982,7 +982,6 @@ namespace COMIGHT
                         int charLimit = IsChineseText(name) ? 8 : 16; // 计算字符上限：如果是中文名称，则得到8；否则得到16
                         cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 90)
                             * (1 - (name.Length - charLimit) * 0.04).Clamp(0.5, 1)); //设置字体大小：如果单元格文字不含换行符，为160；否则为90。再乘以一个缩小字体的因子
-                        cellABStyle.Font.Bold = true; //设置字体加粗
                         cellABStyle.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
                         cellABStyle.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
                         cellABStyle.ShrinkToFit = !name.Contains('\n') ? true : false; //缩小字体填充：如果单元格文字不含换行符，为true；否则为false
