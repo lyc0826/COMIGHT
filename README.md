@@ -141,15 +141,15 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 - Imports the content of the text box in the dialog box into a document table.
   - **The Pandoc application (https://github.com/jgm/pandoc) is necessary for this function. The path of Pandoc executable file shall be set correctly in the Settings.**
 
+#### **Merge Data Into Document**
+
+- Merges multiple Word documents and Excel spreadsheets into one document file (txt, pdf) for easy uploading to AI chat clients.
+
 ### Tools
 
 #### **Batch Convert Office File Types**
 
 - Batch converts older Excel (.xls), Word (.doc), WPS Spreadsheet (.et), and WPS Document (.wps) files into the current .xlsx and .docx formats.
-
-#### **Merge Documents and Tables**
-
-- Merges multiple Word documents and Excel spreadsheets into one file (txt, pdf) for easy uploading to AI chat clients.
 
 #### **Make File List**
 
@@ -178,4 +178,4 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Converts proxy-tunnel client subscriptions between different formats, including: Clash, Loon, SS, SSR, Surfboard, Surge, Trojan, and V2Ray.
 
-  - **It's recommended to use a local SubConverter back-end application (https://github.com/tindy2013/subconverter) for the sake of security. Once the path of the SubConverter executable file is set correctly in the Settings, the SubConverter will automatically start up and keep running. **
+  - **It's recommended to use a local SubConverter back-end application (https://github.com/tindy2013/subconverter) for the sake of security.**
