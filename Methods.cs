@@ -83,80 +83,6 @@ namespace COMIGHT
             return chineseNumberStr; // 将中文数字字符串赋值给函数返回值
         }
 
-        //public static async Task ConvertOfficeFileTypesAsync(List<string> filePaths)
-        //{
-        //    MSExcel.Application? msExcelApp = null;
-        //    MSWord.Application? msWordApp = null;
-        //    try
-        //    {
-
-        //        string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
-
-        //        //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
-        //        Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
-        //        //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
-        //        Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
-
-        //        Task task = Task.Run(() => process());
-        //        void process()
-        //        {
-        //            if (filePaths.Any(f => regExExcelFile.IsMatch(f))) //如果文件列表中有任一文件被可用Excel打开的文件正则表达式匹配成功
-        //            {
-        //                msExcelApp = new MSExcel.Application(); //打开Excel应用程序，赋值给Excel应用程序变量
-        //                msExcelApp.Visible = false;
-        //                msExcelApp.DisplayAlerts = false;
-        //            }
-
-        //            if (filePaths.Any(f => regExWordFile.IsMatch(f))) //如果文件列表中有任一文件被可用Word打开的文件正则表达式匹配成功
-        //            {
-        //                msWordApp = new MSWord.Application(); //打开Word应用程序，赋值给Word应用程序变量
-        //                msWordApp.Visible = false;
-        //                msWordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
-        //            }
-
-        //            foreach (string filePath in filePaths) //遍历所有文件
-        //            {
-        //                if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
-        //                {
-        //                    MSExcelWorkbook msExcelWorkbook = msExcelApp!.Workbooks.Open(filePath); //打开当前Excel工作簿，赋值给Excel工作簿变量
-        //                    string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
-        //                    //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
-        //                    targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
-        //                        Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx");
-        //                    msExcelWorkbook.SaveAs(Filename: targetFilePath, FileFormat: XlFileFormat.xlWorkbookDefault); //目标Excel工作簿另存为xlsx格式
-        //                    msExcelWorkbook.Close(); //关闭当前Excel工作簿
-        //                }
-        //                else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
-        //                {
-        //                    MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开当前Word文档，赋值给Word文档变量
-        //                    string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
-        //                    //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
-        //                    targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
-        //                        Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
-        //                    //目标Word文件另存为docx格式，使用最新Word版本兼容模式
-        //                    msWordDocument.SaveAs2(FileName: targetFilePath, FileFormat: WdSaveFormat.wdFormatDocumentDefault, CompatibilityMode: WdCompatibilityMode.wdCurrent);
-        //                    msWordDocument.Close(); //关闭当前Word文件
-        //                }
-        //                File.Delete(filePath); //删除当前文件
-        //            }
-        //        }
-        //        await task;
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-
-        //    finally
-        //    {
-        //        KillOfficeApps(new object[] { msExcelApp!, msWordApp! }); //结束Office应用程序进程
-        //    }
-        //}
-
-
         public static void FormatDocumentTable(ExcelWorkbook workbook)
         {
             foreach (ExcelWorksheet excelWorksheet in workbook.Worksheets) // 遍历所有Excel工作表
@@ -354,7 +280,7 @@ namespace COMIGHT
             //设定打印顶端标题行：如果表头行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
             printerSettings.RepeatRows = headerRowCount >= 1 ? new ExcelAddress($"$1:${headerRowCount}") : new ExcelAddress("");
             //设定打印左侧重复列为A列
-            printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
+            //printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
 
             // 设置页脚
             string footerText = "P&P / &N"; //设置页码
@@ -367,8 +293,9 @@ namespace COMIGHT
             view.FreezePanes(headerRowCount + 1, 2); // 冻结最上方的行和最左侧的列（参数指定第一个不要冻结的单元格）
             view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
             printerSettings.FitToPage = true; // 启用适应页面的打印设置
-            int printPagesCount = Math.Max(1, (int)Math.Round(fullWidth / 120, 0)); //计算打印页面数：将全表格宽度除以指定最大宽度的商四舍五入取整，如果小于1，则限定为1
-            printerSettings.FitToWidth = printPagesCount;  // 设置缩放为几页宽，1代表即所有列都将打印在一页上
+            //int printPagesCount = Math.Max(1, (int)Math.Round(fullWidth / 120, 0)); //计算打印页面数：将全表格宽度除以指定最大宽度的商四舍五入取整，如果小于1，则限定为1
+            //printerSettings.FitToWidth = printPagesCount;  // 设置缩放为几页宽，1代表即所有列都将打印在一页上
+            printerSettings.FitToWidth = 1; // 设置缩放为几页宽，1代表即所有列都将打印在一页上
             printerSettings.FitToHeight = 0; // 设置缩放为几页高，0代表打印页数不受限制，可能会跨越多页
             printerSettings.PageOrder = ePageOrder.OverThenDown; // 将打印顺序设为“先行后列”
             view.PageLayoutView = false; // 将页面布局视图设为false（即普通视图）
@@ -391,7 +318,7 @@ namespace COMIGHT
             Regex regExCnShiNum = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*是[ |\t]*", RegexOptions.Multiline);
             // 中文“第X条”编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条”，“：:”空格制表符至少一个
             Regex regExCnItemNum = new Regex(@"^[ |\t]*第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*条[：:| |\t]+", RegexOptions.Multiline);
-            // 英文小标题编号，匹配模式为：从开头开始，空格制表符任意多个，“part、charpter、section”标记（捕获组1），【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组2】，空格制表符至少一个
+            // 英文小标题编号，匹配模式为：从开头开始，空格制表符任意多个，“part、charpter、section”标记（至多一个，为捕获组1），【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组2】，空格制表符至少一个
             Regex regExEnHeadingNum = new Regex(@"^[ |\t]*((?:part|chapter|section)[ |\t]+)?((?:\d+\.?){1,4})[ |\t]+", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
             if (isChineseText) // 如果是中文文本
