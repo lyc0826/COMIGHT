@@ -1522,8 +1522,8 @@ namespace COMIGHT
                 ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
                 {
                     FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
-                                           //指定参数，-f从markdown -t转换为docx -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
-                    Arguments = $"-f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
+                                           //指定参数：-s完整独立文件，-f原格式 -t目标格式 -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
+                    Arguments = $"-s -f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
                     RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
                     UseShellExecute = false, //设定使用操作系统shell执行程序为false
                     CreateNoWindow = true, //设定不创建窗口

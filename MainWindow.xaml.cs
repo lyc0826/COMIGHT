@@ -920,8 +920,8 @@ namespace COMIGHT
 
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-
                 ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
+
                 File.Delete(targetMDFilePath); //删除Markdown文件
 
                 ShowSuccessMessage();
