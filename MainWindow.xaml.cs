@@ -2,6 +2,8 @@
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using Microsoft.Win32;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -17,6 +19,7 @@ using static COMIGHT.Methods;
 using static COMIGHT.MSOfficeInterop;
 using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
+using ICell = NPOI.SS.UserModel.ICell;
 using ITextDocument = iText.Layout.Document;
 using ITextParagraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
@@ -893,9 +896,6 @@ namespace COMIGHT
 
                 string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
 
-                // 无序列表符号正则表达式匹配模式为：开头标记，空格或制表符任意多个（捕获组1），“*-”，空格任意多个；将匹配到的字符串替换为换行符和捕获组1（保持每行文字独立分行，且保留原来的缩进）
-                // mdText = Regex.Replace(mdText, @"^([ |\t]*)[\*-][ ]*", "\n$1", RegexOptions.Multiline);
-
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = mdText
                     .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -914,6 +914,7 @@ namespace COMIGHT
                 {
                     Directory.CreateDirectory(targetFolderPath);
                 }
+
                 //导入目标Markdown文档
                 string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
                 File.WriteAllText(targetMDFilePath, mdText); //将导出文本框内的markdown文字导入目标Markdown文档
@@ -923,6 +924,52 @@ namespace COMIGHT
                 ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
 
                 File.Delete(targetMDFilePath); //删除Markdown文件
+
+                // 提取目标Word文档中的表格并转存为目标Excel文档
+                string targetExcelFilePath = Path.Combine(targetFolderPath, $"Tbl_{targetFileMainName}.xlsx"); //获取目标Excel文件路径全名
+                // 使用 NPOI 处理 
+                using (FileStream wordFileStream = File.OpenRead(targetWordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
+                {
+                    using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
+                    {
+                        if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
+                        {
+                            using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
+                            {
+                                IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
+                                int wordTableIndex = 1;
+                                foreach (XWPFTable wordTable in wordDocument.Tables) // 遍历目标Word文档中的所有表格
+                                {
+                                    ISheet worksheet = workbook.CreateSheet($"Table_{wordTableIndex}"); // 创建Excel工作表对象，赋值给Excel工作表变量
+                                    int excelRowIndex = 0;
+                                    foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
+                                    {
+                                        IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
+                                        int excelCellIndex = 0; 
+                                        foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
+                                        {
+                                            ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
+                                            excelCell.SetCellValue(wordTableCell.GetText()); // 设置Excel单元格的值（当前Word文档表格的当前行的当前单元格的文字）
+                                        }
+                                    }
+                                    wordTableIndex++;
+                                }
+                                workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
+                            }
+                        }
+                    }
+                }
+
+                // 格式化目标Excel工作簿中的表格
+                FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
+                using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
+                {
+                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
+                    {
+                        FormatExcelWorksheet(excelWorksheet, 1, 0); //格式化当前工作表
+                    }
+                    excelPackage.Save(); //保存目标Excel文档
+                }
 
                 ShowSuccessMessage();
             }
@@ -962,7 +1009,7 @@ namespace COMIGHT
                         string name = sourceExcelWorksheet.Cells[i, 1].Text; // 将A列当前行单元格的文字赋值给名称变量
 
                         // 在目标工作簿中添加一个工作表，表名为编号i加名称后截取前10个字符，赋值给目标Excel工作表变量
-                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanFileAndFolderName(i.ToString() + name, 10));
+                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanFileAndFolderName($"{i.ToString()}_{name}", 10));
 
                         // 在目标工作表中插入名称并设置样式
                         targetExcelWorksheet.Cells["A1:A2"].Merge = true; //合并A1、A2单元格
@@ -1366,7 +1413,7 @@ namespace COMIGHT
 
                     else if (fileExtension.ToLower().Contains("doc")) // 如果当前文件扩展名转换为小写后含有“doc”（Word文件，docx、docm）
                     {
-                        using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) // 创建文件流，以打开Word文档，赋值给文件流变量
+                        using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) // 打开Word文档，赋值给文件流变量
                         {
                             XWPFDocument wordDocument = new XWPFDocument(fileStream); // 打开Word文档文件流，赋值给Word文档变量
 
@@ -1388,7 +1435,7 @@ namespace COMIGHT
                                         foreach (XWPFTableRow row in table.Rows) // 遍历表格所有行
                                         {
                                             StringBuilder rowTextStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
-                                            foreach (XWPFTableCell cell in row.GetTableCells()) // 遍历表格所有列
+                                            foreach (XWPFTableCell cell in row.GetTableCells()) // 遍历当前行的所有列
                                             {
                                                 string cellText = string.Join(" ", cell.Paragraphs.Select(p => p.Text.Trim())); // 提取单元格内的所有段落文本并连接起来
                                                 rowTextStringBuilder.Append(cellText); // 将当前单元格文字追加到字符串构建器中
