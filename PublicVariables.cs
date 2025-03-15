@@ -3,7 +3,7 @@
 namespace COMIGHT
 {
     // 定义公共变量类
-    public partial class PublicVariables 
+    public class PublicVariables 
     {
         public static string appPath = AppDomain.CurrentDomain.BaseDirectory; //获取程序所在文件夹路径
 
@@ -15,9 +15,11 @@ namespace COMIGHT
 
         //public static string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
 
-        public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
+        //public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
 
     }
+
+    public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
 
     // 定义应用设置类
     public class AppSettings

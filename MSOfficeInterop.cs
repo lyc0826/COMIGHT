@@ -8,6 +8,7 @@ using static COMIGHT.Methods;
 using MSExcel = Microsoft.Office.Interop.Excel;
 using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
 using MSWord = Microsoft.Office.Interop.Word;
+using MSPpt = Microsoft.Office.Interop.PowerPoint;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using MSWordParagraph = Microsoft.Office.Interop.Word.Paragraph;
 using MSWordSection = Microsoft.Office.Interop.Word.Section;
@@ -78,7 +79,6 @@ namespace COMIGHT
                 }
                 await task;
 
-                ShowSuccessMessage();
             }
 
             catch (Exception ex)
