@@ -551,7 +551,7 @@ namespace COMIGHT
 
                                 case 4: //文本型数字转数值型
 
-                                    targetExcelWorkbookPrefix = "Fail"; //目标Excel工作簿类型变量赋值为“失败”
+                                    //targetExcelWorkbookPrefix = "Fail"; //目标Excel工作簿类型变量赋值为“失败”
 
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
@@ -580,29 +580,12 @@ namespace COMIGHT
                                                     cell.Style.Numberformat.Format = ""; //将当前单元格的格式设为常规
                                                     cell.Value = cellNumVal; //将转换得到的数值赋值给当前单元格
                                                 }
-                                                else //否则
-                                                {
-                                                    dataRow = dataTable!.NewRow(); //定义DataTable新数据行
-                                                    //将相关数据填入对应的数据列
-                                                    dataRow["Source Workbook"] = excelFileName;
-                                                    dataRow["Source Worksheet"] = excelWorksheet.Name;
-                                                    dataRow["Unconverted Address"] = cell.Address;
-                                                    dataRow["Unconverted Value"] = cell.Value;
-                                                    dataTable.Rows.Add(dataRow); //向DataTable添加数据行
-                                                }
                                             }
                                         }
                                     }
                                     if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
-                                    }
-
-                                    //如果当前文件是文件列表中的最后一个，且当前Excel工作表也是最后一个，且DataTable的行数和列数均不为0，则将DataTable写入目标工作表
-                                    if (fileNum == filePaths.Count && i == excelWorksheetIndexUpper
-                                        && dataTable!.Rows.Count * dataTable.Columns.Count > 0)
-                                    {
-                                        targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
                                     }
 
                                     break;
@@ -633,6 +616,7 @@ namespace COMIGHT
                                     break;
 
                                 case 6: //提取单元格数据给工作簿文件名加前缀
+
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) // '遍历所有操作区域
                                     {
                                         for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
@@ -687,10 +671,9 @@ namespace COMIGHT
                     //根据功能序号返回相应的目标工作表表头行数
                     int targetHeaderRowCount = functionNum switch
                     {
-                        1 => headerRowCount,  //记录合并，输出记录合并后的汇总表，表头行数为源数据表格的表头行数
-                        3 => 1,  //提取单元格数据，输出提取单元格值后的汇总表，表头行数为1
-                        4 => 1,  //文本型数字转数值型，输出未能转换为数值的单元格地址和值的汇总表，表头行数为1
-                        _ => 0  //其余情况，表头行数为0
+                        1 => headerRowCount,  //记录合并 - 输出记录合并后的汇总表，表头行数为源数据表格的表头行数
+                        3 => 1,  //提取单元格数据 - 输出提取单元格值后的汇总表，表头行数为1
+                        _ => 0  //其余情况-表头行数为0
                     };
 
                     FormatExcelWorksheet(targetExcelWorksheet, targetHeaderRowCount, 0); //设置目标Excel工作表格式
@@ -698,7 +681,9 @@ namespace COMIGHT
                     targetExcelPackage.SaveAs(targetExcelFile);
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
                 }
+
                 templateExcelPackage?.Dispose(); //关闭模板Excel工作簿（仅在模板工作簿已打开的情况下）
+
                 ShowSuccessMessage();
             }
 
