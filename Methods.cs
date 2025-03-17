@@ -34,14 +34,35 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanFileAndFolderName(string inputName, int targetLength)
+        public static string CleanFileAndFolderName(string name, int maxLength)
+        {
+            // 定义文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
+            string invalidChars = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+
+            // 将文件名和文件夹名中允许出现的字符提取并形成数组，再转换成字符串，赋值给清理后的名称变量
+            string cleanedName = new string(name.Where(c => !invalidChars.Contains(c)).ToArray());
+
+            // 截取到指定长度
+            return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
+        }
+
+        //public static string CleanFileAndFolderName(string inputName, int targetLength)
+        //{
+        //    string cleanedName = inputName.Trim(); //去除首尾空白字符
+        //    //正则表达式匹配模式为：制表符“\/:*?<>|"”换行符回车符等1个及以上（不能用于文件名的字符）；将匹配到的字符串替换为下划线
+        //    //在@字符串（逐字字符串字面量）中，双引号只能用双引号转义
+        //    cleanedName = Regex.Replace(cleanedName, @"[\t\\/:\*\?\<\>\|""\n\r]+", "_");
+        //    //正则表达式匹配模式为：空格2个及以上；将匹配到的字符串替换为一个空格
+        //    cleanedName = Regex.Replace(cleanedName, @"[ ]{2,}", " ");
+        //    cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
+        //    return cleanedName;
+        //}
+
+        public static string CleanWorksheetName(string inputName, int targetLength)
         {
             string cleanedName = inputName.Trim(); //去除首尾空白字符
-            //正则表达式匹配模式为：制表符“\/:*?<>|"”换行符回车符等1个及以上（不能用于文件名的字符）；将匹配到的字符串替换为下划线
-            //在@字符串（逐字字符串字面量）中，双引号只能用双引号转义
-            cleanedName = Regex.Replace(cleanedName, @"[\t\\/:\*\?\<\>\|""\n\r]+", "_");
-            //正则表达式匹配模式为：空格2个及以上；将匹配到的字符串替换为一个空格
-            cleanedName = Regex.Replace(cleanedName, @"[ ]{2,}", " ");
+            //正则表达式匹配模式为：非中文字符、非英文字符、非阿拉伯数字或下划线、非空格等字符1个及以上；将匹配到的字符串替换为空
+            cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", "");
             cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
             return cleanedName;
         }
