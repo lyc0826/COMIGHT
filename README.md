@@ -110,7 +110,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Convert Markdown into Word**
 
-- Converts Markdown text into Word documents, keeping formats and styles as the original.
+- Converts Markdown text into Word documents, keeping formats and styles as the original. If there are tables in the document, the tables will be extracted into Excel worksheets in the meantime.
  
 #### **Export Document Table into Word Document**
 
