@@ -504,7 +504,7 @@ namespace COMIGHT
 
                                 case 3: //提取单元格数据
 
-                                    targetExcelWorkbookPrefix = "Extcd"; //目标Excel工作簿类型变量赋值为“提取”
+                                    targetExcelWorkbookPrefix = "Extr"; //目标Excel工作簿类型变量赋值为“提取”
 
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件的第一个Excel工作表
                                     {
