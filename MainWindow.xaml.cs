@@ -870,7 +870,6 @@ namespace COMIGHT
             }
         }
 
-
         private void ConvertMarkDownIntoWord()
         {
             try
@@ -908,79 +907,14 @@ namespace COMIGHT
 
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-                ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
+                ConvertDocumentByPandoc("docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
 
                 File.Delete(targetMDFilePath); //删除Markdown文件
 
-
                 // 提取目标Word文档中的表格并转存为目标Excel文档
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"Tbl_{targetFileMainName}.xlsx"); //获取目标Excel文件路径全名
-                
-                // 使用 NPOI 处理 
-                using (FileStream wordFileStream = File.OpenRead(targetWordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
-                {
-                    using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
-                    {
-                        if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
-                        {
-                            using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
-                            {
-                                IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
-                                int wordTableIndex = 0; 
-                                for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
-                                {
-                                    var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
-                                    if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
-                                    {
-                                        string tableTitle = "Sheet" + (wordTableIndex + 1); // 获取默认表名
 
-                                        // 获取Word文档表格上一行文字，作为表格标题
-                                        if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
-                                        {
-                                            XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
-                                            tableTitle = paragraph.Text; // 获取段落文字，赋值给表格标题变量
-                                        }
-                                        
-                                        //创建Excel工作表，并不使用默认名称，而是使用表格标题作为工作表的名称
-                                        ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}", 15)); // 创建Excel工作表对象,工作表名称限制长度
-
-                                        IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
-                                        
-                                        int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格列数，赋值给表格列数变量
-
-                                        worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
-                                        excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表第一行单元格
-
-                                        int excelRowIndex = 1; // 从Excel工作表1号（第2）行开始写入表格数据
-                                        foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
-                                        {
-                                            IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
-                                            int excelCellIndex = 0;
-                                            foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
-                                            {
-                                                ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
-                                                excelCell.SetCellValue(wordTableCell.GetText()); // 将当前Word文档表格的当前行的当前单元格的文字赋值给当前Excel单元格
-                                            }
-                                        }
-                                        wordTableIndex++; // Word文档表格索引累加1
-                                    }
-                                }
-                                workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
-
-                                // 格式化目标Excel工作簿中的表格
-                                FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
-                                using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
-                                {
-                                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
-                                    {
-                                        FormatExcelWorksheet(excelWorksheet, 2, 0); // 从第2行开始格式化表格数据区域
-                                    }
-                                    excelPackage.Save(); //保存目标Excel文档
-                                }
-                            }
-                        }
-                    }
-                }
+                ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档
 
                 ShowSuccessMessage();
             }
@@ -990,6 +924,75 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
+
+        //private static void ExtractTablesFromWordToExcel(string targetWordFilePath, string targetExcelFilePath)
+        //{
+        //    // 使用 NPOI 处理 
+        //    using (FileStream wordFileStream = File.OpenRead(targetWordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
+        //    {
+        //        using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
+        //        {
+        //            if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
+        //            {
+        //                using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
+        //                {
+        //                    IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
+        //                    int wordTableIndex = 0;
+        //                    for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
+        //                    {
+        //                        var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
+        //                        if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
+        //                        {
+        //                            string tableTitle = "Sheet" + (wordTableIndex + 1); // 获取默认表名
+
+        //                            // 获取表格标题
+        //                            if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
+        //                            {
+        //                                XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
+        //                                tableTitle = !string.IsNullOrWhiteSpace(paragraph.Text) ? paragraph.Text : tableTitle; //获取表格标题：如果段落文字不为null或全空白字符，则得到段落文字；否则，得到表格标题原值
+        //                            }
+
+        //                            //创建Excel工作表，使用表格标题作为工作表的名称
+        //                            ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}", 15)); // 创建Excel工作表对象,工作表名称限制长度
+
+        //                            IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
+
+        //                            int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格列数，赋值给表格列数变量
+
+        //                            worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
+        //                            excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表第一行单元格
+
+        //                            int excelRowIndex = 1; // 从Excel工作表1号（第2）行开始写入表格数据
+        //                            foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
+        //                            {
+        //                                IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
+        //                                int excelCellIndex = 0;
+        //                                foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
+        //                                {
+        //                                    ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
+        //                                    excelCell.SetCellValue(wordTableCell.GetText()); // 将当前Word文档表格的当前行的当前单元格的文字赋值给当前Excel单元格
+        //                                }
+        //                            }
+        //                            wordTableIndex++; // Word文档表格索引累加1
+        //                        }
+        //                    }
+        //                    workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
+
+        //                    // 格式化目标Excel工作簿中的表格
+        //                    FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
+        //                    using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
+        //                    {
+        //                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
+        //                        {
+        //                            FormatExcelWorksheet(excelWorksheet, 2, 0); // 从第2行开始格式化表格数据区域
+        //                        }
+        //                        excelPackage.Save(); //保存目标Excel文档
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         //private void ConvertMarkDownIntoWord()
         //{
