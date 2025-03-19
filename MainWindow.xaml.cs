@@ -966,20 +966,20 @@ namespace COMIGHT
                                     }
                                 }
                                 workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
+
+                                // 格式化目标Excel工作簿中的表格
+                                FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
+                                using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
+                                {
+                                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
+                                    {
+                                        FormatExcelWorksheet(excelWorksheet, 2, 0); // 从第2行开始格式化表格数据区域
+                                    }
+                                    excelPackage.Save(); //保存目标Excel文档
+                                }
                             }
                         }
                     }
-                }
-
-                // 格式化目标Excel工作簿中的表格
-                FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
-                using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
-                {
-                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
-                    {
-                        FormatExcelWorksheet(excelWorksheet, 2, 0); // 从第2行开始格式化表格数据区域
-                    }
-                    excelPackage.Save(); //保存目标Excel文档
                 }
 
                 ShowSuccessMessage();
