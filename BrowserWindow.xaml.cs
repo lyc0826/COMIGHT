@@ -28,7 +28,6 @@ namespace COMIGHT
         public BrowserWindow()
         {
             InitializeComponent();
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
 
             //Dispatcher.Invoke(() => EnsureCoreWebView2());
             //async void EnsureCoreWebView2()
