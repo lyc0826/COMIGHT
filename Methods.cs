@@ -473,7 +473,7 @@ namespace COMIGHT
 
                 // 计算英文小标题编号中含有几组数字
                 int enHeadingNumsCount = Regex.Split(matchEnHeadingNum.Groups[2].Value, @"\.")
-                  .Where(s => !string.IsNullOrWhiteSpace(s)) // 
+                  .Where(s => !string.IsNullOrWhiteSpace(s)) 
                   .ToList().Count;
 
                 if (matchEnHeadingNum.Groups[1].Success) // 如果英文小标题编号正则表达式捕获组1匹配成功（以“part、charpter、section”开头），则将"Lv0"赋值给函数返回值
