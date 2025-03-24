@@ -986,7 +986,6 @@ namespace COMIGHT
             }
         }
 
-
         public static bool IsChineseText(string inText)
         {
             //判断是否为中文文档

@@ -266,7 +266,7 @@ namespace COMIGHT
                         selection.Range.HighlightColorIndex = WdColorIndex.wdNoHighlight; // 突出显示文本取消
 
                         MSWord.Paragraphs paragraphs = selection.Paragraphs; // 将选区段落赋值给段落变量
-                                                                             // '.CharacterUnitFirstLineIndent = 2 '此参数优先级最高，一旦设定，需要再次设置一个绝对值相等的负值或者重置段落格式才能将其归零！
+
                         paragraphs.AutoAdjustRightIndent = 0; // 不自动调整右缩进
                         paragraphs.DisableLineHeightGrid = -1; //取消“如果定义了网格，则对齐到网格”
                         paragraphs.LineSpacingRule = WdLineSpacing.wdLineSpaceExactly; // 行距设置为固定值
