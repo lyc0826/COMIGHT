@@ -1,6 +1,6 @@
 {
   "SavingFolderPath": "C:\\COMIGHT Files",
-  "PandocPath": "C:\\Program Files\\Pandoc\\pandoc.exe",
+  "PandocPath": "pandoc.exe",
   "UserManualUrl": "https://github.com/lyc0826/COMIGHT/",
   "CnTitleFontName": "华文中宋",
   "CnTitleFontSize": 22,
