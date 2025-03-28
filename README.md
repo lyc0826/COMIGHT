@@ -76,7 +76,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Screen Stocks**
 
-- Screens stocks based on price-to-book (P/B) and price-to-earnings (P/E) ratios, selecting undervalued stocks with a margin of safety. The stock data Excel worksheet can be exported from stock analysis software. The data worksheet must be the first worksheet in the workbook, with a single header row containing the column field names: Stock Code, Name, Sector, Current Price, P/E Ratio, and P/B Ratio. The filtered results are stored in the second worksheet.
+- Screens stocks based on price-to-book (P/B) and price-to-earnings (P/E) ratios, selecting undervalued stocks with a margin of safety. The stock data Excel worksheet can be exported from stock analysis software. The data worksheet must be the first worksheet in the workbook, with a single header row containing the column names: Stock Code, Name, Sector, Current Price, P/E Ratio, and P/B Ratio. The filtered results are stored in the second worksheet.
 
 ### Document
 
@@ -161,7 +161,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Create Name Cards**
 
-- Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the seat plates must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell.
+- Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the name cards must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell.
 
 #### **Show System Info**
 - Shows the system infomation of the current computer (e.g. hardware info, network settings, BIOS serial number)
