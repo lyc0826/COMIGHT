@@ -1,5 +1,4 @@
-﻿
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using static COMIGHT.Methods;
 
@@ -12,20 +11,20 @@ namespace COMIGHT
     public partial class InputDialog : Window
     {
 
-        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptsReturn = false )
+        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptsReturn = false)
         {
             InitializeComponent();
 
             txtblkQuestion.Text = question; //将问题值赋值给问题文本块
 
             if (options != null) //如果选项列表不为null
-            { 
+            {
                 txtbxAnswer.Visibility = Visibility.Collapsed; // 隐藏文本框
 
                 cmbbxOptions.ItemsSource = options; // 将选项列表赋值给选项组合框
                 if (cmbbxOptions.Items.Contains(defaultAnswer)) // 如果选项组合框列表包含默认答案值，则选定选项组合框中与默认答案值相符的选项
                 {
-                    cmbbxOptions.SelectedItem = defaultAnswer; 
+                    cmbbxOptions.SelectedItem = defaultAnswer;
                 }
             }
             else //否则
@@ -36,7 +35,7 @@ namespace COMIGHT
                 txtbxAnswer.Height = textboxHeight; //将答案文本框的高度设为输入参数的高度，默认为30
                 txtbxAnswer.AcceptsReturn = acceptsReturn; //将答案文本框是否接受回车键设为输入参数的值，默认为false
             }
-            
+
         }
 
         private void btnDialogOk_Click(object sender, RoutedEventArgs e)
@@ -68,11 +67,11 @@ namespace COMIGHT
 
         public string Answer
         {
-            get 
+            get
             {
                 //如果选项组合框有选定项，则将该项的值赋给函数返回值；否则，将答案文本框的文本去除首尾空白字符后赋给函数返回值
                 return cmbbxOptions.SelectedItem != null ? cmbbxOptions.SelectedItem.ToString()! : txtbxAnswer.Text.Trim();
-            } 
+            }
         }
 
     }

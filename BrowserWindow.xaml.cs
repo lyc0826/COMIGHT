@@ -1,14 +1,13 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
-using OfficeOpenXml;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static COMIGHT.MainWindow;
-using static COMIGHT.PublicVariables;
 using static COMIGHT.Methods;
+using static COMIGHT.PublicVariables;
 
 
 namespace COMIGHT
@@ -104,7 +103,7 @@ namespace COMIGHT
                 DateTime endTime = DateTime.UtcNow;
                 await webView2.CoreWebView2.Profile.ClearBrowsingDataAsync(dataKinds, startTime, endTime); //清理数据
             }
-            
+
             ShowSuccessMessage();
         }
 

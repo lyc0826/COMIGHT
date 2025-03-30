@@ -35,7 +35,6 @@ namespace COMIGHT
             }
         }
 
-
         private List<SettingsRelation> lstSettingsRelations = new List<SettingsRelation> // 定义设置对应关系列表
             {
                 new SettingsRelation ("generalSettingsTable", "Saving Folder Path", "SavingFolderPath"),
@@ -95,10 +94,9 @@ namespace COMIGHT
 
         private void btnShowFonts_Click(object sender, RoutedEventArgs e)
         {
-            //获取已安装的字体名称：读取系统中已安装的字体，赋值给字体名称列表变量
-            var installedFontCollention = new InstalledFontCollection();
-            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
-            ShowMessage(string.Join('\n', lstFontNames));
+            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
+            ShowMessage(string.Join('\n', lstFontNames)); 
         }
 
         private object GetDataTableValue(DataTable dataTable, string dataTableKeyField, string datatableValueField, string key, Type targetType)
