@@ -2,9 +2,6 @@
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using Microsoft.Win32;
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
-using NPOI.XSSF.UserModel;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -14,13 +11,11 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.Methods;
 using static COMIGHT.MSOfficeInterop;
 using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
-using ICell = NPOI.SS.UserModel.ICell;
 using ITextDocument = iText.Layout.Document;
 using ITextParagraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
@@ -45,15 +40,16 @@ namespace COMIGHT
         public MainWindow()
         {
             InitializeComponent();
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;  //定义EPPlus库许可证类型为非商用！！！
+
+            ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
 
             this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
 
             lblStatus.DataContext = taskManager; // 将状态标签控件的数据环境设为任务管理器对象
             lblIntro.Content = $"For Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
 
-            appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置
-            latestRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录
+            appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
+            latestRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
         }
 
         private async void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
@@ -1154,10 +1150,10 @@ namespace COMIGHT
                         printerSettings.Orientation = eOrientation.Landscape; //方向为横向
                         printerSettings.HorizontalCentered = false; //表格水平居中为false
                         printerSettings.VerticalCentered = false; //表格垂直居中为false
-                        printerSettings.TopMargin = (decimal)(0.4 / 2.54); // 边距0.4cm转inch
-                        printerSettings.BottomMargin = (decimal)(0.4 / 2.54);
-                        printerSettings.LeftMargin = (decimal)(0.4 / 2.54);
-                        printerSettings.RightMargin = (decimal)(0.4 / 2.54);
+                        printerSettings.TopMargin = 0.4 / 2.54; // 边距0.4cm转inch
+                        printerSettings.BottomMargin = 0.4 / 2.54;
+                        printerSettings.LeftMargin = 0.4 / 2.54;
+                        printerSettings.RightMargin = 0.4 / 2.54;
                     }
 
                     // 保存目标工作簿
@@ -1741,7 +1737,7 @@ namespace COMIGHT
                     // 将指定列所有数据行的数据转换为double类型，赋值给数值列表
                     List<double> values = dataTable.AsEnumerable()
                                           .Select(row => Val(row[columnName]))
-                                          .ToList(); 
+                                          .ToList();
 
                     double mean = values.Average(); // 计算均值
                     double variance = values.Sum(value => Math.Pow(value - mean, 2)) / (values.Count - 1);  // 计算方差（每个数值与均值之差的平方的平均）

@@ -374,12 +374,12 @@ namespace COMIGHT
             printerSettings.VerticalCentered = false; //表格垂直居中对齐为false
 
             //设置页边距
-            printerSettings.LeftMargin = (decimal)(1.2 / 2.54);
-            printerSettings.RightMargin = (decimal)(1.2 / 2.54);
-            printerSettings.TopMargin = (decimal)(1.2 / 2.54);
-            printerSettings.BottomMargin = (decimal)(1.2 / 2.54);
-            printerSettings.HeaderMargin = (decimal)(0.8 / 2.54);
-            printerSettings.FooterMargin = (decimal)(0.8 / 2.54);
+            printerSettings.LeftMargin = 1.2 / 2.54;
+            printerSettings.RightMargin = 1.2 / 2.54;
+            printerSettings.TopMargin = 1.2 / 2.54;
+            printerSettings.BottomMargin = 1.2 / 2.54;
+            printerSettings.HeaderMargin = 0.8 / 2.54;
+            printerSettings.FooterMargin = 0.8 / 2.54;
 
             //设定打印顶端标题行：如果表头行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
             printerSettings.RepeatRows = headerRowCount >= 1 ? new ExcelAddress($"$1:${headerRowCount}") : new ExcelAddress("");

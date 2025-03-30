@@ -96,7 +96,7 @@ namespace COMIGHT
         private void btnShowFonts_Click(object sender, RoutedEventArgs e)
         {
             //获取已安装的字体名称：读取系统中已安装的字体，赋值给字体名称列表变量
-            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+            var installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
             ShowMessage(string.Join('\n', lstFontNames));
         }
@@ -138,11 +138,11 @@ namespace COMIGHT
                     object? value = propertyInfo?.GetValue(appSettings); // 获取当前设置项属性的值
                     if (value != null) // 如果当前设置项属性的值不为null
                     {
-                        DataRow newDataRow = dataSet.Tables[settingRelation.DataTableName]!.NewRow(); // 创建一个新数据行
-                        // 将设置DataTable中与当前设置项属性相对应的项名和值分别赋值给新数据行的"Item"、"Value"数据列
+                        DataRow newDataRow = dataSet.Tables[settingRelation.DataTableName]!.NewRow(); // 为对应的设置DataTable创建一个新数据行
+                        // 将对应的项名和值分别赋值给新数据行的"Item"、"Value"数据列
                         newDataRow["Item"] = settingRelation.DataTableItem;
                         newDataRow["Value"] = value;
-                        dataSet.Tables[settingRelation.DataTableName]!.Rows.Add(newDataRow); // 向当前设置DataTable添加新数据行
+                        dataSet.Tables[settingRelation.DataTableName]!.Rows.Add(newDataRow); // 向对应的设置DataTable添加新数据行
                     }
                 }
 
@@ -170,7 +170,7 @@ namespace COMIGHT
                     PropertyInfo propertyInfo = appSettings.GetType().GetProperty(settingRelation.AppSettingItem)!; // 获取应用程序设置中当前设置项属性
                     if (propertyInfo != null && propertyInfo.CanWrite) // 如果设置项属性不为null且可写入
                     {
-                        object valueToSet = GetDataTableValue(dataSet.Tables[settingRelation.DataTableName]!, "Item", "Value", settingRelation.DataTableItem, propertyInfo.PropertyType); // 将设置DataTable中与当前设置项属性相对应的数据行的Value值转换为设置项属性的类型
+                        object valueToSet = GetDataTableValue(dataSet.Tables[settingRelation.DataTableName]!, "Item", "Value", settingRelation.DataTableItem, propertyInfo.PropertyType); // 将对应的设置DataTable中对应的数据行的Value值转换为设置项属性的类型
                         if (valueToSet is string && propertyInfo.PropertyType == typeof(string)) // 如果值是字符串且设置项属性类型是字符串
                         {
                             valueToSet = valueToSet.ToString()!.Trim(); // 去除字符串首尾空白字符
