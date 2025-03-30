@@ -816,7 +816,7 @@ namespace COMIGHT
                     }
                 }
 
-                differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable); // 移除差异DataTable中的空数据行和空数据列
+                differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable, true); // 移除差异DataTable中的空数据行和空数据列
 
                 if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则抛出异常
                 {

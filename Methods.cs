@@ -669,26 +669,29 @@ namespace COMIGHT
 
         }
 
-        public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable)
+        public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
         {
+            int valueCountThreshold = removeRowsWithSingleValue? 1 : 0; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为1；否则为0
+
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
             {
-                //// 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
-                //int nonNullCount = dataTable.Rows[i].ItemArray.Count(value =>
-                //    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
+                // 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
+                int valueCount = dataTable.Rows[i].ItemArray.Count(value =>
+                    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
 
-                //// 如果以上数据元素的数量小于等于1（仅含有一个数据的数据行无意义），则删除这一行
-                //if (nonNullCount <= 1)
+                // 如果以上数据元素的数量小于等于数据元素计数阈值（该行视为无意义），则删除这一行
+                if (valueCount <= valueCountThreshold)
+                {
+                    dataTable.Rows[i].Delete();
+                }
+
+                //// 如果当前数据行的所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
+                //if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
                 //{
                 //    dataTable.Rows[i].Delete();
                 //}
 
-                // 如果当前数据行的所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
-                if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
-                {
-                    dataTable.Rows[i].Delete();
-                }
                 dataTable.AcceptChanges();
             }
 
@@ -704,6 +707,42 @@ namespace COMIGHT
             dataTable.AcceptChanges(); //接受上述更改
             return dataTable; // 将DataTable赋值给函数返回值
         }
+
+        //public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable)
+        //{
+        //    //清除空白数据行
+        //    for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
+        //    {
+        //        //// 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
+        //        //int nonNullCount = dataTable.Rows[i].ItemArray.Count(value =>
+        //        //    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
+
+        //        //// 如果以上数据元素的数量小于等于1（仅含有一个数据的数据行无意义），则删除这一行
+        //        //if (nonNullCount <= 1)
+        //        //{
+        //        //    dataTable.Rows[i].Delete();
+        //        //}
+
+        //        // 如果当前数据行的所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
+        //        if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
+        //        {
+        //            dataTable.Rows[i].Delete();
+        //        }
+        //        dataTable.AcceptChanges();
+        //    }
+
+        //    //清除空白数据列
+        //    for (int j = dataTable.Columns.Count - 1; j >= 0; j--) // 遍历DataTable所有数据列
+        //    {
+        //        //如果所有数据行的当前数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据列
+        //        if (dataTable.AsEnumerable().All(dataRow => dataRow[j] == DBNull.Value || string.IsNullOrWhiteSpace(dataRow[j].ToString())))
+        //        {
+        //            dataTable.Columns.RemoveAt(j);
+        //        }
+        //    }
+        //    dataTable.AcceptChanges(); //接受上述更改
+        //    return dataTable; // 将DataTable赋值给函数返回值
+        //}
 
         public static string RemoveMarkDownMarks(this string inText)
         {
