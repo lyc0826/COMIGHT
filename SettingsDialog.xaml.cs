@@ -103,7 +103,7 @@ namespace COMIGHT
         private void btnShowFonts_Click(object sender, RoutedEventArgs e)
         {
             //获取已安装的字体名称：读取系统中已安装的字体，赋值给字体名称列表变量
-            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+            var installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList();
             ShowMessage(string.Join('\n', lstFontNames));
         }

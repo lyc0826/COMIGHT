@@ -998,10 +998,10 @@ namespace COMIGHT
                         printerSettings.Orientation = eOrientation.Landscape; //方向为横向
                         printerSettings.HorizontalCentered = false; //表格水平居中为false
                         printerSettings.VerticalCentered = false; //表格垂直居中为false
-                        printerSettings.TopMargin = (decimal)(0.4 / 2.54); // 边距0.4cm转inch
-                        printerSettings.BottomMargin = (decimal)(0.4 / 2.54);
-                        printerSettings.LeftMargin = (decimal)(0.4 / 2.54);
-                        printerSettings.RightMargin = (decimal)(0.4 / 2.54);
+                        printerSettings.TopMargin = 0.4 / 2.54; // 边距0.4cm转inch
+                        printerSettings.BottomMargin = 0.4 / 2.54;
+                        printerSettings.LeftMargin = 0.4 / 2.54;
+                        printerSettings.RightMargin = 0.4 / 2.54;
                     }
 
                     // 保存目标工作簿
