@@ -1142,18 +1142,28 @@ namespace COMIGHT
 
                     }
 
-                    // 设置页面为A4，横向，页边距为0.4cm
                     foreach (ExcelWorksheet excelWorksheet in targetExcelPackage.Workbook.Worksheets)
                     {
+                        //设置纸张、方向、对齐
                         ExcelPrinterSettings printerSettings = excelWorksheet.PrinterSettings; //将当前Excel工作表打印设置赋值给工作表打印设置变量
                         printerSettings.PaperSize = ePaperSize.A4; // 纸张设置为A4
                         printerSettings.Orientation = eOrientation.Landscape; //方向为横向
                         printerSettings.HorizontalCentered = false; //表格水平居中为false
                         printerSettings.VerticalCentered = false; //表格垂直居中为false
+
+                        //设置页边距
                         printerSettings.TopMargin = 0.4 / 2.54; // 边距0.4cm转inch
                         printerSettings.BottomMargin = 0.4 / 2.54;
                         printerSettings.LeftMargin = 0.4 / 2.54;
                         printerSettings.RightMargin = 0.4 / 2.54;
+
+                        //设置视图和打印版式
+                        ExcelWorksheetView view = excelWorksheet.View; //将Excel工作表视图设置赋值给视图设置变量
+                        view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
+                        printerSettings.FitToPage = true; // 启用适应页面的打印设置
+                        printerSettings.FitToWidth = 0; // 设置缩放为几页宽，0代表打印页数不受限制，可能会跨越多页
+                        printerSettings.FitToHeight = 1; // 设置缩放为几页高，1代表所有行都将打印到一页上
+                        view.PageLayoutView = false; // 将页面布局视图设为false（即普通视图）
                     }
 
                     // 保存目标工作簿

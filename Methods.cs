@@ -397,8 +397,6 @@ namespace COMIGHT
             view.FreezePanes(headerRowCount + 1, 2); // 冻结最上方的行和最左侧的列（参数指定第一个不要冻结的单元格）
             view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
             printerSettings.FitToPage = true; // 启用适应页面的打印设置
-            //int printPagesCount = Math.Max(1, (int)Math.Round(fullWidth / 120, 0)); //计算打印页面数：将全表格宽度除以指定最大宽度的商四舍五入取整，如果小于1，则限定为1
-            //printerSettings.FitToWidth = printPagesCount;  // 设置缩放为几页宽，1代表即所有列都将打印在一页上
             printerSettings.FitToWidth = 1; // 设置缩放为几页宽，1代表即所有列都将打印在一页上
             printerSettings.FitToHeight = 0; // 设置缩放为几页高，0代表打印页数不受限制，可能会跨越多页
             printerSettings.PageOrder = ePageOrder.OverThenDown; // 将打印顺序设为“先行后列”
