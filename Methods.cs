@@ -129,13 +129,14 @@ namespace COMIGHT
                                     var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
                                     if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
                                     {
-                                        string tableTitle = "Sheet" + (wordTableIndex + 1); // 获取默认表名
+                                        //string tableTitle = "Sheet" + (wordTableIndex + 1); // 获取默认表名
+                                        string tableTitle = string.Empty;
 
                                         // 获取表格标题
                                         if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
                                         {
                                             XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
-                                            tableTitle = !string.IsNullOrWhiteSpace(paragraph.Text) ? paragraph.Text : tableTitle; //获取表格标题：如果段落文字不为null或全空白字符，则得到段落文字；否则，得到表格标题原值
+                                            tableTitle = !string.IsNullOrWhiteSpace(paragraph.Text) ? paragraph.Text : "Sheet" + (wordTableIndex + 1); //获取表格标题：如果段落文字不为null或全空白字符，则得到段落文字；否则，得到表单编号
                                         }
 
                                         //创建Excel工作表，使用表格标题作为工作表的名称
@@ -143,7 +144,7 @@ namespace COMIGHT
 
                                         IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
 
-                                        int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格列数，赋值给表格列数变量
+                                        int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
 
                                         worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
                                         excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表第一行单元格
@@ -271,10 +272,14 @@ namespace COMIGHT
                 }
             }
 
+            // 获取Excel工作表行数和列数
+            int rowCount = excelWorksheet.Dimension.End.Row;
+            int columnCount = excelWorksheet.Dimension.End.Column;
+
             //设置表头格式、自动筛选
             if (headerRowCount >= 1) //如果表头行数大于等于1
             {
-                ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column]; //将表头区域赋值给表头区域变量
+                ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerRowCount, columnCount]; //将表头区域赋值给表头区域变量
 
                 // 设置表头区域字体、对齐
                 headerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
@@ -286,12 +291,12 @@ namespace COMIGHT
 
                 if (excelWorksheet.AutoFilter.Address == null) // 如果自动筛选区域为null（未开启自动筛选），则将表头最后一行的自动筛选设为true
                 {
-                    excelWorksheet.Cells[headerRowCount, 1, headerRowCount, excelWorksheet.Dimension.End.Column].AutoFilter = true;
+                    excelWorksheet.Cells[headerRowCount, 1, headerRowCount, columnCount].AutoFilter = true;
                 }
 
                 for (int i = 1; i <= headerRowCount; i++) //遍历表头所有行
                 {
-                    ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
+                    ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, columnCount]; //将当前行所有单元格赋值给表头行单元格变量
 
                     int mergedCellCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
                     //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
@@ -313,7 +318,7 @@ namespace COMIGHT
             }
 
             // 将Excel工作表除去表头、表尾的区域赋值给记录区域变量
-            ExcelRange recordRange = excelWorksheet.Cells[headerRowCount + 1, 1, excelWorksheet.Dimension.End.Row - footerRowCount, excelWorksheet.Dimension.End.Column];
+            ExcelRange recordRange = excelWorksheet.Cells[headerRowCount + 1, 1, rowCount - footerRowCount, columnCount];
 
             // 设置记录区域字体、对齐
             recordRange.Style.Font.Name = appSettings.WorksheetFontName;
@@ -334,9 +339,9 @@ namespace COMIGHT
 
             int firstRefRowIndex = Math.Max(1, headerRowCount); //获取起始参考行的索引号：表头最末行的索引号，如果小于1，则限定为1
             //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
-            int lastRefRowIndex = Math.Max(firstRefRowIndex, excelWorksheet.Dimension.End.Row - footerRowCount);
+            int lastRefRowIndex = Math.Max(firstRefRowIndex, rowCount - footerRowCount);
 
-            for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历所有列
+            for (int j = 1; j <= columnCount; j++) //遍历所有列
             {
                 if (!excelWorksheet.Columns[j].Hidden) //如果当前列不为隐藏列
                 {
@@ -345,9 +350,8 @@ namespace COMIGHT
                     IEnumerable<ExcelRangeBase> qualifiedCells = columnCells.Where(cell => !string.IsNullOrWhiteSpace(cell.Text) && !cell.Merge);
                     //计算当前列所有合格单元格的字符数平均值：如果合格单元格集合不为空，则得到所有单元格字符数的平均值，否则得到0
                     double averageCharactersCount = qualifiedCells.Any() ? qualifiedCells.Average(cell => cell.Text.Length) : 0;
-                    excelWorksheet.Columns[j].Style.WrapText = false; //设置当前列文字自动换行为false
-                    excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（在文字不自动换行时，能完整显示文字的最适合列宽）
                     excelWorksheet.Columns[j].Style.WrapText = true; //设置当前列文字自动换行
+                    excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（在文字不自动换行时，能完整显示文字的最适合列宽）
                     //在当前列最合适列宽、基于单元格字符数平均值计算出的列宽中取较小值（并限制在8-40的范围），赋值给列宽变量
                     double columnWidth = Math.Min(excelWorksheet.Columns[j].Width, averageCharactersCount * 2 + 4).Clamp<double>(8, 40);
                     excelWorksheet.Columns[j].Width = columnWidth; //设置当前列的列宽
@@ -357,7 +361,7 @@ namespace COMIGHT
             }
 
             //设置记录区域行高
-            for (int i = headerRowCount + 1; i <= excelWorksheet.Dimension.End.Row - footerRowCount; i++) //遍历除去表头、表尾的所有行
+            for (int i = headerRowCount + 1; i <= rowCount - footerRowCount; i++) //遍历除去表头、表尾的所有行
             {
                 if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
                 {
@@ -394,7 +398,7 @@ namespace COMIGHT
             // 设置视图和打印版式
             ExcelWorksheetView view = excelWorksheet.View; //将Excel工作表视图设置赋值给视图设置变量
             view.UnFreezePanes(); //取消冻结窗格
-            view.FreezePanes(headerRowCount + 1, 2); // 冻结最上方的行和最左侧的列（参数指定第一个不要冻结的单元格）
+            view.FreezePanes(headerRowCount + 1, 1); // 冻结表头行（参数指定第一个不要冻结的单元格）
             view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
             printerSettings.FitToPage = true; // 启用适应页面的打印设置
             printerSettings.FitToWidth = 1; // 设置缩放为几页宽，1代表即所有列都将打印在一页上
@@ -409,13 +413,13 @@ namespace COMIGHT
             // 中文0级小标题编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，“：:”空格制表符至少一个
             Regex regExCnHeading0Num = new Regex(@"^[ |\t]*第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[：:| |\t]+", RegexOptions.Multiline);
             // 中文1级小标题编号：从开头开始，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-            Regex regExCnHeading1Num = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
+            Regex regExCnHeading1Num = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)、\.，,][ |\t]*", RegexOptions.Multiline);
             // 中文2级小标题编号：从开头开始，空格制表符任意多个，“（(”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-            Regex regExCnHeading2Num = new Regex(@"^[ |\t]*[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
+            Regex regExCnHeading2Num = new Regex(@"^[ |\t]*[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)、\.，,][ |\t]*", RegexOptions.Multiline);
             // 中文3级小标题编号：从开头开始，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-            Regex regExCnHeading3Num = new Regex(@"^[ |\t]*\d+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
+            Regex regExCnHeading3Num = new Regex(@"^[ |\t]*\d+[ |\t]*[）\)、\.，,][ |\t]*", RegexOptions.Multiline);
             // 中文4级小标题编号：从开头开始，空格制表符任意多个，“（(”，空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“）)、.．，,”，空格制表符任意多个
-            Regex regExCnHeading4Num = new Regex(@"^[ |\t]*[（\(][ |\t]*\d+[ |\t]*[）\)、\.．，,][ |\t]*", RegexOptions.Multiline);
+            Regex regExCnHeading4Num = new Regex(@"^[ |\t]*[（\(][ |\t]*\d+[ |\t]*[）\)、\.，,][ |\t]*", RegexOptions.Multiline);
             // 中文“X是”编号：从开头开始，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”，空格制表符任意多个
             Regex regExCnShiNum = new Regex(@"^[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*是[ |\t]*", RegexOptions.Multiline);
             // 中文“第X条”编号：从开头开始，空格制表符任意多个，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条”，“：:”空格制表符至少一个

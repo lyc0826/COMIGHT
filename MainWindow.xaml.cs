@@ -900,7 +900,7 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-                                                                        // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
+                // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
                 string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
 
                 //创建目标文件夹
