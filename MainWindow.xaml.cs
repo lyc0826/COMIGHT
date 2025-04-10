@@ -54,7 +54,7 @@ namespace COMIGHT
 
         private async void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
         {
-            await BatchConvertOfficeFileTypes();
+            await BatchConvertOfficeFileTypesAsync();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -65,6 +65,11 @@ namespace COMIGHT
         private void MnuBatchProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
         {
             BatchProcessExcelWorksheets();
+        }
+
+        private async void MnuBatchRepairWordDocuments_Click(object sender, RoutedEventArgs e)
+        {
+            await BatchRepairWordDocumentsAsync();
         }
 
         private void MnuBatchUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
@@ -113,22 +118,7 @@ namespace COMIGHT
 
         private void MnuHelp_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = appSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
-                    UseShellExecute = true //设定使用操作系统shell执行程序
-                };
-                //启动新的进程
-                Process.Start(startInfo);
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
+            ShowHelpWindow();
         }
 
         private void MnuMakeFileList_Click(object sender, RoutedEventArgs e)
@@ -148,28 +138,7 @@ namespace COMIGHT
 
         private void MnuOpenSavingFolder_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                string savingFolderPath = appSettings.SavingFolderPath; // 获取目标保存文件夹路径
-                if (!Directory.Exists(savingFolderPath)) // 如果目标文件夹不存在，则抛出异常
-                {
-                    throw new Exception("Folder doesn't exist.");
-                }
-
-                // 创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = $"\"{savingFolderPath}\"", //指定需要打开的文件夹路径
-                    UseShellExecute = true //设定使用操作系统shell执行程序
-                };
-                //启动新的进程
-                Process.Start(startInfo);
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
+            OpenSavingFolder();
         }
 
         private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
@@ -181,6 +150,26 @@ namespace COMIGHT
         {
             SettingsDialog settingDialog = new SettingsDialog();
             settingDialog.ShowDialog();
+        }
+
+        private static void ShowHelpWindow()
+        {
+            try
+            {
+                //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = appSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
+                    UseShellExecute = true //设定使用操作系统shell执行程序
+                };
+                //启动新的进程
+                Process.Start(startInfo);
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
 
         private async void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
@@ -202,6 +191,8 @@ namespace COMIGHT
             }
         }
 
+
+
         private async Task BatchFormatWordDocumentsAsync()
         {
             try
@@ -212,7 +203,28 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行FormatWordDocumentsAsync过程
+                await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行相应的过程
+                ShowSuccessMessage();
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
+
+        }
+
+        private async Task BatchRepairWordDocumentsAsync()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Word, true, "Select Word Files"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                await taskManager.RunTaskAsync(() => BatchRepairWordDocumentsAsyncHelper(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行相应的过程
                 ShowSuccessMessage();
             }
 
@@ -846,7 +858,7 @@ namespace COMIGHT
             }
         }
 
-        public async Task BatchConvertOfficeFileTypes()
+        public async Task BatchConvertOfficeFileTypesAsync()
         {
             try
             {
@@ -856,7 +868,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => ConvertOfficeFileTypesAsync(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行ConvertOfficeFileTypesAsync过程
+                await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行相应的过程
                 ShowSuccessMessage();
             }
 
@@ -920,173 +932,6 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
-
-        //private static void ExtractTablesFromWordToExcel(string targetWordFilePath, string targetExcelFilePath)
-        //{
-        //    // 使用 NPOI 处理 
-        //    using (FileStream wordFileStream = File.OpenRead(targetWordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
-        //    {
-        //        using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
-        //        {
-        //            if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
-        //            {
-        //                using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
-        //                {
-        //                    IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
-        //                    int wordTableIndex = 0;
-        //                    for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
-        //                    {
-        //                        var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
-        //                        if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
-        //                        {
-        //                            string tableTitle = "Sheet" + (wordTableIndex + 1); // 获取默认表名
-
-        //                            // 获取表格标题
-        //                            if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
-        //                            {
-        //                                XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
-        //                                tableTitle = !string.IsNullOrWhiteSpace(paragraph.Text) ? paragraph.Text : tableTitle; //获取表格标题：如果段落文字不为null或全空白字符，则得到段落文字；否则，得到表格标题原值
-        //                            }
-
-        //                            //创建Excel工作表，使用表格标题作为工作表的名称
-        //                            ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}", 15)); // 创建Excel工作表对象,工作表名称限制长度
-
-        //                            IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
-
-        //                            int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格列数，赋值给表格列数变量
-
-        //                            worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
-        //                            excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表第一行单元格
-
-        //                            int excelRowIndex = 1; // 从Excel工作表1号（第2）行开始写入表格数据
-        //                            foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
-        //                            {
-        //                                IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
-        //                                int excelCellIndex = 0;
-        //                                foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
-        //                                {
-        //                                    ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
-        //                                    excelCell.SetCellValue(wordTableCell.GetText()); // 将当前Word文档表格的当前行的当前单元格的文字赋值给当前Excel单元格
-        //                                }
-        //                            }
-        //                            wordTableIndex++; // Word文档表格索引累加1
-        //                        }
-        //                    }
-        //                    workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
-
-        //                    // 格式化目标Excel工作簿中的表格
-        //                    FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
-        //                    using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
-        //                    {
-        //                        foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
-        //                        {
-        //                            FormatExcelWorksheet(excelWorksheet, 2, 0); // 从第2行开始格式化表格数据区域
-        //                        }
-        //                        excelPackage.Save(); //保存目标Excel文档
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void ConvertMarkDownIntoWord()
-        //{
-        //    try
-        //    {
-        //        InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
-
-        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-        //        List<string> lstParagraphs = mdText
-        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-        //        {
-        //            throw new Exception("No valid text found.");
-        //        }
-
-        //        string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-        //        // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-        //        string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
-
-        //        //创建目标文件夹
-        //        if (!Directory.Exists(targetFolderPath))
-        //        {
-        //            Directory.CreateDirectory(targetFolderPath);
-        //        }
-
-        //        //导入目标Markdown文档
-        //        string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
-        //        File.WriteAllText(targetMDFilePath, mdText); //将导出文本框内的markdown文字导入目标Markdown文档
-
-        //        //将目标Markdown文档转换为目标Word文档
-        //        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-        //        ConvertDocumentByPandoc("markdown", "docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
-
-        //        File.Delete(targetMDFilePath); //删除Markdown文件
-
-        //        // 提取目标Word文档中的表格并转存为目标Excel文档
-        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"Tbl_{targetFileMainName}.xlsx"); //获取目标Excel文件路径全名
-        //        // 使用 NPOI 处理 
-        //        using (FileStream wordFileStream = File.OpenRead(targetWordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
-        //        {
-        //            using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
-        //            {
-        //                if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
-        //                {
-        //                    using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
-        //                    {
-        //                        IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
-        //                        int wordTableIndex = 1;
-        //                        foreach (XWPFTable wordTable in wordDocument.Tables) // 遍历目标Word文档中的所有表格
-        //                        {
-        //                            ISheet worksheet = workbook.CreateSheet($"Table_{wordTableIndex}"); // 创建Excel工作表对象，赋值给Excel工作表变量
-        //                            int excelRowIndex = 0;
-        //                            foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
-        //                            {
-        //                                IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
-        //                                int excelCellIndex = 0; 
-        //                                foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
-        //                                {
-        //                                    ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
-        //                                    excelCell.SetCellValue(wordTableCell.GetText()); // 设置Excel单元格的值（当前Word文档表格的当前行的当前单元格的文字）
-        //                                }
-        //                            }
-        //                            wordTableIndex++;
-        //                        }
-        //                        workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        // 格式化目标Excel工作簿中的表格
-        //        FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
-        //        using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
-        //        {
-        //            foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
-        //            {
-        //                FormatExcelWorksheet(excelWorksheet, 1, 0); //格式化当前工作表
-        //            }
-        //            excelPackage.Save(); //保存目标Excel文档
-        //        }
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-
-        //}
-
 
         public void CreateNameCards()
         {
@@ -1210,7 +1055,7 @@ namespace COMIGHT
 
                 //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName(lstParagraphs[0], 40)}.xlsx");
-                ProcessParagraphsIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
+                ImportParagraphListIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
 
                 ShowSuccessMessage();
             }
@@ -1308,7 +1153,7 @@ namespace COMIGHT
                 }
 
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
-                await ProcessDocumentTableIntoWordAsync(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
+                await ExportDocumentTableIntoWordAsyncHelper(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
 
                 ShowSuccessMessage();
             }
@@ -1632,6 +1477,32 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
 
+        }
+
+        private static void OpenSavingFolder()
+        {
+            try
+            {
+                string savingFolderPath = appSettings.SavingFolderPath; // 获取目标保存文件夹路径
+                if (!Directory.Exists(savingFolderPath)) // 如果目标文件夹不存在，则抛出异常
+                {
+                    throw new Exception("Folder doesn't exist.");
+                }
+
+                // 创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = $"\"{savingFolderPath}\"", //指定需要打开的文件夹路径
+                    UseShellExecute = true //设定使用操作系统shell执行程序
+                };
+                //启动新的进程
+                Process.Start(startInfo);
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
 
         private void ScreenStocks()

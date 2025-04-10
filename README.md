@@ -108,6 +108,10 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - **Documents with columns, complex tables, or mixed text and images are not applicable!**
 
+#### **Batch Repair Word Documents**
+
+- Repairs problematic Word documents that show weird styles and cannot be formatted correctly.
+
 #### **Convert Markdown into Word**
 
 - Converts Markdown text into Word documents, keeping formats and styles as the original. If there are tables in the document, the tables will be extracted into Excel worksheets in the meantime.

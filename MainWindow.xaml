@@ -37,6 +37,7 @@
 
                 <MenuItem Header="Document">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
+                    <MenuItem x:Name="mnuBatchRepairFormatWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
                     <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
                     <MenuItem x:Name="mnuImportTextIntoDocumentTable" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
@@ -45,7 +46,6 @@
 
                 <MenuItem Header="Tools">
                     <MenuItem x:Name="mnuBatchConvertOfficeFileTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
-                    
                     <MenuItem x:Name="mnuMakeFileList" Header= "Make File List" Click="MnuMakeFileList_Click" />
                     <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />

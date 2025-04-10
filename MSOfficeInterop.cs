@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.Word;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Windows;
 using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
 using MSExcel = Microsoft.Office.Interop.Excel;
@@ -19,7 +20,10 @@ namespace COMIGHT
     public partial class MSOfficeInterop
     {
 
-        public static async Task ConvertOfficeFileTypesAsync(List<string> filePaths)
+        
+
+
+        public static async Task BatchConvertOfficeFileTypesAsyncHelper(List<string> filePaths)
         {
             MSExcel.Application? msExcelApp = null;
             MSWord.Application? msWordApp = null;
@@ -91,7 +95,7 @@ namespace COMIGHT
             }
         }
 
-        public static async Task FormatWordDocumentsAsync(List<string> filePaths)
+        public static async Task BatchFormatWordDocumentsAsyncHelper(List<string> filePaths)
         {
             Task task = Task.Run(() => process()); // 创建一个异步任务，执行过程为process()
             void process()
@@ -756,6 +760,39 @@ namespace COMIGHT
             await task;
         }
 
+        public static async Task BatchRepairWordDocumentsAsyncHelper(List<string> filePaths)
+        {
+            Task task = Task.Run(() => process());
+            void process()
+            {
+                MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
+                try
+                {
+                    foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
+                    {
+                        string targetFilePath = Path.Combine(Path.GetDirectoryName(filePath)!, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
+                        MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开Word文档，赋值给Word文档变量
+                        MSWordDocument targetMSWordDocument = msWordApp.Documents.Add(); // 新建Word文档并赋值给目标Word文档变量
+                        msWordDocument.Content.Copy(); // 复制当前Word文档全文
+                        targetMSWordDocument.Content.PasteSpecial(WdPasteOptions.wdUseDestinationStyles); // 粘贴到目标Word文档，使用目标文档格式
+                        msWordDocument.Close(); //关闭当前Word文档
+                        //目标Word文件另存为docx格式，使用最新Word版本兼容模式
+                        targetMSWordDocument.SaveAs2(FileName: targetFilePath, FileFormat: WdSaveFormat.wdFormatDocumentDefault, CompatibilityMode: WdCompatibilityMode.wdCurrent);
+                        targetMSWordDocument.Close(); //关闭目标Word文件
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                finally
+                {
+                    KillOfficeApps(new object[] { msWordApp });
+                }
+            }
+            await task;
+        }
 
     }
 }

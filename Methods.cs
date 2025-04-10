@@ -917,7 +917,7 @@ namespace COMIGHT
             messageDialog.ShowDialog();
         }
 
-        public static void ProcessParagraphsIntoDocumentTable(List<string>? lstParagraphs, string targetExcelFilePath)
+        public static void ImportParagraphListIntoDocumentTable(List<string>? lstParagraphs, string targetExcelFilePath)
         {
             try
             {
@@ -948,7 +948,7 @@ namespace COMIGHT
                             };
                     titleWorksheet.Cells["A2:A4"].LoadFromArrays(lstTitleWorksheetItems); // 将项目列表加载到大标题工作表
 
-                    // 定义主体工作表表头列表“Heading Level、Heading Index、Content、Deadline、Responsible Subject、Category”
+                    // 定义主体工作表表头列表
                     List<object[]> lstBodyWorksheetHeading = new List<object[]> { new object[] { "Heading Level", "Heading Index", "Content", "Remark 1", "Remark 2", "Remark 3" } };
                     bodyTextsWorksheet.Cells["A1:F1"].LoadFromArrays(lstBodyWorksheetHeading);
 
@@ -1118,7 +1118,7 @@ namespace COMIGHT
             return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
         }
 
-        public static async Task ProcessDocumentTableIntoWordAsync(string documentTableFilePath, string targetWordFilePath)
+        public static async Task ExportDocumentTableIntoWordAsyncHelper(string documentTableFilePath, string targetWordFilePath)
         {
             try
             {
@@ -1383,7 +1383,7 @@ namespace COMIGHT
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
                 if (ShowMessage("Do you want to format the document?"))
                 {
-                    await taskManager.RunTaskAsync(() => FormatWordDocumentsAsync(new List<string> { targetWordFilePath }));
+                    await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(new List<string> { targetWordFilePath }));
                 }
 
             }
