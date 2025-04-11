@@ -136,7 +136,9 @@ namespace COMIGHT
                                         if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
                                         {
                                             XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
-                                            tableTitle = !string.IsNullOrWhiteSpace(paragraph.Text) ? paragraph.Text : "Sheet" + (wordTableIndex + 1); //获取表格标题：如果段落文字不为null或全空白字符，则得到段落文字；否则，得到表单编号
+
+                                            // 表格标题正则表达式匹配模式为：从开头开始，非“。.；;”的字符1至60个，结尾标志；获取表格标题：如果段落文字被表格标题正则表达式匹配成功，则得到段落文字；否则，得到表单通用名+编号
+                                            tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。\.；;]{1,60}$") ? paragraph.Text : "Sheet" + (wordTableIndex + 1); 
                                         }
 
                                         //创建Excel工作表，使用表格标题作为工作表的名称
