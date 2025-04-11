@@ -96,6 +96,16 @@ namespace COMIGHT
             ConvertMarkDownIntoWord();
         }
 
+        private void MnuCreateFileList_Click(object sender, RoutedEventArgs e)
+        {
+            CreateFileList();
+        }
+
+        private void MnuCreateFolders_Click(object sender, RoutedEventArgs e)
+        {
+            CreateFolders();
+        }
+
         private void MnuCreateNameCards_Click(object sender, RoutedEventArgs e)
         {
             CreateNameCards();
@@ -121,16 +131,6 @@ namespace COMIGHT
             ShowHelpWindow();
         }
 
-        private void MnuMakeFileList_Click(object sender, RoutedEventArgs e)
-        {
-            MakeFileList();
-        }
-
-        private void MnuMakeFolders_Click(object sender, RoutedEventArgs e)
-        {
-            MakeFolders();
-        }
-
         private void MnuMergeDataIntoDocument_Click(object sender, RoutedEventArgs e)
         {
             MergeDataIntoDocument();
@@ -152,27 +152,7 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
-        private static void ShowHelpWindow()
-        {
-            try
-            {
-                //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = appSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
-                    UseShellExecute = true //设定使用操作系统shell执行程序
-                };
-                //启动新的进程
-                Process.Start(startInfo);
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
-        }
-
-        private async void MnuShowSystemInfo_Click(object sender, RoutedEventArgs e)
+        private async void MnuSystemInfo_Click(object sender, RoutedEventArgs e)
         {
             await ShowSystemInfoAsync();
         }
@@ -1067,7 +1047,7 @@ namespace COMIGHT
 
         }
 
-        private void MakeFolders()
+        private void CreateFolders()
         {
             try
             {
@@ -1165,7 +1145,7 @@ namespace COMIGHT
         }
 
 
-        private void MakeFileList()
+        private void CreateFileList()
         {
             try
             {
@@ -1670,6 +1650,26 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
 
+        }
+
+        private static void ShowHelpWindow()
+        {
+            try
+            {
+                //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = appSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
+                    UseShellExecute = true //设定使用操作系统shell执行程序
+                };
+                //启动新的进程
+                Process.Start(startInfo);
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
 
         private async Task ShowSystemInfoAsync()

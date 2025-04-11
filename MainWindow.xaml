@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="COMIGHT Assistant" Width="480" SizeToContent="Height" FontSize="14" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" ResizeMode="CanMinimize"  >
+        Title="COMIGHT Assistant" Width="400" SizeToContent="Height" FontSize="14" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" ResizeMode="CanMinimize"  >
 
     <Grid Margin="3,0,3,3">
         <Grid.ColumnDefinitions>
@@ -22,6 +22,7 @@
                 <MenuItem Header="Start">
                     <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="MnuOpenSavingFolder_Click" />
                     <MenuItem x:Name="mnuSettings" Header="Settings" Click="MnuSettings_Click"  />
+                    <MenuItem x:Name="mnuSystemInfo" Header= "System Info" Click="MnuSystemInfo_Click" />
                     <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
                     <!-- <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" /> -->
@@ -37,7 +38,6 @@
 
                 <MenuItem Header="Document">
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
-                    <MenuItem x:Name="mnuBatchRepairFormatWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
                     <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
                     <MenuItem x:Name="mnuExportDocumentTableIntoWord" Header="Export Document Table into Word" Click="MnuExportDocumentTableIntoWord_Click"  />
                     <MenuItem x:Name="mnuImportTextIntoDocumentTable" Header="Import Text into Document Table" Click="MnuImportTextIntoDocumentTable_Click"  />
@@ -45,11 +45,11 @@
                 </MenuItem>
 
                 <MenuItem Header="Tools">
-                    <MenuItem x:Name="mnuBatchConvertOfficeFileTypes" Header= "Batch Convert Office Files Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
-                    <MenuItem x:Name="mnuMakeFileList" Header= "Make File List" Click="MnuMakeFileList_Click" />
-                    <MenuItem x:Name="mnuMakeFolders" Header= "Make Folders" Click="MnuMakeFolders_Click" />
+                    <MenuItem x:Name="mnuBatchConvertOfficeFileTypes" Header= "Batch Convert Office File Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
+                    <MenuItem x:Name="mnuBatchRepairWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
+                    <MenuItem x:Name="mnuCreateFileList" Header= "Create File List" Click="MnuCreateFileList_Click" />
+                    <MenuItem x:Name="mnuCreateFolders" Header= "Create Folders" Click="MnuCreateFolders_Click" />
                     <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
-                    <MenuItem x:Name="mnuShowSystemInfo" Header= "Show System Info" Click="MnuShowSystemInfo_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Web">

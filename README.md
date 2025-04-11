@@ -20,13 +20,24 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 ### Start
 
-- **Open Saving Folder:** Opens the folder where output files are saved.
+#### **Open Saving Folder** 
 
-- **Settings:** Set parameters for this application.
+- Opens the folder where output files are saved.
 
-- **Help:** Opens this user manual.
+#### **Settings** 
+- Sets parameters for this application.
 
-- **Exit:** Closes all windows and exits the program.
+#### **Show System Info**
+
+- Shows the system infomation of the current computer (e.g. hardware info, network settings, BIOS serial number)
+
+#### **Help** 
+
+- Opens this user manual.
+
+#### **Exit** 
+
+- Closes all windows and exits the program.
 
 ### Table
 
@@ -50,8 +61,6 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - **Convert Textual Numbers into Numberic:** Converts textual numbers in specified cell ranges across multiple worksheets into numberic.
 
-  - This function generates a summary sheet listing cells that could not be converted, along with their workbook file name, worksheet name, cell addresses, and values.
-
 - **Copy Formulas to Multiple Worksheets:** Copies a formulas from a specified range in a template worksheet to multiple target worksheets. The formulas to be copied must be located in the first worksheet (template worksheet) of the template workbook.
 
   - Example: A template worksheet has the sum formula "=SUM(A2:D2)" in cell E2, "=SUM(A3:D3)" in E3, and "=SUM(A4:D4)" in E4. This function copies the formulas from the E2:E4 range to multiple target worksheets.
@@ -68,7 +77,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - Example: A student roster worksheet contains class information in column B (Class 1, Class 2, Class 3). Splitting by column B creates separate roster worksheets for each class, each stored in a different workbook.
 
-- **Split into Worksheets:** Same as above, but the split worksheets are stored in different worksheets within a new workbook. The worksheet names are derived from the values in the split column. The number of worksheets cannot exceed 255.
+- **Split into Worksheets:** Same as above, but the split worksheets are stored in different worksheets within a new workbook. The worksheet names are derived from the values in the split column.
 
 #### **Compare Excel Worksheets**
 
@@ -108,13 +117,11 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - **Documents with columns, complex tables, or mixed text and images are not applicable!**
 
-#### **Batch Repair Word Documents**
-
-- Repairs problematic Word documents that show weird styles and cannot be formatted correctly.
-
 #### **Convert Markdown into Word**
 
 - Converts Markdown text into Word documents, keeping formats and styles as the original. If there are tables in the document, the tables will be extracted into Excel worksheets in the meantime.
+
+  - **The Pandoc application (https://github.com/jgm/pandoc) is necessary for this function. The path of Pandoc executable file shall be set correctly in the Settings.**
  
 #### **Export Document Table into Word Document**
 
@@ -143,7 +150,6 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 #### **Import Text into Document Table**
 
 - Imports the content of the text box in the dialog box into a document table.
-  - **The Pandoc application (https://github.com/jgm/pandoc) is necessary for this function. The path of Pandoc executable file shall be set correctly in the Settings.**
 
 #### **Merge Data Into Document**
 
@@ -155,20 +161,21 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Batch converts older Excel (.xls), Word (.doc), WPS Spreadsheet (.et), and WPS Document (.wps) files into the current .xlsx and .docx formats.
 
-#### **Make File List**
+#### **Batch Repair Word Documents**
+
+- Repairs problematic Word documents that show weird styles and cannot be formatted correctly.
+
+#### **Create File List**
 
 - Creates a list of all subfolders and files within a specified folder path, including hyperlinks, subpaths, file/folder names, types, and creation times.
 
-#### **Make Folders**
+#### **Create Folders**
 
 - Creates folders based on the folder structure data in an Excel worksheet. Folders are created hierarchically from left to right, with the leftmost folder being the highest level (closest to the root directory) and the rightmost folder being the lowest level (furthest from the root directory). Use the template provided by this program for the folder creation worksheet.
 
 #### **Create Name Cards**
 
 - Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the name cards must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell.
-
-#### **Show System Info**
-- Shows the system infomation of the current computer (e.g. hardware info, network settings, BIOS serial number)
 
 ### Web
 
