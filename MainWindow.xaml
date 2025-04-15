@@ -54,7 +54,7 @@
 
                 <MenuItem Header="Web">
                     <MenuItem x:Name="mnuBrowser" Header="Browser" Click="MnuBrowser_Click" />
-                    <MenuItem x:Name="mnuSubConverter" Header="SubConverter" Click="MnuSubConverter_Click"  />
+                    <!-- <MenuItem x:Name="mnuSubConverter" Header="SubConverter" Click="MnuSubConverter_Click"  /> -->
                 </MenuItem>
             </Menu>
         </DockPanel>
