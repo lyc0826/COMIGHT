@@ -15,8 +15,6 @@ namespace COMIGHT
 
         //public static string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); //获取桌面文件夹路径
 
-        //public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
-
     }
 
     public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
@@ -74,9 +72,7 @@ namespace COMIGHT
         public string LatestBatchProcessWorkbookOption { get; set; } = string.Empty;
         public string LatestSplitWorksheetOption { get; set; } = string.Empty;
         public string LatestUrl { get; set; } = string.Empty;
-        public string LatestSubConverterBackEndUrl { get; set; } = string.Empty;
-        public string LatestOriginalSubUrls { get; set; } = string.Empty;
-        public string LatestExternalConfigUrl { get; set; } = string.Empty;
+
     }
 
 }

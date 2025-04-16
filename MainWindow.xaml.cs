@@ -162,17 +162,6 @@ namespace COMIGHT
             SplitExcelWorksheet();
         }
 
-        private void MnuSubConverter_Click(object sender, RoutedEventArgs e)
-        {
-            if (GetInstanceCountByHandle<SubConverterWindow>() < 1) //如果被打开的浏览器窗口数量小于1个，则新建一个浏览器窗口实例并显示
-            {
-                SubConverterWindow subConverterWindow = new SubConverterWindow();
-                subConverterWindow.Show();
-            }
-        }
-
-
-
         private async Task BatchFormatWordDocumentsAsync()
         {
             try
