@@ -83,10 +83,6 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Compares data with identical record keys and column fields between a starting data worksheet and an ending data worksheet, listing the differences (and calculating the percentage change for numerical data). The starting and ending data worksheets must be in different workbooks and be the first worksheet in their respective workbooks. Records must be unique (no duplicate record keys).
 
-#### **Screen Stocks**
-
-- Screens stocks based on price-to-book (P/B) and price-to-earnings (P/E) ratios, selecting undervalued stocks with a margin of safety. The stock data Excel worksheet can be exported from stock analysis software. The data worksheet must be the first worksheet in the workbook, with a single header row containing the column names: Stock Code, Name, Sector, Current Price, P/E Ratio, and P/B Ratio. The filtered results are stored in the second worksheet.
-
 ### Document
 
 #### **Batch Format Word Documents**
