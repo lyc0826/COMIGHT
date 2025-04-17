@@ -675,7 +675,7 @@ namespace COMIGHT
 
         public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
         {
-            int valueCountThreshold = removeRowsWithSingleValue? 1 : 0; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为1；否则为0
+            int valueCountThreshold = removeRowsWithSingleValue? 2 : 1; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为2；否则为1
 
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
@@ -684,8 +684,8 @@ namespace COMIGHT
                 int valueCount = dataTable.Rows[i].ItemArray.Count(value =>
                     value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
 
-                // 如果以上数据元素的数量小于等于数据元素计数阈值（该行视为无意义），则删除这一行
-                if (valueCount <= valueCountThreshold)
+                // 如果以上数据元素的数量小于数据元素计数阈值（该行视为无意义），则删除这一行
+                if (valueCount < valueCountThreshold)
                 {
                     dataTable.Rows[i].Delete();
                 }
