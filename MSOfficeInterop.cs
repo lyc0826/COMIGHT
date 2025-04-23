@@ -226,10 +226,13 @@ namespace COMIGHT
                             // 如果当前段落不在表格内，且含有自动编号
                             if (!paragraph.Range.Information[WdInformation.wdWithInTable] && !string.IsNullOrEmpty(paragraph.Range.ListFormat.ListString))
                             {
-                                paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + (!isCnDocument ? " " : "")); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
+                                // 正则表达式匹配模式设为：中文数字、阿拉伯数字；如果自动编号被匹配成功
+                                if (Regex.IsMatch(paragraph.Range.ListFormat.ListString, @"[一二三四五六七八九十〇零\d]")) 
+                                {
+                                    paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + (!isCnDocument ? " " : "")); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
+                                }
                             }
                         }
-
 
                         // 清除文首和文末的空白段
                         while (msWordDocument.Paragraphs[1].Range.Text == "\r") // 如果第1段文字为回车符，则继续循环

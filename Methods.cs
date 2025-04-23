@@ -51,18 +51,6 @@ namespace COMIGHT
             return cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
         }
 
-        //public static string CleanFileAndFolderName(string inputName, int targetLength)
-        //{
-        //    string cleanedName = inputName.Trim(); //去除首尾空白字符
-        //    //正则表达式匹配模式为：制表符“\/:*?<>|"”换行符回车符等1个及以上（不能用于文件名的字符）；将匹配到的字符串替换为下划线
-        //    //在@字符串（逐字字符串字面量）中，双引号只能用双引号转义
-        //    cleanedName = Regex.Replace(cleanedName, @"[\t\\/:\*\?\<\>\|""\n\r]+", "_");
-        //    //正则表达式匹配模式为：空格2个及以上；将匹配到的字符串替换为一个空格
-        //    cleanedName = Regex.Replace(cleanedName, @"[ ]{2,}", " ");
-        //    cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
-        //    return cleanedName;
-        //}
-
         public static string CleanWorksheetName(string inputName, int targetLength)
         {
             string cleanedName = inputName.Trim(); //去除首尾空白字符
