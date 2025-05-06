@@ -182,6 +182,16 @@ namespace COMIGHT
         {
             foreach (ExcelWorksheet excelWorksheet in workbook.Worksheets) // 遍历所有Excel工作表
             {
+                
+                if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
+                {
+                    continue;
+                }
+
+                // 获取当前Excel工作表行数和列数
+                int rowCount = excelWorksheet.Dimension.End.Row;
+                int columnCount = excelWorksheet.Dimension.End.Column;
+
                 FormatExcelWorksheet(excelWorksheet, 1, 0); //设置Excel工作表格式
 
                 //设置A-I列列宽（小标题级别、小标题编号、文字、完成时限、责任人、分类）
@@ -190,47 +200,22 @@ namespace COMIGHT
                 excelWorksheet.Cells["D:F"].EntireColumn.Width = 12;
                 excelWorksheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left; //文字水平左对齐
 
-                if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
-                {
-                    continue;
-                }
-
                 if (excelWorksheet.Name == "Body") // 如果当前Excel工作表为“主体”工作表
                 {
-                    //将A、D、E、F列中所有为null或全空白字符的单元格赋值给空白单元格变量
-                    IEnumerable<ExcelRangeBase> emptyCells = excelWorksheet.Cells["A:A,D:D,E:E,F:F"].Where(c => string.IsNullOrWhiteSpace(c.Text));
-                    foreach (ExcelRangeBase emptyCell in emptyCells) //遍历所有空白单元格
+
+                    // 获取工作表中已使用的单元格区域
+                    ExcelRange recordRange = excelWorksheet.Cells[1, 1, rowCount, columnCount];
+
+                    // 筛选出不在B列且为null或全空白字符的单元格，赋值给空白单元格集合变量
+                    IEnumerable<ExcelRangeBase> emptyCells = recordRange
+                        .Where(cell =>
+                            cell.Start.Column != 2 && // 单元格不在B列 (EPPlus列号从1开始, B列是第2列)
+                            string.IsNullOrWhiteSpace(cell.Text) // 单元格为null或全空白字符
+                        );
+
+                    foreach (ExcelRangeBase emptyCell in emptyCells)  // 遍历所有空白单元格
                     {
                         emptyCell.Value = "-"; // 将当前单元格填充为"-"
-                    }
-
-                    // 填加数据验证
-                    int lastRowIndex = Math.Max(6, excelWorksheet.Dimension.End.Row); // 获取已使用区域最末行的索引号，如果小于指定值，则将其限定到指定值
-                    string rangeStr = "A2:A" + lastRowIndex; // 将A列第2行至最末行单元格区域地址赋值给区域地址字符串变量
-
-                    //在工作表的数据验证集合的ExcelDataValidationList中查找作用区域地址字符串与指定区域地址字符串相同的数据验证列表，从中取出第一个数据验证，将其赋值给existingValidation变量
-                    //第一个Address表示数据验证规则所应用的单元格区域地址，第二个Address表示前述单元格区域地址的字符串表达形式，如“A2:Axx”
-                    ExcelDataValidationList? existingValidation = excelWorksheet.DataValidations.OfType<ExcelDataValidationList>()
-                        .FirstOrDefault(v => v.Address.Address == rangeStr);
-                    string[] arrValidations = new string[] { "Lv0", "Lv1", "Lv2", "Lv3", "Lv4", "Enum.", "Itm.", "Immed." }; //将数据验证项赋值给数据验证数组
-
-                    if (existingValidation == null) // 如果不存在数据验证，则添加新的数据验证
-                    {
-                        IExcelDataValidationList? validation = excelWorksheet.DataValidations.AddListValidation(rangeStr);
-                        // 添加数据验证规则
-                        foreach (string item in arrValidations)
-                        {
-                            validation.Formula.Values.Add(item);
-                        }
-                    }
-                    else //否则
-                    {
-                        // 修改数据验证规则
-                        existingValidation.Formula.Values.Clear(); //删除现有数据验证规则
-                        foreach (string item in arrValidations)
-                        {
-                            existingValidation.Formula.Values.Add(item);
-                        }
                     }
 
                     // 纯标题行设置文字加粗
