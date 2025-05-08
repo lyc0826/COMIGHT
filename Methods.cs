@@ -1,11 +1,10 @@
-﻿using Microsoft.Win32;
+﻿using GEmojiSharp;
+using Microsoft.Win32;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
-using OfficeOpenXml.DataValidation;
-using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Export.ToDataTable;
 using OfficeOpenXml.Style;
 using System.Data;
@@ -126,7 +125,7 @@ namespace COMIGHT
                                             XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
 
                                             // 表格标题正则表达式匹配模式为：从开头开始，非“。；;”的字符1至60个，结尾标志；获取表格标题：如果段落文字被表格标题正则表达式匹配成功，则得到段落文字；否则，得到表单通用名+编号
-                                            tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : "Sheet" + (wordTableIndex + 1); 
+                                            tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : "Sheet" + (wordTableIndex + 1);
                                         }
 
                                         //创建Excel工作表，使用表格标题作为工作表的名称
@@ -182,7 +181,7 @@ namespace COMIGHT
         {
             foreach (ExcelWorksheet excelWorksheet in workbook.Worksheets) // 遍历所有Excel工作表
             {
-                
+
                 if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
                 {
                     continue;
@@ -451,7 +450,7 @@ namespace COMIGHT
 
                 // 计算英文小标题编号中含有几组数字
                 int enHeadingNumsCount = Regex.Split(matchEnHeadingNum.Groups[2].Value, @"\.")
-                  .Where(s => !string.IsNullOrWhiteSpace(s)) 
+                  .Where(s => !string.IsNullOrWhiteSpace(s))
                   .ToList().Count;
 
                 if (matchEnHeadingNum.Groups[1].Success) // 如果英文小标题编号正则表达式捕获组1匹配成功（以“part、charpter、section”开头），则将"Lv0"赋值给函数返回值
@@ -649,7 +648,7 @@ namespace COMIGHT
 
         public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
         {
-            int valueCountThreshold = removeRowsWithSingleValue? 2 : 1; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为2；否则为1
+            int valueCountThreshold = removeRowsWithSingleValue ? 2 : 1; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为2；否则为1
 
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
@@ -790,6 +789,12 @@ namespace COMIGHT
                 }
             }
 
+        }
+
+        public static string RemoveEmojis(string text)
+        {
+            return Regex.Replace(text, Emoji.RegexPattern, string.Empty); // 使用正则表达式匹配并替换所有Emoji字符
+            //return Regex.Replace(text, @"[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Extended_Pictographic}]", "");
         }
 
         public static string RemoveHeadingNum(string inText)
@@ -979,7 +984,7 @@ namespace COMIGHT
                 {
                     FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
                                            //指定参数：-s完整独立文件，-f原格式 -t目标格式 -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
-                    //Arguments = $"-s -f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
+                                           //Arguments = $"-s -f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
                     Arguments = $"-s -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
                     RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
                     UseShellExecute = false, //设定使用操作系统shell执行程序为false

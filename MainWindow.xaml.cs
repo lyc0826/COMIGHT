@@ -858,6 +858,7 @@ namespace COMIGHT
                 }
 
                 string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
+                mdText = RemoveEmojis(mdText); //删除Markdown文本中的Emoji
 
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = mdText
