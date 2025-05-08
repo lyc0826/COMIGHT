@@ -116,7 +116,6 @@ namespace COMIGHT
                                     var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
                                     if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
                                     {
-                                        //string tableTitle = "Sheet" + (wordTableIndex + 1); // 获取默认表名
                                         string tableTitle = string.Empty;
 
                                         // 获取表格标题
