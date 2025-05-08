@@ -793,64 +793,21 @@ namespace COMIGHT
 
         public static string RemoveEmojis(string text)
         {
-            return Regex.Replace(text, Emoji.RegexPattern, string.Empty); // 使用正则表达式匹配并替换所有Emoji字符
-            //return Regex.Replace(text, @"[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Extended_Pictographic}]", "");
+            return Regex.Replace(text, Emoji.RegexPattern, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
         }
 
         public static string RemoveHeadingNum(string inText)
         {
-            // 定义英文标题编号正则表达式字符串：前方出现开头标记或“：:；;”，空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾可以省略句点），空格制表符至少一个
+            // 定义英文小标题编号正则表达式字符串：前方出现开头标记或“：:；;”，空格制表符任意多个，“part、charpter、section”标记至多一个，模式为"1./1.2./1.2.3./1.2.3.4."（不限长度，最末尾可以省略句点），空格制表符至少一个
             string enHeadingNumRegEx = @"(?<=^|[：:；;])[ |\t]*(?:(?:part|chapter|section)[ |\t]+)?(?:\d+\.?)*[ |\t]+";
 
-            //定义小标题编号正则表达式字符串：前方出现开头标记或“。：:；;”，空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、\.，,）)是”，空格制表符任意多个
+            //定义中文小标题编号正则表达式字符串：前方出现开头标记或“。：:；;”，空格制表符任意多个，“第（(”至多一个， 空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节、条”，“：:”空格制表符至少一个/或“、.，,）)是”，空格制表符任意多个
             string cnHeadingNumRegEx = @"(?<=^|[。：:；;])[ |\t]*[第（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:(?:部分|篇|章|节|条)[：:| |\t]+|[、\.，,）\)是])[ |\t]*";
 
             //定义小标题编号正则表达式变量，匹配模式为：英文小标题编号或中文小标题编号（先按英文小标题编号模式匹配，如果先按中文小标题编号模式匹配，会造成英文2级及以下小标题编号只匹配到第一节段数字，造成替换不全）
             Regex regExHeadingNum = new Regex($"(?:{enHeadingNumRegEx})|(?:{cnHeadingNumRegEx})", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
-
-        public static string RunCommandline(string arguments)
-        {
-            try
-            {
-                // 创建一个进程启动信息对象
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe", // 指定启动的程序为命令提示符
-                    Arguments = $"/c \"{arguments}\"", // 指定参数（使用引号包裹命令，确保含空格的命令被正确解析）
-                    RedirectStandardOutput = true, // 重定向输出流，以便获取命令的输出
-                    RedirectStandardError = true, // 重定向错误流，以便获取命令的错误输出
-                    UseShellExecute = false, // 不使用系统外壳程序启动进程
-                    CreateNoWindow = true // 不创建新窗口
-                };
-
-                // 创建并启动进程
-                using (Process process = Process.Start(startInfo)!)
-                {
-                    // 读取输出结果
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-
-                    process.WaitForExit();  // 等待进程退出
-
-                    if (process.ExitCode != 0) // 如果进程退出时返回的代码为0
-                    {
-                        throw new Exception("Failed to get network status.");
-                    }
-
-                    return (output + "\n" + error);
-                }
-
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-                return "";
-            }
-        }
-
 
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
