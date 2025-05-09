@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
-using static COMIGHT.PublicVariables;
 
 
 namespace COMIGHT

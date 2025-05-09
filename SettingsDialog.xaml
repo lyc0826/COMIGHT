@@ -11,6 +11,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TabControl Grid.Row="0" Grid.Column="0" Margin="0,5,0,5">
@@ -53,11 +54,15 @@
 
         </TabControl>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" HorizontalAlignment="Left">
+            <CheckBox x:Name="chkbxAllowEmojis" Content="Allow Emojis In Office Files" IsChecked="{Binding Path = AllowEmojisInOfficeFiles, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button x:Name="btnShowFonts" Content="Show Installed Fonts" Width="150" Height="30" Click="btnShowFonts_Click"  />
         </StackPanel>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOK" Content="OK" Width="50" Height="30" Click="btnDialogOK_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30" Click="btnDialogCancel_Click"  />
         </StackPanel>

@@ -16,7 +16,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Interop;
 using static COMIGHT.MainWindow;
 using static COMIGHT.MSOfficeInterop;
-using static COMIGHT.PublicVariables;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
 using ICell = NPOI.SS.UserModel.ICell;
@@ -808,6 +807,8 @@ namespace COMIGHT
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
+        public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
+
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
             string filter = fileType switch //根据文件类型枚举，返回相应的文件类型和扩展名的过滤项
@@ -1324,7 +1325,7 @@ namespace COMIGHT
                 //如果对话框返回值为OK（点击了OK），则对目标Word文档执行排版过程
                 if (ShowMessage("Do you want to format the document?"))
                 {
-                    await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(new List<string> { targetWordFilePath }));
+                    await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(new List<string> { targetWordFilePath })); // 调用任务管理器执行批量格式化Word文档的方法
                 }
 
             }

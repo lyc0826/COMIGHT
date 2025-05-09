@@ -30,5 +30,6 @@
   "EnLineSpace": 24,
   "WorksheetFontName": "Microsoft YaHei UI",
   "WorksheetFontSize": 11,
-  "NameCardFontName": "宋体"
+  "NameCardFontName": "宋体",
+  "AllowEmojisInOfficeFiles": false
 }

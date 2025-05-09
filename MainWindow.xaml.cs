@@ -14,7 +14,6 @@ using System.Text;
 using System.Windows;
 using static COMIGHT.Methods;
 using static COMIGHT.MSOfficeInterop;
-using static COMIGHT.PublicVariables;
 using DataTable = System.Data.DataTable;
 using ITextDocument = iText.Layout.Document;
 using ITextParagraph = iText.Layout.Element.Paragraph;
@@ -26,16 +25,82 @@ namespace COMIGHT
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
+    /// 
+
     public partial class MainWindow : Window
     {
 
-        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量
+        // 获取路径
+        public static string appPath = AppDomain.CurrentDomain.BaseDirectory; //获取程序所在文件夹路径
+        public static string websitesJsonFilePath = Path.Combine(appPath, "Websites.json"); //获取网址Json文件路径全名
+        public static string settingsJsonFilePath = Path.Combine(appPath, "Settings.json"); //获取应用程序设置Json文件路径全名
+        public static string recordsJsonFilePath = Path.Combine(appPath, "Records.json"); //获取用户使用记录Json文件路径全名
 
-        // 定义应用设置管理器、用户使用记录管理器对象，以及应用设置类、用户使用记录类，用于读取和保存设置
+        // 定义应用设置类
+        public class AppSettings
+        {
+            public string SavingFolderPath { get; set; } = string.Empty;
+            public string PandocPath { get; set; } = string.Empty;
+            public string UserManualUrl { get; set; } = string.Empty;
+            public string CnTitleFontName { get; set; } = string.Empty;
+            public double CnTitleFontSize { get; set; }
+            public string CnBodyFontName { get; set; } = string.Empty;
+            public double CnBodyFontSize { get; set; }
+            public string CnHeading0FontName { get; set; } = string.Empty;
+            public double CnHeading0FontSize { get; set; }
+            public string CnHeading1FontName { get; set; } = string.Empty;
+            public double CnHeading1FontSize { get; set; }
+            public string CnHeading2FontName { get; set; } = string.Empty;
+            public double CnHeading2FontSize { get; set; }
+            public string CnHeading3_4FontName { get; set; } = string.Empty;
+            public double CnHeading3_4FontSize { get; set; }
+            public double CnLineSpace { get; set; }
+            public string EnTitleFontName { get; set; } = string.Empty;
+            public double EnTitleFontSize { get; set; }
+            public string EnBodyFontName { get; set; } = string.Empty;
+            public double EnBodyFontSize { get; set; }
+            public string EnHeading0FontName { get; set; } = string.Empty;
+            public double EnHeading0FontSize { get; set; }
+            public string EnHeading1FontName { get; set; } = string.Empty;
+            public double EnHeading1FontSize { get; set; }
+            public string EnHeading2FontName { get; set; } = string.Empty;
+            public double EnHeading2FontSize { get; set; }
+            public string EnHeading3_4FontName { get; set; } = string.Empty;
+            public double EnHeading3_4FontSize { get; set; }
+            public double EnLineSpace { get; set; }
+            public string WorksheetFontName { get; set; } = string.Empty;
+            public double WorksheetFontSize { get; set; }
+            public string NameCardFontName { get; set; } = string.Empty;
+            public bool AllowEmojisInOfficeFiles { get; set; } = false;
+        }
+
+        //定义用户使用记录类
+        public class LatestRecords
+        {
+            public string LatestFolderPath { get; set; } = string.Empty;
+            public string LatestStockDataColumnNamesStr { get; set; } = string.Empty;
+            public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
+            public string LatestKeyColumnLetter { get; set; } = string.Empty;
+            public string LatestExcelWorksheetIndexesStr { get; set; } = string.Empty;
+            public string LatestExcelWorksheetName { get; set; } = string.Empty;
+            public string LatestOperatingRangeAddresses { get; set; } = string.Empty;
+            public string LatestKeyDataColumnName { get; set; } = string.Empty;
+            public int LatestSubpathDepth { get; set; }
+            public string LatestNameCardFontName { get; set; } = string.Empty;
+            public string LatestBatchProcessWorkbookOption { get; set; } = string.Empty;
+            public string LatestSplitWorksheetOption { get; set; } = string.Empty;
+            public string LatestUrl { get; set; } = string.Empty;
+
+        }
+
+
+        // 定义应用设置管理器、用户使用记录管理器对象，应用设置类、用户使用记录类对象，用于读取、保存应用设置和用户使用记录
         public static SettingsManager<AppSettings> settingsManager = new SettingsManager<AppSettings>(settingsJsonFilePath);
         public static SettingsManager<LatestRecords> recordsManager = new SettingsManager<LatestRecords>(recordsJsonFilePath);
         public static AppSettings appSettings = new AppSettings();
         public static LatestRecords latestRecords = new LatestRecords();
+
+        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量，用于执行异步任务，并提供任务执行状态数据
 
         public MainWindow()
         {
@@ -141,11 +206,6 @@ namespace COMIGHT
             OpenSavingFolder();
         }
 
-        //private void MnuScreenStocks_Click(object sender, RoutedEventArgs e)
-        //{
-        //    ScreenStocks();
-        //}
-
         private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
             SettingsDialog settingDialog = new SettingsDialog();
@@ -172,7 +232,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行相应的过程
+                await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(filePaths)); // 调用任务管理器执行批量格式化Word文档的方法
                 ShowSuccessMessage();
             }
 
@@ -193,7 +253,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchRepairWordDocumentsAsyncHelper(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行相应的过程
+                await taskManager.RunTaskAsync(() => BatchRepairWordDocumentsAsyncHelper(filePaths)); // 调用任务管理器执行批量修复Word文档的方法
                 ShowSuccessMessage();
             }
 
@@ -837,7 +897,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 创建一个任务管理器实例，并使用RunTaskAsync方法异步执行相应的过程
+                await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 调用任务管理器执行批量转换Office文件类型的方法
                 ShowSuccessMessage();
             }
 
@@ -858,7 +918,7 @@ namespace COMIGHT
                 }
 
                 string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
-                mdText = RemoveEmojis(mdText); //删除Markdown文本中的Emoji
+                mdText = appSettings.AllowEmojisInOfficeFiles ? mdText : RemoveEmojis(mdText); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
 
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = mdText
@@ -1508,7 +1568,7 @@ namespace COMIGHT
                     await Task.Run(() => hardwareInfo.RefreshAll());
                 }
 
-                await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行RefreshHardwareInfoAsync方法
+                await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行刷新硬件信息的方法
 
                 // 遍历各软硬件属性，将信息添加到对应的信息列表中
 

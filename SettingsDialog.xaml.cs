@@ -11,6 +11,10 @@ namespace COMIGHT
     /// <summary>
     /// Interaction logic for SettingDialog.xaml
     /// </summary>
+    /// 
+
+
+
     public partial class SettingsDialog : Window
     {
 
@@ -150,6 +154,8 @@ namespace COMIGHT
                 dtgrdEnDocumentSettings.ItemsSource = enSettingsTable!.DefaultView;
                 dtgrdMiscSettings.ItemsSource = miscSettingsTable!.DefaultView;
 
+                // 将设置控件的数据环境设为应用设置对象
+                chkbxAllowEmojis.DataContext = appSettings;  //允许Office文件中存在Emoji字符
             }
 
             catch (Exception ex)
