@@ -71,7 +71,7 @@ namespace COMIGHT
             public string WorksheetFontName { get; set; } = string.Empty;
             public double WorksheetFontSize { get; set; }
             public string NameCardFontName { get; set; } = string.Empty;
-            public bool AllowEmojisInOfficeFiles { get; set; } = false;
+            public bool KeepEmojisInMarkdown { get; set; } = false;
         }
 
         //定义用户使用记录类
@@ -918,7 +918,7 @@ namespace COMIGHT
                 }
 
                 string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
-                mdText = appSettings.AllowEmojisInOfficeFiles ? mdText : RemoveEmojis(mdText); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
+                mdText = appSettings.KeepEmojisInMarkdown ? mdText : RemoveEmojis(mdText); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
 
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = mdText

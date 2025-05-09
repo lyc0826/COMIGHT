@@ -31,5 +31,5 @@
   "WorksheetFontName": "Microsoft YaHei UI",
   "WorksheetFontSize": 11,
   "NameCardFontName": "宋体",
-  "AllowEmojisInOfficeFiles": false
+  "KeepEmojisInMarkdown": false
 }
