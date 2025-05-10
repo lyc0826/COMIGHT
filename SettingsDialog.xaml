@@ -17,46 +17,139 @@
         <TabControl Grid.Row="0" Grid.Column="0" Margin="0,5,0,5">
             
             <TabItem Header="General">
-                <DataGrid x:Name="dtgrdGeneralSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <StackPanel Orientation="Vertical">
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Saving Folder:" />
+                        <TextBox Text="{Binding Path = SavingFolderPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Pandoc Path:" />
+                        <TextBox Text="{Binding Path = PandocPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                </StackPanel>
             </TabItem>
 
             <TabItem Header="Chinese Document">
-                <DataGrid x:Name="dtgrdCnDocumentSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <StackPanel Orientation="Vertical">
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Title Font Name/Size:" />
+                        <TextBox Text="{Binding Path = CnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = CnTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Body Font Name/Size:" />
+                        <TextBox Text="{Binding Path = CnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = CnBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Heading Lv0 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = CnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = CnHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Heading Lv1 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = CnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = CnHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Heading Lv2 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = CnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = CnHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Heading Lv3/4 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = CnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = CnHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Chinese Line Space:" />
+                        <TextBox Text="{Binding Path = CnLineSpace, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                </StackPanel>
             </TabItem>
 
             <TabItem Header="English Document">
-                <DataGrid x:Name="dtgrdEnDocumentSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <StackPanel Orientation="Vertical">
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Title Font Name/Size:" />
+                        <TextBox Text="{Binding Path = EnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = EnTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Body Font Name/Size:" />
+                        <TextBox Text="{Binding Path = EnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = EnBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Heading Lv0 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = EnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = EnHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Heading Lv1 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = EnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = EnHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Heading Lv2 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = EnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = EnHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Heading Lv3/4 Font Name/Size:" />
+                        <TextBox Text="{Binding Path = EnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = EnHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="English Line Space:" />
+                        <TextBox Text="{Binding Path = EnLineSpace, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                </StackPanel>
             </TabItem>
 
             <TabItem Header="Misc.">
-                <DataGrid x:Name="dtgrdMiscSettings"  AutoGenerateColumns="False" SelectionMode="Single" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" CanUserResizeRows="False" >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Item" Binding="{Binding Path = Item, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Path = Value, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <StackPanel Orientation="Vertical">
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Worksheet Font Name/Size:" />
+                        <TextBox Text="{Binding Path = WorksheetFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Path = WorksheetFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="NameCard Font Name:" />
+                        <TextBox Text="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+                    </StackPanel>
+                    
+                </StackPanel>
             </TabItem>
 
         </TabControl>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" HorizontalAlignment="Left">
-            <CheckBox x:Name="chkbxKeepEmojis" Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-        </StackPanel>
+
 
         <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button x:Name="btnShowFonts" Content="Show Installed Fonts" Width="150" Height="30" Click="btnShowFonts_Click"  />
@@ -66,5 +159,7 @@
             <Button IsDefault="True" x:Name="btnDialogOK" Content="OK" Width="50" Height="30" Click="btnDialogOK_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30" Click="btnDialogCancel_Click"  />
         </StackPanel>
+
     </Grid>
+
 </Window>
