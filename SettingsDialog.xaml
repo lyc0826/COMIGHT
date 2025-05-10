@@ -147,6 +147,8 @@
                             <TextBox Text="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
+                        <Separator Margin="0,5,0,5" />
+                        
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
                         </StackPanel>

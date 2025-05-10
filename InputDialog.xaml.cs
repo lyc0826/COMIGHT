@@ -69,7 +69,7 @@ namespace COMIGHT
         {
             get
             {
-                //如果选项组合框有选定项，则将该项的值赋给函数返回值；否则，将答案文本框的文本去除首尾空白字符后赋给函数返回值
+                //如果选项组合框的选定项不为null，则将该项的值赋给函数返回值；否则，将答案文本框的文本去除首尾空白字符后赋给函数返回值
                 return cmbbxOptions.SelectedItem != null ? cmbbxOptions.SelectedItem.ToString()! : txtbxAnswer.Text.Trim();
             }
         }
