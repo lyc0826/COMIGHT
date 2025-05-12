@@ -27,7 +27,7 @@ namespace COMIGHT
             this.DataContext = appSettings; // 将应用设置窗口的数据环境设为应用设置对象
         }
 
-        private void OnLostFocus(object sender, RoutedEventArgs e)
+        private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
         {
             TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
             if (textBox != null) // 如果事件源对象不为空

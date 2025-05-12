@@ -1,13 +1,7 @@
 ﻿<Window x:Class="COMIGHT.SettingsDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Settings" Width="480" SizeToContent="Height" FontSize="13" WindowStartupLocation="CenterScreen" >
-
-    <Window.Resources>
-        <Style TargetType="TextBox">
-            <EventSetter Event="LostFocus" Handler="OnLostFocus"/>
-        </Style>
-    </Window.Resources>
+        Title="Settings" Width="480" Height="360" FontSize="13" WindowStartupLocation="CenterScreen" >
 
     <Grid Margin="10,10,10,10">
         <Grid.ColumnDefinitions>
@@ -21,9 +15,27 @@
 
         <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0,5,0,5" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 
-            <TabControl>
-            
-                <TabItem Header="General">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="Label">
+                        <Setter Property="Margin" Value="0,3,0,3"/>
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Margin" Value="3,3,3,3"/>
+                        <EventSetter Event="LostFocus" Handler="OnTextBoxLostFocus"/>
+                    </Style>
+                    <Style TargetType="CheckBox">
+                        <Setter Property="Margin" Value="0,3,0,3"/>
+                    </Style>
+                    <Style TargetType="Separator">
+                        <Setter Property="Margin" Value="0,3,0,3"/>
+                    </Style>
+                    <Style TargetType="Expander">
+                        <Setter Property="Margin" Value="0,3,0,3"/>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Expander Header="General" IsExpanded="True">
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -37,9 +49,9 @@
                         </StackPanel>
 
                     </StackPanel>
-                </TabItem>
+                </Expander>
 
-                <TabItem Header="Chinese Document">
+                <Expander Header="Chinese Document">
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -84,9 +96,9 @@
                         </StackPanel>
 
                     </StackPanel>
-                </TabItem>
+                </Expander>
 
-                <TabItem Header="English Document">
+                <Expander Header="English Document">
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -131,9 +143,9 @@
                         </StackPanel>
 
                     </StackPanel>
-                </TabItem>
+                </Expander>
 
-                <TabItem Header="Misc.">
+                <Expander Header="Misc.">
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -148,15 +160,15 @@
                         </StackPanel>
 
                         <Separator Margin="0,5,0,5" />
-                        
+
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
                         </StackPanel>
-                    
-                    </StackPanel>
-                </TabItem>
 
-            </TabControl>
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
 
         </ScrollViewer>
 
