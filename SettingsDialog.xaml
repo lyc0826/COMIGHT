@@ -20,6 +20,9 @@
                     <Style TargetType="Label">
                         <Setter Property="Margin" Value="0,3,0,3"/>
                     </Style>
+                    <Style TargetType="ComboBox">
+                        <Setter Property="Margin" Value="0,3,0,3"/>
+                    </Style>
                     <Style TargetType="TextBox">
                         <Setter Property="Margin" Value="3,3,3,3"/>
                         <EventSetter Event="LostFocus" Handler="OnTextBoxLostFocus"/>
@@ -56,37 +59,37 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Title Font Name/Size:" />
-                            <TextBox Text="{Binding Path = CnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxCnTitleFontName" SelectedItem ="{Binding Path = CnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Body Font Name/Size:" />
-                            <TextBox Text="{Binding Path = CnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxCnBodyFontName" SelectedItem ="{Binding Path = CnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv0 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = CnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxCnHeading0FontName" SelectedItem ="{Binding Path = CnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv1 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = CnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxCnHeading1FontName" SelectedItem ="{Binding Path = CnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv2 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = CnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxCnHeading2FontName" SelectedItem ="{Binding Path = CnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv3/4 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = CnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxCnHeading3_4FontName" SelectedItem ="{Binding Path = CnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -103,37 +106,37 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="English Title Font Name/Size:" />
-                            <TextBox Text="{Binding Path = EnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxEnTitleFontName" SelectedItem ="{Binding Path = EnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = EnTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="English Body Font Name/Size:" />
-                            <TextBox Text="{Binding Path = EnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxEnBodyFontName" SelectedItem ="{Binding Path = EnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = EnBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="English Heading Lv0 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = EnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxEnHeading0FontName" SelectedItem ="{Binding Path = EnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = EnHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="English Heading Lv1 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = EnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxEnHeading1FontName" SelectedItem ="{Binding Path = EnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = EnHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="English Heading Lv2 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = EnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxEnHeading2FontName" SelectedItem ="{Binding Path = EnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = EnHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="English Heading Lv3/4 Font Name/Size:" />
-                            <TextBox Text="{Binding Path = EnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxEnHeading3_4FontName" SelectedItem ="{Binding Path = EnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = EnHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -150,13 +153,13 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Worksheet Font Name/Size:" />
-                            <TextBox Text="{Binding Path = WorksheetFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <ComboBox x:Name ="cmbbxWorksheetFontName" SelectedItem ="{Binding Path = WorksheetFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = WorksheetFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="NameCard Font Name:" />
-                            <TextBox Text="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <Label Content="Name Card Font Name:" />
+                            <ComboBox x:Name ="cmbbxNameCardFontName" SelectedItem ="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                         </StackPanel>
 
                         <Separator Margin="0,5,0,5" />
@@ -172,9 +175,11 @@
 
         </ScrollViewer>
 
+        <!-- 
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button x:Name="btnShowFonts" Content="Show Installed Fonts" Width="150" Height="30" Click="btnShowFonts_Click"  />
         </StackPanel>
+        -->
 
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOK" Content="OK" Width="50" Height="30" Click="btnDialogOK_Click" />

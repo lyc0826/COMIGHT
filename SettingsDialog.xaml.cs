@@ -1,10 +1,8 @@
 ﻿using System.Data;
 using System.Drawing.Text;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
 
@@ -25,6 +23,50 @@ namespace COMIGHT
             InitializeComponent();
 
             this.DataContext = appSettings; // 将应用设置窗口的数据环境设为应用设置对象
+
+            this.Loaded += OnWindowLoaded; // 窗口加载完成后，执行OnWindowLoaded过程
+
+        }
+
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
+            FillComboBoxes(this, "FontName", lstFontNames); // 将字体名称列表填充到窗体的所有字体选择组合框中
+        }
+
+        private void FillComboBoxes(DependencyObject root, string nameContains, IEnumerable<string> items)
+        {
+            var stack = new Stack<DependencyObject>(); // 创建一个栈，用于存储依赖项对象
+            stack.Push(root); // 将根依赖项对象压入栈中
+
+            while (stack.Count > 0) // 当栈元素数量不为0，循环执行以下代码
+            {
+                var current = stack.Pop(); // 弹出栈顶元素
+
+                // 如果是 ComboBox 且名称包含指定的字符串，则设置其数据源为字体名称列表
+                if (current is ComboBox comboBox && comboBox.Name.Contains(nameContains, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    comboBox.ItemsSource = items;
+                }
+
+                if (current is FrameworkElement fe) // 如果是 FrameworkElement
+                {
+                    // 遍历FrameworkElement中所有DependencyObject元素
+                    foreach (var child in LogicalTreeHelper.GetChildren(fe).OfType<DependencyObject>().Reverse())
+                    {
+                        stack.Push(child); // 将子元素压入栈中
+                    }
+                }
+                else if (current is FrameworkContentElement fce) // 如果是 FrameworkContentElement
+                {
+                    // 遍历FrameworkContentElement中所有DependencyObject元素
+                    foreach (var child in LogicalTreeHelper.GetChildren(fce).OfType<DependencyObject>().Reverse())
+                    {
+                        stack.Push(child); // 将子元素压入栈中
+                    }
+                }
+            }
         }
 
         private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
@@ -51,7 +93,7 @@ namespace COMIGHT
         {
             InstalledFontCollection installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            ShowMessage(string.Join('\n', lstFontNames)); 
+            ShowMessage(string.Join('\n', lstFontNames));
         }
 
     }
