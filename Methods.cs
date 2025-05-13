@@ -41,8 +41,8 @@ namespace COMIGHT
             // 定义文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
             string invalidChars = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
 
-            // 将文件名和文件夹名中允许出现的字符提取并形成数组，再转换成字符串，赋值给清理后的名称变量
-            string cleanedName = new string(name.Where(c => !invalidChars.Contains(c)).ToArray());
+            // 遍历文件名和文件夹名中的字符：如果为不允许出现的字符，则得到'_'；否则，得到原字符；将以上字符形成数组，再转换成字符串，赋值给清理后的名称变量
+            string cleanedName = new string(name.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray());
 
             // 截取到指定长度
             //return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
@@ -81,7 +81,7 @@ namespace COMIGHT
             string chineseNumberStr = arabicNumberStr.Select((arabicDigit, i) =>
                 {
                     string chineseDigit = dicChineseDigits[arabicDigit]; //获取当前阿拉伯位数字对应的中文位数字
-                    string chineseUnit = arrChineseUnits[n - i - 1]; //获取当前阿拉伯位数字对应的中文单位 （假设是个3位数，从左往右数当i到达第2位（1号）数字时，3-1-1=1，在中文数字单位数组中索引号为1的元素为“十”，依此类推）
+                    string chineseUnit = arrChineseUnits[n - i - 1]; //获取当前阿拉伯位数字对应的中文单位 （假设是个3位数，从左往右数当i到达第2位（1号）的十位数字时，3-1-1=1，在中文数字单位数组中索引号为1的元素为“十”，依此类推）
                     return chineseDigit + chineseUnit; //返回当前中文位数字和中文单位的组合
                 }).Aggregate("", (tempChineseNumberStr, addedChineseNumberStr) => tempChineseNumberStr + addedChineseNumberStr);
 
@@ -839,6 +839,30 @@ namespace COMIGHT
             }
             return null; //如果上一个if未执行，没有文件列表赋给函数返回值，则函数返回值赋值为null
         }
+
+        public static string? SelectFolder(string dialogTitle)
+        {
+            string initialDirectory = latestRecords.LatestFolderPath; // 读取用户使用记录中保存的文件夹路径
+            // 重新赋值给文件夹路径变量：如果文件夹路径存在，则得到该文件夹路径原值；否则得到C盘根目录
+            initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
+
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog() // 打开文件夹选择对话框
+            {
+                Multiselect = false, // 禁用多选
+                Title = dialogTitle, // 设置对话框标题
+                RootDirectory = initialDirectory // 根文件夹路径设为文件夹路径
+            };
+
+            if (openFolderDialog.ShowDialog() == true) // 如果对话框返回值为false（点击Cancel），则结束本过程
+            {
+                string folderPath = openFolderDialog.FolderName;
+                latestRecords.LatestFolderPath = folderPath;  // 将文件夹路径赋值给用户使用记录
+                return folderPath;
+            }
+            return null;
+
+        }
+
 
         public static void ShowExceptionMessage(Exception ex)
         {

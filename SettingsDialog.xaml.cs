@@ -32,20 +32,20 @@ namespace COMIGHT
         {
             InstalledFontCollection installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            FillComboBoxes(this, "FontName", lstFontNames); // 将字体名称列表填充到窗体的所有字体选择组合框中
+            FillComboBoxes(this, lstFontNames, "FontName"); // 将字体名称列表填充到窗体的所有字体选择组合框中
         }
 
-        private void FillComboBoxes(DependencyObject root, string nameContains, IEnumerable<string> items)
+        private void FillComboBoxes(DependencyObject root, IEnumerable<string> items, string? nameContains = null)
         {
-            var stack = new Stack<DependencyObject>(); // 创建一个栈，用于存储依赖项对象
+            Stack<DependencyObject> stack = new Stack<DependencyObject>(); // 创建一个栈，用于存储依赖项对象
             stack.Push(root); // 将根依赖项对象压入栈中
 
             while (stack.Count > 0) // 当栈元素数量不为0，循环执行以下代码
             {
-                var current = stack.Pop(); // 弹出栈顶元素
+                DependencyObject current = stack.Pop(); // 弹出栈顶元素
 
-                // 如果是 ComboBox 且名称包含指定的字符串，则设置其数据源为字体名称列表
-                if (current is ComboBox comboBox && comboBox.Name.Contains(nameContains, StringComparison.CurrentCultureIgnoreCase))
+                // 如果当前控件是ComboBox且：未指定名称必须包含的字符串，或控件名称包含了指定的字符串，则设置其数据源为相应枚举对象
+                if (current is ComboBox comboBox && (nameContains == null || comboBox.Name.Contains(nameContains, StringComparison.CurrentCultureIgnoreCase))) // 
                 {
                     comboBox.ItemsSource = items;
                 }

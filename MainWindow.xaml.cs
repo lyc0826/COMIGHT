@@ -1194,30 +1194,15 @@ namespace COMIGHT
             }
         }
 
-
         private void CreateFileList()
         {
             try
             {
-
-                string initialDirectory = latestRecords.LatestFolderPath; // 读取用户使用记录中保存的文件夹路径
-                // 重新赋值给第一级文件夹路径变量：如果文件夹路径存在，则得到该文件夹路径原值；否则得到C盘根目录
-                initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
-
-                OpenFolderDialog openFolderDialog = new OpenFolderDialog() // 打开文件夹选择对话框
-                {
-                    Multiselect = false, // 禁用多选
-                    Title = "Select the Directory", // 设置对话框标题
-                    RootDirectory = initialDirectory // 根文件夹路径设为第一级文件夹路径
-                };
-
-                if (openFolderDialog.ShowDialog() == false) // 如果对话框返回值为false（点击Cancel），则结束本过程
+                string? folderPath = SelectFolder("Select the Folder"); //获取所选文件夹路径
+                if (folderPath == null)  // 如果所选文件夹路径为null，则结束本过程
                 {
                     return;
                 }
-
-                string folderPath = openFolderDialog.FolderName;  // 将选择的文件夹路径赋值给第一级文件夹路径变量
-                latestRecords.LatestFolderPath = folderPath;  // 将第一级文件夹路径赋值给用户使用记录
 
                 int latestSubpathDepth = latestRecords.LatestSubpathDepth;  // 读取用户使用记录中保存的子路径深度
                 // 弹出功能选择对话框，提示用户输入子路径深度
@@ -1243,16 +1228,16 @@ namespace COMIGHT
                         new DataColumn("Date", typeof(DateTime))
                     });  // 向DataTable添加列
 
-                Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其深度
+                Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其相对于第一级文件夹路径的子路径深度
 
-                stack.Push((folderPath, 0)); // 将第一级文件夹路径和子路径深度0压入栈
+                stack.Push((folderPath, 0)); // 将第一级文件夹路径及其子路径深度0压入栈
 
                 while (stack.Count > 0) // 当栈不为空时，继续循环
                 {
 
-                    var (currentFolderPath, currentSubpathDepth) = stack.Pop(); // 从栈中弹出一个文件夹路径及其相对于第一级文件夹路径的子路径深度
+                    (string currentFolderPath, int currentSubpathDepth) = stack.Pop(); // 从栈中弹出一个文件夹路径及其相对于第一级文件夹路径的子路径深度
 
-                    if (currentSubpathDepth > subpathDepth) // 如果当前子路径深度超过指定的子路径深度，则直接跳过进入下一个循环
+                    if (currentSubpathDepth > subpathDepth) // 如果当前文件夹路径路径相对于第一级文件夹路径的子路径深度超过指定的子路径深度，则直接跳过进入下一个循环
                     {
                         continue;
                     }
@@ -1315,7 +1300,6 @@ namespace COMIGHT
                     int dateColumnIndex = dataTable.Columns["Date"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
                     //将目标Excel工作表时间列从第2行到最末行所有单元格的数据格式设为“年-月-日”
                     targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
-                    //targetExcelWorksheet.Column(dateColumnIndex).Style.Numberformat.Format = "yyyy-m-d";
 
                     for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
                     {
