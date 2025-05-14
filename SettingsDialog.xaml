@@ -43,12 +43,14 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Saving Folder:" />
-                            <TextBox Text="{Binding Path = SavingFolderPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <TextBox x:Name ="txtbxSavingFolder" Text="{Binding Path = SavingFolderPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <Button x:Name ="btnSavingFolderSelector" Content="..." Width="25" Height="25" Click="btnSavingFolderSelector_Click"  />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Pandoc Path:" />
-                            <TextBox Text="{Binding Path = PandocPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <TextBox x:Name ="txtbxPandocPath" Text="{Binding Path = PandocPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
+                            <Button x:Name ="btnPandocPathSelector" Content="..." Width="25" Height="25" Click="btnPandocPathSelector_Click"  />
                         </StackPanel>
 
                     </StackPanel>

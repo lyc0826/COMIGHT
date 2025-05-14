@@ -807,7 +807,7 @@ namespace COMIGHT
             return regExHeadingNum.Replace(inText, ""); //将输入文字中被小标题编号正则表达式匹配到的字符串替换为空，赋值给函数返回值
         }
 
-        public enum FileType { Excel, Word, WordAndExcel, Convertible, All } //定义文件类型枚举
+        public enum FileType { Excel, Word, WordAndExcel, Convertible, Executable, All } //定义文件类型枚举
 
         public static List<string>? SelectFiles(FileType fileType, bool isMultiselect, string dialogTitle)
         {
@@ -817,6 +817,7 @@ namespace COMIGHT
                 FileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
                 FileType.WordAndExcel => "Word And Excel Files(*.docx;*.xlsx;*.docm;*.xlsm)|*.docx;*.xlsx;*.docm;*.xlsm|All Files(*.*)|*.*",
                 FileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
+                FileType.Executable => "Executable Files(*.exe)|*.exe|All Files(*.*)|*.*",
                 _ => "All Files(*.*)|*.*"
             };
 
