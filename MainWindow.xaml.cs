@@ -589,8 +589,6 @@ namespace COMIGHT
 
                                 case 4: //文本型数字转数值型
 
-                                    //targetExcelWorkbookPrefix = "Fail"; //目标Excel工作簿类型变量赋值为“失败”
-
                                     if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
                                     {
                                         dataTable = new DataTable(); //定义DataTable
@@ -731,8 +729,6 @@ namespace COMIGHT
             }
 
         }
-
-
 
         private void CompareExcelWorksheets()
         {
