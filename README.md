@@ -65,10 +65,6 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
   - Example: A template worksheet has the sum formula "=SUM(A2:D2)" in cell E2, "=SUM(A3:D3)" in E3, and "=SUM(A4:D4)" in E4. This function copies the formulas from the E2:E4 range to multiple target worksheets.
 
-- **Prefix Workbook Filenames with Cell Data:** Extracts data from specified cell ranges across multiple worksheets and uses it as a prefix for the workbook filenames.
-
-  - Example: Several departmental roster worksheets are stored in workbooks named "Roster1.xlsx", "Roster2.xlsx", "Roster3.xlsx". Cells A1 and A2 of each roster worksheet contain the department name and update time, respectively. This function extracts the values from A1 and A2 and adds them as prefixes to the file names, renaming them to "[Department Name] [Update Time]_Roster1.xlsx" (e.g. "R&D Department 2023-09_Roster2.xlsx", "Finance Department 2023-10_Roster3.xlsx").
-
 - **Adjust Worksheet Format for Printing:** Automatically adjusts borders, fonts, line breaks, column widths, row heights, and page layout based on the worksheet content for optimal printing.
 
 #### **Split Excel Worksheet**
