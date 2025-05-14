@@ -310,7 +310,7 @@ namespace COMIGHT
             try
             {
                 List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
-                    "5-Copy Formula to Multiple Worksheets", "6-Prefix Workbook Filenames with Cell Data", "7-Adjust Worksheet Format for Printing"};
+                    "5-Copy Formula to Multiple Worksheets", "6-Adjust Worksheet Format for Printing"};
 
                 string latestBatchProcessWorkbookOption = latestRecords.LatestBatchProcessWorkbookOption; //读取用户使用记录中保存的批量处理Excel工作簿功能选项字符串
                 InputDialog inputDialog = new InputDialog(question: "Select the function", options: lstFunctions, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
@@ -323,7 +323,7 @@ namespace COMIGHT
 
                 int functionNum = lstFunctions.Contains(batchProcessWorkbookOption) ? lstFunctions.IndexOf(batchProcessWorkbookOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
 
-                if (functionNum < 1 || functionNum > 7) //如果功能选项索引号不在设定范围，则结束本过程
+                if (functionNum < 1 || functionNum > 6) //如果功能选项索引号不在设定范围，则结束本过程
                 {
                     return;
                 }
@@ -379,15 +379,14 @@ namespace COMIGHT
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
-                    case 7: //调整工作表打印版式
+                    case 6: //调整工作表打印版式
                         (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
                         break;
 
                     case 2:
                     case 3:
                     case 4:
-                    case 5:
-                    case 6: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表, 6-提取单元格数据给工作簿文件名加前缀
+                    case 5: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
                         string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
                         inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
                         if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
@@ -589,19 +588,6 @@ namespace COMIGHT
 
                                 case 4: //文本型数字转数值型
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
-                                    {
-                                        dataTable = new DataTable(); //定义DataTable
-                                        dataTable.Columns.AddRange(new DataColumn[]
-                                            {
-                                                new DataColumn("Source Workbook"),
-                                                new DataColumn("Source Worksheet"),
-                                                new DataColumn("Unconverted Address"),
-                                                new DataColumn("Unconverted Value")
-                                            }); //向DataTable添加列
-
-                                    }
-
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
                                     {
                                         for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
@@ -651,33 +637,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 6: //提取单元格数据给工作簿文件名加前缀
-
-                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // '遍历所有操作区域
-                                    {
-                                        for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
-                                        {
-                                            for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
-                                            {
-                                                lstPrefixes.Add(excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格数据转换成文本并追加到前缀列表
-                                            }
-                                        }
-
-                                    }
-
-                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个
-                                    {
-                                        string prefixes = string.Join(' ', lstPrefixes); //合并前缀列表中的字符串，当中用空格分隔
-                                        excelPackage.Dispose(); //关闭当前被处理Excel工作簿
-                                                                //获取新文件名：将前缀加到当前文件主名之前，清除不能作为文件名的字符并截取指定数量的字符，再加上当前文件扩展名
-                                        string renamedExcelFileName = CleanFileAndFolderName($"{prefixes}_{Path.GetFileNameWithoutExtension(excelFilePath)}", 40) + Path.GetExtension(excelFilePath);
-                                        string renamedExcelFilePath = Path.Combine(Path.GetDirectoryName(excelFilePath)!, renamedExcelFileName); //获取新文件路径全名
-                                        File.Move(excelFilePath, renamedExcelFilePath); //将当前Excel工作簿文件更名
-                                    }
-
-                                    break;
-
-                                case 7: //调整工作表打印版式
+                                case 6: //调整工作表打印版式
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
@@ -1725,7 +1685,7 @@ namespace COMIGHT
 
                     for (int i = headerRowCount + 1; i <= excelWorksheet.Dimension!.End.Row - footerRowCount; i++) // 遍历Excel工作表除去表头、表尾的每一行
                     {
-                        string key = excelWorksheet.Cells[columnLetter + i.ToString()].Text != "" ?
+                        string key = !string.IsNullOrWhiteSpace(excelWorksheet.Cells[columnLetter + i.ToString()].Text) ?
                             excelWorksheet.Cells[columnLetter + i.ToString()].Text : "-Blank-"; //将当前行拆分基准列的值赋值给键值变量：如果当前行单元格文字不为空，则得到得到单元格文字，否则得到"-Blank-"
                         if (dataDict.ContainsKey(key)) // 如果字典中已经有这个键，就将当前行添加到对应的列表中
                         {
