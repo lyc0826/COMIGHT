@@ -115,15 +115,15 @@ namespace COMIGHT
                                     var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
                                     if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
                                     {
-                                        string tableTitle = string.Empty;
+                                        string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
 
                                         // 获取表格标题
                                         if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
                                         {
                                             XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
 
-                                            // 表格标题正则表达式匹配模式为：从开头开始，非“。；;”的字符1至60个，结尾标志；获取表格标题：如果段落文字被表格标题正则表达式匹配成功，则得到段落文字；否则，得到表单通用名+编号
-                                            tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : "Sheet" + (wordTableIndex + 1);
+                                            // 表格标题正则表达式匹配模式为：从开头开始，非“。；;”的字符1至60个，结尾标志；获取表格标题：如果段落文字被表格标题正则表达式匹配成功，则得到段落文字；否则，得到表格标题变量原值
+                                            tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : tableTitle;
                                         }
 
                                         //创建Excel工作表，使用表格标题作为工作表的名称
@@ -147,7 +147,7 @@ namespace COMIGHT
                                                 excelCell.SetCellValue(wordTableCell.GetText()); // 将当前Word文档表格的当前行的当前单元格的文字赋值给当前Excel单元格
                                             }
                                         }
-                                        wordTableIndex++; // Word文档表格索引累加1
+                                        wordTableIndex++; // Word文档表格索引号累加1
                                     }
                                 }
                                 workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
