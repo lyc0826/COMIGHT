@@ -78,15 +78,11 @@ namespace COMIGHT
         public class LatestRecords
         {
             public string LatestFolderPath { get; set; } = string.Empty;
-            public string LatestStockDataColumnNamesStr { get; set; } = string.Empty;
             public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
             public string LatestKeyColumnLetter { get; set; } = string.Empty;
             public string LatestExcelWorksheetIndexesStr { get; set; } = string.Empty;
-            public string LatestExcelWorksheetName { get; set; } = string.Empty;
             public string LatestOperatingRangeAddresses { get; set; } = string.Empty;
-            public string LatestKeyDataColumnName { get; set; } = string.Empty;
             public int LatestSubpathDepth { get; set; }
-            public string LatestNameCardFontName { get; set; } = string.Empty;
             public string LatestBatchProcessWorkbookOption { get; set; } = string.Empty;
             public string LatestSplitWorksheetOption { get; set; } = string.Empty;
             public string LatestUrl { get; set; } = string.Empty;
@@ -337,7 +333,6 @@ namespace COMIGHT
                 int fileNum;
                 int excelWorksheetIndexLower = 0;
                 int excelWorksheetIndexUpper = 0;
-                string? excelWorksheetName = null;
                 bool useExcelWorksheetIndex = true;
                 int headerRowCount = 0;
                 int footerRowCount = 0;
@@ -351,31 +346,17 @@ namespace COMIGHT
                 }
 
                 string excelWorksheetIndexesStr = inputDialog.Answer; //获取对话框返回的Excel工作表索引号范围字符串
-                if (!string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串不为null或全空白字符
+                if (string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串不为null或全空白字符
                 {
-                    latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
-
-                    //将Excel索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
-                    List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
-                    excelWorksheetIndexLower = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值
-                    excelWorksheetIndexUpper = lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值
-
-                    useExcelWorksheetIndex = true; //“使用工作表索引号”变量赋值为true
+                    return;
                 }
-                else
-                {
-                    string latestExcelWorksheetName = latestRecords.LatestExcelWorksheetName; //读取用户使用记录中保存的Excel工作表名称
-                    inputDialog = new InputDialog(question: "Input the worksheet name (one worksheet per operation)", defaultAnswer: latestExcelWorksheetName); //弹出对话框，输入工作表名称
-                    if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-                    {
-                        return;
-                    }
-                    excelWorksheetName = inputDialog.Answer;
-                    latestRecords.LatestExcelWorksheetName = excelWorksheetName; // 将对话框返回的Excel工作表名称赋值给用户使用记录
-
-                    useExcelWorksheetIndex = false; //“使用工作表索引号”变量赋值为false
-                }
-
+                
+                latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
+                //将Excel索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
+                List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
+                excelWorksheetIndexLower = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值
+                excelWorksheetIndexUpper = lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值
+               
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
@@ -399,7 +380,6 @@ namespace COMIGHT
                         //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
                         lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
                         break;
-
                 }
 
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
@@ -431,25 +411,10 @@ namespace COMIGHT
                             targetFolderPath = appSettings.SavingFolderPath; //获取目标文件的文件夹路径
                         }
 
-                        //获取被处理Excel工作表索引号范围
-                        if (useExcelWorksheetIndex) //如果使用Excel工作表索引号
-                        {
-                            //获取被处理Excel工作表索引号上下限，如果大于工作表数量-1，则限定为工作表数量-1
-                            excelWorksheetIndexLower = Math.Min(excelWorksheetIndexLower, excelWorkbook.Worksheets.Count - 1);
-                            excelWorksheetIndexUpper = Math.Min(excelWorksheetIndexUpper, excelWorkbook.Worksheets.Count - 1);
-                        }
-                        else //否则（使用Excel工作表名称）
-                        {
-                            //如果当前Excel工作簿没有指定名称的工作表，则直接跳过当前循环进入下一个循环
-                            if (!excelWorkbook.Worksheets.Any(sheet => sheet.Name.Trim() == excelWorksheetName))
-                            {
-                                continue;
-                            }
-                            //获取被处理Excel工作表索引号上下限：筛选出工作表名称移除首尾空白字符后与指定名称相同的工作表，将其中第一个的索引号作为下限；上限与下限相同
-                            excelWorksheetIndexLower = excelWorkbook.Worksheets.Where(sheet => sheet.Name.Trim() == excelWorksheetName)
-                                .FirstOrDefault()!.Index;
-                            excelWorksheetIndexUpper = excelWorksheetIndexLower;
-                        }
+                        //获取被处理Excel工作表索引号上下限，如果大于工作表数量-1，则限定为工作表数量-1
+                        excelWorksheetIndexLower = Math.Min(excelWorksheetIndexLower, excelWorkbook.Worksheets.Count - 1);
+                        excelWorksheetIndexUpper = Math.Min(excelWorksheetIndexUpper, excelWorkbook.Worksheets.Count - 1);
+                        
 
                         for (int i = excelWorksheetIndexLower; i <= excelWorksheetIndexUpper; i++) //遍历指定范围内的所有Excel工作表
                         {
