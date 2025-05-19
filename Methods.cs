@@ -1,4 +1,5 @@
 ﻿using GEmojiSharp;
+using iText.IO.Source;
 using Microsoft.Win32;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
@@ -11,6 +12,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Interop;
@@ -476,31 +478,55 @@ namespace COMIGHT
             return columnLetter; //将列符赋值给函数返回值
         }
 
+        public static List<string>? GetWorksheetOperatingRangeAddresses()
+        {
+            string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
+            InputDialog inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
+            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+            {
+                return null;
+            }
+            string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
+            latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
+
+            //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
+            return operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
+        }
+
+        public static (int startIndex, int endIndex) GetWorksheetRange()
+        {
+            string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
+            InputDialog inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
+            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则工作表索引号范围起始值均为-1，赋值给函数返回值
+            {
+                return (-1, -1);
+            }
+
+            string excelWorksheetIndexesStr = inputDialog.Answer;
+            latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
+            //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
+            List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
+            int startIndex = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值：列表的0号元素的值
+            int endIndex = lstExcelWorksheetIndexesStr.Count() == 1 ? startIndex : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值：如果Excel工作表索引号列表只有一个元素（起始和终止工作表相同），则得到Excel工作表索引号范围起始值；否则，得到列表的1号元素的值
+            return (startIndex, endIndex); // 将Excel工作表索引号范围起始值和结束值复制给函数返回值元组
+        }
 
         public static (int headerRowCount, int footerRowCount) GetHeaderAndFooterRowCount()
         {
-            try
+            string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
+            InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
+            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均为-1，赋值给函数返回值
             {
-                string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
-                InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均赋值为默认值，并结束本过程
-                {
-                    return (0, 0);
-                }
-                string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-                latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
-
-                //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，如果小于0则限定为0，并赋值给表头表尾行数列表
-                List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => Math.Max(0, e));
-                //将表头表尾行数列表0号、1号元素，赋值给函数返回值
-                return (lstHeaderFooterRowCount[0], lstHeaderFooterRowCount[1]);
+                return (-1, -1);
             }
 
-            catch (Exception ex) // 捕获错误
-            {
-                ShowExceptionMessage(ex);
-                return (0, 0); //表头、表尾行数变量赋值为0
-            }
+            string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
+            latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+
+            //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，如果小于0则限定为0，并赋值给表头表尾行数列表
+            List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => Math.Max(0, e));
+            //将表头表尾行数列表0号、1号元素，赋值给函数返回值
+            return (lstHeaderFooterRowCount[0], lstHeaderFooterRowCount[1]);
         }
 
         public static int GetInstanceCountByHandle<T>() where T : Window //泛型参数T，T必须是Window的实例
@@ -864,6 +890,32 @@ namespace COMIGHT
 
         }
 
+        public static int SelectFunction(string question, List<string> options, object lastRecords, string propertyName)
+        {
+            Type type = lastRecords.GetType(); // 获取用户使用记录对象类型
+            PropertyInfo? property = type.GetProperty(propertyName); // 获取对象的指定属性
+            if (property == null) // 如果对象属性为空，则将-1赋值给函数返回值
+            {
+                return -1;
+            }
+            
+            object value = property.GetValue(lastRecords) ?? ""; //  获取对象指定属性的值
+            string latestBatchProcessWorkbookOption = (string)value; //将指定属性的值转换成字符串
+
+            InputDialog inputDialog = new InputDialog(question: question, options: options, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
+            if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则将-1赋值给函数返回值
+            {
+                return -1;
+            }
+            string batchProcessWorkbookOption = inputDialog.Answer;
+            if (property!.CanWrite) //  如果对象属性可写
+            {
+                property.SetValue(lastRecords, batchProcessWorkbookOption); //将对话框返回的功能选项字符串赋值给用户使用记录对象指定属性
+            }
+
+            int functionNum = options.Contains(batchProcessWorkbookOption) ? options.IndexOf(batchProcessWorkbookOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
+            return functionNum; // 将功能选项索引号赋值给函数返回值
+        }
 
         public static void ShowExceptionMessage(Exception ex)
         {

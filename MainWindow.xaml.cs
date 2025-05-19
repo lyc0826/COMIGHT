@@ -1,6 +1,7 @@
 ﻿using Hardware.Info;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
+using MathNet.Numerics;
 using Microsoft.Win32;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
@@ -305,79 +306,58 @@ namespace COMIGHT
             string currentFilePath = "";
             try
             {
+                // 定义功能选项列表
                 List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
                     "5-Copy Formula to Multiple Worksheets", "6-Adjust Worksheet Format for Printing"};
+                //  获取功能选项
+                int functionNum = SelectFunction(question: "Select the function", options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestBatchProcessWorkbookOption");
 
-                string latestBatchProcessWorkbookOption = latestRecords.LatestBatchProcessWorkbookOption; //读取用户使用记录中保存的批量处理Excel工作簿功能选项字符串
-                InputDialog inputDialog = new InputDialog(question: "Select the function", options: lstFunctions, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
-                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-                string batchProcessWorkbookOption = inputDialog.Answer;
-                latestRecords.LatestBatchProcessWorkbookOption = batchProcessWorkbookOption; //将对话框返回的批量处理Excel工作簿功能选项字符串赋值给用户使用记录
-
-                int functionNum = lstFunctions.Contains(batchProcessWorkbookOption) ? lstFunctions.IndexOf(batchProcessWorkbookOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
-
-                if (functionNum < 1 || functionNum > 6) //如果功能选项索引号不在设定范围，则结束本过程
+                if (functionNum <= 0) //如果功能选项索引号小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {
                     return;
                 }
 
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files"); //获取所选文件列表
+                //获取所选文件列表
+                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files"); 
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
-                int fileNum;
-                int excelWorksheetIndexLower = 0;
-                int excelWorksheetIndexUpper = 0;
+                // 获取Excel工作表索引范围
+                (int excelWorksheetStartIndex, int excelWorksheetEndIndex) = GetWorksheetRange();
+
+                if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
+                {
+                    return;
+                }
+
                 int headerRowCount = 0;
                 int footerRowCount = 0;
                 List<string>? lstOperatingRangeAddresses = null;
-
-                string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
-                inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-
-                string excelWorksheetIndexesStr = inputDialog.Answer; //获取对话框返回的Excel工作表索引号范围字符串
-                if (string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串为null或全空白字符，则结束本过程
-                {
-                    return;
-                }
-                
-                latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
-                //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
-                List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
-                excelWorksheetIndexLower = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值：列表的0号元素的值
-                excelWorksheetIndexUpper = lstExcelWorksheetIndexesStr.Count() == 1 ? excelWorksheetIndexLower : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值：如果Excel工作表索引号列表只有一个元素（起始和终止工作表相同），则得到Excel工作表索引号范围起始值；否则，得到列表的1号元素的值
 
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
                     case 6: //调整工作表打印版式
                         (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
+                        if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+                        {
+                            return;
+                        }
+
                         break;
 
                     case 2:
                     case 3:
                     case 4:
                     case 5: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
-                        string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
-                        inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
-                        if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                        lstOperatingRangeAddresses = GetWorksheetOperatingRangeAddresses();
+                        if (lstOperatingRangeAddresses == null) //如果获取到的操作范围地址列表为null，则结束本过程
                         {
                             return;
                         }
-                        string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
-                        latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
 
-                        //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
-                        lstOperatingRangeAddresses = operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
                         break;
                 }
 
@@ -393,7 +373,7 @@ namespace COMIGHT
                 ExcelPackage? templateExcelPackage = null; //定义模板Excel包变量
                 ExcelWorksheet? templateExcelWorksheet = null; //定义模板Excel工作表变量
 
-                fileNum = 1;
+                int fileNum = 1;
                 foreach (string excelFilePath in filePaths) //遍历所有文件
                 {
                     currentFilePath = excelFilePath; //将当前Excel文件路径全名赋值给当前文件路径全名变量
@@ -411,11 +391,11 @@ namespace COMIGHT
                         }
 
                         //获取被处理Excel工作表索引号上下限，如果大于工作表数量-1，则限定为工作表数量-1
-                        excelWorksheetIndexLower = Math.Min(excelWorksheetIndexLower, excelWorkbook.Worksheets.Count - 1);
-                        excelWorksheetIndexUpper = Math.Min(excelWorksheetIndexUpper, excelWorkbook.Worksheets.Count - 1);
-                        
+                        excelWorksheetStartIndex = Math.Min(excelWorksheetStartIndex, excelWorkbook.Worksheets.Count - 1);
+                        excelWorksheetEndIndex = Math.Min(excelWorksheetEndIndex, excelWorkbook.Worksheets.Count - 1);
 
-                        for (int i = excelWorksheetIndexLower; i <= excelWorksheetIndexUpper; i++) //遍历指定范围内的所有Excel工作表
+
+                        for (int i = excelWorksheetStartIndex; i <= excelWorksheetEndIndex; i++) //遍历指定范围内的所有Excel工作表
                         {
                             ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i];
                             //如果当前Excel工作表为隐藏且使用工作表索引号，则抛出异常
@@ -444,7 +424,7 @@ namespace COMIGHT
                                         continue;
                                     }
 
-                                    int sourceStartRowIndex = (fileNum == 1 && i == excelWorksheetIndexLower) ? 1 : headerRowCount + 1; //获取被处理工作表起始行索引号：如果当前是第一个Excel工作簿的第一个工作表，则得到1；否则得到表头行数+1
+                                    int sourceStartRowIndex = (fileNum == 1 && i == excelWorksheetStartIndex) ? 1 : headerRowCount + 1; //获取被处理工作表起始行索引号：如果当前是第一个Excel工作簿的第一个工作表，则得到1；否则得到表头行数+1
                                     int sourceEndRowIndex = excelWorksheet.Dimension!.End.Row - footerRowCount; //获取被处理工作表末尾行索引号：已使用区域最末行的索引号-表尾行数
                                     int targetStartRowIndex = (targetExcelWorksheet.Dimension?.End.Row ?? 0) + 1; //获取目标工作表起始行索引号：已使用区域最末行的索引号（如果工作表为空，则为0）+1
 
@@ -469,7 +449,7 @@ namespace COMIGHT
 
                                     targetExcelWorkbookPrefix = "Accum"; //目标Excel工作簿类型变量赋值为“累加”
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
+                                    if (fileNum == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
                                     {
                                         // 整体复制粘贴到目标Excel工作表
                                         excelWorksheet.Cells[excelWorksheet.Dimension.Address].CopyStyles(targetExcelWorksheet.Cells["A1"]); //将被处理Excel工作表的已使用区域的格式复制到目标工作表
@@ -506,7 +486,7 @@ namespace COMIGHT
 
                                     targetExcelWorkbookPrefix = "Extr"; //目标Excel工作簿类型变量赋值为“提取”
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) //如果是第一个文件的第一个Excel工作表
+                                    if (fileNum == 1 && i == excelWorksheetStartIndex) //如果是第一个文件的第一个Excel工作表
                                     {
                                         dataTable = new DataTable(); //定义DataTable
                                         dataTable.Columns.Add("Source Workbook"); //添加列
@@ -543,7 +523,7 @@ namespace COMIGHT
                                     dataTable.Rows.Add(dataRow); //向DataTable添加数据行
 
                                     //如果当前文件是文件列表中的最后一个，且当前Excel工作表也是最后一个，且DataTable的行数和列数均不为0，则将DataTable写入目标工作表
-                                    if (fileNum == filePaths.Count && i == excelWorksheetIndexUpper
+                                    if (fileNum == filePaths.Count && i == excelWorksheetEndIndex
                                         && dataTable!.Rows.Count * dataTable.Columns.Count > 0)
                                     {
                                         targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
@@ -569,7 +549,7 @@ namespace COMIGHT
                                             }
                                         }
                                     }
-                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    if (i == excelWorksheetEndIndex) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
                                     }
@@ -578,7 +558,7 @@ namespace COMIGHT
 
                                 case 5: //复制公式到多Excel工作表
 
-                                    if (fileNum == 1 && i == excelWorksheetIndexLower) // 如果是第一个文件的第一个Excel工作表
+                                    if (fileNum == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
                                     {
                                         templateExcelFilePaths = SelectFiles(FileType.Excel, false, "Select the Template Excel File"); //选择模板文件
                                         if (templateExcelFilePaths == null) //如果文件为null，结束本过程
@@ -594,7 +574,7 @@ namespace COMIGHT
                                         templateExcelWorksheet?.Cells[anOperatingRange].Copy(excelWorksheet.Cells[anOperatingRange]); //将模板Excel工作表指定区域的公式复制到当前工作表中
                                     }
 
-                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    if (i == excelWorksheetEndIndex) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
                                     }
@@ -606,7 +586,7 @@ namespace COMIGHT
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
 
-                                    if (i == excelWorksheetIndexUpper) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
+                                    if (i == excelWorksheetEndIndex) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
                                     }
@@ -667,6 +647,10 @@ namespace COMIGHT
                 }
 
                 (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
+                if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+                {
+                    return;
+                }
 
                 string? keyColumnLetter = GetKeyColumnLetter(); //获取主键列符
                 if (keyColumnLetter == null) //如果主键列符为null，则结束本过程
@@ -1597,18 +1581,9 @@ namespace COMIGHT
 
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
 
-                string latestSplitWorksheetOption = latestRecords.LatestSplitWorksheetOption; //读取用户使用记录中保存的拆分Excel工作表功能选项字符串
-                inputDialog = new InputDialog(question: "Select the function", options: lstFunctions, defaultAnswer: latestSplitWorksheetOption); //弹出功能选择对话框
-                if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-                {
-                    return;
-                }
-                string splitWorksheetOption = inputDialog.Answer; // 获取对话框返回的拆分Excel工作表功能选项字符串
-                latestRecords.LatestSplitWorksheetOption = splitWorksheetOption; //将对话框返回的拆分Excel工作表功能选项字符串赋值给用户使用记录
+                int functionNum = SelectFunction(question: "Select the function", options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption");
 
-                int functionNum = lstFunctions.Contains(splitWorksheetOption) ? lstFunctions.IndexOf(splitWorksheetOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
-
-                if (functionNum < 1 || functionNum > 2) //如果功能选项不在设定范围，则结束本过程
+                if (functionNum <= 0) //如果功能选项小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {
                     return;
                 }
@@ -1620,6 +1595,10 @@ namespace COMIGHT
                 }
 
                 (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; //获取表头、表尾行数
+                if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+                {
+                    return;
+                }
 
                 string? columnLetter = GetKeyColumnLetter(); //获取主键列符
                 if (columnLetter == null) //如果主键列符为null，则结束本过程
