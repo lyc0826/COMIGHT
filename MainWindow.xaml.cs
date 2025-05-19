@@ -333,30 +333,29 @@ namespace COMIGHT
                 int fileNum;
                 int excelWorksheetIndexLower = 0;
                 int excelWorksheetIndexUpper = 0;
-                bool useExcelWorksheetIndex = true;
                 int headerRowCount = 0;
                 int footerRowCount = 0;
                 List<string>? lstOperatingRangeAddresses = null;
 
                 string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
-                inputDialog = new InputDialog(question: "Input the indexes range of worksheets to be processed (separated by a hyphen, e.g. \"1-3\"); Leave blank to designate the worksheet name", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
+                inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
                 if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
 
                 string excelWorksheetIndexesStr = inputDialog.Answer; //获取对话框返回的Excel工作表索引号范围字符串
-                if (string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串不为null或全空白字符
+                if (string.IsNullOrWhiteSpace(excelWorksheetIndexesStr)) //如果Excel工作表索引号范围字符串为null或全空白字符，则结束本过程
                 {
                     return;
                 }
                 
                 latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
-                //将Excel索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
+                //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
                 List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
-                excelWorksheetIndexLower = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值
-                excelWorksheetIndexUpper = lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值
-               
+                excelWorksheetIndexLower = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值：列表的0号元素的值
+                excelWorksheetIndexUpper = lstExcelWorksheetIndexesStr.Count() == 1 ? excelWorksheetIndexLower : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值：如果Excel工作表索引号列表只有一个元素（起始和终止工作表相同），则得到Excel工作表索引号范围起始值；否则，得到列表的1号元素的值
+
                 switch (functionNum) //根据功能序号进入相应的分支
                 {
                     case 1: //记录合并
@@ -420,7 +419,7 @@ namespace COMIGHT
                         {
                             ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i];
                             //如果当前Excel工作表为隐藏且使用工作表索引号，则抛出异常
-                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible && useExcelWorksheetIndex)
+                            if (excelWorksheet.Hidden != eWorkSheetHidden.Visible)
                             {
                                 throw new Exception("Hidden worksheets found. Operation aborted.");
                             }
