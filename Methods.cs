@@ -126,7 +126,7 @@ namespace COMIGHT
                                             tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : tableTitle;
                                         }
 
-                                        //创建Excel工作表，使用表格标题作为工作表的名称
+                                        //创建Excel工作表，使用序号加表格标题作为工作表的名称
                                         ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}", 15)); // 创建Excel工作表对象,工作表名称限制长度
 
                                         IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
