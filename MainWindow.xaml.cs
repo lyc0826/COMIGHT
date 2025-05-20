@@ -1285,7 +1285,7 @@ namespace COMIGHT
                                         tableRowStringBuilder.Append('|'); //追加表格分隔符到字符串构建器中
                                     }
                                     lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
-                                    tableRowStringBuilder.Clear();
+                                    tableRowStringBuilder.Clear(); //清空字符串构建器
                                 }
                                 lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"(The End)"元素和一个空字符串元素
                             }
@@ -1322,7 +1322,7 @@ namespace COMIGHT
                                                 tableRowStringBuilder.Append('|'); // 追加表格分隔符到字符串构建器中
                                             }
                                             lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); // 将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
-                                            tableRowStringBuilder.Clear();
+                                            tableRowStringBuilder.Clear(); // 清空字符串构建器
                                         }
                                         break;
 
