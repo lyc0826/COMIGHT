@@ -310,7 +310,7 @@ namespace COMIGHT
                 List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
                     "5-Copy Formula to Multiple Worksheets", "6-Adjust Worksheet Format for Printing"};
                 //  获取功能选项
-                int functionNum = SelectFunction(question: "Select the function", options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestBatchProcessWorkbookOption");
+                int functionNum = SelectFunction(options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestBatchProcessWorkbookOption");
 
                 if (functionNum <= 0) //如果功能选项索引号小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {
@@ -359,6 +359,7 @@ namespace COMIGHT
                         }
 
                         break;
+                        
                 }
 
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
@@ -1581,7 +1582,7 @@ namespace COMIGHT
 
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
 
-                int functionNum = SelectFunction(question: "Select the function", options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption");
+                int functionNum = SelectFunction(options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption");
 
                 if (functionNum <= 0) //如果功能选项小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {

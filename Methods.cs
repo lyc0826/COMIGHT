@@ -890,7 +890,7 @@ namespace COMIGHT
 
         }
 
-        public static int SelectFunction(string question, List<string> options, object lastRecords, string propertyName)
+        public static int SelectFunction(List<string> options, object lastRecords, string propertyName)
         {
             Type type = lastRecords.GetType(); // 获取用户使用记录对象类型
             PropertyInfo? property = type.GetProperty(propertyName); // 获取对象的指定属性
@@ -902,7 +902,7 @@ namespace COMIGHT
             object value = property.GetValue(lastRecords) ?? ""; //  获取对象指定属性的值
             string latestBatchProcessWorkbookOption = (string)value; //将指定属性的值转换成字符串
 
-            InputDialog inputDialog = new InputDialog(question: question, options: options, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
+            InputDialog inputDialog = new InputDialog(question: "Select the Function", options: options, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
             if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则将-1赋值给函数返回值
             {
                 return -1;
