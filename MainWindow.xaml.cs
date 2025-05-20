@@ -1250,6 +1250,7 @@ namespace COMIGHT
 
 
                 List<string> lstFullText = new List<string>(); //建立全文本列表
+                StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
 
                 foreach (string filePath in filePaths) //遍历所有列表中的文件
                 {
@@ -1278,13 +1279,13 @@ namespace COMIGHT
 
                                 for (int i = 1; i <= excelWorksheet.Dimension.End.Row; i++) // 遍历Excel工作表所有行
                                 {
-                                    StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
                                     for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) // 遍历Excel工作表所有列
                                     {
                                         tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text); // 将当前单元格文字追加到字符串构建器中
                                         tableRowStringBuilder.Append('|'); //追加表格分隔符到字符串构建器中
                                     }
                                     lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
+                                    tableRowStringBuilder.Clear();
                                 }
                                 lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"(The End)"元素和一个空字符串元素
                             }
@@ -1314,14 +1315,14 @@ namespace COMIGHT
                                     case XWPFTable table: // 如果当前元素是表格
                                         foreach (XWPFTableRow row in table.Rows) // 遍历表格所有行
                                         {
-                                            StringBuilder rowTextStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
                                             foreach (XWPFTableCell cell in row.GetTableCells()) // 遍历当前行的所有列
                                             {
                                                 string cellText = string.Join(" ", cell.Paragraphs.Select(p => p.Text.Trim())); // 提取单元格内的所有段落文本并连接起来
-                                                rowTextStringBuilder.Append(cellText); // 将当前单元格文字追加到字符串构建器中
-                                                rowTextStringBuilder.Append('|'); // 追加表格分隔符到字符串构建器中
+                                                tableRowStringBuilder.Append(cellText); // 将当前单元格文字追加到字符串构建器中
+                                                tableRowStringBuilder.Append('|'); // 追加表格分隔符到字符串构建器中
                                             }
-                                            lstFullText.Add(rowTextStringBuilder.ToString().TrimEnd('|')); // 将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
+                                            lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); // 将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
+                                            tableRowStringBuilder.Clear();
                                         }
                                         break;
 
@@ -1462,13 +1463,14 @@ namespace COMIGHT
                 // 遍历各软硬件属性，将信息添加到对应的信息列表中
 
                 // 操作系统
-                string operatingSystem = hardwareInfo.OperatingSystem.ToString();
+                string operatingSystem = hardwareInfo.OperatingSystem.Name.ToString();
 
                 // 计算机系统
                 List<string> lstComputerSystemInfos = new List<string>();
                 foreach (var computerSystem in hardwareInfo.ComputerSystemList)
                 {
-                    lstComputerSystemInfos.Add(computerSystem.ToString());
+                    lstComputerSystemInfos.Add("Name: " + computerSystem.Name.ToString());
+                    lstComputerSystemInfos.Add("Identifying Number: " + computerSystem.IdentifyingNumber.ToString());
                 }
                 string computerSystemInfo = string.Join("\n\n", lstComputerSystemInfos);
 
@@ -1476,15 +1478,15 @@ namespace COMIGHT
                 List<string> lstBiosInfos = new List<string>();
                 foreach (var bios in hardwareInfo.BiosList) // 遍历BIOS列表
                 {
-                    lstBiosInfos.Add(bios.ToString()); // 将BIOS信息添加到BIOS信息列表中
+                    lstBiosInfos.Add("Serial Number: " + bios.SerialNumber.ToString()); // 将BIOS信息添加到BIOS信息列表中
                 }
                 string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
 
                 // 主板
                 List<string> lstMotherboardInfos = new List<string>();
-                foreach (var board in hardwareInfo.MotherboardList)
+                foreach (var motherboard in hardwareInfo.MotherboardList)
                 {
-                    lstMotherboardInfos.Add(board.ToString());
+                    lstMotherboardInfos.Add("Serial Number: " + motherboard.SerialNumber.ToString());
                 }
                 string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
 
@@ -1492,7 +1494,7 @@ namespace COMIGHT
                 List<string> lstCpuInfos = new List<string>();
                 foreach (var cpu in hardwareInfo.CpuList)
                 {
-                    lstCpuInfos.Add(cpu.ToString());
+                    lstCpuInfos.Add("Name: " + cpu.Name.ToString());
                 }
                 string cpuInfo = string.Join("\n\n", lstCpuInfos);
 
@@ -1501,19 +1503,19 @@ namespace COMIGHT
                 long totalMemCapacity = 0;
                 foreach (var memory in hardwareInfo.MemoryList)
                 {
-                    lstMemoryInfos.Add(memory.ToString());
-                    totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量累加到总容量变量中
+                    //lstMemoryInfos.Add(memory.ToString());
+                    totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量从Byte换算到GB
                 }
-                lstMemoryInfos.Add($"Total Memory Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
+                lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
                 string memoryInfo = string.Join("\n\n", lstMemoryInfos);
 
                 // 硬盘
                 List<string> lstDiskInfos = new List<string>();
                 foreach (var disk in hardwareInfo.DriveList)
                 {
-                    lstDiskInfos.Add(disk.ToString());
+                    lstDiskInfos.Add("Caption: " + disk.Caption.ToString());
                     // 将硬盘容量转换为GB并添加到硬盘信息列表中
-                    long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3));
+                    long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
                     lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
                 }
                 string diskInfo = string.Join("\n\n", lstDiskInfos);
@@ -1522,7 +1524,7 @@ namespace COMIGHT
                 List<string> lstVideoControllerInfos = new List<string>();
                 foreach (var videoController in hardwareInfo.VideoControllerList)
                 {
-                    lstVideoControllerInfos.Add(videoController.ToString());
+                    lstVideoControllerInfos.Add("Name: " + videoController.Name.ToString());
                 }
                 string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
 
@@ -1530,7 +1532,7 @@ namespace COMIGHT
                 List<string> lstSoundDeviceInfos = new List<string>();
                 foreach (var soundDevice in hardwareInfo.SoundDeviceList)
                 {
-                    lstSoundDeviceInfos.Add(soundDevice.ToString());
+                    lstSoundDeviceInfos.Add("Name: " + soundDevice.Name.ToString());
                 }
                 string soundDeviceInfo = string.Join("\n\n", lstSoundDeviceInfos);
 
@@ -1538,7 +1540,7 @@ namespace COMIGHT
                 List<string> lstNetworkAdapterInfos = new List<string>();
                 foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
                 {
-                    lstNetworkAdapterInfos.Add(networkAdapter.ToString());
+                    lstNetworkAdapterInfos.Add("Name: " + networkAdapter.Name.ToString());
 
                     List<string> lstIPAddressInfos = new List<string>();
                     foreach (var ipAddress in networkAdapter.IPAddressList) // 遍历当前网络适配器IP地址列表

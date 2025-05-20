@@ -484,14 +484,14 @@ namespace COMIGHT
         {
             string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
             InputDialog inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
-            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则将null赋值给函数返回值
             {
                 return null;
             }
             string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
             latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
 
-            //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符
+            //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符，赋值给函数返回值
             return operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
         }
 
@@ -510,7 +510,7 @@ namespace COMIGHT
             List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
             int startIndex = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值：列表的0号元素的值
             int endIndex = lstExcelWorksheetIndexesStr.Count() == 1 ? startIndex : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值：如果Excel工作表索引号列表只有一个元素（起始和终止工作表相同），则得到Excel工作表索引号范围起始值；否则，得到列表的1号元素的值
-            return (startIndex, endIndex); // 将Excel工作表索引号范围起始值和结束值复制给函数返回值元组
+            return (startIndex, endIndex); // 将Excel工作表索引号范围起始值和结束值赋值给函数返回值元组
         }
 
         public static (int headerRowCount, int footerRowCount) GetHeaderAndFooterRowCount()
@@ -886,7 +886,7 @@ namespace COMIGHT
             {
                 string folderPath = openFolderDialog.FolderName;
                 latestRecords.LatestFolderPath = folderPath;  // 将文件夹路径赋值给用户使用记录
-                return folderPath;
+                return folderPath; // 将文件夹路径赋值给函数返回值
             }
             return null;
 
