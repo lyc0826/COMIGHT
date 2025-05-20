@@ -470,7 +470,7 @@ namespace COMIGHT
         {
             string latestColumnLetter = latestRecords.LatestKeyColumnLetter; //读取设置中保存的主键列符
             InputDialog inputDialog = new InputDialog(question: "Input the key column letter (e.g. \"A\"）", defaultAnswer: latestColumnLetter); //弹出对话框，输入主键列符
-            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则函数返回值赋值为null
+            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
@@ -484,7 +484,7 @@ namespace COMIGHT
         {
             string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
             InputDialog inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
-            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则将null赋值给函数返回值
+            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
@@ -499,7 +499,8 @@ namespace COMIGHT
         {
             string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
             InputDialog inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
-            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则工作表索引号范围起始值均为-1，赋值给函数返回值
+
+            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则工作表索引号范围起始值均为-1，赋值给函数返回值
             {
                 return (-1, -1);
             }
@@ -517,7 +518,7 @@ namespace COMIGHT
         {
             string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
             InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
-            if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则表头、表尾行数均为-1，赋值给函数返回值
+            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则表头、表尾行数均为-1，赋值给函数返回值元组
             {
                 return (-1, -1);
             }
@@ -882,13 +883,13 @@ namespace COMIGHT
                 RootDirectory = initialDirectory // 根文件夹路径设为文件夹路径
             };
 
-            if (openFolderDialog.ShowDialog() == true) // 如果对话框返回值为false（点击Cancel），则结束本过程
+            if (openFolderDialog.ShowDialog() == true) // 如果对话框返回值为true（点击OK）
             {
                 string folderPath = openFolderDialog.FolderName;
                 latestRecords.LatestFolderPath = folderPath;  // 将文件夹路径赋值给用户使用记录
                 return folderPath; // 将文件夹路径赋值给函数返回值
             }
-            return null;
+            return null; // 如果上一个if未执行，没有文件夹路径赋给函数返回值，则函数返回值赋值为null
 
         }
 
@@ -905,7 +906,7 @@ namespace COMIGHT
             string latestBatchProcessWorkbookOption = (string)value; //将指定属性的值转换成字符串
 
             InputDialog inputDialog = new InputDialog(question: "Select the Function", options: options, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
-            if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则将-1赋值给函数返回值
+            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则将-1赋值给函数返回值
             {
                 return -1;
             }

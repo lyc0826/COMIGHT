@@ -817,7 +817,7 @@ namespace COMIGHT
             try
             {
                 InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
@@ -966,7 +966,7 @@ namespace COMIGHT
             try
             {
                 InputDialog inputDialog = new InputDialog(question: "Input the text to be imported", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
@@ -1113,7 +1113,7 @@ namespace COMIGHT
                 // 弹出功能选择对话框，提示用户输入子路径深度
                 InputDialog inputDialog = new InputDialog(question: "Input the depth(level) of subdirectories", defaultAnswer: latestSubpathDepth.ToString());
 
-                if (inputDialog.ShowDialog() == false)
+                if (inputDialog.ShowDialog() == false) // 如果对话框返回值为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
@@ -1610,7 +1610,7 @@ namespace COMIGHT
                 }
 
                 inputDialog = new InputDialog(question: "Input the filename of target workbooks", defaultAnswer: Path.GetFileNameWithoutExtension(filePaths[0])); //弹出对话框，输入拆分后Excel工作簿文件主名
-                if (inputDialog.ShowDialog() == false) //如果对话框返回为false（点击了Cancel），则结束本过程
+                if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
                 {
                     return;
                 }
@@ -1747,7 +1747,7 @@ namespace COMIGHT
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {
             //InputDialog inputDialog = new InputDialog(question:"Number", defaultAnswer:"1000"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
             //{
             //    return;
             //}
