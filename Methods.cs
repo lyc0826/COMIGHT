@@ -324,8 +324,10 @@ namespace COMIGHT
                     IEnumerable<ExcelRangeBase> qualifiedCells = columnCells.Where(cell => !string.IsNullOrWhiteSpace(cell.Text) && !cell.Merge);
                     //计算当前列所有合格单元格的字符数平均值：如果合格单元格集合不为空，则得到所有单元格字符数的平均值，否则得到0
                     double averageCharacterCount = qualifiedCells.Any() ? qualifiedCells.Average(cell => cell.Text.Length) : 0;
-                    excelWorksheet.Columns[j].Style.WrapText = false; //设置当前列文字自动换行为false
-                    excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（在文字不自动换行时，能完整显示文字的最适合列宽）
+                    //获取“文字是否自动换行”变量值，如果合格单元格集合中有任何一个包含换行符，则得到true，否则得到false
+                    bool wrapText = columnCells.Any(cell => cell.Text.Contains('\n'))? true : false;
+                    excelWorksheet.Columns[j].Style.WrapText = wrapText; //设置当前列文字自动换行为false
+                    excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（能完整显示文字的最适合列宽）
                     excelWorksheet.Columns[j].Style.WrapText = true; //设置当前列文字自动换行
                     //在当前列最合适列宽、基于单元格字符数平均值计算出的列宽中取较小值（并限制在8-40的范围），赋值给列宽变量
                     double columnWidth = Math.Min(excelWorksheet.Columns[j].Width, averageCharacterCount * 2 + 4).Clamp<double>(8, 40);
