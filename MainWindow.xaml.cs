@@ -1454,58 +1454,65 @@ namespace COMIGHT
             }
         }
 
-        private async Task ShowSystemInfoAsync()
+        public async Task ShowSystemInfoAsync()
         {
             try
             {
-                HardwareInfo hardwareInfo = new HardwareInfo(); // 创建HardwareInfo实例
-                //await taskManager.RunTaskAsync(async () => await Task.Run(() => hardwareInfo.RefreshAll())); // 刷新硬件信息
-
+                HardwareInfo hardwareInfo = new HardwareInfo();
+                
                 // 定义异步委托方法，用于刷新硬件信息
                 async Task RefreshHardwareInfoAsync()
                 {
                     await Task.Run(() => hardwareInfo.RefreshAll());
                 }
-
-                await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行刷新硬件信息的方法
-
-                // 遍历各软硬件属性，将信息添加到对应的信息列表中
-
+                await taskManager.RunTaskAsync(RefreshHardwareInfoAsync);
+                
+                // 创建 DataTable
+                DataTable systemInfoTable = new DataTable("System Information");
+                systemInfoTable.Columns.Add("Hardware Name", typeof(string));
+                systemInfoTable.Columns.Add("Hardware Info", typeof(string));
+                
+                // 辅助方法：将信息添加到 DataTable
+                void AddInfoToTable(string name, string info)
+                {
+                    systemInfoTable.Rows.Add(name, info);
+                }
+                
                 // 操作系统
-                string operatingSystem = hardwareInfo.OperatingSystem.ToString();
-
+                AddInfoToTable("Operating System", hardwareInfo.OperatingSystem.ToString());
+                
                 // 计算机系统
                 List<string> lstComputerSystemInfos = new List<string>();
                 foreach (var computerSystem in hardwareInfo.ComputerSystemList)
                 {
                     lstComputerSystemInfos.Add(computerSystem.ToString());
                 }
-                string computerSystemInfo = string.Join("\n\n", lstComputerSystemInfos);
-
+                AddInfoToTable("Computer System", string.Join("\n\n", lstComputerSystemInfos));
+                
                 // BIOS
                 List<string> lstBiosInfos = new List<string>();
-                foreach (var bios in hardwareInfo.BiosList) // 遍历BIOS列表
+                foreach (var bios in hardwareInfo.BiosList)
                 {
-                    lstBiosInfos.Add(bios.ToString()); // 将BIOS信息添加到BIOS信息列表中
+                    lstBiosInfos.Add(bios.ToString());
                 }
-                string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
-
+                AddInfoToTable("BIOS", string.Join("\n\n", lstBiosInfos));
+                
                 // 主板
                 List<string> lstMotherboardInfos = new List<string>();
                 foreach (var motherboard in hardwareInfo.MotherboardList)
                 {
                     lstMotherboardInfos.Add(motherboard.ToString());
                 }
-                string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
-
+                AddInfoToTable("Motherboard", string.Join("\n\n", lstMotherboardInfos));
+                
                 // CPU
                 List<string> lstCpuInfos = new List<string>();
                 foreach (var cpu in hardwareInfo.CpuList)
                 {
                     lstCpuInfos.Add(cpu.ToString());
                 }
-                string cpuInfo = string.Join("\n\n", lstCpuInfos);
-
+                AddInfoToTable("CPU", string.Join("\n\n", lstCpuInfos));
+                
                 // 内存
                 List<string> lstMemoryInfos = new List<string>();
                 long totalMemCapacity = 0;
@@ -1513,76 +1520,200 @@ namespace COMIGHT
                 {
                     lstMemoryInfos.Add(memory.ToString());
                     totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量从Byte换算到GB
+                    
                 }
-                lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
-                string memoryInfo = string.Join("\n\n", lstMemoryInfos);
-
+                lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB");
+                AddInfoToTable("Memory", string.Join("\n\n", lstMemoryInfos));
+                
                 // 硬盘
                 List<string> lstDiskInfos = new List<string>();
                 foreach (var disk in hardwareInfo.DriveList)
                 {
                     lstDiskInfos.Add(disk.ToString());
-                    // 将硬盘容量转换为GB并添加到硬盘信息列表中
+
                     long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
                     lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
+                    
                 }
-                string diskInfo = string.Join("\n\n", lstDiskInfos);
-
+                AddInfoToTable("Disks", string.Join("\n\n", lstDiskInfos));
+                
                 // 视频控制器
                 List<string> lstVideoControllerInfos = new List<string>();
                 foreach (var videoController in hardwareInfo.VideoControllerList)
                 {
                     lstVideoControllerInfos.Add(videoController.ToString());
                 }
-                string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
-
+                AddInfoToTable("Video Controllers", string.Join("\n\n", lstVideoControllerInfos));
+                
                 // 音频适配器
                 List<string> lstSoundDeviceInfos = new List<string>();
                 foreach (var soundDevice in hardwareInfo.SoundDeviceList)
                 {
                     lstSoundDeviceInfos.Add(soundDevice.ToString());
                 }
-                string soundDeviceInfo = string.Join("\n\n", lstSoundDeviceInfos);
-
+                AddInfoToTable("Sound Devices", string.Join("\n\n", lstSoundDeviceInfos));
+                
                 // 网络适配器
                 List<string> lstNetworkAdapterInfos = new List<string>();
                 foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
                 {
-                    lstNetworkAdapterInfos.Add(networkAdapter.ToString());
-
+                    List<string> currentAdapterDetails = new List<string>();
+                    currentAdapterDetails.Add(networkAdapter.ToString());
                     List<string> lstIPAddressInfos = new List<string>();
-                    foreach (var ipAddress in networkAdapter.IPAddressList) // 遍历当前网络适配器IP地址列表
+                    foreach (var ipAddress in networkAdapter.IPAddressList)
                     {
-                        lstIPAddressInfos.Add(ipAddress.ToString()); // 将当前IP地址添加到IP地址信息列表中
+                        lstIPAddressInfos.Add(ipAddress.ToString());
                     }
-                    string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos); // 将IP地址信息列表元素合并为字符串
-                    lstNetworkAdapterInfos.Add(ipAddressInfo); // 将IP地址信息添加到网络适配器信息列表中
+                    string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos);
+                    currentAdapterDetails.Add(ipAddressInfo);
+                    lstNetworkAdapterInfos.Add(string.Join("\n", currentAdapterDetails)); // 每个适配器的详细信息用换行符分隔
                 }
-                string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
+                AddInfoToTable("Network Adapters", string.Join("\n\n", lstNetworkAdapterInfos));
+                
+                // 显示 DataTable
+                if (GetInstanceCountByHandle<DataGridWindow>() < 1) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
+                {
+                    DataGridWindow systemInfoWindow = new DataGridWindow("System Info", systemInfoTable);
+                    systemInfoWindow.Show();
+                }
 
-                // 将所有信息组合成一个字符串，并显示在消息框中
-                string outputInfo = string.Join("\n\n", new string[]
-                    {
-                        "Operating System: ", operatingSystem, "==========",
-                        "Computer System: ", computerSystemInfo, "==========",
-                        "BIOS:", biosInfo, "==========",
-                        "Motherboard:", motherboardInfo, "==========",
-                        "CPU:", cpuInfo, "==========",
-                        "Memory:", memoryInfo, "==========",
-                        "Disks:", diskInfo, "==========",
-                        "Video Controllers:", videoControllerInfo, "==========",
-                        "Sound Devices:", soundDeviceInfo, "==========",
-                        "Network Adapters:", networkAdapterInfo,
-                    });
-
-                ShowMessage(outputInfo);
             }
-
             catch (Exception ex)
             {
                 ShowExceptionMessage(ex);
             }
         }
+
+
+        //private async Task ShowSystemInfoAsync()
+        //{
+        //    try
+        //    {
+        //        HardwareInfo hardwareInfo = new HardwareInfo(); // 创建HardwareInfo实例
+        //        //await taskManager.RunTaskAsync(async () => await Task.Run(() => hardwareInfo.RefreshAll())); // 刷新硬件信息
+
+        //        // 定义异步委托方法，用于刷新硬件信息
+        //        async Task RefreshHardwareInfoAsync()
+        //        {
+        //            await Task.Run(() => hardwareInfo.RefreshAll());
+        //        }
+
+        //        await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行刷新硬件信息的方法
+
+        //        // 遍历各软硬件属性，将信息添加到对应的信息列表中
+
+        //        // 操作系统
+        //        string operatingSystem = hardwareInfo.OperatingSystem.ToString();
+
+        //        // 计算机系统
+        //        List<string> lstComputerSystemInfos = new List<string>();
+        //        foreach (var computerSystem in hardwareInfo.ComputerSystemList)
+        //        {
+        //            lstComputerSystemInfos.Add(computerSystem.ToString());
+        //        }
+        //        string computerSystemInfo = string.Join("\n\n", lstComputerSystemInfos);
+
+        //        // BIOS
+        //        List<string> lstBiosInfos = new List<string>();
+        //        foreach (var bios in hardwareInfo.BiosList) // 遍历BIOS列表
+        //        {
+        //            lstBiosInfos.Add(bios.ToString()); // 将BIOS信息添加到BIOS信息列表中
+        //        }
+        //        string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
+
+        //        // 主板
+        //        List<string> lstMotherboardInfos = new List<string>();
+        //        foreach (var motherboard in hardwareInfo.MotherboardList)
+        //        {
+        //            lstMotherboardInfos.Add(motherboard.ToString());
+        //        }
+        //        string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
+
+        //        // CPU
+        //        List<string> lstCpuInfos = new List<string>();
+        //        foreach (var cpu in hardwareInfo.CpuList)
+        //        {
+        //            lstCpuInfos.Add(cpu.ToString());
+        //        }
+        //        string cpuInfo = string.Join("\n\n", lstCpuInfos);
+
+        //        // 内存
+        //        List<string> lstMemoryInfos = new List<string>();
+        //        long totalMemCapacity = 0;
+        //        foreach (var memory in hardwareInfo.MemoryList)
+        //        {
+        //            lstMemoryInfos.Add(memory.ToString());
+        //            totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量从Byte换算到GB
+        //        }
+        //        lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
+        //        string memoryInfo = string.Join("\n\n", lstMemoryInfos);
+
+        //        // 硬盘
+        //        List<string> lstDiskInfos = new List<string>();
+        //        foreach (var disk in hardwareInfo.DriveList)
+        //        {
+        //            lstDiskInfos.Add(disk.ToString());
+        //            // 将硬盘容量转换为GB并添加到硬盘信息列表中
+        //            long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
+        //            lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
+        //        }
+        //        string diskInfo = string.Join("\n\n", lstDiskInfos);
+
+        //        // 视频控制器
+        //        List<string> lstVideoControllerInfos = new List<string>();
+        //        foreach (var videoController in hardwareInfo.VideoControllerList)
+        //        {
+        //            lstVideoControllerInfos.Add(videoController.ToString());
+        //        }
+        //        string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
+
+        //        // 音频适配器
+        //        List<string> lstSoundDeviceInfos = new List<string>();
+        //        foreach (var soundDevice in hardwareInfo.SoundDeviceList)
+        //        {
+        //            lstSoundDeviceInfos.Add(soundDevice.ToString());
+        //        }
+        //        string soundDeviceInfo = string.Join("\n\n", lstSoundDeviceInfos);
+
+        //        // 网络适配器
+        //        List<string> lstNetworkAdapterInfos = new List<string>();
+        //        foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
+        //        {
+        //            lstNetworkAdapterInfos.Add(networkAdapter.ToString());
+
+        //            List<string> lstIPAddressInfos = new List<string>();
+        //            foreach (var ipAddress in networkAdapter.IPAddressList) // 遍历当前网络适配器IP地址列表
+        //            {
+        //                lstIPAddressInfos.Add(ipAddress.ToString()); // 将当前IP地址添加到IP地址信息列表中
+        //            }
+        //            string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos); // 将IP地址信息列表元素合并为字符串
+        //            lstNetworkAdapterInfos.Add(ipAddressInfo); // 将IP地址信息添加到网络适配器信息列表中
+        //        }
+        //        string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
+
+        //        // 将所有信息组合成一个字符串，并显示在消息框中
+        //        string outputInfo = string.Join("\n\n", new string[]
+        //            {
+        //                "Operating System: ", operatingSystem, "==========",
+        //                "Computer System: ", computerSystemInfo, "==========",
+        //                "BIOS:", biosInfo, "==========",
+        //                "Motherboard:", motherboardInfo, "==========",
+        //                "CPU:", cpuInfo, "==========",
+        //                "Memory:", memoryInfo, "==========",
+        //                "Disks:", diskInfo, "==========",
+        //                "Video Controllers:", videoControllerInfo, "==========",
+        //                "Sound Devices:", soundDeviceInfo, "==========",
+        //                "Network Adapters:", networkAdapterInfo,
+        //            });
+
+        //        ShowMessage(outputInfo);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+        //}
 
         public void SplitExcelWorksheet()
         {

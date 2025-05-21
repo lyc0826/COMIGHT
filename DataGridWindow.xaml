@@ -1,0 +1,75 @@
+﻿<Window x:Class="COMIGHT.DataGridWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:COMIGHT"
+        mc:Ignorable="d"
+        Title="DataGrid Window" Height="480" Width="640" FontSize="13" WindowStartupLocation="CenterScreen">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部控制区 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+            <Button Content="Clear Data" Click="ClearData_Click"/>
+        </StackPanel>
+
+        <!-- DataGrid 控件 -->
+        <DataGrid Grid.Row="1"
+                  x:Name="myDataGrid"
+                  AutoGenerateColumns="True"
+                  CanUserAddRows="True"
+                  CanUserDeleteRows="True"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="False"
+                  CanUserResizeRows="True" 
+                  HeadersVisibility="Column"
+                  RowHeaderWidth="20"
+                  Margin="10"
+                  FontSize="11"
+                  AlternatingRowBackground="LightCyan"
+                  RowBackground="White"
+                  GridLinesVisibility="All"
+                  BorderBrush="LightGray"
+                  BorderThickness="1" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.CanContentScroll="False"
+                  >
+
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                </Style>
+            </DataGrid.Resources>
+
+                <!-- 如果需要手动定义列，并应用样式，可以这样写：
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="列1" Binding="{Binding 列1}"/>
+                <DataGridTextColumn Header="列2" Binding="{Binding 列2}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="AcceptsReturn" Value="True"/>
+                            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+            -->
+
+        </DataGrid>
+    </Grid>
+</Window>
+
