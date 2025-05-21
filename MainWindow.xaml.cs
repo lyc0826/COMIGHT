@@ -326,7 +326,6 @@ namespace COMIGHT
 
                 // 获取Excel工作表索引范围
                 (int excelWorksheetStartIndex, int excelWorksheetEndIndex) = GetWorksheetRange();
-
                 if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
                 {
                     return;
@@ -391,7 +390,7 @@ namespace COMIGHT
                             targetFolderPath = appSettings.SavingFolderPath; //获取目标文件的文件夹路径
                         }
 
-                        //获取被处理Excel工作表索引号上下限，如果大于工作表数量-1，则限定为工作表数量-1
+                        //获取被处理Excel工作表索引号上下限，如果大于工作表数量-1，则限定为工作表数量-1 (EPPlus工作表索引号从0开始，Excel工作表索引号从1开始)
                         excelWorksheetStartIndex = Math.Min(excelWorksheetStartIndex, excelWorkbook.Worksheets.Count - 1);
                         excelWorksheetEndIndex = Math.Min(excelWorksheetEndIndex, excelWorkbook.Worksheets.Count - 1);
 
@@ -647,6 +646,12 @@ namespace COMIGHT
                     return;
                 }
 
+                (int worksheetStartIndex, int worksheetEndIndex) = GetWorksheetRange();
+                if (worksheetStartIndex < 0 || worksheetEndIndex < 0) //如果获取到的工作表起始和结束索引号有一个小于0（范围无效），则结束本过程
+                {
+                    return;
+                }
+
                 (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
                 if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
                 {
@@ -654,115 +659,9 @@ namespace COMIGHT
                 }
 
                 string? keyColumnLetter = GetKeyColumnLetter(); //获取主键列符
-                if (keyColumnLetter == null) //如果主键列符为null，则结束本过程
+                if (keyColumnLetter == null) //如果获取到的主键列符为null，则结束本过程
                 {
                     return;
-                }
-
-                DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], 1, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
-                DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], 1, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
-
-                if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则结束本过程
-                {
-                    return;
-                }
-
-                //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
-                string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(keyColumnLetter) - 1].ColumnName;
-
-                List<string> lstRecordKeys = new List<string>(); //定义记录主键列表
-                List<string> lstDataColumnNames = new List<string>(); //定义数据列名称列表
-
-                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
-                foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
-                {
-                    lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
-                }
-
-                foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
-                {
-                    lstDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到数据列名称列表中
-                }
-
-                foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
-                {
-                    string key = Convert.ToString(startDataRow[keyDataColumnName])!; //获取当前数据行主键数据列的值
-                    if (!lstRecordKeys.Contains(key)) //如果记录主键列表不含当前数据行的主键数据列的值，则将该值添加到记录主键列表中
-                    {
-                        lstRecordKeys.Add(key);
-                    }
-                }
-
-                foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历起点DataTable的每一数据列
-                {
-                    if (!lstDataColumnNames.Contains(startDataColumn.ColumnName))  //如果数据列名称列表不含当前数据列名称，则将该数据列名称添加到数据列名称列表中
-                    {
-                        lstDataColumnNames.Add(startDataColumn.ColumnName);
-                    }
-                }
-
-                DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
-                foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
-                {
-                    differenceDataTable.Columns.Add(dataColumnName, typeof(string)); //将当前数据列名称作为新数据列添加到差异DataTable中，数据类型为string
-                }
-
-                foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
-                {
-                    DataRow differenceDataRow = differenceDataTable.NewRow(); //定义差异DataTable新数据行，赋值给差异DataTable数据行变量
-                    differenceDataRow[keyDataColumnName] = recordKey; //将当前记录主键赋值给差异DataTable新数据行的主键数据列
-                    differenceDataTable.Rows.Add(differenceDataRow); //向差异DataTable添加该新数据行
-
-                    //从起始和终点DataTable中筛选出主键数据列的值为当前主键的行，并取其中第一个，分别赋值给起始数据行和终点数据行
-                    DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
-                    DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
-
-                    foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
-                    {
-                        if (dataColumnName == keyDataColumnName) //如果当前数据列名称等于主键列名称，则直接跳过进入下一个循环
-                        {
-                            continue;
-                        }
-
-                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有当前数据列，则得到起始（终点）数据行当前数据列的数据字符串；否则得到空字符串
-                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(dataColumnName) ?
-                                Convert.ToString(startDataRow[dataColumnName])! : "";
-                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(dataColumnName) ?
-                                Convert.ToString(endDataRow[dataColumnName])! : "";
-
-                        string? result;
-                        if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为null
-                        {
-                            result = null;
-                        }
-                        else //否则
-                        {
-                            double startDataValue, endDataValue;
-                            //将起始和终点数据字符串转换成数值，如果成功则将转换结果赋值给各自的数据数值变量并将true赋值给各自的“数据为数值”变量；否则将false赋值给各自的“数据为数值”变量
-                            bool startDataIsNumeric = double.TryParse(startDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out startDataValue);
-                            bool endDataIsNumeric = double.TryParse(endDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out endDataValue);
-
-                            //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
-                            if (!startDataIsNumeric || !endDataIsNumeric)
-                            {
-                                result = $"Start: {startDataStr}\nEnd: {endDataStr}";
-                            }
-                            else //否则
-                            {
-                                double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
-                                double diffRate = startDataValue != 0 ? difference / startDataValue : double.NaN; //获取终点和起始数据的变化率：如果起始数值不为零，得到变化率；否则得到NaN
-                                result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({diffRate.ToString("P2", CultureInfo.InvariantCulture)})"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
-                            }
-                        }
-                        differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
-                    }
-                }
-
-                differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable, true); // 移除差异DataTable中的空数据行和空数据列
-
-                if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则抛出异常
-                {
-                    throw new Exception("No difference detected.");
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
@@ -773,16 +672,128 @@ namespace COMIGHT
                     Directory.CreateDirectory(targetFolderPath!);
                 }
                 FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"Comp_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-
+                
                 using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
-                {
-                    ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"Sheet1"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
-                    targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
+                { 
 
-                    FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
+                    for (int i = worksheetStartIndex; i <= worksheetEndIndex; i++)
+                    {
+
+                        DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], i, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+                        DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], i, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+
+                        if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则直接退出循环
+                        {
+                            break;
+                        }
+
+                        //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
+                        string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(keyColumnLetter) - 1].ColumnName;
+
+                        List<string> lstRecordKeys = new List<string>(); //定义记录主键列表
+                        List<string> lstDataColumnNames = new List<string>(); //定义数据列名称列表
+
+                        //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
+                        foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
+                        {
+                            lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
+                        }
+
+                        foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
+                        {
+                            lstDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到数据列名称列表中
+                        }
+
+                        foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
+                        {
+                            string key = Convert.ToString(startDataRow[keyDataColumnName])!; //获取当前数据行主键数据列的值
+                            if (!lstRecordKeys.Contains(key)) //如果记录主键列表不含当前数据行的主键数据列的值，则将该值添加到记录主键列表中
+                            {
+                                lstRecordKeys.Add(key);
+                            }
+                        }
+
+                        foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历起点DataTable的每一数据列
+                        {
+                            if (!lstDataColumnNames.Contains(startDataColumn.ColumnName))  //如果数据列名称列表不含当前数据列名称，则将该数据列名称添加到数据列名称列表中
+                            {
+                                lstDataColumnNames.Add(startDataColumn.ColumnName);
+                            }
+                        }
+
+                        DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
+                        foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
+                        {
+                            differenceDataTable.Columns.Add(dataColumnName, typeof(string)); //将当前数据列名称作为新数据列添加到差异DataTable中，数据类型为string
+                        }
+
+                        foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
+                        {
+                            DataRow differenceDataRow = differenceDataTable.NewRow(); //定义差异DataTable新数据行，赋值给差异DataTable数据行变量
+                            differenceDataRow[keyDataColumnName] = recordKey; //将当前记录主键赋值给差异DataTable新数据行的主键数据列
+                            differenceDataTable.Rows.Add(differenceDataRow); //向差异DataTable添加该新数据行
+
+                            //从起始和终点DataTable中筛选出主键数据列的值为当前主键的行，并取其中第一个，分别赋值给起始数据行和终点数据行
+                            DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+                            DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+
+                            foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
+                            {
+                                if (dataColumnName == keyDataColumnName) //如果当前数据列名称等于主键列名称，则直接跳过进入下一个循环
+                                {
+                                    continue;
+                                }
+
+                                //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有当前数据列，则得到起始（终点）数据行当前数据列的数据字符串；否则得到空字符串
+                                string startDataStr = startDataRow != null && startDataTable.Columns.Contains(dataColumnName) ?
+                                        Convert.ToString(startDataRow[dataColumnName])! : "";
+                                string endDataStr = endDataRow != null && endDataTable.Columns.Contains(dataColumnName) ?
+                                        Convert.ToString(endDataRow[dataColumnName])! : "";
+
+                                string? result;
+                                if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为null
+                                {
+                                    result = null;
+                                }
+                                else //否则
+                                {
+                                    double startDataValue, endDataValue;
+                                    //将起始和终点数据字符串转换成数值，如果成功则将转换结果赋值给各自的数据数值变量并将true赋值给各自的“数据为数值”变量；否则将false赋值给各自的“数据为数值”变量
+                                    bool startDataIsNumeric = double.TryParse(startDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out startDataValue);
+                                    bool endDataIsNumeric = double.TryParse(endDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out endDataValue);
+
+                                    //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
+                                    if (!startDataIsNumeric || !endDataIsNumeric)
+                                    {
+                                        result = $"Start: {startDataStr}\nEnd: {endDataStr}";
+                                    }
+                                    else //否则
+                                    {
+                                        double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
+                                        double diffRate = startDataValue != 0 ? difference / startDataValue : double.NaN; //获取终点和起始数据的变化率：如果起始数值不为零，得到变化率；否则得到NaN
+                                        result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({diffRate.ToString("P2", CultureInfo.InvariantCulture)})"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+                                    }
+                                }
+                                differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
+                            }
+                        }
+
+                        differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable, true); // 移除差异DataTable中的空数据行和空数据列
+
+                        if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则直接跳过进入下一个循环
+                        {
+                            continue;
+                        }
+
+                        ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"Sheet{i + 1}"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
+                        targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
+
+                        FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
+                        
+                    }
                     excelPackage.SaveAs(targetExcelFile);
                 }
-
+                
                 ShowSuccessMessage();
             }
 
@@ -791,6 +802,164 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
+
+
+        //private void CompareExcelWorksheets()
+        //{
+        //    try
+        //    {
+        //        List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Start Data"); //获取所选起始数据文件列表
+        //        List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the End Data"); //获取所选终点数据文件列表
+
+        //        if (startFilePaths == null || endFilePaths == null) //如果起始数据或终点数据文件列表有一个为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
+        //        if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string? keyColumnLetter = GetKeyColumnLetter(); //获取主键列符
+        //        if (keyColumnLetter == null) //如果主键列符为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], 1, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+        //        DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], 1, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+
+        //        if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
+        //        string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(keyColumnLetter) - 1].ColumnName;
+
+        //        List<string> lstRecordKeys = new List<string>(); //定义记录主键列表
+        //        List<string> lstDataColumnNames = new List<string>(); //定义数据列名称列表
+
+        //        //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
+        //        foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
+        //        {
+        //            lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
+        //        }
+
+        //        foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
+        //        {
+        //            lstDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到数据列名称列表中
+        //        }
+
+        //        foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
+        //        {
+        //            string key = Convert.ToString(startDataRow[keyDataColumnName])!; //获取当前数据行主键数据列的值
+        //            if (!lstRecordKeys.Contains(key)) //如果记录主键列表不含当前数据行的主键数据列的值，则将该值添加到记录主键列表中
+        //            {
+        //                lstRecordKeys.Add(key);
+        //            }
+        //        }
+
+        //        foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历起点DataTable的每一数据列
+        //        {
+        //            if (!lstDataColumnNames.Contains(startDataColumn.ColumnName))  //如果数据列名称列表不含当前数据列名称，则将该数据列名称添加到数据列名称列表中
+        //            {
+        //                lstDataColumnNames.Add(startDataColumn.ColumnName);
+        //            }
+        //        }
+
+        //        DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
+        //        foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
+        //        {
+        //            differenceDataTable.Columns.Add(dataColumnName, typeof(string)); //将当前数据列名称作为新数据列添加到差异DataTable中，数据类型为string
+        //        }
+
+        //        foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
+        //        {
+        //            DataRow differenceDataRow = differenceDataTable.NewRow(); //定义差异DataTable新数据行，赋值给差异DataTable数据行变量
+        //            differenceDataRow[keyDataColumnName] = recordKey; //将当前记录主键赋值给差异DataTable新数据行的主键数据列
+        //            differenceDataTable.Rows.Add(differenceDataRow); //向差异DataTable添加该新数据行
+
+        //            //从起始和终点DataTable中筛选出主键数据列的值为当前主键的行，并取其中第一个，分别赋值给起始数据行和终点数据行
+        //            DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+        //            DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+
+        //            foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
+        //            {
+        //                if (dataColumnName == keyDataColumnName) //如果当前数据列名称等于主键列名称，则直接跳过进入下一个循环
+        //                {
+        //                    continue;
+        //                }
+
+        //                //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有当前数据列，则得到起始（终点）数据行当前数据列的数据字符串；否则得到空字符串
+        //                string startDataStr = startDataRow != null && startDataTable.Columns.Contains(dataColumnName) ?
+        //                        Convert.ToString(startDataRow[dataColumnName])! : "";
+        //                string endDataStr = endDataRow != null && endDataTable.Columns.Contains(dataColumnName) ?
+        //                        Convert.ToString(endDataRow[dataColumnName])! : "";
+
+        //                string? result;
+        //                if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为null
+        //                {
+        //                    result = null;
+        //                }
+        //                else //否则
+        //                {
+        //                    double startDataValue, endDataValue;
+        //                    //将起始和终点数据字符串转换成数值，如果成功则将转换结果赋值给各自的数据数值变量并将true赋值给各自的“数据为数值”变量；否则将false赋值给各自的“数据为数值”变量
+        //                    bool startDataIsNumeric = double.TryParse(startDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out startDataValue);
+        //                    bool endDataIsNumeric = double.TryParse(endDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out endDataValue);
+
+        //                    //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
+        //                    if (!startDataIsNumeric || !endDataIsNumeric)
+        //                    {
+        //                        result = $"Start: {startDataStr}\nEnd: {endDataStr}";
+        //                    }
+        //                    else //否则
+        //                    {
+        //                        double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
+        //                        double diffRate = startDataValue != 0 ? difference / startDataValue : double.NaN; //获取终点和起始数据的变化率：如果起始数值不为零，得到变化率；否则得到NaN
+        //                        result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({diffRate.ToString("P2", CultureInfo.InvariantCulture)})"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+        //                    }
+        //                }
+        //                differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
+        //            }
+        //        }
+
+        //        differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable, true); // 移除差异DataTable中的空数据行和空数据列
+
+        //        if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则抛出异常
+        //        {
+        //            throw new Exception("No difference detected.");
+        //        }
+
+        //        string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
+
+        //        //创建目标文件夹
+        //        if (!Directory.Exists(targetFolderPath))
+        //        {
+        //            Directory.CreateDirectory(targetFolderPath!);
+        //        }
+        //        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"Comp_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+
+        //        using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
+        //        {
+        //            ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"Sheet1"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
+        //            targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
+
+        //            FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
+        //            excelPackage.SaveAs(targetExcelFile);
+        //        }
+
+        //        ShowSuccessMessage();
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+        //}
 
         public async Task BatchConvertOfficeFileTypesAsync()
         {
@@ -1012,14 +1181,12 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 1); //读取Excel工作簿的第1张工作表，赋值给DataTable变量
+                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 0); //读取Excel工作簿的第1张（0号）工作表，赋值给DataTable变量
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
                 {
                     throw new Exception("No valid data found!");
                 }
-
-
 
                 for (int i = 0; i < dataTable!.Rows.Count; i++) //遍历DataTable所有数据行
                 {

@@ -20,9 +20,6 @@ namespace COMIGHT
     public partial class MSOfficeInterop
     {
 
-        
-
-
         public static async Task BatchConvertOfficeFileTypesAsyncHelper(List<string> filePaths)
         {
             MSExcel.Application? msExcelApp = null;

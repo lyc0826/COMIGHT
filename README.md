@@ -77,7 +77,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Compare Excel Worksheets**
 
-- Compares data with identical record keys and column fields between a starting data worksheet and an ending data worksheet, listing the differences (and calculating the percentage change for numerical data). The starting and ending data worksheets must be in different workbooks and be the first worksheet in their respective workbooks. Records must be unique (no duplicate record keys).
+- Compares data with identical record keys and column fields between starting data worksheets and ending data worksheets, listing the differences (and calculating the percentage change for numerical data). The starting and ending data worksheets must have the same structure, and be arranged in the same sequence in 2 workbooks. Records must be unique (no duplicate record keys).
 
 ### Document
 

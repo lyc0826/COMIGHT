@@ -500,14 +500,14 @@ namespace COMIGHT
             string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
             InputDialog inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
 
-            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则工作表索引号范围起始值均为-1，赋值给函数返回值
+            if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则工作表索引号范围起始值均-1，赋值给函数返回值
             {
                 return (-1, -1);
             }
 
             string excelWorksheetIndexesStr = inputDialog.Answer;
             latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
-            //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，并减去1（Excel工作表索引号从1开始，EPPlus从0开始）
+            //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，减1，赋值给函数返回值（EPPlus工作表索引号从0开始，Excel从1开始）
             List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
             int startIndex = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值：列表的0号元素的值
             int endIndex = lstExcelWorksheetIndexesStr.Count() == 1 ? startIndex : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值：如果Excel工作表索引号列表只有一个元素（起始和终止工作表相同），则得到Excel工作表索引号范围起始值；否则，得到列表的1号元素的值
@@ -623,12 +623,13 @@ namespace COMIGHT
                     switch (worksheetID) //根据worksheetID变量类型进入相应的分支
                     {
                         case int index: //如果为整数，则赋值给索引号变量
-                            excelWorksheet = excelPackage.Workbook.Worksheets[index - 1]; //将指定索引号的Excel工作表赋值给Excel工作表变量（Excel工作表索引号从1开始，EPPlus从0开始）
+                            excelWorksheet = excelPackage.Workbook.Worksheets[index]; //将指定索引号的Excel工作表赋值给Excel工作表变量（Excel工作表索引号从1开始，EPPlus从0开始）
                             break;
                         case string name: //如果为字符串，则赋值给名称变量
                             excelWorksheet = excelPackage.Workbook.Worksheets[name]; //将指定名称的Excel工作表赋值给Excel工作表变量
                             break;
                         default: //以上均不符合，则抛出异常
+
                             throw new Exception("Parameter error.");
                     }
 
@@ -665,9 +666,8 @@ namespace COMIGHT
                 }
             }
 
-            catch (Exception ex) // 捕获错误
+            catch (Exception) // 捕获错误
             {
-                ShowExceptionMessage(ex);
                 return null; //函数返回值赋值为null
             }
 
