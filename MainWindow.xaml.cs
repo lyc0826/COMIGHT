@@ -1472,7 +1472,7 @@ namespace COMIGHT
                     lstComputerSystemInfos.Add("Name: " + computerSystem.Name.ToString());
                     lstComputerSystemInfos.Add("Identifying Number: " + computerSystem.IdentifyingNumber.ToString());
                 }
-                string computerSystemInfo = string.Join("\n\n", lstComputerSystemInfos);
+                string computerSystemInfo = string.Join("\n", lstComputerSystemInfos);
 
                 // BIOS
                 List<string> lstBiosInfos = new List<string>();
@@ -1480,7 +1480,7 @@ namespace COMIGHT
                 {
                     lstBiosInfos.Add("Serial Number: " + bios.SerialNumber.ToString()); // 将BIOS信息添加到BIOS信息列表中
                 }
-                string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
+                string biosInfo = string.Join("\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
 
                 // 主板
                 List<string> lstMotherboardInfos = new List<string>();
@@ -1488,7 +1488,7 @@ namespace COMIGHT
                 {
                     lstMotherboardInfos.Add("Serial Number: " + motherboard.SerialNumber.ToString());
                 }
-                string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
+                string motherboardInfo = string.Join("\n", lstMotherboardInfos);
 
                 // CPU
                 List<string> lstCpuInfos = new List<string>();
@@ -1496,7 +1496,7 @@ namespace COMIGHT
                 {
                     lstCpuInfos.Add("Name: " + cpu.Name.ToString());
                 }
-                string cpuInfo = string.Join("\n\n", lstCpuInfos);
+                string cpuInfo = string.Join("\n", lstCpuInfos);
 
                 // 内存
                 List<string> lstMemoryInfos = new List<string>();
@@ -1507,7 +1507,7 @@ namespace COMIGHT
                     totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量从Byte换算到GB
                 }
                 lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
-                string memoryInfo = string.Join("\n\n", lstMemoryInfos);
+                string memoryInfo = string.Join("\n", lstMemoryInfos);
 
                 // 硬盘
                 List<string> lstDiskInfos = new List<string>();
@@ -1518,7 +1518,7 @@ namespace COMIGHT
                     long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
                     lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
                 }
-                string diskInfo = string.Join("\n\n", lstDiskInfos);
+                string diskInfo = string.Join("\n", lstDiskInfos);
 
                 // 视频控制器
                 List<string> lstVideoControllerInfos = new List<string>();
@@ -1526,7 +1526,7 @@ namespace COMIGHT
                 {
                     lstVideoControllerInfos.Add("Name: " + videoController.Name.ToString());
                 }
-                string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
+                string videoControllerInfo = string.Join("\n", lstVideoControllerInfos);
 
                 // 音频适配器
                 List<string> lstSoundDeviceInfos = new List<string>();
@@ -1534,7 +1534,7 @@ namespace COMIGHT
                 {
                     lstSoundDeviceInfos.Add("Name: " + soundDevice.Name.ToString());
                 }
-                string soundDeviceInfo = string.Join("\n\n", lstSoundDeviceInfos);
+                string soundDeviceInfo = string.Join("\n", lstSoundDeviceInfos);
 
                 // 网络适配器
                 List<string> lstNetworkAdapterInfos = new List<string>();
@@ -1550,7 +1550,7 @@ namespace COMIGHT
                     string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos); // 将IP地址信息列表元素合并为字符串
                     lstNetworkAdapterInfos.Add(ipAddressInfo); // 将IP地址信息添加到网络适配器信息列表中
                 }
-                string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
+                string networkAdapterInfo = string.Join("\n", lstNetworkAdapterInfos);
 
                 // 将所有信息组合成一个字符串，并显示在消息框中
                 string outputInfo = string.Join("\n\n", new string[]
