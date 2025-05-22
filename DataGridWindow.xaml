@@ -9,17 +9,11 @@
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 顶部控制区 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <Button Content="Clear Data" Click="ClearData_Click"/>
-        </StackPanel>
-
-        <!-- DataGrid 控件 -->
-        <DataGrid Grid.Row="1"
+        <DataGrid Grid.Row="0"
                   x:Name="myDataGrid"
                   AutoGenerateColumns="True"
                   CanUserAddRows="True"
@@ -38,7 +32,7 @@
                   BorderThickness="1" 
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                  ScrollViewer.CanContentScroll="False"
+                  ScrollViewer.CanContentScroll="True"
                   >
 
             <DataGrid.Resources>
@@ -70,6 +64,11 @@
             -->
 
         </DataGrid>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
+            <Button Content="Export Data" Click="BtnExportData_Click" Height="30" Width="80"/>
+        </StackPanel>
+        
     </Grid>
 </Window>
 

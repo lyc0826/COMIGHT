@@ -1,5 +1,31 @@
-﻿using System.Data; // 引入 System.Data 命名空间
+﻿using System.Data; 
 using System.Windows;
+using static COMIGHT.Methods;
+using GEmojiSharp;
+using iText.IO.Source;
+using Microsoft.Win32;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using NPOI.XWPF.UserModel;
+using OfficeOpenXml;
+using OfficeOpenXml.Export.ToDataTable;
+using OfficeOpenXml.Style;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Windows.Interop;
+using static COMIGHT.MainWindow;
+using static COMIGHT.MSOfficeInterop;
+using Application = System.Windows.Application;
+using DataTable = System.Data.DataTable;
+using ICell = NPOI.SS.UserModel.ICell;
+using Task = System.Threading.Tasks.Task;
+using Window = System.Windows.Window;
+using Microsoft.Web.WebView2.Core;
 
 
 namespace COMIGHT
@@ -46,11 +72,26 @@ namespace COMIGHT
             }
         }
 
-         //------------- 以下是原有的事件处理方法，稍作修改以使用 currentDataTable -------------
-
-        private void ClearData_Click(object sender, RoutedEventArgs e)
+        private void BtnExportData_Click(object sender, RoutedEventArgs e)
         {
-            currentDataTable.Clear(); // 使用_currentDataTable
+            ExportData(); // 调用ExportData方法，导出数据
+        }
+
+        private void ExportData()
+        {
+            try
+            {
+                string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
+                string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(this.Title, 15)}.xlsx"); //获取目标Excel工作簿文件路径全名信息
+                WriteDataTableIntoExcelWorkbook(new List<DataTable>() { currentDataTable }, targetExcelFile);
+
+                ShowSuccessMessage();
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
     }
 }

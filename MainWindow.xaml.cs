@@ -168,9 +168,9 @@ namespace COMIGHT
             CreateFolders();
         }
 
-        private void MnuCreateNameCards_Click(object sender, RoutedEventArgs e)
+        private void MnuCreatePlaceCards_Click(object sender, RoutedEventArgs e)
         {
-            CreateNameCards();
+            CreatePlaceCards();
         }
 
         private void MnuExit_Click(object sender, RoutedEventArgs e)
@@ -218,6 +218,27 @@ namespace COMIGHT
         {
             SplitExcelWorksheet();
         }
+
+        public async Task BatchConvertOfficeFileTypesAsync()
+        {
+            try
+            {
+                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
+                if (filePaths == null) //如果文件列表为null，则结束本过程
+                {
+                    return;
+                }
+
+                await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 调用任务管理器执行批量转换Office文件类型的方法
+                ShowSuccessMessage();
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
+        }
+
 
         private async Task BatchFormatWordDocumentsAsync()
         {
@@ -664,17 +685,9 @@ namespace COMIGHT
                     return;
                 }
 
-                string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-
-                //创建目标文件夹
-                if (!Directory.Exists(targetFolderPath))
-                {
-                    Directory.CreateDirectory(targetFolderPath!);
-                }
-                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"Comp_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-                
+                List <DataTable> lstDataTable = new List<DataTable>(); // 新建数据表列表变量
                 using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
-                { 
+                {
 
                     for (int i = worksheetStartIndex; i <= worksheetEndIndex; i++)
                     {
@@ -785,35 +798,22 @@ namespace COMIGHT
                             continue;
                         }
 
-                        ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"Sheet{i + 1}"); //新建“数据比较”Excel工作表，赋值给目标工作表变量
-                        targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
+                        lstDataTable.Add(differenceDataTable); //将差异DataTable添加到差异DataTable列表中
 
-                        FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
-                        
                     }
-                    excelPackage.SaveAs(targetExcelFile);
                 }
-                
-                ShowSuccessMessage();
-            }
 
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
-        }
+                string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
 
-        public async Task BatchConvertOfficeFileTypesAsync()
-        {
-            try
-            {
-                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
-                if (filePaths == null) //如果文件列表为null，则结束本过程
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath))
                 {
-                    return;
+                    Directory.CreateDirectory(targetFolderPath!);
                 }
+                string targetExcelFile = Path.Combine(targetFolderPath!, $"Comp_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名信息
 
-                await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 调用任务管理器执行批量转换Office文件类型的方法
+                WriteDataTableIntoExcelWorkbook(lstDataTable, targetExcelFile); //将所有差异DataTable列表写入目标Excel工作簿
+
                 ShowSuccessMessage();
             }
 
@@ -822,6 +822,179 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
+
+
+
+        //private void CompareExcelWorksheets()
+        //{
+        //    try
+        //    {
+        //        List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Start Data"); //获取所选起始数据文件列表
+        //        List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the End Data"); //获取所选终点数据文件列表
+
+        //        if (startFilePaths == null || endFilePaths == null) //如果起始数据或终点数据文件列表有一个为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        (int worksheetStartIndex, int worksheetEndIndex) = GetWorksheetRange();
+        //        if (worksheetStartIndex < 0 || worksheetEndIndex < 0) //如果获取到的工作表起始和结束索引号有一个小于0（范围无效），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
+        //        if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string? keyColumnLetter = GetKeyColumnLetter(); //获取主键列符
+        //        if (keyColumnLetter == null) //如果获取到的主键列符为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
+
+        //        //创建目标文件夹
+        //        if (!Directory.Exists(targetFolderPath))
+        //        {
+        //            Directory.CreateDirectory(targetFolderPath!);
+        //        }
+        //        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"Comp_{Path.GetFileNameWithoutExtension(endFilePaths[0])}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+
+        //        using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
+        //        { 
+
+        //            for (int i = worksheetStartIndex; i <= worksheetEndIndex; i++)
+        //            {
+
+        //                DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], i, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+        //                DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], i, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+
+        //                if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则直接退出循环
+        //                {
+        //                    break;
+        //                }
+
+        //                //获取Excel工作表的主键列对应的DataTable主键数据列的名称（工作表列索引号从1开始，DataTable从0开始）
+        //                string keyDataColumnName = endDataTable.Columns[ConvertColumnLettersIntoIndex(keyColumnLetter) - 1].ColumnName;
+
+        //                List<string> lstRecordKeys = new List<string>(); //定义记录主键列表
+        //                List<string> lstDataColumnNames = new List<string>(); //定义数据列名称列表
+
+        //                //将起始和终点DataTable的所有记录的主键数据列的值，和所有数据列名称分别添加到记录主键列表和数据列名称列表中
+        //                foreach (DataRow endDataRow in endDataTable.Rows) //遍历终点DataTable的每一数据行
+        //                {
+        //                    lstRecordKeys.Add(Convert.ToString(endDataRow[keyDataColumnName])!); //将当前数据行主键数据列的值添加到记录主键列表中
+        //                }
+
+        //                foreach (DataColumn endDataColumn in endDataTable.Columns) //遍历终点DataTable的每一数据列
+        //                {
+        //                    lstDataColumnNames.Add(endDataColumn.ColumnName); //将当前数据列名称添加到数据列名称列表中
+        //                }
+
+        //                foreach (DataRow startDataRow in startDataTable.Rows) //遍历起点DataTable的每一数据行
+        //                {
+        //                    string key = Convert.ToString(startDataRow[keyDataColumnName])!; //获取当前数据行主键数据列的值
+        //                    if (!lstRecordKeys.Contains(key)) //如果记录主键列表不含当前数据行的主键数据列的值，则将该值添加到记录主键列表中
+        //                    {
+        //                        lstRecordKeys.Add(key);
+        //                    }
+        //                }
+
+        //                foreach (DataColumn startDataColumn in startDataTable.Columns) //遍历起点DataTable的每一数据列
+        //                {
+        //                    if (!lstDataColumnNames.Contains(startDataColumn.ColumnName))  //如果数据列名称列表不含当前数据列名称，则将该数据列名称添加到数据列名称列表中
+        //                    {
+        //                        lstDataColumnNames.Add(startDataColumn.ColumnName);
+        //                    }
+        //                }
+
+        //                DataTable differenceDataTable = new DataTable(); //定义差异DataTable，赋值给差异DataTable变量
+        //                foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
+        //                {
+        //                    differenceDataTable.Columns.Add(dataColumnName, typeof(string)); //将当前数据列名称作为新数据列添加到差异DataTable中，数据类型为string
+        //                }
+
+        //                foreach (string recordKey in lstRecordKeys) //遍历记录主键列表的所有元素
+        //                {
+        //                    DataRow differenceDataRow = differenceDataTable.NewRow(); //定义差异DataTable新数据行，赋值给差异DataTable数据行变量
+        //                    differenceDataRow[keyDataColumnName] = recordKey; //将当前记录主键赋值给差异DataTable新数据行的主键数据列
+        //                    differenceDataTable.Rows.Add(differenceDataRow); //向差异DataTable添加该新数据行
+
+        //                    //从起始和终点DataTable中筛选出主键数据列的值为当前主键的行，并取其中第一个，分别赋值给起始数据行和终点数据行
+        //                    DataRow? startDataRow = startDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+        //                    DataRow? endDataRow = endDataTable.AsEnumerable().Where(dataRow => Convert.ToString(dataRow[keyDataColumnName]) == recordKey).FirstOrDefault();
+
+        //                    foreach (string dataColumnName in lstDataColumnNames) //遍历数据列名称列表的所有元素
+        //                    {
+        //                        if (dataColumnName == keyDataColumnName) //如果当前数据列名称等于主键列名称，则直接跳过进入下一个循环
+        //                        {
+        //                            continue;
+        //                        }
+
+        //                        //获取起始和终点数据字符串：如果起始（终点）数据行不为null且起始（终点）DataTable含有当前数据列，则得到起始（终点）数据行当前数据列的数据字符串；否则得到空字符串
+        //                        string startDataStr = startDataRow != null && startDataTable.Columns.Contains(dataColumnName) ?
+        //                                Convert.ToString(startDataRow[dataColumnName])! : "";
+        //                        string endDataStr = endDataRow != null && endDataTable.Columns.Contains(dataColumnName) ?
+        //                                Convert.ToString(endDataRow[dataColumnName])! : "";
+
+        //                        string? result;
+        //                        if ((startDataStr == endDataStr) && endDataStr != "") //如果起始数据字符串与终点数据字符串相同且不为空字符串，结果变量赋值为null
+        //                        {
+        //                            result = null;
+        //                        }
+        //                        else //否则
+        //                        {
+        //                            double startDataValue, endDataValue;
+        //                            //将起始和终点数据字符串转换成数值，如果成功则将转换结果赋值给各自的数据数值变量并将true赋值给各自的“数据为数值”变量；否则将false赋值给各自的“数据为数值”变量
+        //                            bool startDataIsNumeric = double.TryParse(startDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out startDataValue);
+        //                            bool endDataIsNumeric = double.TryParse(endDataStr, NumberStyles.Any, CultureInfo.InvariantCulture, out endDataValue);
+
+        //                            //如果起始或终点数据字符串之中有一个没有被成功地转换为数值，则将起始和终点数据字符串结果合并后赋值给结果变量
+        //                            if (!startDataIsNumeric || !endDataIsNumeric)
+        //                            {
+        //                                result = $"Start: {startDataStr}\nEnd: {endDataStr}";
+        //                            }
+        //                            else //否则
+        //                            {
+        //                                double difference = endDataValue - startDataValue; //计算终点和起始数据的差值
+        //                                double diffRate = startDataValue != 0 ? difference / startDataValue : double.NaN; //获取终点和起始数据的变化率：如果起始数值不为零，得到变化率；否则得到NaN
+        //                                result = $"Start: {startDataValue}\nEnd: {endDataValue}\nDiff: {difference}({diffRate.ToString("P2", CultureInfo.InvariantCulture)})"; //将起始和终点数据数值、差值和变化率合并后赋值给结果变量
+        //                            }
+        //                        }
+        //                        differenceDataRow[dataColumnName] = result; //将结果赋值给差异DataTable当前新数据行的当前数据列
+        //                    }
+        //                }
+
+        //                differenceDataTable = RemoveDataTableEmptyRowsAndColumns(differenceDataTable, true); // 移除差异DataTable中的空数据行和空数据列
+
+        //                if (differenceDataTable.Rows.Count * differenceDataTable.Columns.Count == 0) //如果差异DataTable的数据行数或列数有一个为0，则直接跳过进入下一个循环
+        //                {
+        //                    continue;
+        //                }
+
+        //                ExcelWorksheet targetExcelWorksheet = excelPackage.Workbook.Worksheets.Add($"Sheet{i + 1}"); //新建Excel工作表，赋值给目标工作表变量
+        //                targetExcelWorksheet.Cells["A1"].LoadFromDataTable(differenceDataTable, true); //将DataTable数据导入目标Excel工作表（true代表将表头赋给第一行）
+
+        //                FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
+
+        //            }
+        //            excelPackage.SaveAs(targetExcelFile);
+        //        }
+
+        //        ShowSuccessMessage();
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+        //}
+
+
 
         private void ConvertMarkDownIntoWord()
         {
@@ -879,7 +1052,7 @@ namespace COMIGHT
             }
         }
 
-        public void CreateNameCards()
+        public void CreatePlaceCards()
         {
             try
             {
@@ -959,7 +1132,7 @@ namespace COMIGHT
 
                     // 保存目标工作簿
                     string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-                    string targetFilePath = Path.Combine(targetFolderPath, $"Cards_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
+                    string targetFilePath = Path.Combine(targetFolderPath, $"PlCds_{Path.GetFileNameWithoutExtension(filePaths[0])}.xlsx"); //获取目标Excel工作簿文件路径全名
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
                     ShowSuccessMessage();
                 }
@@ -1459,119 +1632,101 @@ namespace COMIGHT
             try
             {
                 HardwareInfo hardwareInfo = new HardwareInfo();
-                
+
                 // 定义异步委托方法，用于刷新硬件信息
                 async Task RefreshHardwareInfoAsync()
                 {
                     await Task.Run(() => hardwareInfo.RefreshAll());
                 }
                 await taskManager.RunTaskAsync(RefreshHardwareInfoAsync);
-                
+
                 // 创建 DataTable
                 DataTable systemInfoTable = new DataTable("System Information");
                 systemInfoTable.Columns.Add("Hardware Name", typeof(string));
                 systemInfoTable.Columns.Add("Hardware Info", typeof(string));
-                
-                // 辅助方法：将信息添加到 DataTable
-                void AddInfoToTable(string name, string info)
-                {
-                    systemInfoTable.Rows.Add(name, info);
-                }
-                
+
+                int i;
+
                 // 操作系统
-                AddInfoToTable("Operating System", hardwareInfo.OperatingSystem.ToString());
-                
+                systemInfoTable.Rows.Add($"Operating System", hardwareInfo.OperatingSystem.ToString());
+
                 // 计算机系统
-                List<string> lstComputerSystemInfos = new List<string>();
+                i = 1;
                 foreach (var computerSystem in hardwareInfo.ComputerSystemList)
                 {
-                    lstComputerSystemInfos.Add(computerSystem.ToString());
+                    systemInfoTable.Rows.Add($"Computer System", computerSystem.ToString());
                 }
-                AddInfoToTable("Computer System", string.Join("\n\n", lstComputerSystemInfos));
-                
+
                 // BIOS
-                List<string> lstBiosInfos = new List<string>();
+                i = 1;
                 foreach (var bios in hardwareInfo.BiosList)
                 {
-                    lstBiosInfos.Add(bios.ToString());
+                    systemInfoTable.Rows.Add($"BIOS", bios.ToString());
                 }
-                AddInfoToTable("BIOS", string.Join("\n\n", lstBiosInfos));
-                
+
                 // 主板
-                List<string> lstMotherboardInfos = new List<string>();
+                i = 1;
                 foreach (var motherboard in hardwareInfo.MotherboardList)
                 {
-                    lstMotherboardInfos.Add(motherboard.ToString());
+                    systemInfoTable.Rows.Add($"Motherboard", motherboard.ToString());
                 }
-                AddInfoToTable("Motherboard", string.Join("\n\n", lstMotherboardInfos));
-                
+
                 // CPU
-                List<string> lstCpuInfos = new List<string>();
+                i = 1;
                 foreach (var cpu in hardwareInfo.CpuList)
                 {
-                    lstCpuInfos.Add(cpu.ToString());
+                    systemInfoTable.Rows.Add($"CPU {i++}", cpu.ToString());
                 }
-                AddInfoToTable("CPU", string.Join("\n\n", lstCpuInfos));
-                
+
                 // 内存
-                List<string> lstMemoryInfos = new List<string>();
+                i = 1;
                 long totalMemCapacity = 0;
                 foreach (var memory in hardwareInfo.MemoryList)
                 {
-                    lstMemoryInfos.Add(memory.ToString());
-                    totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量从Byte换算到GB
-                    
+                    systemInfoTable.Rows.Add($"Memory {i++}", memory.ToString());
+                    totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将容量从Byte换算到GB
                 }
-                lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB");
-                AddInfoToTable("Memory", string.Join("\n\n", lstMemoryInfos));
-                
+                systemInfoTable.Rows.Add("Total Memory Capacity", $"{totalMemCapacity.ToString()} GB");
+
                 // 硬盘
-                List<string> lstDiskInfos = new List<string>();
+                i = 1;
                 foreach (var disk in hardwareInfo.DriveList)
                 {
-                    lstDiskInfos.Add(disk.ToString());
-
                     long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
-                    lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
-                    
+                    string diskInfo = $"{disk.ToString()}\n{diskSize.ToString()} GB";
+                    systemInfoTable.Rows.Add($"Disk {i++}", diskInfo);
                 }
-                AddInfoToTable("Disks", string.Join("\n\n", lstDiskInfos));
-                
+
                 // 视频控制器
-                List<string> lstVideoControllerInfos = new List<string>();
+                i = 1;
                 foreach (var videoController in hardwareInfo.VideoControllerList)
                 {
-                    lstVideoControllerInfos.Add(videoController.ToString());
+                    systemInfoTable.Rows.Add($"Video Controller {i++}", videoController.ToString());
                 }
-                AddInfoToTable("Video Controllers", string.Join("\n\n", lstVideoControllerInfos));
-                
+
                 // 音频适配器
-                List<string> lstSoundDeviceInfos = new List<string>();
+                i = 1;
                 foreach (var soundDevice in hardwareInfo.SoundDeviceList)
                 {
-                    lstSoundDeviceInfos.Add(soundDevice.ToString());
+                    systemInfoTable.Rows.Add($"Sound Device {i++}", soundDevice.ToString());
                 }
-                AddInfoToTable("Sound Devices", string.Join("\n\n", lstSoundDeviceInfos));
-                
+
                 // 网络适配器
-                List<string> lstNetworkAdapterInfos = new List<string>();
+                i = 1;
                 foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
                 {
-                    List<string> currentAdapterDetails = new List<string>();
-                    currentAdapterDetails.Add(networkAdapter.ToString());
                     List<string> lstIPAddressInfos = new List<string>();
                     foreach (var ipAddress in networkAdapter.IPAddressList)
                     {
                         lstIPAddressInfos.Add(ipAddress.ToString());
                     }
                     string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos);
-                    currentAdapterDetails.Add(ipAddressInfo);
-                    lstNetworkAdapterInfos.Add(string.Join("\n", currentAdapterDetails)); // 每个适配器的详细信息用换行符分隔
+                    string networkAdapterInfo = $"{networkAdapter.ToString()}\n{ipAddressInfo}";
+                    systemInfoTable.Rows.Add($"Network Adapter {i++}", networkAdapterInfo);
                 }
-                AddInfoToTable("Network Adapters", string.Join("\n\n", lstNetworkAdapterInfos));
-                
+
                 // 显示 DataTable
-                if (GetInstanceCountByHandle<DataGridWindow>() < 1) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
+                if (GetInstanceCountByHandle<DataGridWindow>() < 1) //如果被打开的浏览器窗口数量小于1个，则新建一个浏览器窗口实例并显示
                 {
                     DataGridWindow systemInfoWindow = new DataGridWindow("System Info", systemInfoTable);
                     systemInfoWindow.Show();
@@ -1583,137 +1738,6 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
-
-
-        //private async Task ShowSystemInfoAsync()
-        //{
-        //    try
-        //    {
-        //        HardwareInfo hardwareInfo = new HardwareInfo(); // 创建HardwareInfo实例
-        //        //await taskManager.RunTaskAsync(async () => await Task.Run(() => hardwareInfo.RefreshAll())); // 刷新硬件信息
-
-        //        // 定义异步委托方法，用于刷新硬件信息
-        //        async Task RefreshHardwareInfoAsync()
-        //        {
-        //            await Task.Run(() => hardwareInfo.RefreshAll());
-        //        }
-
-        //        await taskManager.RunTaskAsync(RefreshHardwareInfoAsync); // 调用任务管理器执行刷新硬件信息的方法
-
-        //        // 遍历各软硬件属性，将信息添加到对应的信息列表中
-
-        //        // 操作系统
-        //        string operatingSystem = hardwareInfo.OperatingSystem.ToString();
-
-        //        // 计算机系统
-        //        List<string> lstComputerSystemInfos = new List<string>();
-        //        foreach (var computerSystem in hardwareInfo.ComputerSystemList)
-        //        {
-        //            lstComputerSystemInfos.Add(computerSystem.ToString());
-        //        }
-        //        string computerSystemInfo = string.Join("\n\n", lstComputerSystemInfos);
-
-        //        // BIOS
-        //        List<string> lstBiosInfos = new List<string>();
-        //        foreach (var bios in hardwareInfo.BiosList) // 遍历BIOS列表
-        //        {
-        //            lstBiosInfos.Add(bios.ToString()); // 将BIOS信息添加到BIOS信息列表中
-        //        }
-        //        string biosInfo = string.Join("\n\n", lstBiosInfos); // 将BIOS信息列表转换为字符串，以换行符分隔
-
-        //        // 主板
-        //        List<string> lstMotherboardInfos = new List<string>();
-        //        foreach (var motherboard in hardwareInfo.MotherboardList)
-        //        {
-        //            lstMotherboardInfos.Add(motherboard.ToString());
-        //        }
-        //        string motherboardInfo = string.Join("\n\n", lstMotherboardInfos);
-
-        //        // CPU
-        //        List<string> lstCpuInfos = new List<string>();
-        //        foreach (var cpu in hardwareInfo.CpuList)
-        //        {
-        //            lstCpuInfos.Add(cpu.ToString());
-        //        }
-        //        string cpuInfo = string.Join("\n\n", lstCpuInfos);
-
-        //        // 内存
-        //        List<string> lstMemoryInfos = new List<string>();
-        //        long totalMemCapacity = 0;
-        //        foreach (var memory in hardwareInfo.MemoryList)
-        //        {
-        //            lstMemoryInfos.Add(memory.ToString());
-        //            totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将每个内存模块的容量从Byte换算到GB
-        //        }
-        //        lstMemoryInfos.Add($"Total Capacity: {totalMemCapacity.ToString()} GB"); // 将总容量转换为GB并添加到内存信息列表中
-        //        string memoryInfo = string.Join("\n\n", lstMemoryInfos);
-
-        //        // 硬盘
-        //        List<string> lstDiskInfos = new List<string>();
-        //        foreach (var disk in hardwareInfo.DriveList)
-        //        {
-        //            lstDiskInfos.Add(disk.ToString());
-        //            // 将硬盘容量转换为GB并添加到硬盘信息列表中
-        //            long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
-        //            lstDiskInfos.Add($"Disk Size: {diskSize.ToString()} GB");
-        //        }
-        //        string diskInfo = string.Join("\n\n", lstDiskInfos);
-
-        //        // 视频控制器
-        //        List<string> lstVideoControllerInfos = new List<string>();
-        //        foreach (var videoController in hardwareInfo.VideoControllerList)
-        //        {
-        //            lstVideoControllerInfos.Add(videoController.ToString());
-        //        }
-        //        string videoControllerInfo = string.Join("\n\n", lstVideoControllerInfos);
-
-        //        // 音频适配器
-        //        List<string> lstSoundDeviceInfos = new List<string>();
-        //        foreach (var soundDevice in hardwareInfo.SoundDeviceList)
-        //        {
-        //            lstSoundDeviceInfos.Add(soundDevice.ToString());
-        //        }
-        //        string soundDeviceInfo = string.Join("\n\n", lstSoundDeviceInfos);
-
-        //        // 网络适配器
-        //        List<string> lstNetworkAdapterInfos = new List<string>();
-        //        foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
-        //        {
-        //            lstNetworkAdapterInfos.Add(networkAdapter.ToString());
-
-        //            List<string> lstIPAddressInfos = new List<string>();
-        //            foreach (var ipAddress in networkAdapter.IPAddressList) // 遍历当前网络适配器IP地址列表
-        //            {
-        //                lstIPAddressInfos.Add(ipAddress.ToString()); // 将当前IP地址添加到IP地址信息列表中
-        //            }
-        //            string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos); // 将IP地址信息列表元素合并为字符串
-        //            lstNetworkAdapterInfos.Add(ipAddressInfo); // 将IP地址信息添加到网络适配器信息列表中
-        //        }
-        //        string networkAdapterInfo = string.Join("\n\n", lstNetworkAdapterInfos);
-
-        //        // 将所有信息组合成一个字符串，并显示在消息框中
-        //        string outputInfo = string.Join("\n\n", new string[]
-        //            {
-        //                "Operating System: ", operatingSystem, "==========",
-        //                "Computer System: ", computerSystemInfo, "==========",
-        //                "BIOS:", biosInfo, "==========",
-        //                "Motherboard:", motherboardInfo, "==========",
-        //                "CPU:", cpuInfo, "==========",
-        //                "Memory:", memoryInfo, "==========",
-        //                "Disks:", diskInfo, "==========",
-        //                "Video Controllers:", videoControllerInfo, "==========",
-        //                "Sound Devices:", soundDeviceInfo, "==========",
-        //                "Network Adapters:", networkAdapterInfo,
-        //            });
-
-        //        ShowMessage(outputInfo);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
 
         public void SplitExcelWorksheet()
         {

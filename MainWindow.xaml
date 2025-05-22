@@ -48,7 +48,7 @@
                     <MenuItem x:Name="mnuBatchRepairWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
                     <MenuItem x:Name="mnuCreateFileList" Header= "Create File List" Click="MnuCreateFileList_Click" />
                     <MenuItem x:Name="mnuCreateFolders" Header= "Create Folders" Click="MnuCreateFolders_Click" />
-                    <MenuItem x:Name="mnuCreateNameCards" Header= "Create Name Cards" Click="MnuCreateNameCards_Click" />
+                    <MenuItem x:Name="mnuCreatePlaceCards" Header= "Create Place Cards" Click="MnuCreatePlaceCards_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Web">
