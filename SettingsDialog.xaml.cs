@@ -24,49 +24,28 @@ namespace COMIGHT
 
             this.DataContext = appSettings; // 将应用设置窗口的数据环境设为应用设置对象
 
-            this.Loaded += OnWindowLoaded; // 窗口加载完成后，执行OnWindowLoaded过程
+            this.Loaded += SettingsDialog_Loaded; // 窗口加载完成后，执行SettingsDialog_Loaded过程
+            this.Closing += SettingsDialog_Closing; // 窗口关闭前，执行SettingsDialog_Closing过程
 
         }
 
-        private void btnDialogOK_Click(object sender, RoutedEventArgs e)
+        private void BtnDialogOK_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
-        private void btnPandocPathSelector_Click(object sender, RoutedEventArgs e)
+        private void BtnPandocPathSelector_Click(object sender, RoutedEventArgs e)
         {
             List<string>? lstFilePaths = SelectFiles(FileType.Executable, false, "Select the Pandoc Path"); // 选择Pandoc程序路径，赋值给Pandoc程序路径变量：如果用户选择了文件路径并点击了OK，则返回选择的文件路径；否则，返回null
 
             txtbxPandocPath.Text = lstFilePaths?[0] ?? txtbxPandocPath.Text; // 将Pandoc程序路径赋值给对应的文本框（如果Pandoc程序路径变量为null，则得到文本框原值）
         }
 
-        private void btnSavingFolderSelector_Click(object sender, RoutedEventArgs e)
+        private void BtnSavingFolderSelector_Click(object sender, RoutedEventArgs e)
         {
             string? savingFolderPath = SelectFolder("Select the Saving Folder"); // 选择保存文件夹路径，赋值给保存文件夹路径变量：如果用户选择了文件夹路径并点击了OK，则返回选择的文件夹路径；否则，返回null
 
             txtbxSavingFolder.Text = savingFolderPath ?? txtbxSavingFolder.Text; // 将保存文件夹路径赋值给对应的文本框（如果保存文件夹路径变量为null，则得到文本框原值）
-        }
-
-        private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
-            if (textBox != null) // 如果事件源对象不为空
-            {
-                textBox.Text = textBox.Text.Trim(); // 去除文本框中的空格
-
-                BindingExpression binding = textBox.GetBindingExpression(TextBox.TextProperty); // 获取TextBox控件文本属性的绑定表达式
-                if (binding != null) // 如果绑定表达式不为空
-                {
-                    binding.UpdateSource(); // 强制触发绑定源更新
-                }
-            }
-        }
-
-        private void OnWindowLoaded(object sender, RoutedEventArgs e)
-        {
-            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
-            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            FillComboBoxes(this, lstFontNames, "FontName"); // 将字体名称列表填充到窗体的所有字体选择组合框中
         }
 
         private void FillComboBoxes(DependencyObject root, IEnumerable<string> items, string? nameContains = null)
@@ -103,5 +82,33 @@ namespace COMIGHT
             }
         }
 
+        private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
+            if (textBox != null) // 如果事件源对象不为空
+            {
+                textBox.Text = textBox.Text.Trim(); // 去除文本框中的空格
+
+                BindingExpression binding = textBox.GetBindingExpression(TextBox.TextProperty); // 获取TextBox控件文本属性的绑定表达式
+                if (binding != null) // 如果绑定表达式不为空
+                {
+                    binding.UpdateSource(); // 强制触发绑定源更新
+                }
+            }
+        }
+
+        private void SettingsDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
+            FillComboBoxes(this, lstFontNames, "FontName"); // 将字体名称列表填充到窗体的所有字体选择组合框中
+        }
+
+        private void SettingsDialog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+        }
+
+       
     }
 }

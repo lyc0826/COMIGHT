@@ -1138,6 +1138,23 @@ namespace COMIGHT
             return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
         }
 
+        public static void CreateFolder(string targetFolderPath)
+        {
+            try
+            {
+                //创建目标文件夹
+                if (!Directory.Exists(targetFolderPath))
+                {
+                    Directory.CreateDirectory(targetFolderPath!);
+                }
+            }
+
+            catch
+            {
+                
+            }
+        }
+
         public static async Task ExportDocumentTableIntoWordAsyncHelper(string documentTableFilePath, string targetWordFilePath)
         {
             try

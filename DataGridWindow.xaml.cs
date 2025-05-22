@@ -82,7 +82,7 @@ namespace COMIGHT
             try
             {
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(this.Title, 15)}.xlsx"); //获取目标Excel工作簿文件路径全名信息
+                string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(this.Title, 40)}.xlsx"); //获取目标Excel工作簿文件路径全名信息
                 WriteDataTableIntoExcelWorkbook(new List<DataTable>() { currentDataTable }, targetExcelFile);
 
                 ShowSuccessMessage();

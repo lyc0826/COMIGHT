@@ -44,13 +44,13 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Saving Folder:" />
                             <TextBox x:Name ="txtbxSavingFolder" Text="{Binding Path = SavingFolderPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
-                            <Button x:Name ="btnSavingFolderSelector" Content="..." Width="25" Height="25" Click="btnSavingFolderSelector_Click"  />
+                            <Button x:Name ="btnSavingFolderSelector" Content="..." Width="25" Height="25" Click="BtnSavingFolderSelector_Click"  />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Pandoc Path:" />
                             <TextBox x:Name ="txtbxPandocPath" Text="{Binding Path = PandocPath, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
-                            <Button x:Name ="btnPandocPathSelector" Content="..." Width="25" Height="25" Click="btnPandocPathSelector_Click"  />
+                            <Button x:Name ="btnPandocPathSelector" Content="..." Width="25" Height="25" Click="BtnPandocPathSelector_Click"  />
                         </StackPanel>
 
                     </StackPanel>
@@ -184,7 +184,7 @@
         -->
 
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button IsDefault="True" x:Name="btnDialogOK" Content="OK" Width="50" Height="30" Click="btnDialogOK_Click" />
+            <Button IsDefault="True" x:Name="btnDialogOK" Content="OK" Width="50" Height="30" Click="BtnDialogOK_Click" />
         </StackPanel>
 
     </Grid>
