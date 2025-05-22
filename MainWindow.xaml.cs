@@ -1488,7 +1488,7 @@ namespace COMIGHT
                 foreach (var disk in hardwareInfo.DriveList)
                 {
                     long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
-                    string diskInfo = $"{disk.ToString()}\n{diskSize.ToString()} GB";
+                    string diskInfo = $"{disk.ToString()}\nDisk Size: {diskSize.ToString()} GB";
                     systemInfoTable.Rows.Add($"Disk {i++}", diskInfo);
                 }
 
