@@ -29,8 +29,9 @@ namespace COMIGHT
     public static partial class Methods
 
     {
-        static SettingsManager<AppSettings> settingsManager = new SettingsManager<AppSettings>(settingsJsonFilePath);
-        static SettingsManager<LatestRecords> recordsManager = new SettingsManager<LatestRecords>(recordsJsonFilePath);
+
+        // 定义表格标题正则表达式字符串
+        public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。；;\f\n\r]{0,60}(?:表|单|录|册|回执|table|form|list|roll)[ |\t]*(?![^\d+\.一二三四五六七八九十〇零（）()\n\r])[^。；;\f\n\r]{0,60}(?:[\n\r]|$)";
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
@@ -120,12 +121,21 @@ namespace COMIGHT
                                         string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
 
                                         // 获取表格标题
-                                        if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
+                                        if (i > 0) // 如果当前Word元素不是0号元素且前一个元素是Word段落
                                         {
-                                            XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
-
-                                            // 表格标题正则表达式匹配模式为：从开头开始，非“。；;”的字符1至60个，结尾标志；获取表格标题：如果段落文字被表格标题正则表达式匹配成功，则得到段落文字；否则，得到表格标题变量原值
-                                            tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : tableTitle;
+                                            for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止）
+                                            {
+                                                if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
+                                                {
+                                                    XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
+                                                    // 如果段落文字被表格标题正则表达式匹配成功，将段落文字赋给表格标题变量并退出循环
+                                                    if (Regex.IsMatch(paragraph.Text, tableTitleRegEx))
+                                                    {
+                                                        tableTitle = paragraph.Text;
+                                                        break;
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         //创建Excel工作表，使用序号加表格标题作为工作表的名称
@@ -176,6 +186,87 @@ namespace COMIGHT
             }
 
         }
+
+
+        //public static void ExtractTablesFromWordToExcel(string wordFilePath, string targetExcelFilePath)
+        //{
+        //    try
+        //    {
+        //        // 使用 NPOI 处理 
+        //        using (FileStream wordFileStream = File.OpenRead(wordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
+        //        {
+        //            using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
+        //            {
+        //                if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
+        //                {
+        //                    using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
+        //                    {
+        //                        IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
+        //                        int wordTableIndex = 0;
+        //                        for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
+        //                        {
+        //                            var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
+        //                            if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格
+        //                            {
+        //                                string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
+
+        //                                // 获取表格标题
+        //                                if (i > 0 && wordDocument.BodyElements[i - 1] is XWPFParagraph) // 如果当前Word元素不是0号元素且前一个元素是Word段落
+        //                                {
+        //                                    XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - 1]; // 获取前一个Word元素，并赋值给段落变量
+
+        //                                    // 表格标题正则表达式匹配模式为：从开头开始，非“。；;”的字符1至60个，结尾标志；获取表格标题：如果段落文字被表格标题正则表达式匹配成功，则得到段落文字；否则，得到表格标题变量原值
+        //                                    tableTitle = Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,60}$") ? paragraph.Text : tableTitle;
+        //                                }
+
+        //                                //创建Excel工作表，使用序号加表格标题作为工作表的名称
+        //                                ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}", 15)); // 创建Excel工作表对象,工作表名称限制长度
+
+        //                                IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
+
+        //                                int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
+
+        //                                worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
+        //                                excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表第一行单元格
+
+        //                                int excelRowIndex = 1; // 从Excel工作表1号（第2）行开始写入表格数据
+        //                                foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
+        //                                {
+        //                                    IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
+        //                                    int excelCellIndex = 0;
+        //                                    foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
+        //                                    {
+        //                                        ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
+        //                                        excelCell.SetCellValue(wordTableCell.GetText()); // 将当前Word文档表格的当前行的当前单元格的文字赋值给当前Excel单元格
+        //                                    }
+        //                                }
+        //                                wordTableIndex++; // Word文档表格索引号累加1
+        //                            }
+        //                        }
+        //                        workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
+
+        //                        // 格式化目标Excel工作簿中的表格
+        //                        FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
+        //                        using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
+        //                        {
+        //                            foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
+        //                            {
+        //                                FormatExcelWorksheet(excelWorksheet, 2, 0); // 格式化表格数据区域（表头为2行）
+        //                            }
+        //                            excelPackage.Save(); //保存目标Excel文档
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowMessage(ex.Message); // 弹出错误信息
+        //    }
+
+        //}
 
         public static void FormatDocumentTable(ExcelWorkbook workbook)
         {
