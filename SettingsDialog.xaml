@@ -35,6 +35,7 @@
                     </Style>
                     <Style TargetType="Expander">
                         <Setter Property="Margin" Value="0,3,0,3"/>
+                        <Setter Property="Background" Value="#F0F0F0"/>
                     </Style>
                 </StackPanel.Resources>
 
