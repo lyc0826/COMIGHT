@@ -27,11 +27,12 @@ using Window = System.Windows.Window;
 namespace COMIGHT
 {
     public static partial class Methods
-
     {
 
-        // 定义表格标题正则表达式字符串
-        public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。；;\f\n\r]{0,60}(?:表|单|录|册|回执|table|form|list|roll)[ |\t]*(?![^\d+\.一二三四五六七八九十〇零（）()\n\r])[^。；;\f\n\r]{0,60}(?:[\n\r]|$)";
+        // 定义表格标题正则表达式字符串（需要兼顾常规字符串和Word中的文本）
+        //public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[ |\t]*(?![^\d+\.一二三四五六七八九十〇零（）\(\)\-\n\r])[^。；;\f\n\r]{0,100}(?:[\n\r]|$)";
+
+        public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)";
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
@@ -49,16 +50,17 @@ namespace COMIGHT
 
             // 截取到指定长度
             //return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
-            return cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
+            cleanedName = cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
+            return !string.IsNullOrWhiteSpace(cleanedName)? cleanedName : "-Blank-"; // 将清理后的文件名和文件夹名赋值给函数返回值：如果不为null或全空字符，则返回变量原值；否则返回"-Blank-"
         }
 
         public static string CleanWorksheetName(string inputName, int targetLength)
         {
             string cleanedName = inputName.Trim(); //去除首尾空白字符
-            //正则表达式匹配模式为：非中文字符、非英文字符、非阿拉伯数字或下划线、非空格等字符1个及以上；将匹配到的字符串替换为空
-            cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", "");
+            // 清理工作表名中非中文、非英文、非数字或下划线的字符
+            cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", ""); 
             cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
-            return cleanedName;
+            return !string.IsNullOrWhiteSpace(cleanedName)? cleanedName : "-Blank-"; // 将清理后的工作表名赋值给函数返回值：如果不为null或全空字符，则返回变量原值；否则返回"-Blank-"
         }
 
         public static int ConvertColumnLettersIntoIndex(string columnLetters)

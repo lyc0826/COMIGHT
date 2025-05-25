@@ -292,8 +292,8 @@ namespace COMIGHT
                         // 文档大标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-120个，换行符回车符，后方出现：换行符回车符
-                        Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,120}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                        // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-150个，换行符回车符，后方出现：换行符回车符
+                        Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,150}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
                         // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
                         Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
@@ -499,8 +499,8 @@ namespace COMIGHT
                             //设置英文小标题格式
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记（捕获组1），【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组2】，空格制表符至少一个，非“；;”分页符换行符回车符的字符1-10个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符1-100个，换行符回车符
-                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:part|chapter|section)[ |\t]+)?((?:\d+\.?){1,4})[ |\t]+[^；;\f\n\r]{1,10}?[a-zA-Z][^；;\f\n\r]{1,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                            // 定义英文小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记（捕获组1），【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组2】，空格制表符至少一个，非“；;”分页符换行符回车符的字符0-100个（尽可能少匹配），英文字符，非“；;”分页符换行符回车符的字符0-100个，换行符回车符
+                            Regex regExEnHeading = new Regex(@"(?<=^|\n|\r)((?:part|chapter|section)[ |\t]+)?((?:\d+\.?){1,4})[ |\t]+[^；;\f\n\r]{0,100}?[a-zA-Z][^；;\f\n\r]{0,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                             MatchCollection matchesEnHeadings = regExEnHeading.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
                             foreach (Match matchEnHeading in matchesEnHeadings)
