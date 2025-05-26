@@ -125,19 +125,28 @@ namespace COMIGHT
                                         // 获取表格标题
                                         if (i > 0) // 如果当前Word元素不是0号元素且前一个元素是Word段落
                                         {
+                                            List<string> lstBackupTableTitle = new List<string>();
+                                            string preferredTableTitle = string.Empty;
                                             for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止）
                                             {
                                                 if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
                                                 {
                                                     XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
-                                                    // 如果段落文字被表格标题正则表达式匹配成功，将段落文字赋给表格标题变量并退出循环
+                                                    // 如果段落文字被表格标题正则表达式匹配成功，将段落文字赋给首选表格标题变量并退出循环
                                                     if (Regex.IsMatch(paragraph.Text, tableTitleRegEx))
                                                     {
-                                                        tableTitle = paragraph.Text;
+                                                        preferredTableTitle = paragraph.Text;
                                                         break;
+                                                    }
+                                                    // 否则，备选表格标题正则表达式模式设为：开头标记，不含“。；;：:”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到备用表格标题列表中
+                                                    else if (Regex.IsMatch(paragraph.Text, @"^[^。；;：:]{1,100}$"))
+                                                    {
+                                                        lstBackupTableTitle.Add(paragraph.Text);
                                                     }
                                                 }
                                             }
+                                            // 获取表格标题：如果最合适表格标题变量不为空，则得到该变量值；否则，如果备用表格标题列表不为空，则得到其0号（第一个）元素的值；否则，得到表格标题变量原值
+                                            tableTitle = !string.IsNullOrWhiteSpace(preferredTableTitle) ? preferredTableTitle : lstBackupTableTitle.Count > 0 ? lstBackupTableTitle[0] : tableTitle;
                                         }
 
                                         //创建Excel工作表，使用序号加表格标题作为工作表的名称
