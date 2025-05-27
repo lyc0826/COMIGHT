@@ -1164,64 +1164,13 @@ namespace COMIGHT
             {
                 if (!cell.EntireRow.Hidden) // 如果当前单元格所在行不是隐藏行
                 {
-                    //将当前单元格文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，赋值给拆分后文字列表
+                    //将当前单元格文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，删除所有的小标题编号，赋值给拆分后文字列表
                     List<string>? lstSplitTexts = cell.Text.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                        .ToList();
+                        .ToList().ConvertAll(e => RemoveHeadingNum(e));
 
                     int lstSplitTextCount = lstSplitTexts!.Count; //获取拆分后文字列表元素个数
 
                     contentsChanged = lstSplitTextCount > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果拆分后文字列表元素个数大于1，得到true；否则，得到原值
-
-                    for (int i = 0; i < lstSplitTextCount; i++) //遍历拆分后文字列表的所有元素
-                    {
-                        //将拆分后文字列表当前元素的文字按修订标记字符'^'拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
-                        List<string> lstTextsToRevise = lstSplitTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                            .ToList().ConvertAll(e => RemoveHeadingNum(e));
-
-                        contentsChanged = lstTextsToRevise.Count > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果修订文字列表元素个数大于1，得到true；否则，得到原值
-
-                        //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
-                        lstSplitTexts[i] = MergeRevision(lstTextsToRevise);
-
-                        string MergeRevision(List<string> lstTextsToRevise) //合并修订文字
-                        {
-                            if ((lstTextsToRevise?.Count ?? 0) == 0) //如果修订文字列表的元素数（如果字符串列表为null，则得到0）为0，则将空字符串赋值给函数返回值
-                            {
-                                return string.Empty;
-                            }
-
-                            if (lstTextsToRevise!.Count == 1) //如果修订文字列表的元素数为1，则将0号元素赋值给函数返回值
-                            {
-                                return lstTextsToRevise[0];
-                            }
-
-                            // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
-
-                            //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
-                            Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
-
-                            // 获取修订文字列表0号元素经过中文句子正则表达式匹配后的结果集合
-                            MatchCollection matchesSentences = regExCnSentence.Matches(lstTextsToRevise[0]);
-
-                            foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
-                            {
-                                int sameSentenceCount = 0;
-                                for (int i = 1; i < lstTextsToRevise.Count; i++) //遍历修订文字列表从1号（第2个）元素开始的所有元素
-                                {
-                                    if (lstTextsToRevise[i].Contains(matchSentence.Value))  //如果修订文字列表当前元素含有当前中文句子（基准句）
-                                    {
-                                        lstTextsToRevise[i] = lstTextsToRevise[i].Replace(matchSentence.Value, ""); //将修订文字列表当前元素中的当前基准句替换为空（删除重复句）
-                                        sameSentenceCount += 1; //相同中文句子计数加1
-                                    }
-                                }
-
-                                //重新赋值给修订文字列表0号元素：如果相同中文句子计数小于修订文字列表元素数量减1（除0号元素外的其他元素并不都含有当前基准句），则得到将0号元素中的当前基准句替换为空后的字符串（删除非共有句）；否则得到0号元素原值
-                                lstTextsToRevise[0] = sameSentenceCount < lstTextsToRevise.Count - 1 ? lstTextsToRevise[0].Replace(matchSentence.Value, "") : lstTextsToRevise[0];
-                            }
-                            return string.Join("", lstTextsToRevise);  //合并修订文字列表的所有元素，赋值给函数返回值
-                        }
-
-                    }
 
                     if (lstSplitTextCount >= 2) // 如果拆分后文字列表的元素个数大于等于2个
                     {
@@ -1239,6 +1188,91 @@ namespace COMIGHT
             }
             return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
         }
+
+        //public static bool PreprocessDocumentTexts(ExcelRange range)
+        //{
+        //    bool contentsChanged = false; // “内容是否改变”变量赋值为false
+
+        //    foreach (ExcelRangeBase cell in range) // 遍历所有单元格
+        //    {
+        //        if (!cell.EntireRow.Hidden) // 如果当前单元格所在行不是隐藏行
+        //        {
+        //            //将当前单元格文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，赋值给拆分后文字列表
+        //            List<string>? lstSplitTexts = cell.Text.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        //                .ToList();
+
+        //            int lstSplitTextCount = lstSplitTexts!.Count; //获取拆分后文字列表元素个数
+
+        //            contentsChanged = lstSplitTextCount > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果拆分后文字列表元素个数大于1，得到true；否则，得到原值
+
+        //            for (int i = 0; i < lstSplitTextCount; i++) //遍历拆分后文字列表的所有元素
+        //            {
+        //                //将拆分后文字列表当前元素的文字按修订标记字符'^'拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
+        //                List<string> lstTextsToRevise = lstSplitTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        //                    .ToList().ConvertAll(e => RemoveHeadingNum(e));
+
+        //                contentsChanged = lstTextsToRevise.Count > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果修订文字列表元素个数大于1，得到true；否则，得到原值
+
+        //                //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
+        //                lstSplitTexts[i] = MergeRevision(lstTextsToRevise);
+
+        //                string MergeRevision(List<string> lstTextsToRevise) //合并修订文字
+        //                {
+        //                    if ((lstTextsToRevise?.Count ?? 0) == 0) //如果修订文字列表的元素数（如果字符串列表为null，则得到0）为0，则将空字符串赋值给函数返回值
+        //                    {
+        //                        return string.Empty;
+        //                    }
+
+        //                    if (lstTextsToRevise!.Count == 1) //如果修订文字列表的元素数为1，则将0号元素赋值给函数返回值
+        //                    {
+        //                        return lstTextsToRevise[0];
+        //                    }
+
+        //                    // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
+
+        //                    //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
+        //                    Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
+
+        //                    // 获取修订文字列表0号元素经过中文句子正则表达式匹配后的结果集合
+        //                    MatchCollection matchesSentences = regExCnSentence.Matches(lstTextsToRevise[0]);
+
+        //                    foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
+        //                    {
+        //                        int sameSentenceCount = 0;
+        //                        for (int i = 1; i < lstTextsToRevise.Count; i++) //遍历修订文字列表从1号（第2个）元素开始的所有元素
+        //                        {
+        //                            if (lstTextsToRevise[i].Contains(matchSentence.Value))  //如果修订文字列表当前元素含有当前中文句子（基准句）
+        //                            {
+        //                                lstTextsToRevise[i] = lstTextsToRevise[i].Replace(matchSentence.Value, ""); //将修订文字列表当前元素中的当前基准句替换为空（删除重复句）
+        //                                sameSentenceCount += 1; //相同中文句子计数加1
+        //                            }
+        //                        }
+
+        //                        //重新赋值给修订文字列表0号元素：如果相同中文句子计数小于修订文字列表元素数量减1（除0号元素外的其他元素并不都含有当前基准句），则得到将0号元素中的当前基准句替换为空后的字符串（删除非共有句）；否则得到0号元素原值
+        //                        lstTextsToRevise[0] = sameSentenceCount < lstTextsToRevise.Count - 1 ? lstTextsToRevise[0].Replace(matchSentence.Value, "") : lstTextsToRevise[0];
+        //                    }
+        //                    return string.Join("", lstTextsToRevise);  //合并修订文字列表的所有元素，赋值给函数返回值
+        //                }
+
+        //            }
+
+        //            if (lstSplitTextCount >= 2) // 如果拆分后文字列表的元素个数大于等于2个
+        //            {
+        //                int insertedRowsCount = lstSplitTextCount - 1; // 计算需要插入的行数：拆分后文字列表元素数-1
+        //                cell.Worksheet.InsertRow(cell.Start.Row + 1, insertedRowsCount); // 从被拆分单元格的下一个单元格开始，插入行
+        //            }
+
+        //            for (int i = 0; i < lstSplitTextCount; i++) //遍历拆分后文字列表的每个元素
+        //            {
+        //                cell.Offset(i, 0).Value = lstSplitTexts[i]; //将拆分后文字列表当前元素赋值给当前单元格向下偏移i行的单元格
+        //                cell.CopyStyles(cell.Offset(i, 0)); //将当前单元格的样式复制到当前单元格向下偏移i行的单元格
+        //                cell.Offset(i, 0).EntireRow.CustomHeight = false; // 当前单元格向下偏移i行的单元格所在行的手动设置行高设为false（即为自动）   
+        //            }
+        //        }
+        //    }
+        //    return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
+        //}
+
 
         public static void CreateFolder(string targetFolderPath)
         {
