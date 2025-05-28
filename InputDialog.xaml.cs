@@ -22,10 +22,8 @@ namespace COMIGHT
                 txtbxAnswer.Visibility = Visibility.Collapsed; // 隐藏文本框
 
                 cmbbxOptions.ItemsSource = options; // 将选项列表赋值给选项组合框
-                if (cmbbxOptions.Items.Contains(defaultAnswer)) // 如果选项组合框列表包含默认答案值，则选定选项组合框中与默认答案值相符的选项
-                {
-                    cmbbxOptions.SelectedItem = defaultAnswer;
-                }
+                // 如果选项组合框列表包含默认答案值，则选定选项组合框中与默认答案值相符的选项；否则，将选项组合框的选定项设为null
+                cmbbxOptions.SelectedItem = cmbbxOptions.Items.Contains(defaultAnswer) ? defaultAnswer : null;
             }
             else //否则
             {
