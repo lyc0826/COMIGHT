@@ -446,6 +446,42 @@ namespace COMIGHT
                 }
             }
 
+            // 设置表尾格式
+            if (footerRowCount >= 1) //如果表尾行数大于等于1
+            {
+                ExcelRange footerRange = excelWorksheet.Cells[rowCount - footerRowCount + 1, 1, rowCount, columnCount]; //将表尾区域赋值给表尾区域变量
+
+                // 设置表尾区域字体、对齐
+                footerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
+                footerRange.Style.Font.Size = (float)appSettings.WorksheetFontSize; // 获取应用程序设置中的字体大小
+                
+                footerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left; //单元格内容水平左对齐
+                footerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
+                footerRange.Style.WrapText = true; //设置文字自动换行
+
+                for (int i = rowCount; i >= rowCount - footerRowCount + 1; i--) //遍历表尾所有行
+                {
+                    ExcelRange footerRowCells = excelWorksheet.Cells[i, 1, i, columnCount]; //将当前行所有单元格赋值给表尾行单元格变量
+
+                    int mergedCellCount = footerRowCells.Count(cell => cell.Merge); // 计算当前表尾行单元格中被合并的单元格数量
+                    //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
+                    bool isRowMerged = mergedCellCount >= footerRowCells.Count() * 0.75 ? true : false;
+                    //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
+                    ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
+
+                    //设置当前行所有单元格的边框
+                    footerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
+                    footerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
+                    footerRowCells.Style.Border.Left.Style = borderStyle;
+                    footerRowCells.Style.Border.Right.Style = borderStyle;
+                    footerRowCells.Style.Border.Bottom.Style = borderStyle;
+
+                    excelWorksheet.Rows[i].CustomHeight = false; //设置当前行“是否手动调整行高”为false（即为自动）
+
+                }
+
+            }
+
             //调整纸张、方向、对齐
             ExcelPrinterSettings printerSettings = excelWorksheet.PrinterSettings; //将Excel工作表打印设置赋值给打印设置变量
             printerSettings.PaperSize = ePaperSize.A4; // 纸张设置为A4
