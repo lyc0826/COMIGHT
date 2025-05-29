@@ -69,7 +69,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Split Excel Worksheet**
 
-- **Split into Workbooks:** Splits a worksheet into separate workbooks based on the values in a specified column. The data to be split must be located in the first worksheet.
+- **Split into Workbooks:** Splits a worksheet into separate workbooks based on the values in a specified column. Only one worksheet can be split in one operation.
 
   - Example: A student roster worksheet contains class information in column B (Class 1, Class 2, Class 3). Splitting by column B creates separate roster worksheets for each class, each stored in a different workbook.
 
@@ -77,7 +77,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Compare Excel Worksheets**
 
-- Compares data with identical record keys and column fields between starting data worksheets and ending data worksheets, listing the differences (and calculating the percentage change for numerical data). The starting and ending data worksheets must have the same structure, and be arranged in the same sequence in 2 workbooks. Records must be unique (no duplicate record keys).
+- Compares data with identical record keys and column fields between starting data worksheets and ending data worksheets, listing the differences (and calculating the percentage change for numerical data). The starting and ending data worksheets must have the same structure, and be arranged in the same sequence in two workbooks. Records must be unique (no duplicate record keys).
 
 ### Document
 
@@ -163,7 +163,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Create Folders**
 
-- Creates folders based on the folder structure data in an Excel worksheet. Folders are created hierarchically from left to right, with the leftmost folder being the highest level (closest to the root directory) and the rightmost folder being the lowest level (furthest from the root directory). Use the template provided by this program for the folder creation worksheet.
+- Creates folders based on the folder structure data in an Excel worksheet. Folders are created hierarchically from left to right, with the leftmost folder being the highest level (closest to the root directory) and the rightmost folder being the lowest level (furthest from the root directory). Use the template workbook provided with this application to organize the folder structure data.
 
 #### **Create Name Cards**
 
