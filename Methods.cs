@@ -631,6 +631,7 @@ namespace COMIGHT
             return operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
         }
 
+
         public static (int startIndex, int endIndex) GetWorksheetRange()
         {
             string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
@@ -643,11 +644,11 @@ namespace COMIGHT
 
             string excelWorksheetIndexesStr = inputDialog.Answer;
             latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
-            //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，减1，赋值给函数返回值（EPPlus工作表索引号从0开始，Excel从1开始）
+            //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，减去1（EPPlus工作表索引号从0开始，Excel从1开始），赋值给Excel工作表索引号列表
             List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
-            int startIndex = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号范围起始值：列表的0号元素的值
-            int endIndex = lstExcelWorksheetIndexesStr.Count() == 1 ? startIndex : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号范围结束值：如果Excel工作表索引号列表只有一个元素（起始和终止工作表相同），则得到Excel工作表索引号范围起始值；否则，得到列表的1号元素的值
-            return (startIndex, endIndex); // 将Excel工作表索引号范围起始值和结束值赋值给函数返回值元组
+            int index1 = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号界值1：列表的0号元素的值
+            int index2 = lstExcelWorksheetIndexesStr.Count() == 1 ? index1 : lstExcelWorksheetIndexesStr[1]; //获取Excel工作表索引号界值2：如果Excel工作表索引号列表只有一个元素（界值1和2相同），则得到Excel工作表索引号界值1；否则，得到列表的1号元素的值
+            return (Math.Min(index1, index2), Math.Max(index1, index2)); // 将Excel工作表索引号的2个界值中较小的和较大的值分别作为起始值和结束值赋值给函数返回值元组
         }
 
         public static (int headerRowCount, int footerRowCount) GetHeaderAndFooterRowCount()
