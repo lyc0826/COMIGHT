@@ -165,9 +165,9 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 - Creates folders based on the folder structure data in an Excel worksheet. Folders are created hierarchically from left to right, with the leftmost folder being the highest level (closest to the root directory) and the rightmost folder being the lowest level (furthest from the root directory). Use the template workbook provided with this application to organize the folder structure data.
 
-#### **Create Name Cards**
+#### **Create Place Cards**
 
-- Creates name cards (20 x 10 cm) based on the data in a roster Excel worksheet. The names for the name cards must be in column A of the first worksheet, starting from cell A1. One item can be split into two lines within a cell.
+- Creates place cards (20 x 10 cm) based on the roster data in an Excel worksheet. One item can be split into two lines within a cell. Use the template workbook provided with this application to organize the roster data.
 
 ### Web
 

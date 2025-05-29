@@ -887,12 +887,13 @@ namespace COMIGHT
 
                     TrimCellStrings(sourceExcelWorksheet); //删除源数据Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(sourceExcelWorksheet); //删除源数据Excel工作表内所有空白行和空白列
-                    if (sourceExcelWorksheet.Dimension == null) //如果工作表为空，则抛出异常
+                    
+                    if ((sourceExcelWorksheet.Dimension?.End.Row ?? 0) <= 1) //如果工作表最末行序号（如果工作表为null，则为0）小于等于1，则抛出异常
                     {
                         throw new Exception("No valid data found.");
                     }
 
-                    for (int i = 1; i <= sourceExcelWorksheet.Dimension.End.Row; i++) //遍历源数据工作表所有行
+                    for (int i = 2; i <= sourceExcelWorksheet.Dimension!.End.Row; i++) //从第2行开始遍历源数据工作表所有行
                     {
                         string name = sourceExcelWorksheet.Cells[i, 1].Text; // 将A列当前行单元格的文字赋值给名称变量
 

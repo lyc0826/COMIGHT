@@ -811,7 +811,7 @@ namespace COMIGHT
 
         public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
         {
-            int valueCountThreshold = removeRowsWithSingleValue ? 2 : 1; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为2；否则为1
+            int valueCountThreshold = removeRowsWithSingleValue ? 2 : 1; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为2（每行都必须有2个及以上的数据才不会被移除）；否则为1
 
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
