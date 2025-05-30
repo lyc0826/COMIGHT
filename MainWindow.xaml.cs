@@ -1576,15 +1576,17 @@ namespace COMIGHT
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) // 打开Excel工作簿，赋值给Excel包变量
                 {
-                    
-                    for (int i = excelWorksheetStartIndex; i <= excelWorksheetEndIndex; i++) //遍历所有Excel工作表
+
+                    int newWorkbookIndex = 1;
+
+                    for (int i = excelWorksheetStartIndex; i <= excelWorksheetEndIndex; i++) //遍历所有指定范围的Excel工作表
                     {
-                        if (i > excelPackage.Workbook.Worksheets.Count) // 如果当前索引号大于Excel工作簿内工作表数量，则结束本过程
+                        if (i > excelPackage.Workbook.Worksheets.Count - 1) // 如果当前工作表索引号大于Excel工作簿内工作表数量-1，则结束本过程
                         {
                             break;
                         }
 
-                        int newIndex = 1;
+                        int newWorksheetIndex = 1;
 
                         ExcelWorksheet excelWorksheet = excelPackage.Workbook.Worksheets[i]; // 将当前索引号的Excel工作表赋值给Excel工作表变量
 
@@ -1613,16 +1615,16 @@ namespace COMIGHT
 
                         string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取目标Excel工作簿文件主名
 
-                        // 创建目标文件夹
-                        string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, $"Splt_{targetFileMainName}_{excelWorksheet.Name}");
+                        string targetFolderPath;
 
-                        CreateFolder(targetFolderPath);
-
-                        
                         switch (functionNum) //根据功能序号进入相应的分支
                         {
                             case 1: //拆分为Excel工作簿
-
+                                
+                                // 创建目标文件夹
+                                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanFileAndFolderName($"{targetFileMainName}_{excelWorksheet.Name}", 80));
+                                CreateFolder(targetFolderPath);
+                                
                                 foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
                                 {
                                     using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
@@ -1648,7 +1650,7 @@ namespace COMIGHT
                                         FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
 
                                         // 保存目标Excel工作簿文件
-                                        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newIndex++}_{targetFileMainName}_{excelWorksheet.Name}_{pair.Key}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息（文件主名为序号加目标文件主名加当前工作表名加键名后去掉不能作为文件名的字符并截取前80个字符)
+                                        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{targetFileMainName}_{excelWorksheet.Name}_{pair.Key}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息（文件主名为序号加目标文件主名加当前工作表名加键名后去掉不能作为文件名的字符并截取前80个字符)
                                         targetExcelPackage.SaveAs(targetExcelFile);
                                     }
                                 }
@@ -1657,14 +1659,20 @@ namespace COMIGHT
 
                             case 2:  //拆分为Excel工作表
 
+                                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanFileAndFolderName(targetFileMainName, 80));
+
+                                if (newWorkbookIndex == 1) //如果新工作簿序号等于1，则创建目标文件夹
+                                {
+                                    CreateFolder(targetFolderPath);
+                                }
+
                                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量
                                 {
-                                    ExcelWorkbook targetExcelWorkbook = targetExcelPackage.Workbook; // 将Excel工作簿赋值给目标Excel工作簿变量
 
                                     foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) //遍历所有字典数据
                                     {
                                         // 新建Excel工作表，表名为序号加当前工作表名加键名后去掉不能作为工作表名的字符并截取前15个字符，赋值给目标工作表变量
-                                        ExcelWorksheet targetExcelWorksheet = targetExcelWorkbook.Worksheets.Add(CleanWorksheetName($"{newIndex++}_{excelWorksheet.Name}_{pair.Key}", 15));
+                                        ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanWorksheetName($"{newWorksheetIndex++}_{pair.Key}", 15));
 
                                         // 将表头复制到目标Excel工作表
                                         if (headerRowCount >= 1) //如果表头行数大于等于1，复制表头
@@ -1686,9 +1694,8 @@ namespace COMIGHT
 
                                     }
                                     // 保存目标Excel工作簿文件
-                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Splt_{targetFileMainName}_{excelWorksheet.Name}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{targetFileMainName}_{excelWorksheet.Name}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
-
                                 }
 
                                 break;
