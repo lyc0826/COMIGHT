@@ -27,9 +27,9 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 #### **Settings** 
 - Sets parameters for this application.
 
-#### **Show System Info**
+#### **System Info**
 
-- Shows the system infomation of the current computer (e.g. hardware info, network settings, BIOS serial number)
+- Shows the system infomation of the current computer. The system information can be exported to an Excel workbook.
 
 #### **Help** 
 
@@ -69,7 +69,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
 
 #### **Split Excel Worksheet**
 
-- **Split into Workbooks:** Splits a worksheet into separate workbooks based on the values in a specified column. Only one worksheet can be split in one operation.
+- **Split into Workbooks:** Splits worksheets into separate workbooks based on the values in a specified column. The worksheets must have the same structure.
 
   - Example: A student roster worksheet contains class information in column B (Class 1, Class 2, Class 3). Splitting by column B creates separate roster worksheets for each class, each stored in a different workbook.
 
@@ -117,7 +117,7 @@ Key features include merging and splitting Excel worksheets, comparing data, for
  
 #### **Export Document Table into Word Document**
 
-- Exports the contents of a document table into a Word document, automatically numbers headings at all levels, and formats them according to Chinese government document standards.
+- Exports the contents of a document table into a Word document, automatically numbers headings at all levels, and formats them in conformity with official document standards.
 
 - Requirements of the document table:
 

@@ -1,4 +1,5 @@
 ﻿using Hardware.Info;
+using iText.Commons.Utils;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using MathNet.Numerics;
@@ -1325,7 +1326,7 @@ namespace COMIGHT
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
 
                 ////写入目标Word文档
-                //string targetWordFilePath = Path.Combine(targetFolderPath, $"Mrg_{targetFileMainName}.docx"); //获取目标Word文件的路径全名
+                //string targetWordFilePath = Path.Combine(targetFolderPath, $"Mrg_{excelWorkbookFileMainName}.docx"); //获取目标Word文件的路径全名
 
                 //using (FileStream fileStream = new FileStream(targetWordFilePath, FileMode.Create, FileAccess.Write)) // 创建文件流，以创建目标Word文档，赋值给文件流变量
                 //{
@@ -1541,9 +1542,9 @@ namespace COMIGHT
             {
 
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
-                
+
                 //获取功能选项
-                int functionNum = SelectFunction(options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption"); 
+                int functionNum = SelectFunction(options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption");
                 if (functionNum <= 0) //如果功能选项小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {
                     return;
@@ -1554,14 +1555,14 @@ namespace COMIGHT
                 {
                     return;
                 }
-                
+
                 (int excelWorksheetStartIndex, int excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
                 if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
                 {
                     return;
                 }
-                
-                
+
+
                 (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
                 if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
                 {
@@ -1613,18 +1614,18 @@ namespace COMIGHT
                             }
                         }
 
-                        string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取目标Excel工作簿文件主名
+                        string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
 
                         string targetFolderPath;
 
                         switch (functionNum) //根据功能序号进入相应的分支
                         {
                             case 1: //拆分为Excel工作簿
-                                
+
                                 // 创建目标文件夹
-                                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanFileAndFolderName($"{targetFileMainName}_{excelWorksheet.Name}", 80));
+                                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanFileAndFolderName($"{excelWorkbookFileMainName}_{excelWorksheet.Name}", 80));
                                 CreateFolder(targetFolderPath);
-                                
+
                                 foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
                                 {
                                     using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
@@ -1650,7 +1651,7 @@ namespace COMIGHT
                                         FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
 
                                         // 保存目标Excel工作簿文件
-                                        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{targetFileMainName}_{excelWorksheet.Name}_{pair.Key}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息（文件主名为序号加目标文件主名加当前工作表名加键名后去掉不能作为文件名的字符并截取前80个字符)
+                                        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{pair.Key}_{excelWorkbookFileMainName}_{excelWorksheet.Name}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息（文件主名为序号加目标文件主名加当前工作表名加键名后去掉不能作为文件名的字符并截取前80个字符)
                                         targetExcelPackage.SaveAs(targetExcelFile);
                                     }
                                 }
@@ -1659,7 +1660,7 @@ namespace COMIGHT
 
                             case 2:  //拆分为Excel工作表
 
-                                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanFileAndFolderName(targetFileMainName, 80));
+                                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanFileAndFolderName(excelWorkbookFileMainName, 80));
 
                                 if (newWorkbookIndex == 1) //如果新工作簿序号等于1，则创建目标文件夹
                                 {
@@ -1694,7 +1695,7 @@ namespace COMIGHT
 
                                     }
                                     // 保存目标Excel工作簿文件
-                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{targetFileMainName}_{excelWorksheet.Name}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{excelWorkbookFileMainName}_{excelWorksheet.Name}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
                                 }
 
