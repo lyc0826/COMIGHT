@@ -95,6 +95,9 @@
     <None Update="Settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Place Card Creation Template.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Websites.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
