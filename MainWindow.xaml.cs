@@ -1,9 +1,6 @@
 ﻿using Hardware.Info;
-using iText.Commons.Utils;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
-using MathNet.Numerics;
-using Microsoft.Win32;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -262,7 +259,7 @@ namespace COMIGHT
                     string targetExcelFilePath = Path.Combine(appSettings.SavingFolderPath, $"Tbl_{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); // 获取目标Excel文件路径全名
                     ExtractTablesFromWordToExcel(filePath, targetExcelFilePath); // 从Word文档中提取表格并保存为目标Excel工作簿
                 }
-                
+
                 ShowSuccessMessage();
             }
 
@@ -371,7 +368,7 @@ namespace COMIGHT
                 }
 
                 //获取所选文件列表
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files"); 
+                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files");
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -411,7 +408,7 @@ namespace COMIGHT
                         }
 
                         break;
-                        
+
                 }
 
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
@@ -717,7 +714,7 @@ namespace COMIGHT
                     return;
                 }
 
-                List <DataTable> lstDataTable = new List<DataTable>(); // 新建数据表列表变量
+                List<DataTable> lstDataTable = new List<DataTable>(); // 新建数据表列表变量
                 using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
                 {
 
@@ -917,7 +914,7 @@ namespace COMIGHT
 
                     TrimCellStrings(sourceExcelWorksheet); //删除源数据Excel工作表内所有文本型单元格值的首尾空格
                     RemoveWorksheetEmptyRowsAndColumns(sourceExcelWorksheet); //删除源数据Excel工作表内所有空白行和空白列
-                    
+
                     if ((sourceExcelWorksheet.Dimension?.End.Row ?? 0) <= 1) //如果工作表最末行序号（如果工作表为null，则为0）小于等于1，则抛出异常
                     {
                         throw new Exception("No valid data found.");
@@ -1062,7 +1059,7 @@ namespace COMIGHT
 
                 // 创建目标文件夹路径
                 string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, $"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}"); //获取目标文件夹路径
-                
+
                 CreateFolder(targetFolderPath);
 
                 // 创建各级文件夹路径
@@ -1644,7 +1641,7 @@ namespace COMIGHT
                         }
 
                         string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
-                        
+
                         // 创建目标文件夹
                         string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
                         CreateFolder(targetFolderPath);
