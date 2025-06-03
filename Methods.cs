@@ -868,7 +868,7 @@ namespace COMIGHT
             // 引用符号正则表达式匹配模式为：开头标记，“>”；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^>", "", RegexOptions.Multiline);
             // 无序列表符号正则表达式匹配模式为：开头标记，“*-”，空格任意多个；将匹配到的字符串替换为空
-            outText = Regex.Replace(outText, @"^[\*-][ ]*", "", RegexOptions.Multiline);
+            outText = Regex.Replace(outText, @"^[\*\-][ ]*", "", RegexOptions.Multiline);
 
             // 代码引用符号转义符号正则表达式匹配模式为：“`”至少2个，；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"`{2,}", "", RegexOptions.Multiline);
