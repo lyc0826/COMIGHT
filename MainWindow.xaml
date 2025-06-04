@@ -25,7 +25,7 @@
                     <MenuItem x:Name="mnuSystemInfo" Header= "System Info" Click="MnuSystemInfo_Click" />
                     <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
                     <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
-                    <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" />
+                    <!-- <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" /> -->
                 </MenuItem>
 
                 <MenuItem Header="Table">
