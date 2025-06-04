@@ -1780,7 +1780,7 @@ namespace COMIGHT
             }
             //获取对话框返回的功能选项
             string result = inputDialog.Answer.RemoveMarkDownMarks();
-            ShowMessage("转换后的文字为：" + result);
+            ShowMessage($"转换后的文字为：\n\n{result}");
         }
 
 
