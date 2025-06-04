@@ -1764,14 +1764,23 @@ namespace COMIGHT
             //string result = ConvertArabicNumberIntoChinese(numbers);
             //MessageBox.Show("转换后的中文数字为：" + result);
 
-            InputDialog inputDialog = new InputDialog(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
+            //InputDialog inputDialog = new InputDialog(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            ////获取对话框返回的功能选项
+            //double result = Val(inputDialog.Answer);
+            //ShowMessage("提取后的数字为：" + result.ToString());
+
+            InputDialog inputDialog = new InputDialog(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
             if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
             {
                 return;
             }
             //获取对话框返回的功能选项
-            double result = Val(inputDialog.Answer);
-            ShowMessage("提取后的数字为：" + result.ToString());
+            string result = inputDialog.Answer.RemoveMarkDownMarks();
+            ShowMessage("转换后的文字为：" + result);
         }
 
 
