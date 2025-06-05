@@ -1604,6 +1604,12 @@ namespace COMIGHT
                     return;
                 }
 
+                string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
+
+                // 创建目标文件夹
+                string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
+                CreateFolder(targetFolderPath);
+
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) // 打开Excel工作簿，赋值给Excel包变量
                 {
 
@@ -1643,12 +1649,6 @@ namespace COMIGHT
                             }
                         }
 
-                        string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
-                        
-                        // 创建目标文件夹
-                        string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
-                        CreateFolder(targetFolderPath);
-
                         switch (functionNum) //根据功能序号进入相应的分支
                         {
                             case 1: //拆分为Excel工作簿
@@ -1687,11 +1687,6 @@ namespace COMIGHT
 
                             case 2:  //拆分为Excel工作表
 
-                                if (newWorkbookIndex == 1) //如果新工作簿序号等于1，则创建目标文件夹
-                                {
-                                    CreateFolder(targetFolderPath);
-                                }
-
                                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量
                                 {
 
@@ -1719,9 +1714,11 @@ namespace COMIGHT
                                         FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
 
                                     }
+
                                     // 保存目标Excel工作簿文件
                                     FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{excelWorksheet.Name}_{excelWorkbookFileMainName}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
+                                    
                                 }
 
                                 break;

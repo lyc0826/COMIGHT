@@ -30,8 +30,6 @@ namespace COMIGHT
     {
 
         // 定义表格标题正则表达式字符串（需要兼顾常规字符串和Word中的文本）
-        //public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[ |\t]*(?![^\d+\.一二三四五六七八九十〇零（）\(\)\-\n\r])[^。；;\f\n\r]{0,100}(?:[\n\r]|$)";
-
         public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)";
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
