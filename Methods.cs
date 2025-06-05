@@ -932,7 +932,7 @@ namespace COMIGHT
 
         }
 
-        public static string RemoveEmojis(string text)
+        public static string RemoveEmojis(this string text)
         {
             return Regex.Replace(text, Emoji.RegexPattern, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
         }
