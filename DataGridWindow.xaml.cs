@@ -13,8 +13,8 @@ namespace COMIGHT
     /// </summary>
     public partial class DataGridWindow : Window
     {
-        private DataTable dataTable; // 定义DataTable变量
-        private string windowTitle = string.Empty; // 定义窗口标题变量
+        private readonly DataTable dataTable; // 定义DataTable变量
+        private readonly string windowTitle = string.Empty; // 定义窗口标题变量
 
         // 默认构造函数
         public DataGridWindow()
@@ -30,6 +30,11 @@ namespace COMIGHT
             this.Title = this.windowTitle = windowTitle; //  设置窗口标题，并赋值给windowTitle字段
             this.dataTable = dataTable != null ? dataTable : new DataTable(); // 获取参数传入的DataTable，如果为null则创建一个空的DataTable
             myDataGrid.ItemsSource = this.dataTable.DefaultView; // 将DataTable绑定到DataGrid
+        }
+
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         private void BtnExportData_Click(object sender, RoutedEventArgs e)
@@ -53,6 +58,7 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
+
     }
 }
 

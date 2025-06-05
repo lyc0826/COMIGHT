@@ -29,8 +29,6 @@ namespace COMIGHT
     {
 
         // 定义表格标题正则表达式字符串（需要兼顾常规字符串和Word中的文本）
-        //public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[ |\t]*(?![^\d+\.一二三四五六七八九十〇零（）\(\)\-\n\r])[^。；;\f\n\r]{0,100}(?:[\n\r]|$)";
-
         public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)";
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
@@ -39,13 +37,15 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanFileAndFolderName(string name, int maxLength)
+        public static string CleanFileAndFolderName(string inputName, int maxLength)
         {
+            string cleanedName = inputName.Trim(); // 去除首尾空白字符
+
             // 定义文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
             string invalidChars = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
 
             // 遍历文件名和文件夹名中的字符：如果为不允许出现的字符，则得到'_'；否则，得到原字符；将以上字符形成数组，再转换成字符串，赋值给清理后的名称变量
-            string cleanedName = new string(name.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray());
+            cleanedName = new string(inputName.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray());
 
             // 截取到指定长度
             //return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
@@ -56,6 +56,7 @@ namespace COMIGHT
         public static string CleanWorksheetName(string inputName, int targetLength)
         {
             string cleanedName = inputName.Trim(); //去除首尾空白字符
+
             // 清理工作表名中非中文、非英文、非数字或下划线的字符
             cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", "");
             cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
@@ -767,41 +768,54 @@ namespace COMIGHT
             return dataTable; // 将DataTable赋值给函数返回值
         }
 
+
         public static string RemoveMarkDownMarks(this string inText)
         {
             string outText = inText;
+
             // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
             //[^\S\n]+与(?:(?!\n)\s)+等同
             outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
 
-            // 文档分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
+            // 将行内换行符号替换为换行符
+            outText = Regex.Replace(outText, @"<br>", "\n", RegexOptions.Multiline);
+
+            // 水平分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^[\*\-_]+$", "", RegexOptions.Multiline);
+
+            // 标题符号正则表达式匹配模式为：开头标记，“#”（同行标题标记）至少一个，空格至少一个/或开头标记，“=-”（上一行标题标记）至少一个，结尾标记；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^#+[ ]+|^[=\-]+$", "", RegexOptions.Multiline);
+
+            // 无序列表符号正则表达式匹配模式为：开头标记，“*-+”，空格至少一个；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^[\*\-\+][ ]+", "", RegexOptions.Multiline);
+
+            // 引用符号正则表达式匹配模式为：开头标记，“>”，空格任意多个；将匹配到的字符串替换为空
+            outText = Regex.Replace(outText, @"^>[ ]*", "", RegexOptions.Multiline);
+
+            // 移除代码引用符号 —— 代码引用符号正则表达式匹配模式为：开头标记，非“~”的字符任意多个（捕获组1），“`”1-3个（捕获组2），非“~”的字符至少1个（捕获组3），捕获组2，非“~”的字符任意多个（捕获组4），结尾标记；将匹配到的字符串替换为捕获组1、3、4合并后的字符串
+            outText = Regex.Replace(outText, @"^([^`]*)(`{1,3})([^`]+)\2([^`]*)$", "$1$3$4", RegexOptions.Multiline);
+
+            // 移除公式引用符号
+            outText = Regex.Replace(outText, @"^([^\$]*)(\${1,2})([^\$]+)\2([^\$]*)$", "$1$3$4", RegexOptions.Multiline);
+
+            // 移除删除线符号
+            outText = Regex.Replace(outText, @"^([^~]*)(~~)([^~]+)\2([^~]*)$", "$1$3$4", RegexOptions.Multiline);
+
             // 表格表头分隔线符号正则表达式匹配模式为：开头标记，“|-:”至少一个，结尾标记；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^[\|\-:]+$", "", RegexOptions.Multiline);
 
-            // 标题符号正则表达式匹配模式为：开头标记，“#”（同行标题标记）至少一个，空格任意多个/或开头标记，“=-”（上一行标题标记）至少一个，结尾标记；将匹配到的字符串替换为空
-            outText = Regex.Replace(outText, @"^#+[ ]*|^[=\-]+$", "", RegexOptions.Multiline);
-            // 斜体或粗体符号（1个代表斜体，2个代表粗体）正则表达式匹配模式为：开头标记或任意字符任意多个（尽可能少）（捕获组1），“*_”至少一个，任意字符任意多个（尽可能少）（捕获组2），“*_”至少一个，任意字符任意多个（尽可能少）或结尾标记（捕获组3）；将匹配到的字符串替换为3个捕获组合并后的字符串
-            outText = Regex.Replace(outText, @"(^|.*?)[\*_]+(.*?)[\*_]+(.*?|$)", "$1$2$3", RegexOptions.Multiline);
-            // 引用符号正则表达式匹配模式为：开头标记，“>”；将匹配到的字符串替换为空
-            outText = Regex.Replace(outText, @"^>", "", RegexOptions.Multiline);
-            // 无序列表符号正则表达式匹配模式为：开头标记，“*-”，空格任意多个；将匹配到的字符串替换为空
-            outText = Regex.Replace(outText, @"^[\*-][ ]*", "", RegexOptions.Multiline);
-
-            // 代码引用符号转义符号正则表达式匹配模式为：“`”至少2个，；将匹配到的字符串替换为空
-            outText = Regex.Replace(outText, @"`{2,}", "", RegexOptions.Multiline);
-            // 代码引用符号正则表达式匹配模式为：开头标记或任意字符任意多个（尽可能少）（捕获组1），“`”，任意字符任意多个（尽可能少）（捕获组2），“`”，任意字符任意多个（尽可能少）或结尾标记（捕获组3）；将匹配到的字符串替换为3个捕获组用"隔开后的字符串
-            outText = Regex.Replace(outText, @"(^|.*?)`(.*?)`(.*?|$)", "$1\"$2\"$3", RegexOptions.Multiline);
-            // 删除线符号正则表达式匹配模式为：开头标记或任意字符任意多个（尽可能少）（捕获组1），“~~”，任意字符任意多个（尽可能少）（捕获组2），“~~”，任意字符任意多个（尽可能少）或结尾标记（捕获组3）；将匹配到的字符串替换为3个捕获组合并后的字符串
-            outText = Regex.Replace(outText, @"(^|.*?)~~(.*?)~~(.*?|$)", "$1$2$3", RegexOptions.Multiline);
-
             // 表格行开头和结尾符号正则表达式匹配模式为：开头标记，“|”/或“|”，结尾标记；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^\||\|$", "", RegexOptions.Multiline);
+
             // 表格内部多余空白字符正则表达式匹配模式为：前方出现“|”，不为换行符的空白字符至少一个/或前述字符至少一个，后方出现“|”；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"(?<=\|)[^\S\n]+|[^\S\n]+(?=\|)", "", RegexOptions.Multiline);
 
+            // 移除斜体或粗体符号（1个代表斜体，2个代表粗体，3个代表粗斜体）
+            outText = Regex.Replace(outText, @"^([^\*_]*)([\*_]{1,3})([^\*_]+)\2([^\*_]*)$", "$1$3$4", RegexOptions.Multiline);
+
             // 空白行正则表达式匹配模式设为：开头标记，空白字符任意多个；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^\s*", "", RegexOptions.Multiline);
+
             // 再次将每行首尾空白字符替换为空
             outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
 
@@ -837,7 +851,7 @@ namespace COMIGHT
 
         }
 
-        public static string RemoveEmojis(string text)
+        public static string RemoveEmojis(this string text)
         {
             return Regex.Replace(text, Emoji.RegexPattern, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
         }

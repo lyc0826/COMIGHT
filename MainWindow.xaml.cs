@@ -219,9 +219,9 @@ namespace COMIGHT
             await ShowSystemInfoAsync();
         }
 
-        private void MnuSplitExcelWorksheet_Click(object sender, RoutedEventArgs e)
+        private void MnuSplitExcelWorkbook_Click(object sender, RoutedEventArgs e)
         {
-            SplitExcelWorksheet();
+            SplitExcelWorkbook();
         }
 
         public async Task BatchConvertOfficeFileTypesAsync()
@@ -858,7 +858,7 @@ namespace COMIGHT
                 }
 
                 string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
-                mdText = appSettings.KeepEmojisInMarkdown ? mdText : RemoveEmojis(mdText); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
+                mdText = appSettings.KeepEmojisInMarkdown ? mdText : mdText.RemoveEmojis(); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
 
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = mdText
@@ -1562,12 +1562,13 @@ namespace COMIGHT
             }
         }
 
-        public void SplitExcelWorksheet()
+
+        public void SplitExcelWorkbook()
         {
             try
             {
-
-                List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
+                // 定义功能选项列表
+                List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks by a Column", "2-Split into Worksheets by a Column", "3-Extract Worksheets into Separate Workbooks" };
 
                 //获取功能选项
                 int functionNum = SelectFunction(options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption");
@@ -1582,24 +1583,53 @@ namespace COMIGHT
                     return;
                 }
 
-                (int excelWorksheetStartIndex, int excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
+                // 定义Excel工作簿索引范围、表头表尾行数、列符号变量（初始值均为“非法”数值）
+                int excelWorksheetStartIndex = -1; int excelWorksheetEndIndex = -1;
+                int headerRowCount = -1; int footerRowCount = -1;
+                string? columnLetter = null;
+                
+                bool createDataDict = true; // 定义“是否创建数据字典”变量（默认赋值为True）
+                Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义数据字典（保存按列拆分的数据）
+
+                (excelWorksheetStartIndex, excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
                 if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
                 {
                     return;
                 }
 
-
-                (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
-                if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+                switch (functionNum) // 根据功能选项进入相应分支
                 {
-                    return;
-                }
+                    case 1: // 按列拆分为Excel工作簿
+                    case 2: // 按列拆分为Excel工作表
+                        
+                        (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
+                        if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+                        {                           
+                            return;
+                        }
 
-                string? columnLetter = GetKeyColumnLetter(); //获取主键列符
-                if (columnLetter == null) //如果主键列符为null，则结束本过程
-                {
-                    return;
+                        columnLetter = GetKeyColumnLetter(); //获取主键列符
+                        if (columnLetter == null) //如果主键列符为null，则结束本过程
+                        {
+                            return;
+                        }
+
+                        createDataDict = true; // “是否创建数据字典”变量赋值为true
+
+                        break;
+
+                    case 3: // 提取工作表到独立工作簿
+
+                        createDataDict = false; // “是否创建数据字典”变量赋值为false
+
+                        break;
                 }
+                
+                string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
+
+                // 创建目标文件夹
+                string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
+                CreateFolder(targetFolderPath);
 
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) // 打开Excel工作簿，赋值给Excel包变量
                 {
@@ -1619,36 +1649,33 @@ namespace COMIGHT
 
                         TrimCellStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
                         RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
-                        if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则抛出异常
+
+                        if (createDataDict) // 如果需要创建数据字典（按列拆分时）
                         {
-                            throw new Exception("No valid data found!");
-                        }
-
-                        Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义一个字典来保存拆分的数据
-
-                        for (int j = headerRowCount + 1; j <= excelWorksheet.Dimension!.End.Row - footerRowCount; j++) // 遍历Excel工作表除去表头、表尾的每一行
-                        {
-                            string key = !string.IsNullOrWhiteSpace(excelWorksheet.Cells[columnLetter + j.ToString()].Text) ?
-                                excelWorksheet.Cells[columnLetter + j.ToString()].Text : "-Blank-"; //将当前行拆分基准列的值赋值给键值变量：如果当前行单元格文字不为空，则得到得到单元格文字，否则得到"-Blank-"
-                            if (dataDict.ContainsKey(key)) // 如果字典中已经有这个键，就将当前行添加到对应的列表中
+                            dataDict.Clear(); // 清空数据字典
+                            if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则直接跳过并进入下一个循环
                             {
-                                dataDict[key].Add(excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column]);
+                                continue;
                             }
-                            else // 否则，定义一个列表并向其中添加当前行，而后将列表并添加到字典中
+
+                            for (int j = headerRowCount + 1; j <= excelWorksheet.Dimension!.End.Row - footerRowCount; j++) // 遍历Excel工作表除去表头、表尾的每一行
                             {
-                                dataDict[key] = new List<ExcelRangeBase> { excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column] };
+                                string key = !string.IsNullOrWhiteSpace(excelWorksheet.Cells[columnLetter + j.ToString()].Text) ?
+                                    excelWorksheet.Cells[columnLetter + j.ToString()].Text : "-Blank-"; //将当前行拆分基准列的值赋值给键值变量：如果当前行单元格文字不为空，则得到得到单元格文字，否则得到"-Blank-"
+                                if (dataDict.ContainsKey(key)) // 如果字典中已经有这个键，就将当前行添加到对应的列表中
+                                {
+                                    dataDict[key].Add(excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column]);
+                                }
+                                else // 否则，定义一个列表并向其中添加当前行，而后将列表并添加到字典中
+                                {
+                                    dataDict[key] = new List<ExcelRangeBase> { excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column] };
+                                }
                             }
                         }
-
-                        string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
-
-                        // 创建目标文件夹
-                        string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
-                        CreateFolder(targetFolderPath);
 
                         switch (functionNum) //根据功能序号进入相应的分支
                         {
-                            case 1: //拆分为Excel工作簿
+                            case 1: //按列拆分为Excel工作簿
 
                                 foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
                                 {
@@ -1682,12 +1709,7 @@ namespace COMIGHT
 
                                 break;
 
-                            case 2:  //拆分为Excel工作表
-
-                                if (newWorkbookIndex == 1) //如果新工作簿序号等于1，则创建目标文件夹
-                                {
-                                    CreateFolder(targetFolderPath);
-                                }
+                            case 2:  //按列拆分为Excel工作表
 
                                 using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量
                                 {
@@ -1716,9 +1738,32 @@ namespace COMIGHT
                                         FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
 
                                     }
+
                                     // 保存目标Excel工作簿文件
                                     FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{excelWorksheet.Name}_{excelWorkbookFileMainName}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
+
+                                }
+
+                                break;
+
+                            case 3: // 提取工作表到独立工作簿
+
+                                using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量
+                                {
+                                    // 新建Excel工作表，表名为序号加键名后去掉不能作为工作表名的字符并截取前15个字符，赋值给目标工作表变量
+                                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1");
+
+                                    // 将整个工作表复制到目标Excel工作表
+                                    excelWorksheet.Cells[1, 1, excelWorksheet.Dimension.End.Row, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
+                                    excelWorksheet.Cells[1, 1, excelWorksheet.Dimension.End.Row, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
+
+                                    FormatExcelWorksheet(targetExcelWorksheet, 0, 0); //设置目标Excel工作表格式
+
+                                    // 保存目标Excel工作簿文件
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{excelWorksheet.Name}_{excelWorkbookFileMainName}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                    targetExcelPackage.SaveAs(targetExcelFile);
+
                                 }
 
                                 break;
@@ -1735,6 +1780,177 @@ namespace COMIGHT
             }
 
         }
+
+        //public void SplitExcelWorkbook()
+        //{
+        //    try
+        //    {
+
+        //        List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split into Workbooks", "2-Split into Worksheets" };
+
+        //        //获取功能选项
+        //        int functionNum = SelectFunction(options: lstFunctions, lastRecords: latestRecords, propertyName: "LatestSplitWorksheetOption");
+        //        if (functionNum <= 0) //如果功能选项小于等于0（选择“Cancel”或不在设定范围），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File"); //获取所选文件列表
+        //        if (filePaths == null) //如果文件列表为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        (int excelWorksheetStartIndex, int excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
+        //        if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+
+        //        (int headerRowCount, int footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
+        //        if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string? columnLetter = GetKeyColumnLetter(); //获取主键列符
+        //        if (columnLetter == null) //如果主键列符为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取当前Excel工作簿文件主名
+
+        //        // 创建目标文件夹
+        //        string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
+        //        CreateFolder(targetFolderPath);
+
+        //        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePaths[0]))) // 打开Excel工作簿，赋值给Excel包变量
+        //        {
+
+        //            int newWorkbookIndex = 1;
+
+        //            for (int i = excelWorksheetStartIndex; i <= excelWorksheetEndIndex; i++) //遍历所有指定范围的Excel工作表
+        //            {
+        //                if (i > excelPackage.Workbook.Worksheets.Count - 1) // 如果当前工作表索引号大于Excel工作簿内工作表数量-1，则结束本过程
+        //                {
+        //                    break;
+        //                }
+
+        //                int newWorksheetIndex = 1;
+
+        //                ExcelWorksheet excelWorksheet = excelPackage.Workbook.Worksheets[i]; // 将当前索引号的Excel工作表赋值给Excel工作表变量
+
+        //                TrimCellStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
+        //                RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
+        //                if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则抛出异常
+        //                {
+        //                    throw new Exception("No valid data found!");
+        //                }
+
+        //                Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义一个字典来保存拆分的数据
+
+        //                for (int j = headerRowCount + 1; j <= excelWorksheet.Dimension!.End.Row - footerRowCount; j++) // 遍历Excel工作表除去表头、表尾的每一行
+        //                {
+        //                    string key = !string.IsNullOrWhiteSpace(excelWorksheet.Cells[columnLetter + j.ToString()].Text) ?
+        //                        excelWorksheet.Cells[columnLetter + j.ToString()].Text : "-Blank-"; //将当前行拆分基准列的值赋值给键值变量：如果当前行单元格文字不为空，则得到得到单元格文字，否则得到"-Blank-"
+        //                    if (dataDict.ContainsKey(key)) // 如果字典中已经有这个键，就将当前行添加到对应的列表中
+        //                    {
+        //                        dataDict[key].Add(excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column]);
+        //                    }
+        //                    else // 否则，定义一个列表并向其中添加当前行，而后将列表并添加到字典中
+        //                    {
+        //                        dataDict[key] = new List<ExcelRangeBase> { excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column] };
+        //                    }
+        //                }
+
+        //                switch (functionNum) //根据功能序号进入相应的分支
+        //                {
+        //                    case 1: //拆分为Excel工作簿
+
+        //                        foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
+        //                        {
+        //                            using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量
+        //                            {
+        //                                ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); // 新建Excel工作表，赋值给目标工作表变量
+
+        //                                // 将表头复制到目标Excel工作表
+        //                                if (headerRowCount >= 1) //如果表头行数大于等于1，复制表头
+        //                                {
+        //                                    excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
+        //                                    excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
+        //                                }
+
+        //                                // 将字典中的每一行复制到目标Excel工作表
+        //                                foreach (ExcelRangeBase dictRow in pair.Value) //遍历所有字典数据
+        //                                {
+        //                                    //获取目标Excel工作表最末行索引号（如果工作表为空， 则为0）
+        //                                    int lastRowIndex = targetExcelWorksheet.Dimension?.End.Row ?? 0;
+        //                                    dictRow.CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的样式复制到目标Excel工作表的第一个非空白行
+        //                                    dictRow.Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的数据复制到目标Excel工作表的第一个非空白行
+        //                                }
+
+        //                                FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
+
+        //                                // 保存目标Excel工作簿文件
+        //                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{pair.Key}_{excelWorksheet.Name}_{excelWorkbookFileMainName}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息（文件主名为序号加键名加当前工作表名加当前工作簿文件主名后去掉不能作为文件名的字符并截取前80个字符)
+        //                                targetExcelPackage.SaveAs(targetExcelFile);
+        //                            }
+        //                        }
+
+        //                        break;
+
+        //                    case 2:  //拆分为Excel工作表
+
+        //                        using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量
+        //                        {
+
+        //                            foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) //遍历所有字典数据
+        //                            {
+        //                                // 新建Excel工作表，表名为序号加键名后去掉不能作为工作表名的字符并截取前15个字符，赋值给目标工作表变量
+        //                                ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanWorksheetName($"{newWorksheetIndex++}_{pair.Key}", 15));
+
+        //                                // 将表头复制到目标Excel工作表
+        //                                if (headerRowCount >= 1) //如果表头行数大于等于1，复制表头
+        //                                {
+        //                                    excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
+        //                                    excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
+        //                                }
+
+        //                                // 将字典中的每一行复制到目标Excel工作表
+        //                                foreach (ExcelRangeBase dictRow in pair.Value) //遍历所有字典数据
+        //                                {
+        //                                    //获取目标Excel工作表最末行索引号（如果工作表为空， 则为0）
+        //                                    int lastRowIndex = targetExcelWorksheet.Dimension?.End.Row ?? 0;
+        //                                    dictRow.CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的样式复制到目标Excel工作表的第一个非空白行
+        //                                    dictRow.Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的数据复制到目标Excel工作表的第一个非空白行
+        //                                }
+
+        //                                FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
+
+        //                            }
+
+        //                            // 保存目标Excel工作簿文件
+        //                            FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{newWorkbookIndex++}_{excelWorksheet.Name}_{excelWorkbookFileMainName}", 80)}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+        //                            targetExcelPackage.SaveAs(targetExcelFile);
+
+        //                        }
+
+        //                        break;
+        //                }
+        //            }
+        //        }
+
+        //        ShowSuccessMessage();
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+
+        //}
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -1761,14 +1977,23 @@ namespace COMIGHT
             //string result = ConvertArabicNumberIntoChinese(numbers);
             //MessageBox.Show("转换后的中文数字为：" + result);
 
-            InputDialog inputDialog = new InputDialog(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
+            //InputDialog inputDialog = new InputDialog(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            ////获取对话框返回的功能选项
+            //double result = Val(inputDialog.Answer);
+            //ShowMessage("提取后的数字为：" + result.ToString());
+
+            InputDialog inputDialog = new InputDialog(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
             if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
             {
                 return;
             }
             //获取对话框返回的功能选项
-            double result = Val(inputDialog.Answer);
-            ShowMessage("提取后的数字为：" + result.ToString());
+            string result = inputDialog.Answer.RemoveMarkDownMarks();
+            ShowMessage($"转换后的文字为：\n\n{result}");
         }
 
 
