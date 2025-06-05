@@ -40,6 +40,7 @@
                 </StackPanel.Resources>
 
                 <Expander Header="General" IsExpanded="True">
+                    
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -55,9 +56,11 @@
                         </StackPanel>
 
                     </StackPanel>
+                    
                 </Expander>
 
                 <Expander Header="Chinese Document">
+                    
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -102,9 +105,11 @@
                         </StackPanel>
 
                     </StackPanel>
+                    
                 </Expander>
 
                 <Expander Header="English Document">
+                    
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -149,9 +154,11 @@
                         </StackPanel>
 
                     </StackPanel>
+                    
                 </Expander>
 
                 <Expander Header="Misc.">
+                    
                     <StackPanel Orientation="Vertical">
 
                         <StackPanel Orientation="Horizontal">
@@ -172,17 +179,12 @@
                         </StackPanel>
 
                     </StackPanel>
+                    
                 </Expander>
 
             </StackPanel>
 
         </ScrollViewer>
-
-        <!-- 
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button x:Name="btnShowFonts" Content="Show Installed Fonts" Width="150" Height="30" Click="btnShowFonts_Click"  />
-        </StackPanel>
-        -->
 
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOK" Content="OK" Width="50" Height="30" Click="BtnDialogOK_Click" />

@@ -40,13 +40,15 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanFileAndFolderName(string name, int maxLength)
+        public static string CleanFileAndFolderName(string inputName, int maxLength)
         {
+            string cleanedName = inputName.Trim(); // 去除首尾空白字符
+
             // 定义文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
             string invalidChars = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
 
             // 遍历文件名和文件夹名中的字符：如果为不允许出现的字符，则得到'_'；否则，得到原字符；将以上字符形成数组，再转换成字符串，赋值给清理后的名称变量
-            string cleanedName = new string(name.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray());
+            cleanedName = new string(inputName.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray());
 
             // 截取到指定长度
             //return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
@@ -57,6 +59,7 @@ namespace COMIGHT
         public static string CleanWorksheetName(string inputName, int targetLength)
         {
             string cleanedName = inputName.Trim(); //去除首尾空白字符
+
             // 清理工作表名中非中文、非英文、非数字或下划线的字符
             cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", ""); 
             cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
