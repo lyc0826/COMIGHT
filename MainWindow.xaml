@@ -31,8 +31,10 @@
                 <MenuItem Header="Table">
                     
                     <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuBatchDisassembleExcelWorkbook" Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbook_Click" />
                     <MenuItem x:Name="mnuBatchExtractTablesFromWord" Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
-                    <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" /> <MenuItem x:Name="mnuSplitExcelWorkbook" Header= "Split Excel Workbook" Click="MnuSplitExcelWorkbook_Click" />
+                    <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
+                    
                     <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />
                 </MenuItem>
 
@@ -48,8 +50,8 @@
                     <MenuItem x:Name="mnuBatchConvertOfficeFileTypes" Header= "Batch Convert Office File Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
                     <MenuItem x:Name="mnuBatchRepairWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
                     <MenuItem x:Name="mnuCreateFileList" Header= "Create File List" Click="MnuCreateFileList_Click" />
-                    <MenuItem x:Name="mnuCreateFolders" Header= "Create Folders" Click="MnuCreateFolders_Click" />
-                    <MenuItem x:Name="mnuCreatePlaceCards" Header= "Create Place Cards" Click="MnuCreatePlaceCards_Click" />
+                    <MenuItem x:Name="mnuBatchCreateFolders" Header= "Batch Create Folders" Click="MnuBatchCreateFolders_Click" />
+                    <MenuItem x:Name="mnuBatchCreatePlaceCards" Header= "Batch Create Place Cards" Click="MnuBatchCreatePlaceCards_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Web">
