@@ -31,10 +31,9 @@
                 <MenuItem Header="Table">
                     
                     <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuBatchAssembleDisassembleExcelWorkbook" Header= "Batch Assemble/Disassemble Excel Workbook" Click="MnuBatchAssembleDisassembleExcelWorkbooks_Click" />
+                    <MenuItem x:Name="mnuBatchDisassembleExcelWorkbook" Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
                     <MenuItem x:Name="mnuBatchExtractTablesFromWord" Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
                     <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
-                    
                     <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />
                 </MenuItem>
 
