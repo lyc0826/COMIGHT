@@ -1672,7 +1672,7 @@ namespace COMIGHT
                 string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
                 cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis(); //获取清理后文本：如果要保留Emoji，则返回清理后文本变量原值；否则返回删除Emoji表情后的文本
 
-                Clipboard.SetText(cleanedText); // 将清理后的文本放回剪贴板
+                Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
 
                 ShowSuccessMessage();
 
