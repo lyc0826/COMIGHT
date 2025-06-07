@@ -55,6 +55,7 @@
 
                 <MenuItem Header="Web">
                     <MenuItem x:Name="mnuBrowser" Header="Browser" Click="MnuBrowser_Click" />
+                    <MenuItem x:Name="mnuRemoveMarkdownMarksInCopiedText" Header="Remove Markdown Marks In Copied Text" Click="MnuRemoveMarkdownMarksInCopiedText_Click" />
                 </MenuItem>
             </Menu>
         </DockPanel>

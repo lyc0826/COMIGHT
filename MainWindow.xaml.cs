@@ -208,6 +208,11 @@ namespace COMIGHT
             OpenSavingFolder();
         }
 
+        private void MnuRemoveMarkdownMarksInCopiedText_Click(object sender, RoutedEventArgs e)
+        {
+            RemoveMarkdownMarksInCopiedText();
+        }
+
         private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
             SettingsDialog settingDialog = new SettingsDialog();
@@ -1094,7 +1099,7 @@ namespace COMIGHT
 
                 string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
                 // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-                string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkDownMarks(), 40);
+                string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkdownMarks(), 40);
 
                 //导入目标Markdown文档
                 string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
@@ -1653,6 +1658,31 @@ namespace COMIGHT
             }
         }
 
+        private void RemoveMarkdownMarksInCopiedText()
+        {
+            try
+            {
+                if (!Clipboard.ContainsText()) // 如果剪贴板不包含文本，则抛出异常
+                {
+                    throw new Exception("Clipboard Not Containing Text.");
+                }
+
+                string originalText = Clipboard.GetText(); // 从剪贴板获取文本
+
+                string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
+                cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis(); //获取清理后文本：如果要保留Emoji，则返回清理后文本变量原值；否则返回删除Emoji表情后的文本
+
+                Clipboard.SetText(cleanedText); // 将清理后的文本放回剪贴板
+
+                ShowSuccessMessage();
+
+            }
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
+        }
+
         private static void ShowHelpWindow()
         {
             try
@@ -1828,11 +1858,13 @@ namespace COMIGHT
                 return;
             }
             //获取对话框返回的功能选项
-            string result = inputDialog.Answer.RemoveMarkDownMarks();
+            string result = inputDialog.Answer.RemoveMarkdownMarks();
             ShowMessage($"转换后的文字为：\n\n{result}");
         }
 
 
+
+        
     }
 
 }

@@ -26,6 +26,7 @@
                     <Style TargetType="TextBox">
                         <Setter Property="Margin" Value="3,3,3,3"/>
                         <EventSetter Event="TextChanged" Handler="OnTextBoxChanged"/>
+                        <EventSetter Event="LostFocus" Handler="OnTextBoxLostFocus"/>
                     </Style>
                     <Style TargetType="CheckBox">
                         <Setter Property="Margin" Value="0,3,0,3"/>

@@ -768,8 +768,7 @@ namespace COMIGHT
             return dataTable; // 将DataTable赋值给函数返回值
         }
 
-
-        public static string RemoveMarkDownMarks(this string inText)
+        public static string RemoveMarkdownMarks(this string inText)
         {
             string outText = inText;
 
@@ -792,14 +791,14 @@ namespace COMIGHT
             // 引用符号正则表达式匹配模式为：开头标记，“>”，空格任意多个；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^>[ ]*", "", RegexOptions.Multiline);
 
-            // 移除代码引用符号 —— 代码引用符号正则表达式匹配模式为：开头标记，非“~”的字符任意多个（捕获组1），“`”1-3个（捕获组2），非“~”的字符至少1个（捕获组3），捕获组2，非“~”的字符任意多个（捕获组4），结尾标记；将匹配到的字符串替换为捕获组1、3、4合并后的字符串
-            outText = Regex.Replace(outText, @"^([^`]*)(`{1,3})([^`]+)\2([^`]*)$", "$1$3$4", RegexOptions.Multiline);
+            // 移除行内代码和代码块引用符号 —— 代码引用符号正则表达式匹配模式为：任意字符任意多个（尽量少匹配）（捕获组1），“`”1-3个（捕获组2），任意字符任意多个（尽量少匹配）（捕获组3），捕获组2，任意字符任意多个（尽量少匹配）；将匹配到的字符串替换为捕获组1、3、4合并后的字符串
+            outText = Regex.Replace(outText, @"(.*?)(`{1,3})(.*?)\2(.*?)", "$1$3$4", RegexOptions.Singleline); // 文本可能跨多行，"."需包含换行符，故使用单行匹配模式
 
-            // 移除公式引用符号
-            outText = Regex.Replace(outText, @"^([^\$]*)(\${1,2})([^\$]+)\2([^\$]*)$", "$1$3$4", RegexOptions.Multiline);
+            // 移除行内公式和公式块引用符号
+            outText = Regex.Replace(outText, @"(.*?)(\${1,2})(.*?)\2(.*?)", "$1$3$4", RegexOptions.Singleline);
 
             // 移除删除线符号
-            outText = Regex.Replace(outText, @"^([^~]*)(~~)([^~]+)\2([^~]*)$", "$1$3$4", RegexOptions.Multiline);
+            outText = Regex.Replace(outText, @"(.*?)(~~)(.*?)\2(.*?)", "$1$3$4", RegexOptions.Multiline);
 
             // 表格表头分隔线符号正则表达式匹配模式为：开头标记，“|-:”至少一个，结尾标记；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^[\|\-:]+$", "", RegexOptions.Multiline);
@@ -811,7 +810,8 @@ namespace COMIGHT
             outText = Regex.Replace(outText, @"(?<=\|)[^\S\n]+|[^\S\n]+(?=\|)", "", RegexOptions.Multiline);
 
             // 移除斜体或粗体符号（1个代表斜体，2个代表粗体，3个代表粗斜体）
-            outText = Regex.Replace(outText, @"^([^\*_]*)([\*_]{1,3})([^\*_]+)\2([^\*_]*)$", "$1$3$4", RegexOptions.Multiline);
+            //outText = Regex.Replace(outText, @"(^|.*?)([\*_]{1,3})(.*?)\2(.*?|$)", "$1$3$4", RegexOptions.Singleline);
+            outText = Regex.Replace(outText, @"(.*?)([\*_]{1,3})(.*?)\2(.*?)", "$1$3$4", RegexOptions.Multiline);
 
             // 空白行正则表达式匹配模式设为：开头标记，空白字符任意多个；将匹配到的字符串替换为空
             outText = Regex.Replace(outText, @"^\s*", "", RegexOptions.Multiline);
@@ -821,6 +821,59 @@ namespace COMIGHT
 
             return outText; //将输出文字赋值给函数返回值
         }
+
+        //public static string RemoveMarkdownMarks(this string inText)
+        //{
+        //    string outText = inText;
+
+        //    // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
+        //    //[^\S\n]+与(?:(?!\n)\s)+等同
+        //    outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
+
+        //    // 将行内换行符号替换为换行符
+        //    outText = Regex.Replace(outText, @"<br>", "\n", RegexOptions.Multiline);
+
+        //    // 水平分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^[\*\-_]+$", "", RegexOptions.Multiline);
+
+        //    // 标题符号正则表达式匹配模式为：开头标记，“#”（同行标题标记）至少一个，空格至少一个/或开头标记，“=-”（上一行标题标记）至少一个，结尾标记；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^#+[ ]+|^[=\-]+$", "", RegexOptions.Multiline);
+
+        //    // 无序列表符号正则表达式匹配模式为：开头标记，“*-+”，空格至少一个；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^[\*\-\+][ ]+", "", RegexOptions.Multiline);
+
+        //    // 引用符号正则表达式匹配模式为：开头标记，“>”，空格任意多个；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^>[ ]*", "", RegexOptions.Multiline);
+
+        //    // 移除代码引用符号 —— 代码引用符号正则表达式匹配模式为：开头标记，非“~”的字符任意多个（捕获组1），“`”1-3个（捕获组2），非“~”的字符至少1个（捕获组3），捕获组2，非“~”的字符任意多个（捕获组4），结尾标记；将匹配到的字符串替换为捕获组1、3、4合并后的字符串
+        //    outText = Regex.Replace(outText, @"^([^`]*)(`{1,3})([^`]+)\2([^`]*)$", "$1$3$4", RegexOptions.Multiline);
+
+        //    // 移除公式引用符号
+        //    outText = Regex.Replace(outText, @"^([^\$]*)(\${1,2})([^\$]+)\2([^\$]*)$", "$1$3$4", RegexOptions.Multiline);
+
+        //    // 移除删除线符号
+        //    outText = Regex.Replace(outText, @"^([^~]*)(~~)([^~]+)\2([^~]*)$", "$1$3$4", RegexOptions.Multiline);
+
+        //    // 表格表头分隔线符号正则表达式匹配模式为：开头标记，“|-:”至少一个，结尾标记；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^[\|\-:]+$", "", RegexOptions.Multiline);
+
+        //    // 表格行开头和结尾符号正则表达式匹配模式为：开头标记，“|”/或“|”，结尾标记；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^\||\|$", "", RegexOptions.Multiline);
+
+        //    // 表格内部多余空白字符正则表达式匹配模式为：前方出现“|”，不为换行符的空白字符至少一个/或前述字符至少一个，后方出现“|”；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"(?<=\|)[^\S\n]+|[^\S\n]+(?=\|)", "", RegexOptions.Multiline);
+
+        //    // 移除斜体或粗体符号（1个代表斜体，2个代表粗体，3个代表粗斜体）
+        //    outText = Regex.Replace(outText, @"^([^\*_]*?)([\*_]{1,3})([^\*_]+?)\2([^\*_]*?)$", "$1$3$4", RegexOptions.Multiline);
+
+        //    // 空白行正则表达式匹配模式设为：开头标记，空白字符任意多个；将匹配到的字符串替换为空
+        //    outText = Regex.Replace(outText, @"^\s*", "", RegexOptions.Multiline);
+
+        //    // 再次将每行首尾空白字符替换为空
+        //    outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
+
+        //    return outText; //将输出文字赋值给函数返回值
+        //}
 
         public static void RemoveWorksheetEmptyRowsAndColumns(ExcelWorksheet excelWorksheet)
         {

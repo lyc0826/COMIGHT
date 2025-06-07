@@ -87,13 +87,20 @@ namespace COMIGHT
             TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
             if (textBox != null) // 如果事件源对象不为空
             {
-                textBox.Text = textBox.Text.Trim(); // 去除文本框中的空格
-
                 BindingExpression binding = textBox.GetBindingExpression(TextBox.TextProperty); // 获取TextBox控件文本属性的绑定表达式
                 if (binding != null) // 如果绑定表达式不为空
                 {
                     binding.UpdateSource(); // 强制触发绑定源更新
                 }
+            }
+        }
+
+        private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
+            if (textBox != null) // 如果事件源对象不为空
+            {
+                textBox.Text = textBox.Text.Trim(); // 去除文本框中的空格
             }
         }
 
