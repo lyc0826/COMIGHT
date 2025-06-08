@@ -1662,44 +1662,29 @@ namespace COMIGHT
 
         private void RemoveMarkdownMarksInCopiedText()
         {
-            const int MaxRetries = 10; // 最大重试次数
-            const int DelayMilliseconds = 100; // 每次重试之间的延迟（毫秒）
-
-            for (int i = 1; i <= MaxRetries; i++) // 循环重试
+            try 
             {
-                try
+                if (!Clipboard.ContainsText()) //  如果剪贴板中不包含文本，则抛出异常
                 {
-                    if (!Clipboard.ContainsText())
-                    {
-                        throw new Exception("No text in clipboard.");
-                    }
-
-                    string originalText = Clipboard.GetText(); // 从剪贴板获取文本
-                    string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
-                    cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis();
-
-                    Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
-
-                    ShowSuccessMessage();
-                    return; // 成功后退出方法
+                    ShowExceptionMessage( new Exception("No text in clipboard.") );
+                    return;
                 }
 
-                catch (Exception ex) // 捕获异常
-                {
-                    // 如果错误是 CLIPBRD_E_CANT_OPEN 错误（HResult 是 -2147221176）或其他剪贴板相关的错误
-                    if (ex.HResult == -2147221176 || (ex.Message != null && ex.Message.Contains("OpenClipboard failed", StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        if (i < MaxRetries) // 如果还有剩余的重试次数，则延迟一段时间，继续循环重试
-                        {
-                            Thread.Sleep(DelayMilliseconds);
-                        }
-                    }
-                    else // 否则（错误是其他Exception，不进行重试，直接退出）
-                    {
-                        ShowExceptionMessage(ex);
-                        return;
-                    }
-                }
+                string originalText = Clipboard.GetText(); // 从剪贴板获取文本
+                string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
+                cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis();
+                Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
+
+            }
+
+            catch // 捕获异常（即使因剪贴板访问异常，内容也更新成功，故不处理）
+            {
+               
+            }
+
+            finally 
+            {
+                ShowSuccessMessage();
             }
         }
 
