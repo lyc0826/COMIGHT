@@ -1665,7 +1665,7 @@ namespace COMIGHT
             const int MaxRetries = 10; // 最大重试次数
             const int DelayMilliseconds = 100; // 每次重试之间的延迟（毫秒）
 
-            for (int i = 1; i <= MaxRetries; i++)
+            for (int i = 1; i <= MaxRetries; i++) // 循环重试
             {
                 try
                 {
@@ -1675,7 +1675,6 @@ namespace COMIGHT
                     }
 
                     string originalText = Clipboard.GetText(); // 从剪贴板获取文本
-
                     string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
                     cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis();
 
@@ -1685,115 +1684,24 @@ namespace COMIGHT
                     return; // 成功后退出方法
                 }
 
-                catch (ExternalException ex) // 捕获特定的剪贴板异常
+                catch (Exception ex) // 捕获异常
                 {
-                    // 检查是否是 CLIPBRD_E_CANT_OPEN 错误（HResult 是 -2147221176）或其他剪贴板相关的错误
+                    // 如果错误是 CLIPBRD_E_CANT_OPEN 错误（HResult 是 -2147221176）或其他剪贴板相关的错误
                     if (ex.HResult == -2147221176 || (ex.Message != null && ex.Message.Contains("OpenClipboard failed", StringComparison.InvariantCultureIgnoreCase)))
                     {
-                        if (i < MaxRetries) // 如果还有剩余的重试次数，则延迟一段时间
+                        if (i < MaxRetries) // 如果还有剩余的重试次数，则延迟一段时间，继续循环重试
                         {
                             Thread.Sleep(DelayMilliseconds);
                         }
-                        else // 否则抛出异常
-                        {
-                            ShowExceptionMessage(new Exception("Failed to access clipboard after multiple retries.", ex));
-                        }
                     }
-                    else
+                    else // 否则（错误是其他Exception，不进行重试，直接退出）
                     {
-                        // 捕获到其他 ExternalException，不进行重试，直接退出
                         ShowExceptionMessage(ex);
                         return;
                     }
                 }
-
-                catch (Exception ex) // 捕获其他类型的异常
-                {
-                    ShowExceptionMessage(ex);
-                    return; // 其他异常不重试，直接退出
-                }
             }
         }
-
-        //private void RemoveMarkdownMarksInCopiedText()
-        //{
-        //    const int MaxRetries = 10; // 最大重试次数
-        //    const int DelayMilliseconds = 100; // 每次重试之间的延迟（毫秒）
-
-        //    for (int i = 1; i <= MaxRetries; i++)
-        //    {
-        //        try
-        //        {
-        //            if (!Clipboard.ContainsText())
-        //            {
-        //                throw new Exception("No text in clipboard.");
-        //            }
-
-        //            string originalText = Clipboard.GetText(); // 从剪贴板获取文本
-
-        //            string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
-        //            cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis();
-
-        //            Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
-
-        //            ShowSuccessMessage();
-        //            return; // 成功后退出方法
-        //        }
-
-        //        catch (ExternalException ex) // 捕获特定的剪贴板异常
-        //        {
-        //            // 检查是否是 CLIPBRD_E_CANT_OPEN 错误或其他剪贴板相关的错误
-        //            // CLIPBRD_E_CANT_OPEN 的 HResult 是 -2147221176
-        //            if (ex.HResult == -2147221176 || (ex.Message != null && ex.Message.Contains("OpenClipboard failed")))
-        //            {
-        //                if (i < MaxRetries) // 如果还有剩余的重试次数，则延迟一段时间
-        //                {
-        //                    Thread.Sleep(DelayMilliseconds);
-        //                }
-        //                else // 否则抛出异常
-        //                {
-        //                    ShowExceptionMessage(new Exception("Failed to access clipboard after multiple retries.", ex));
-        //                }
-        //            }
-        //            else
-        //            {
-        //                // 捕获到其他 ExternalException，不进行重试
-        //                ShowExceptionMessage(ex);
-        //                return;
-        //            }
-        //        }
-        //        catch (Exception ex) // 捕获其他类型的异常
-        //        {
-        //            ShowExceptionMessage(ex);
-        //            return; // 其他异常不重试，直接退出
-        //        }
-        //    }
-        //}
-
-        //private void RemoveMarkdownMarksInCopiedText()
-        //{
-        //    try
-        //    {
-        //        if (!Clipboard.ContainsText()) // 如果剪贴板不包含文本，则抛出异常
-        //        {
-        //            throw new Exception("No text in clipboard.");
-        //        }
-
-        //        string originalText = Clipboard.GetText(); // 从剪贴板获取文本
-
-        //        string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
-        //        cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis(); //获取清理后文本：如果要保留Emoji，则返回清理后文本变量原值；否则返回删除Emoji表情后的文本
-
-        //        Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
-
-        //        ShowSuccessMessage();
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
 
         private static void ShowHelpWindow()
         {
