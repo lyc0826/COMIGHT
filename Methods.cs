@@ -1008,15 +1008,14 @@ namespace COMIGHT
 
         public static void ShowExceptionMessage(Exception ex)
         {
-            MessageDialog messageDialog = new MessageDialog(ex.Message + "\n" + (ex.InnerException?.Message ?? ""));
+            MessageDialog messageDialog = new MessageDialog($"{ex.Message}\n{ex.InnerException?.Message ?? ""}");
             messageDialog.ShowDialog();
         }
-
 
         public static bool ShowMessage(string message)
         {
             MessageDialog messageDialog = new MessageDialog(message);
-            return messageDialog.ShowDialog() ?? false; // 将对话框返回值（点击OK为true，点击Cancel为false)赋值给函数返回值（如果对话框返回null，则为false)
+            return messageDialog.ShowDialog() ?? false; // 将对话框返回值（点击OK为true，点击Cancel为false）赋值给函数返回值（如果对话框返回null，则为false)
         }
 
         public static void ShowSuccessMessage()

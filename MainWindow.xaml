@@ -14,11 +14,40 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" >
+            
             <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding Path=FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
+
+                <Menu.Resources>
+                    <Style TargetType="MenuItem">
+                        <Style.Triggers>
+                            
+                            <EventTrigger RoutedEvent="MenuItem.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard  BeginTime="0:0:0.3">
+                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="IsSubmenuOpen">
+                                            <DiscreteBooleanKeyFrame KeyTime="0" Value="True"/>
+                                        </BooleanAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            
+                            <EventTrigger RoutedEvent="MenuItem.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard  BeginTime="0:0:0.2">
+                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="IsSubmenuOpen">
+                                            <DiscreteBooleanKeyFrame KeyTime="0" Value="False"/>
+                                        </BooleanAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            
+                        </Style.Triggers>
+                    </Style>
+                </Menu.Resources>
+
                 <MenuItem Header="Start">
                     <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="MnuOpenSavingFolder_Click" />
                     <MenuItem x:Name="mnuSettings" Header="Settings" Click="MnuSettings_Click"  />
@@ -58,11 +87,14 @@
                     <MenuItem x:Name="mnuRemoveMarkdownMarksInCopiedText" Header="Remove Markdown Marks In Copied Text" Click="MnuRemoveMarkdownMarksInCopiedText_Click" />
                 </MenuItem>
             </Menu>
+            
         </DockPanel>
 
-        <Label x:Name="lblStatus" Height="30" Grid.Row="1" Grid.Column="0" Content ="{Binding Path=StatusText, Mode=Default}"/>
-        <Label x:Name="lblIntro" Height="30" Grid.Row="2" Grid.Column="0" />
-
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Label x:Name="lblStatus" Height="30"  Content ="{Binding Path=StatusText, Mode=Default}"/>
+            <Label x:Name="lblIntro" Height="30"  />
+        </StackPanel>
+        
     </Grid>
 
 </Window>
