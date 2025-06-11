@@ -318,6 +318,7 @@ namespace COMIGHT
             // 设置记录区域字体、对齐
             recordRange.Style.Font.Name = appSettings.WorksheetFontName;
             recordRange.Style.Font.Size = (float)appSettings.WorksheetFontSize;
+            recordRange.Style.Font.Bold = false;
             recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
             recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
             recordRange.Style.WrapText = true; //设置文字自动换行
