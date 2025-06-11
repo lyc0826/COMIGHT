@@ -37,7 +37,7 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanFileAndFolderName(string inputName, int maxLength)
+        public static string CleanFileAndFolderName(string inputName, int maxLength = 254)
         {
             string cleanedName = inputName.Trim(); // 去除首尾空白字符
 
@@ -53,13 +53,13 @@ namespace COMIGHT
             return !string.IsNullOrWhiteSpace(cleanedName) ? cleanedName : "-Blank-"; // 将清理后的文件名和文件夹名赋值给函数返回值：如果不为null或全空字符，则返回变量原值；否则返回"-Blank-"
         }
 
-        public static string CleanWorksheetName(string inputName, int targetLength)
+        public static string CleanWorksheetName(string inputName, int maxLength = 30)
         {
             string cleanedName = inputName.Trim(); //去除首尾空白字符
 
             // 清理工作表名中非中文、非英文、非数字或下划线的字符
             cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", "");
-            cleanedName = cleanedName[..Math.Min(targetLength, cleanedName.Length)]; //截取目标字数
+            cleanedName = cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
             return !string.IsNullOrWhiteSpace(cleanedName) ? cleanedName : "-Blank-"; // 将清理后的工作表名赋值给函数返回值：如果不为null或全空字符，则返回变量原值；否则返回"-Blank-"
         }
 
@@ -150,7 +150,7 @@ namespace COMIGHT
                                         }
 
                                         //创建Excel工作表，使用序号加表格标题作为工作表的名称
-                                        ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}", 15)); // 创建Excel工作表对象,工作表名称限制长度
+                                        ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}")); // 创建Excel工作表对象
 
                                         IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
 
