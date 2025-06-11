@@ -1310,7 +1310,7 @@ namespace COMIGHT
                     string newPathStr = ""; //每下移一个数据行，新文件夹路径字符串变量清零
                     for (int j = 0; j < dataTable.Columns.Count; j++) //遍历所有数据列
                     {
-                        dataTable.Rows[i][j] = CleanFileAndFolderName(Convert.ToString(dataTable.Rows[i][j])!); //去除DataTable当前数据行当前数据列数据的文件夹名中不可用于文件夹名的字符
+                        //dataTable.Rows[i][j] = Convert.ToString(dataTable.Rows[i][j])!; //去除DataTable当前数据行当前数据列数据的文件夹名中不可用于文件夹名的字符
                         newPathStr += Convert.ToString(dataTable.Rows[i][j]); //将DataTable当前数据行当前数据列元素的文件夹名累加到新文件夹路径字符串上
                         if (i >= 1 && newPathStr == "") //如果当前数据行索引号大于等于1（从第2个记录行起），且新文件夹路径字符串变量为空字符串（当前元素及左侧所有元素均为空字符串），则将DataTable当前数据行当前数据列的元素填充为上一行同数据列的文件夹名
                         {
@@ -1332,8 +1332,8 @@ namespace COMIGHT
                     {
                         if (dataTable.Rows[i][j] != null) //如果当前数据行当前数据列的数据不为空
                         {
-                            newPath = Path.Combine(newPath, Convert.ToString(dataTable.Rows[i][j])!); //将现有新文件夹路径和当前数据行当前数据列的文件夹名合并，重新赋值给自身
-
+                            //newPath = Path.Combine(newPath, Convert.ToString(dataTable.Rows[i][j])!); //将现有新文件夹路径和当前数据行当前数据列的文件夹名合并，重新赋值给自身
+                            newPath = Path.Combine(newPath, CleanFileAndFolderName(Convert.ToString(dataTable.Rows[i][j])!)); //将现有新文件夹路径和当前数据行当前数据列的文件夹名合并，重新赋值给自身
                             CreateFolder(newPath);
                         }
                     }
