@@ -277,25 +277,25 @@ namespace COMIGHT
                             }
 
                             // 用EPPlus库将转换后的工作簿的每一张工作表复制到新工作簿中，并保存覆盖原工作簿（此过程用来修正DocSharp转换时的错误）
-                            using (ExcelPackage sourcePackage = new ExcelPackage(new FileInfo(targetFilePath)))
-                            using (ExcelPackage destinationPackage = new ExcelPackage())
+                            using (ExcelPackage xlsPackage = new ExcelPackage(new FileInfo(targetFilePath)))
+                            using (ExcelPackage xlsxPackage = new ExcelPackage())
                             {
                                 // 获取源工作簿
-                                ExcelWorkbook sourceWorkbook = sourcePackage.Workbook; // 定义源工作簿对象
+                                ExcelWorkbook xlsWorkbook = xlsPackage.Workbook; // 定义源工作簿对象
                                 // 获取目标工作簿
-                                ExcelWorkbook destinationWorkbook = destinationPackage.Workbook; // 定义目标工作簿对象
-                                foreach (var sourceSheet in sourceWorkbook.Worksheets) // 遍历源工作簿中的每一张工作表
+                                ExcelWorkbook xlsxWorkbook = xlsxPackage.Workbook; // 定义目标工作簿对象
+                                foreach (ExcelWorksheet xlsWorksheet in xlsWorkbook.Worksheets) // 遍历源工作簿中的每一张工作表
                                 {
-                                    if (sourceSheet == null) //  如果当前工作表为空，则直接跳过进入下一个工作表
+                                    if (xlsWorksheet == null) //  如果当前工作表为空，则直接跳过进入下一个工作表
                                     {
                                         continue;
                                     }
                                     // 使用 Copy 方法将工作表复制到目标工作簿
-                                    destinationWorkbook.Worksheets.Add(sourceSheet.Name, sourceSheet); // 将当前工作表复制到目标工作簿
+                                    xlsxWorkbook.Worksheets.Add(xlsWorksheet.Name, xlsWorksheet); // 将当前工作表复制到目标工作簿
                                 }
 
                                 // 保存目标工作簿，覆盖原文件
-                                destinationPackage.SaveAs(targetFilePath);
+                                xlsxPackage.SaveAs(targetFilePath);
                             }
                         }
                     }
