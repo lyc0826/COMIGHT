@@ -1,11 +1,21 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using DocSharp.Binary.DocFileFormat;
+using DocSharp.Binary.Spreadsheet.XlsFileFormat;
+using DocSharp.Binary.StructuredStorage.Reader;
+using iText.Forms.Form.Element;
+using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using NPOI.XWPF.UserModel;
+using OfficeOpenXml;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
+using DocSharpWordMapping = DocSharp.Binary.WordprocessingMLMapping;
 using MSExcel = Microsoft.Office.Interop.Excel;
 using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
 using MSWord = Microsoft.Office.Interop.Word;
@@ -13,7 +23,10 @@ using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using MSWordParagraph = Microsoft.Office.Interop.Word.Paragraph;
 using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
+using SpreadsheetDocument = DocSharp.Binary.OpenXmlLib.SpreadsheetML.SpreadsheetDocument;
 using Task = System.Threading.Tasks.Task;
+using WordprocessingDocument = DocSharp.Binary.OpenXmlLib.WordprocessingML.WordprocessingDocument;
+
 
 namespace COMIGHT
 {
@@ -22,8 +35,7 @@ namespace COMIGHT
 
         public static async Task BatchConvertOfficeFileTypesAsyncHelper(List<string> filePaths)
         {
-            MSExcel.Application? msExcelApp = null;
-            MSWord.Application? msWordApp = null;
+
             try
             {
 
@@ -37,42 +49,46 @@ namespace COMIGHT
                 Task task = Task.Run(() => process());
                 void process()
                 {
-                    if (filePaths.Any(f => regExExcelFile.IsMatch(f))) //如果文件列表中有任一文件被可用Excel打开的文件正则表达式匹配成功
-                    {
-                        msExcelApp = new MSExcel.Application(); //打开Excel应用程序，赋值给Excel应用程序变量
-                        msExcelApp.Visible = false;
-                        msExcelApp.DisplayAlerts = false;
-                    }
-
-                    if (filePaths.Any(f => regExWordFile.IsMatch(f))) //如果文件列表中有任一文件被可用Word打开的文件正则表达式匹配成功
-                    {
-                        msWordApp = new MSWord.Application(); //打开Word应用程序，赋值给Word应用程序变量
-                        msWordApp.Visible = false;
-                        msWordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
-                    }
 
                     foreach (string filePath in filePaths) //遍历所有文件
                     {
                         if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
                         {
-                            MSExcelWorkbook msExcelWorkbook = msExcelApp!.Workbooks.Open(filePath); //打开当前Excel工作簿，赋值给Excel工作簿变量
+                            // 获取目标Excel文件路径全名
                             string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
                             //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
                             targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
                                 Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx");
-                            msExcelWorkbook.SaveAs(Filename: targetFilePath, FileFormat: XlFileFormat.xlWorkbookDefault); //目标Excel工作簿另存为xlsx格式
-                            msExcelWorkbook.Close(); //关闭当前Excel工作簿
+
+                            using (var reader = new StructuredStorageReader(filePath)) //使用结构化存储读取器读取当前文件
+                            {
+                                var outputType = DocSharp.Binary.OpenXmlLib.SpreadsheetDocumentType.Workbook; // 定义输出文件类型为Workbook
+                                var xls = new XlsDocument(reader); // 创建Xls对象
+                                using (var xlsx = SpreadsheetDocument.Create(targetFilePath, outputType)) //  创建xlsx目标文件
+                                {
+                                    DocSharp.Binary.SpreadsheetMLMapping.Converter.Convert(xls, xlsx); // 将xls文件转换为xlsx文件
+                                }
+
+                            }
                         }
+
                         else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
                         {
-                            MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开当前Word文档，赋值给Word文档变量
                             string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
                             //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
                             targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
                                 Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
-                            //目标Word文件另存为docx格式，使用最新Word版本兼容模式
-                            msWordDocument.SaveAs2(FileName: targetFilePath, FileFormat: WdSaveFormat.wdFormatDocumentDefault, CompatibilityMode: WdCompatibilityMode.wdCurrent);
-                            msWordDocument.Close(); //关闭当前Word文件
+
+                            using (var reader = new StructuredStorageReader(filePath))
+                            {
+                                var outputType = DocSharp.Binary.OpenXmlLib.WordprocessingDocumentType.Document; 
+                                var doc = new WordDocument(reader);
+                                using (var docx = WordprocessingDocument.Create(targetFilePath, outputType))
+                                {
+                                    DocSharpWordMapping.Converter.Convert(doc, docx);
+                                }
+                            }
+
                         }
                         File.Delete(filePath); //删除当前文件
                     }
@@ -86,11 +102,80 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
 
-            finally
-            {
-                KillOfficeApps(new object[] { msExcelApp!, msWordApp! }); //结束Office应用程序进程
-            }
         }
+
+
+        //public static async Task BatchConvertOfficeFileTypesAsyncHelper(List<string> filePaths)
+        //{
+        //    MSExcel.Application? msExcelApp = null;
+        //    MSWord.Application? msWordApp = null;
+        //    try
+        //    {
+
+        //        string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
+
+        //        //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
+        //        Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
+        //        //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
+        //        Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
+
+        //        Task task = Task.Run(() => process());
+        //        void process()
+        //        {
+        //            if (filePaths.Any(f => regExExcelFile.IsMatch(f))) //如果文件列表中有任一文件被可用Excel打开的文件正则表达式匹配成功
+        //            {
+        //                msExcelApp = new MSExcel.Application(); //打开Excel应用程序，赋值给Excel应用程序变量
+        //                msExcelApp.Visible = false;
+        //                msExcelApp.DisplayAlerts = false;
+        //            }
+
+        //            if (filePaths.Any(f => regExWordFile.IsMatch(f))) //如果文件列表中有任一文件被可用Word打开的文件正则表达式匹配成功
+        //            {
+        //                msWordApp = new MSWord.Application(); //打开Word应用程序，赋值给Word应用程序变量
+        //                msWordApp.Visible = false;
+        //                msWordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
+        //            }
+
+        //            foreach (string filePath in filePaths) //遍历所有文件
+        //            {
+        //                if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
+        //                {
+        //                    MSExcelWorkbook msExcelWorkbook = msExcelApp!.Workbooks.Open(filePath); //打开当前Excel工作簿，赋值给Excel工作簿变量
+        //                    string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
+        //                    //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
+        //                    targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
+        //                        Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx");
+        //                    msExcelWorkbook.SaveAs(Filename: targetFilePath, FileFormat: XlFileFormat.xlWorkbookDefault); //目标Excel工作簿另存为xlsx格式
+        //                    msExcelWorkbook.Close(); //关闭当前Excel工作簿
+        //                }
+        //                else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
+        //                {
+        //                    MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开当前Word文档，赋值给Word文档变量
+        //                    string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
+        //                    //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
+        //                    targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
+        //                        Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
+        //                    //目标Word文件另存为docx格式，使用最新Word版本兼容模式
+        //                    msWordDocument.SaveAs2(FileName: targetFilePath, FileFormat: WdSaveFormat.wdFormatDocumentDefault, CompatibilityMode: WdCompatibilityMode.wdCurrent);
+        //                    msWordDocument.Close(); //关闭当前Word文件
+        //                }
+        //                File.Delete(filePath); //删除当前文件
+        //            }
+        //        }
+        //        await task;
+
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+
+        //    finally
+        //    {
+        //        KillOfficeApps(new object[] { msExcelApp!, msWordApp! }); //结束Office应用程序进程
+        //    }
+        //}
 
         public static async Task BatchFormatWordDocumentsAsyncHelper(List<string> filePaths)
         {

@@ -73,6 +73,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocSharp.Binary.Doc" Version="0.7.1" />
+    <PackageReference Include="DocSharp.Binary.Xls" Version="0.7.1" />
+    <PackageReference Include="DocSharp.Common" Version="0.7.1" />
+    <PackageReference Include="DocSharp.Docx" Version="0.7.1" />
+    <PackageReference Include="DocSharp.Markdown" Version="0.7.1" />
     <PackageReference Include="EPPlus" Version="8.0.5" />
     <PackageReference Include="GEmojiSharp" Version="4.0.0" />
     <PackageReference Include="Hardware.Info" Version="101.0.1.1" />

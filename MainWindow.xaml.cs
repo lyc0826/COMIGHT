@@ -19,6 +19,7 @@ using ITextParagraph = iText.Layout.Element.Paragraph;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
 using System.Runtime.InteropServices;
+using DocSharp.Markdown;
 
 namespace COMIGHT
 {
@@ -1137,15 +1138,15 @@ namespace COMIGHT
                 // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
                 string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkdownMarks());
 
-                //导入目标Markdown文档
-                string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
-                File.WriteAllText(targetMDFilePath, mdText); //将导出文本框内的markdown文字导入目标Markdown文档
-
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-                ConvertDocumentByPandoc("docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
-
-                File.Delete(targetMDFilePath); //删除Markdown文件
+                
+                MarkdownSource markdown = MarkdownSource.FromMarkdownString(mdText); // 创建Markdown源对象
+                MarkdownConverter converter = new MarkdownConverter() //  创建Markdown转换器对象
+                {
+                    //ImagesBaseUri = Path.GetDirectoryName(targetMDFilePath)  // 设置图片的路径
+                };
+                converter.ToDocx(markdown, targetWordFilePath); // 将Markdown文档转换成Word文档
 
                 // 提取目标Word文档中的表格并转存为目标Excel文档
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径全名
@@ -1160,6 +1161,57 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
+
+
+        //private void ConvertMarkDownIntoWord()
+        //{
+        //    try
+        //    {
+        //        InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
+        //        if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
+        //        mdText = appSettings.KeepEmojisInMarkdown ? mdText : mdText.RemoveEmojis(); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
+
+        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
+        //        List<string> lstParagraphs = mdText
+        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
+        //        {
+        //            throw new Exception("No valid text found.");
+        //        }
+
+        //        string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
+        //        // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
+        //        string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkdownMarks());
+
+        //        //导入目标Markdown文档
+        //        string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
+        //        File.WriteAllText(targetMDFilePath, mdText); //将导出文本框内的markdown文字导入目标Markdown文档
+
+        //        //将目标Markdown文档转换为目标Word文档
+        //        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
+        //        ConvertDocumentByPandoc("docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
+
+        //        File.Delete(targetMDFilePath); //删除Markdown文件
+
+        //        // 提取目标Word文档中的表格并转存为目标Excel文档
+        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径全名
+
+        //        ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档
+
+        //        ShowSuccessMessage();
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+        //}
 
         public void BatchCreatePlaceCards()
         {
