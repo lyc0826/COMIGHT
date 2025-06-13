@@ -1,110 +1,23 @@
-﻿using DocSharp.Binary.DocFileFormat;
-using DocSharp.Binary.Spreadsheet.XlsFileFormat;
-using DocSharp.Binary.StructuredStorage.Reader;
-using iText.Forms.Form.Element;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Interop.Word;
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
-using NPOI.XSSF.UserModel;
-using NPOI.XWPF.UserModel;
-using OfficeOpenXml;
+﻿using Microsoft.Office.Interop.Word;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
-using DocSharpWordMapping = DocSharp.Binary.WordprocessingMLMapping;
-using MSExcel = Microsoft.Office.Interop.Excel;
-using MSExcelWorkbook = Microsoft.Office.Interop.Excel.Workbook;
 using MSWord = Microsoft.Office.Interop.Word;
 using MSWordDocument = Microsoft.Office.Interop.Word.Document;
 using MSWordParagraph = Microsoft.Office.Interop.Word.Paragraph;
 using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
-using SpreadsheetDocument = DocSharp.Binary.OpenXmlLib.SpreadsheetML.SpreadsheetDocument;
 using Task = System.Threading.Tasks.Task;
-using WordprocessingDocument = DocSharp.Binary.OpenXmlLib.WordprocessingML.WordprocessingDocument;
+
 
 
 namespace COMIGHT
 {
     public partial class MSOfficeInterop
     {
-
-        public static async Task BatchConvertOfficeFileTypesAsyncHelper(List<string> filePaths)
-        {
-
-            try
-            {
-
-                string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
-
-                //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
-                Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
-                //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
-                Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
-
-                Task task = Task.Run(() => process());
-                void process()
-                {
-
-                    foreach (string filePath in filePaths) //遍历所有文件
-                    {
-                        if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
-                        {
-                            // 获取目标Excel文件路径全名
-                            string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
-                            //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
-                            targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
-                                Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx");
-
-                            using (var reader = new StructuredStorageReader(filePath)) //使用结构化存储读取器读取当前文件
-                            {
-                                var outputType = DocSharp.Binary.OpenXmlLib.SpreadsheetDocumentType.Workbook; // 定义输出文件类型为Workbook
-                                var xls = new XlsDocument(reader); // 创建Xls对象
-                                using (var xlsx = SpreadsheetDocument.Create(targetFilePath, outputType)) //  创建xlsx目标文件
-                                {
-                                    DocSharp.Binary.SpreadsheetMLMapping.Converter.Convert(xls, xlsx); // 将xls文件转换为xlsx文件
-                                }
-
-                            }
-                        }
-
-                        else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
-                        {
-                            string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
-                            //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
-                            targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
-                                Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
-
-                            using (var reader = new StructuredStorageReader(filePath))
-                            {
-                                var outputType = DocSharp.Binary.OpenXmlLib.WordprocessingDocumentType.Document; 
-                                var doc = new WordDocument(reader);
-                                using (var docx = WordprocessingDocument.Create(targetFilePath, outputType))
-                                {
-                                    DocSharpWordMapping.Converter.Convert(doc, docx);
-                                }
-                            }
-
-                        }
-                        File.Delete(filePath); //删除当前文件
-                    }
-                }
-                await task;
-
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
-            }
-
-        }
-
-
         //public static async Task BatchConvertOfficeFileTypesAsyncHelper(List<string> filePaths)
         //{
         //    MSExcel.Application? msExcelApp = null;
@@ -309,7 +222,7 @@ namespace COMIGHT
                             if (!paragraph.Range.Information[WdInformation.wdWithInTable] && !string.IsNullOrEmpty(paragraph.Range.ListFormat.ListString))
                             {
                                 // 自动编号正则表达式匹配模式设为：中文数字、阿拉伯数字；如果自动编号被匹配成功
-                                if (Regex.IsMatch(paragraph.Range.ListFormat.ListString, @"[一二三四五六七八九十〇零\d]")) 
+                                if (Regex.IsMatch(paragraph.Range.ListFormat.ListString, @"[一二三四五六七八九十〇零\d]"))
                                 {
                                     paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + (!isCnDocument ? " " : "")); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
                                 }

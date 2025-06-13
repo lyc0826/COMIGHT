@@ -1,4 +1,9 @@
-﻿using Hardware.Info;
+﻿using DocSharp.Binary.DocFileFormat;
+using DocSharp.Binary.OpenXmlLib;
+using DocSharp.Binary.Spreadsheet.XlsFileFormat;
+using DocSharp.Binary.StructuredStorage.Reader;
+using DocSharp.Markdown;
+using Hardware.Info;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using NPOI.XWPF.UserModel;
@@ -10,16 +15,19 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.Methods;
 using static COMIGHT.MSOfficeInterop;
 using DataTable = System.Data.DataTable;
+using DocSharpSpreadsheetMapping = DocSharp.Binary.SpreadsheetMLMapping;
+using DocSharpWordMapping = DocSharp.Binary.WordprocessingMLMapping;
 using ITextDocument = iText.Layout.Document;
 using ITextParagraph = iText.Layout.Element.Paragraph;
+using SpreadsheetDocument = DocSharp.Binary.OpenXmlLib.SpreadsheetML.SpreadsheetDocument;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using System.Runtime.InteropServices;
-using DocSharp.Markdown;
+using WordprocessingDocument = DocSharp.Binary.OpenXmlLib.WordprocessingML.WordprocessingDocument;
 
 namespace COMIGHT
 {
@@ -99,7 +107,7 @@ namespace COMIGHT
 
         public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量，用于执行异步任务，并提供任务执行状态数据
 
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -117,9 +125,9 @@ namespace COMIGHT
             CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
         }
 
-        private async void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
         {
-            await BatchConvertOfficeFileTypesAsync();
+            BatchConvertOfficeFileTypes();
         }
 
         private void MnuBatchCreateFolders_Click(object sender, RoutedEventArgs e)
@@ -232,7 +240,7 @@ namespace COMIGHT
             BatchDisassembleAssembleExcelWorkbooks();
         }
 
-        public async Task BatchConvertOfficeFileTypesAsync()
+        public void BatchConvertOfficeFileTypes()
         {
             try
             {
@@ -242,7 +250,77 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 调用任务管理器执行批量转换Office文件类型的方法
+                string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
+
+                //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
+                Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
+                //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
+                Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
+
+                foreach (string filePath in filePaths) //遍历所有文件
+                {
+                    if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
+                    {
+                        // 获取目标Excel文件路径全名
+                        string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.xlsx"); //获取目标文件路径全名
+                        //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
+                        targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
+                            Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.xlsx");
+
+                        using (StructuredStorageReader reader = new StructuredStorageReader(filePath)) //使用结构化存储读取器读取当前文件
+                        {
+                            SpreadsheetDocumentType outputType = SpreadsheetDocumentType.Workbook; // 定义输出文件类型为Workbook
+                            XlsDocument xls = new XlsDocument(reader); // 创建Xls对象
+                            using (SpreadsheetDocument xlsx = SpreadsheetDocument.Create(targetFilePath, outputType)) //  创建xlsx目标文件
+                            {
+                                DocSharpSpreadsheetMapping.Converter.Convert(xls, xlsx); // 将xls文件转换为xlsx文件
+                            }
+
+                            // 用EPPlus库将转换后的工作簿的每一张工作表复制到新工作簿中，并保存覆盖原工作簿（此过程用来修正DocSharp转换时的错误）
+                            using (ExcelPackage sourcePackage = new ExcelPackage(new FileInfo(targetFilePath)))
+                            using (ExcelPackage destinationPackage = new ExcelPackage())
+                            {
+                                // 获取源工作簿
+                                ExcelWorkbook sourceWorkbook = sourcePackage.Workbook; // 定义源工作簿对象
+                                // 获取目标工作簿
+                                ExcelWorkbook destinationWorkbook = destinationPackage.Workbook; // 定义目标工作簿对象
+                                foreach (var sourceSheet in sourceWorkbook.Worksheets) // 遍历源工作簿中的每一张工作表
+                                {
+                                    if (sourceSheet == null) //  如果当前工作表为空，则直接跳过进入下一个工作表
+                                    {
+                                        continue;
+                                    }
+                                    // 使用 Copy 方法将工作表复制到目标工作簿
+                                    destinationWorkbook.Worksheets.Add(sourceSheet.Name, sourceSheet); // 将当前工作表复制到目标工作簿
+                                }
+
+                                // 保存目标工作簿，覆盖原文件
+                                destinationPackage.SaveAs(targetFilePath);
+                            }
+                        }
+                    }
+
+                    else if (regExWordFile.IsMatch(filePath)) //如果当前文件名被可用Word打开的文件正则表达式匹配成功
+                    {
+                        string targetFilePath = Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
+                        //获取目标文件路径全名：如果目标文件不存在，则得到原目标文件路径全名；否则，在原目标文件主名后添加4位随机数，得到新目标文件路径全名
+                        targetFilePath = !File.Exists(targetFilePath) ? targetFilePath :
+                            Path.Combine(folderPath, $"{Path.GetFileNameWithoutExtension(filePath)}{new Random().Next(1000, 10000)}.docx");
+
+                        using (StructuredStorageReader reader = new StructuredStorageReader(filePath)) // 使用结构化存储读取器读取当前文件
+                        {
+                            WordprocessingDocumentType outputType = WordprocessingDocumentType.Document; // 定义输出文件类型为Document
+                            WordDocument doc = new WordDocument(reader); //  创建Word对象
+                            using (WordprocessingDocument docx = WordprocessingDocument.Create(targetFilePath, outputType)) // 创建docx目标文件
+                            {
+                                DocSharpWordMapping.Converter.Convert(doc, docx); // 将doc文件转换为docx文件
+                            }
+                        }
+
+                    }
+                    File.Delete(filePath); //删除当前文件
+                }
+
                 ShowSuccessMessage();
             }
 
@@ -251,6 +329,26 @@ namespace COMIGHT
                 ShowExceptionMessage(ex);
             }
         }
+
+        //public async Task BatchConvertOfficeFileTypes()
+        //{
+        //    try
+        //    {
+        //        List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
+        //        if (filePaths == null) //如果文件列表为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        await taskManager.RunTaskAsync(() => BatchConvertOfficeFileTypesAsyncHelper(filePaths)); // 调用任务管理器执行批量转换Office文件类型的方法
+        //        ShowSuccessMessage();
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex);
+        //    }
+        //}
 
         public void BatchDisassembleAssembleExcelWorkbooks()
         {
@@ -308,7 +406,8 @@ namespace COMIGHT
                 bool createFolderForEachWorkbook = true; // 定义“是否为每个工作簿创建一个文件夹”变量（默认赋值为true）
 
                 // 根据功能选项，给“是否创建数据字典”和“是否创建数据字典”变量赋值
-                (createDataDict, createFolderForEachWorkbook) = functionNum switch  {
+                (createDataDict, createFolderForEachWorkbook) = functionNum switch
+                {
                     1 => (true, true), // 按列拆分为Excel工作簿
                     2 => (true, true),  // 按列拆分为Excel工作表
                     3 => (false, true), // 拆分工作表到独立工作簿
@@ -327,18 +426,18 @@ namespace COMIGHT
                 {
 
                     string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePath); //获取当前Excel工作簿文件主名
-                    
+
                     if (createFolderForEachWorkbook) //  如果要为每个工作簿创建一个独立文件夹
                     {
                         // 创建目标文件夹（为每个工作簿创建一个独立文件夹）
                         targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
                         CreateFolder(targetFolderPath);
                     }
-          
+
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) // 打开当前Excel工作簿，赋值给Excel包变量
                     {
-                        ExcelWorkbook excelWorkbook = excelPackage.Workbook; 
-                        
+                        ExcelWorkbook excelWorkbook = excelPackage.Workbook;
+
                         //获取被处理Excel工作表索引号的起始值和结束值，如果大于工作表数量-1，则限定为工作表数量-1 (EPPlus工作表索引号从0开始，Excel工作表索引号从1开始)
                         excelWorksheetStartIndex = Math.Min(excelWorksheetStartIndex, excelWorkbook.Worksheets.Count - 1);
                         excelWorksheetEndIndex = Math.Min(excelWorksheetEndIndex, excelWorkbook.Worksheets.Count - 1);
@@ -473,21 +572,21 @@ namespace COMIGHT
 
                                 case 4: //集合工作簿
 
-                                        ExcelWorksheet collectedExcelWorksheet = assembledExcelPackage.Workbook.Worksheets.Add(CleanWorksheetName($"{collectedWorksheetCount++}_{excelWorksheet.Name}"));  // 新建收集Excel工作表
-                                        excelWorksheet.Cells[excelWorksheet.Dimension.Address].CopyStyles(collectedExcelWorksheet.Cells["A1"]);
-                                        excelWorksheet.Cells[excelWorksheet.Dimension.Address].Copy(collectedExcelWorksheet.Cells["A1"]);
+                                    ExcelWorksheet collectedExcelWorksheet = assembledExcelPackage.Workbook.Worksheets.Add(CleanWorksheetName($"{collectedWorksheetCount++}_{excelWorksheet.Name}"));  // 新建收集Excel工作表
+                                    excelWorksheet.Cells[excelWorksheet.Dimension.Address].CopyStyles(collectedExcelWorksheet.Cells["A1"]);
+                                    excelWorksheet.Cells[excelWorksheet.Dimension.Address].Copy(collectedExcelWorksheet.Cells["A1"]);
 
-                                        FormatExcelWorksheet(collectedExcelWorksheet, 0, 0); //设置目标Excel工作表格式
+                                    FormatExcelWorksheet(collectedExcelWorksheet, 0, 0); //设置目标Excel工作表格式
 
-                                        // 如果当前Excel工作簿是最后一个工作簿，并且当前工作表是最后一个工作表，则将数据写入集合Excel工作表
-                                        if (filePaths.IndexOf(filePath) == filePaths.Count - 1 && i == excelWorksheetEndIndex)
-                                        {
-                                            // 保存目标Excel工作簿文件
-                                            FileInfo assembledExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Coll_{assembledExcelFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-                                            assembledExcelPackage.SaveAs(assembledExcelFile);
-                                            assembledExcelPackage.Dispose();
-                                        }
-                                    
+                                    // 如果当前Excel工作簿是最后一个工作簿，并且当前工作表是最后一个工作表，则将数据写入集合Excel工作表
+                                    if (filePaths.IndexOf(filePath) == filePaths.Count - 1 && i == excelWorksheetEndIndex)
+                                    {
+                                        // 保存目标Excel工作簿文件
+                                        FileInfo assembledExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Coll_{assembledExcelFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
+                                        assembledExcelPackage.SaveAs(assembledExcelFile);
+                                        assembledExcelPackage.Dispose();
+                                    }
+
                                     break;
                             }
 
@@ -672,18 +771,18 @@ namespace COMIGHT
                         break;
 
                 }
-                
+
                 string? excelFileName = null; //定义被处理Excel工作簿文件名变量
-                
+
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
                 ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //在目标Excel工作簿中添加一个工作表，赋值给目标工作表变量
                 string? targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径变量
                 string? targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[1]); ; //定义目标文件主名变量
-                
+
                 // 定义数据表、数据行（功能3“提取单元格数据”时使用）
                 DataTable? dataTable = null; //定义DataTable变量
                 DataRow? dataRow = null; //定义DataTable行变量
-                
+
                 //定义模板Excel文件列表、模板Excel包和模板Excel工作表（功能5“复制公式到多Excel工作表”时使用）
                 List<string>? templateExcelFilePaths = null; //定义模板Excel文件列表变量
                 ExcelPackage? templateExcelPackage = null; //定义模板Excel包变量
@@ -883,12 +982,12 @@ namespace COMIGHT
                                     if (i == excelWorksheetEndIndex) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
                                     {
                                         excelPackage.Save();
-                                        
+
                                         // 如果当前Excel文件是最后一个，则关闭模板工作簿
                                         if (filePaths.IndexOf(excelFilePath) == filePaths.Count - 1)
                                         {
                                             templateExcelPackage?.Dispose();
-                                        }   
+                                        }
                                     }
 
                                     break;
@@ -933,7 +1032,7 @@ namespace COMIGHT
                     };
 
                     FormatExcelWorksheet(targetExcelWorksheet, targetHeaderRowCount, 0); //设置目标工作表格式
-                    
+
                     FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName($"{targetExcelWorkbookPrefix}_{targetFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
                     targetExcelPackage.SaveAs(targetExcelFile);
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
@@ -1140,7 +1239,7 @@ namespace COMIGHT
 
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-                
+
                 MarkdownSource markdown = MarkdownSource.FromMarkdownString(mdText); // 创建Markdown源对象
                 MarkdownConverter converter = new MarkdownConverter() //  创建Markdown转换器对象
                 {
@@ -1748,11 +1847,11 @@ namespace COMIGHT
 
         private void RemoveMarkdownMarksInCopiedText()
         {
-            try 
+            try
             {
                 if (!Clipboard.ContainsText()) //  如果剪贴板中不包含文本，则抛出异常
                 {
-                    ShowExceptionMessage( new Exception("No text in clipboard.") );
+                    ShowExceptionMessage(new Exception("No text in clipboard."));
                     return;
                 }
 
@@ -1765,10 +1864,10 @@ namespace COMIGHT
 
             catch // 捕获异常（即使因剪贴板访问异常，内容也更新成功，故不处理）
             {
-               
+
             }
 
-            finally 
+            finally
             {
                 ShowSuccessMessage();
             }
@@ -1907,7 +2006,7 @@ namespace COMIGHT
         }
 
 
-  
+
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -1955,7 +2054,7 @@ namespace COMIGHT
 
 
 
-        
+
     }
 
 }
