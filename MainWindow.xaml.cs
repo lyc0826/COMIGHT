@@ -181,7 +181,7 @@ namespace COMIGHT
 
         private void MnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
         {
-            ConvertMarkDownIntoWord();
+            ConvertMarkdownIntoWord();
         }
 
         private void MnuCreateFileList_Click(object sender, RoutedEventArgs e)
@@ -1211,7 +1211,7 @@ namespace COMIGHT
             }
         }
 
-        private void ConvertMarkDownIntoWord()
+        private void ConvertMarkdownIntoWord()
         {
             try
             {
@@ -1234,8 +1234,8 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-                // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-                string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkdownMarks());
+                // 获取目标文件主名：将段落列表中删除Markdown标记和不能作为文件名的字符后不为null或空的字符串的元素的第一个，作为目标文件主名
+                string targetFileMainName = lstParagraphs.Where(e => !string.IsNullOrWhiteSpace(CleanFileAndFolderName(e.RemoveMarkdownMarks()))).First();
 
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
@@ -1262,7 +1262,7 @@ namespace COMIGHT
         }
 
 
-        //private void ConvertMarkDownIntoWord()
+        //private void ConvertMarkdownIntoWord()
         //{
         //    try
         //    {

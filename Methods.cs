@@ -50,7 +50,7 @@ namespace COMIGHT
             // 截取到指定长度
             //return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
             cleanedName = cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
-            return !string.IsNullOrWhiteSpace(cleanedName) ? cleanedName : "-Blank-"; // 将清理后的文件名和文件夹名赋值给函数返回值：如果不为null或全空字符，则返回变量原值；否则返回"-Blank-"
+            return cleanedName; // 将清理后的文件名和文件夹名赋值给函数返回值
         }
 
         public static string CleanWorksheetName(string inputName, int maxLength = 30)
@@ -60,7 +60,7 @@ namespace COMIGHT
             // 清理工作表名中非中文、非英文、非数字或下划线的字符
             cleanedName = Regex.Replace(cleanedName, @"[^\u4e00-\u9fa5\w| ]+", "");
             cleanedName = cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
-            return !string.IsNullOrWhiteSpace(cleanedName) ? cleanedName : "-Blank-"; // 将清理后的工作表名赋值给函数返回值：如果不为null或全空字符，则返回变量原值；否则返回"-Blank-"
+            return cleanedName; // 将清理后的工作表名赋值给函数返回值
         }
 
         public static int ConvertColumnLettersIntoIndex(string columnLetters)
