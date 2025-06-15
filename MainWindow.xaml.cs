@@ -245,6 +245,7 @@ namespace COMIGHT
             try
             {
                 List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
+                
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -259,6 +260,11 @@ namespace COMIGHT
 
                 foreach (string filePath in filePaths) //遍历所有文件
                 {
+                    if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
+                    {
+                        continue;
+                    }
+
                     if (regExExcelFile.IsMatch(filePath)) //如果当前文件名被可用Excel打开的文件正则表达式匹配成功
                     {
                         // 获取目标Excel文件路径全名

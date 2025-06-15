@@ -1,4 +1,5 @@
-﻿using GEmojiSharp;
+﻿using DocSharp.Binary.Spreadsheet.XlsFileFormat.Records;
+using GEmojiSharp;
 using Microsoft.Win32;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
@@ -104,6 +105,11 @@ namespace COMIGHT
         {
             try
             {
+                if (new FileInfo(wordFilePath).Length == 0) //如果当前文件大小为0，则直接结束本过程
+                {
+                    return;
+                }
+
                 // 使用 NPOI 处理 
                 using (FileStream wordFileStream = File.OpenRead(wordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
                 {
