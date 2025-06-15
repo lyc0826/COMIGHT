@@ -623,6 +623,11 @@ namespace COMIGHT
 
                 foreach (string filePath in filePaths) // 遍历所有文件
                 {
+                    if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过并进入下一个循环
+                    {
+                        continue;
+                    }
+
                     string targetExcelFilePath = Path.Combine(appSettings.SavingFolderPath, $"{CleanFileAndFolderName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径全名
                     ExtractTablesFromWordToExcel(filePath, targetExcelFilePath); // 从Word文档中提取表格并保存为目标Excel工作簿
                 }
