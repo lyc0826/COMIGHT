@@ -449,12 +449,8 @@ namespace COMIGHT
                         excelWorksheetStartIndex = Math.Min(excelWorksheetStartIndex, excelWorkbook.Worksheets.Count - 1);
                         excelWorksheetEndIndex = Math.Min(excelWorksheetEndIndex, excelWorkbook.Worksheets.Count - 1);
 
-                        //int workbookCount = 1;
-
                         for (int i = excelWorksheetStartIndex; i <= excelWorksheetEndIndex; i++) //遍历所有指定范围的Excel工作表
                         {
-                            //int worksheetCount = 1;
-
                             ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i]; // 将当前索引号的Excel工作表赋值给Excel工作表变量
 
                             TrimCellStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
