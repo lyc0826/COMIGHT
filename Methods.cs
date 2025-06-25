@@ -1,5 +1,4 @@
-﻿using DocSharp.Binary.Spreadsheet.XlsFileFormat.Records;
-using GEmojiSharp;
+﻿using GEmojiSharp;
 using Microsoft.Win32;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
