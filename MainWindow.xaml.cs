@@ -980,7 +980,7 @@ namespace COMIGHT
         private void BatchProcessExcelWorksheets()
         {
             string currentFilePath = "";
-            try
+            //try
             {
                 // 定义功能选项列表
                 List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
@@ -1042,7 +1042,7 @@ namespace COMIGHT
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
                 ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //在目标Excel工作簿中添加一个工作表，赋值给目标工作表变量
                 string? targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径变量
-                string? targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[1]); ; //定义目标文件主名变量
+                string? targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); ; //定义目标文件主名变量
 
                 // 定义数据表、数据行（功能3“提取单元格数据”时使用）
                 DataTable? dataTable = null; //定义DataTable变量
@@ -1306,10 +1306,10 @@ namespace COMIGHT
                 ShowSuccessMessage();
             }
 
-            catch (Exception ex)
-            {
-                ShowMessage($"{ex.Message} at {currentFilePath}.");
-            }
+            //catch (Exception ex)
+            //{
+            //    ShowMessage($"{ex.Message} at {currentFilePath}.");
+            //}
 
         }
 
