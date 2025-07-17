@@ -50,7 +50,7 @@ namespace COMIGHT
         public class AppSettings
         {
             public string SavingFolderPath { get; set; } = string.Empty;
-            public string PandocPath { get; set; } = string.Empty;
+            // public string PandocPath { get; set; } = string.Empty;
             public string UserManualUrl { get; set; } = string.Empty;
             public string CnTitleFontName { get; set; } = string.Empty;
             public double CnTitleFontSize { get; set; }
