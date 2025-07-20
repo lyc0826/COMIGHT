@@ -57,7 +57,7 @@ namespace COMIGHT
                 DependencyObject current = stack.Pop(); // 弹出栈顶元素
 
                 // 如果当前控件是ComboBox且：未指定名称必须包含的字符串，或控件名称包含了指定的字符串，则设置其数据源为相应枚举对象
-                if (current is ComboBox comboBox && (nameContains == null || comboBox.Name.Contains(nameContains, StringComparison.CurrentCultureIgnoreCase))) // 
+                if (current is ComboBox comboBox && (nameContains == null || comboBox.Name.Contains(nameContains, StringComparison.CurrentCultureIgnoreCase))) 
                 {
                     comboBox.ItemsSource = items;
                 }
