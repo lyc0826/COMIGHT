@@ -283,27 +283,27 @@ namespace COMIGHT
                                 DocSharpSpreadsheetMapping.Converter.Convert(xls, xlsx); // 将xls文件转换为xlsx文件
                             }
 
-                            // 用EPPlus库将转换后的工作簿的每一张工作表复制到新工作簿中，并保存覆盖原工作簿（此过程用来修正DocSharp转换时的错误）
-                            using (ExcelPackage xlsPackage = new ExcelPackage(new FileInfo(targetFilePath)))
-                            using (ExcelPackage xlsxPackage = new ExcelPackage())
-                            {
-                                // 获取源工作簿
-                                ExcelWorkbook xlsWorkbook = xlsPackage.Workbook; // 定义源工作簿对象
-                                // 获取目标工作簿
-                                ExcelWorkbook xlsxWorkbook = xlsxPackage.Workbook; // 定义目标工作簿对象
-                                foreach (ExcelWorksheet xlsWorksheet in xlsWorkbook.Worksheets) // 遍历源工作簿中的每一张工作表
-                                {
-                                    if (xlsWorksheet == null) //  如果当前工作表为空，则直接跳过进入下一个工作表
-                                    {
-                                        continue;
-                                    }
-                                    // 使用 Copy 方法将工作表复制到目标工作簿
-                                    xlsxWorkbook.Worksheets.Add(xlsWorksheet.Name, xlsWorksheet); // 将当前工作表复制到目标工作簿
-                                }
+                            //// 用EPPlus库将转换后的工作簿的每一张工作表复制到新工作簿中，并保存覆盖原工作簿（此过程用来修正DocSharp转换时的错误）
+                            //using (ExcelPackage xlsPackage = new ExcelPackage(new FileInfo(targetFilePath)))
+                            //using (ExcelPackage xlsxPackage = new ExcelPackage())
+                            //{
+                            //    // 获取源工作簿
+                            //    ExcelWorkbook xlsWorkbook = xlsPackage.Workbook; // 定义源工作簿对象
+                            //    // 获取目标工作簿
+                            //    ExcelWorkbook xlsxWorkbook = xlsxPackage.Workbook; // 定义目标工作簿对象
+                            //    foreach (ExcelWorksheet xlsWorksheet in xlsWorkbook.Worksheets) // 遍历源工作簿中的每一张工作表
+                            //    {
+                            //        if (xlsWorksheet == null) //  如果当前工作表为空，则直接跳过进入下一个工作表
+                            //        {
+                            //            continue;
+                            //        }
+                            //        // 使用 Copy 方法将工作表复制到目标工作簿
+                            //        xlsxWorkbook.Worksheets.Add(xlsWorksheet.Name, xlsWorksheet); // 将当前工作表复制到目标工作簿
+                            //    }
 
-                                // 保存目标工作簿，覆盖原文件
-                                xlsxPackage.SaveAs(targetFilePath);
-                            }
+                            //    // 保存目标工作簿，覆盖原文件
+                            //    xlsxPackage.SaveAs(targetFilePath);
+                            //}
                         }
                     }
 
