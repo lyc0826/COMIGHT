@@ -33,13 +33,6 @@ namespace COMIGHT
             this.Close();
         }
 
-        //private void BtnPandocPathSelector_Click(object sender, RoutedEventArgs e)
-        //{
-        //    List<string>? lstFilePaths = SelectFiles(FileType.Executable, false, "Select the Pandoc Path"); // 选择Pandoc程序路径，赋值给Pandoc程序路径变量：如果用户选择了文件路径并点击了OK，则返回选择的文件路径；否则，返回null
-
-        //    txtbxPandocPath.Text = lstFilePaths?[0] ?? txtbxPandocPath.Text; // 将Pandoc程序路径赋值给对应的文本框（如果Pandoc程序路径变量为null，则得到文本框原值）
-        //}
-
         private void BtnSavingFolderSelector_Click(object sender, RoutedEventArgs e)
         {
             string? savingFolderPath = SelectFolder("Select the Saving Folder"); // 选择保存文件夹路径，赋值给保存文件夹路径变量：如果用户选择了文件夹路径并点击了OK，则返回选择的文件夹路径；否则，返回null
@@ -115,6 +108,5 @@ namespace COMIGHT
             CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
         }
 
-       
     }
 }

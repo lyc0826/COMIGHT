@@ -828,59 +828,6 @@ namespace COMIGHT
             return outText; //将输出文字赋值给函数返回值
         }
 
-        //public static string RemoveMarkdownMarks(this string inText)
-        //{
-        //    string outText = inText;
-
-        //    // 行首尾空白字符正则表达式匹配模式为：开头标记，不为非空白字符也不为换行符的字符（不为换行符的空白字符）至少一个/或前述字符至少一个，结尾标记；将匹配到的字符串替换为空
-        //    //[^\S\n]+与(?:(?!\n)\s)+等同
-        //    outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
-
-        //    // 将行内换行符号替换为换行符
-        //    outText = Regex.Replace(outText, @"<br>", "\n", RegexOptions.Multiline);
-
-        //    // 水平分隔线符号正则表达式匹配模式为：开头标记，“*-_”至少一个，结尾标记；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^[\*\-_]+$", "", RegexOptions.Multiline);
-
-        //    // 标题符号正则表达式匹配模式为：开头标记，“#”（同行标题标记）至少一个，空格至少一个/或开头标记，“=-”（上一行标题标记）至少一个，结尾标记；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^#+[ ]+|^[=\-]+$", "", RegexOptions.Multiline);
-
-        //    // 无序列表符号正则表达式匹配模式为：开头标记，“*-+”，空格至少一个；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^[\*\-\+][ ]+", "", RegexOptions.Multiline);
-
-        //    // 引用符号正则表达式匹配模式为：开头标记，“>”，空格任意多个；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^>[ ]*", "", RegexOptions.Multiline);
-
-        //    // 移除代码引用符号 —— 代码引用符号正则表达式匹配模式为：开头标记，非“~”的字符任意多个（捕获组1），“`”1-3个（捕获组2），非“~”的字符至少1个（捕获组3），捕获组2，非“~”的字符任意多个（捕获组4），结尾标记；将匹配到的字符串替换为捕获组1、3、4合并后的字符串
-        //    outText = Regex.Replace(outText, @"^([^`]*)(`{1,3})([^`]+)\2([^`]*)$", "$1$3$4", RegexOptions.Multiline);
-
-        //    // 移除公式引用符号
-        //    outText = Regex.Replace(outText, @"^([^\$]*)(\${1,2})([^\$]+)\2([^\$]*)$", "$1$3$4", RegexOptions.Multiline);
-
-        //    // 移除删除线符号
-        //    outText = Regex.Replace(outText, @"^([^~]*)(~~)([^~]+)\2([^~]*)$", "$1$3$4", RegexOptions.Multiline);
-
-        //    // 表格表头分隔线符号正则表达式匹配模式为：开头标记，“|-:”至少一个，结尾标记；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^[\|\-:]+$", "", RegexOptions.Multiline);
-
-        //    // 表格行开头和结尾符号正则表达式匹配模式为：开头标记，“|”/或“|”，结尾标记；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^\||\|$", "", RegexOptions.Multiline);
-
-        //    // 表格内部多余空白字符正则表达式匹配模式为：前方出现“|”，不为换行符的空白字符至少一个/或前述字符至少一个，后方出现“|”；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"(?<=\|)[^\S\n]+|[^\S\n]+(?=\|)", "", RegexOptions.Multiline);
-
-        //    // 移除斜体或粗体符号（1个代表斜体，2个代表粗体，3个代表粗斜体）
-        //    outText = Regex.Replace(outText, @"^([^\*_]*?)([\*_]{1,3})([^\*_]+?)\2([^\*_]*?)$", "$1$3$4", RegexOptions.Multiline);
-
-        //    // 空白行正则表达式匹配模式设为：开头标记，空白字符任意多个；将匹配到的字符串替换为空
-        //    outText = Regex.Replace(outText, @"^\s*", "", RegexOptions.Multiline);
-
-        //    // 再次将每行首尾空白字符替换为空
-        //    outText = Regex.Replace(outText, @"^[^\S\n]+|[^\S\n]+$", "", RegexOptions.Multiline);
-
-        //    return outText; //将输出文字赋值给函数返回值
-        //}
-
         public static void RemoveWorksheetEmptyRowsAndColumns(ExcelWorksheet excelWorksheet)
         {
             if (excelWorksheet.Dimension == null) //如果Excel工作表为空，结束本过程
@@ -1102,40 +1049,6 @@ namespace COMIGHT
             }
         }
 
-        //public static void ConvertDocumentByPandoc(string toType, string fromFilePath, string toFilePath)
-        //{
-        //    try
-        //    {
-        //        string? pandocPath = appSettings.PandocPath; //读取设置中保存的Pandoc程序文件路径全名，赋值给Pandoc程序文件路径全名变量
-
-        //        ProcessStartInfo startInfo = new ProcessStartInfo //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
-        //        {
-        //            FileName = pandocPath, // 指定pandoc应用程序的文件路径全名
-        //                                   //指定参数：-s完整独立文件，-f原格式 -t目标格式 -o输出文件路径全名，\"用于确保文件路径（可能包含空格）被视为pandoc命令的单个参数
-        //                                   //Arguments = $"-s -f {fromType} -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
-        //            Arguments = $"-s -t {toType} \"{fromFilePath}\" -o \"{toFilePath}\"",
-        //            RedirectStandardOutput = true, //设定将外部程序的标准输出重定向到C#程序
-        //            UseShellExecute = false, //设定使用操作系统shell执行程序为false
-        //            CreateNoWindow = true, //设定不创建窗口
-        //        };
-
-        //        //启动新进程
-        //        using (Process process = Process.Start(startInfo)!)
-        //        {
-        //            process.WaitForExit(); //等待进程结束
-        //            if (process.ExitCode != 0) //如果进程退出时返回的代码不为0，则抛出异常
-        //            {
-        //                throw new Exception("Conversion failed.");
-        //            }
-        //        }
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
-
         public static bool IsChineseText(string inText)
         {
             //判断是否为中文文档
@@ -1179,90 +1092,6 @@ namespace COMIGHT
             }
             return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
         }
-
-        //public static bool PreprocessDocumentTexts(ExcelRange range)
-        //{
-        //    bool contentsChanged = false; // “内容是否改变”变量赋值为false
-
-        //    foreach (ExcelRangeBase cell in range) // 遍历所有单元格
-        //    {
-        //        if (!cell.EntireRow.Hidden) // 如果当前单元格所在行不是隐藏行
-        //        {
-        //            //将当前单元格文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，赋值给拆分后文字列表
-        //            List<string>? lstSplitTexts = cell.Text.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-        //                .ToList();
-
-        //            int lstSplitTextCount = lstSplitTexts!.Count; //获取拆分后文字列表元素个数
-
-        //            contentsChanged = lstSplitTextCount > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果拆分后文字列表元素个数大于1，得到true；否则，得到原值
-
-        //            for (int i = 0; i < lstSplitTextCount; i++) //遍历拆分后文字列表的所有元素
-        //            {
-        //                //将拆分后文字列表当前元素的文字按修订标记字符'^'拆分成数组（删除每个元素前后空白字符，并删除空白元素），转换成列表，移除每个元素的小标题编号，赋值给修订文字列表
-        //                List<string> lstTextsToRevise = lstSplitTexts[i].Split('^', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-        //                    .ToList().ConvertAll(e => RemoveHeadingNum(e));
-
-        //                contentsChanged = lstTextsToRevise.Count > 1 ? true : contentsChanged; // 获取“内容是否改变”变量值：如果修订文字列表元素个数大于1，得到true；否则，得到原值
-
-        //                //合并修订文字列表中的所有元素成为完整字符串，重新赋值给拆分后文字列表当前元素
-        //                lstSplitTexts[i] = MergeRevision(lstTextsToRevise);
-
-        //                string MergeRevision(List<string> lstTextsToRevise) //合并修订文字
-        //                {
-        //                    if ((lstTextsToRevise?.Count ?? 0) == 0) //如果修订文字列表的元素数（如果字符串列表为null，则得到0）为0，则将空字符串赋值给函数返回值
-        //                    {
-        //                        return string.Empty;
-        //                    }
-
-        //                    if (lstTextsToRevise!.Count == 1) //如果修订文字列表的元素数为1，则将0号元素赋值给函数返回值
-        //                    {
-        //                        return lstTextsToRevise[0];
-        //                    }
-
-        //                    // 以0号元素中所有的中文句子为基准，逐句比较其他元素中的重复句
-
-        //                    //定义中文句子正则表达式变量，匹配模式为：非“。；;”字符任意多个，“。；;”
-        //                    Regex regExCnSentence = new Regex(@"[^。；;]*[。；;]");
-
-        //                    // 获取修订文字列表0号元素经过中文句子正则表达式匹配后的结果集合
-        //                    MatchCollection matchesSentences = regExCnSentence.Matches(lstTextsToRevise[0]);
-
-        //                    foreach (Match matchSentence in matchesSentences) //遍历所有中文句子正则表达式匹配的结果
-        //                    {
-        //                        int sameSentenceCount = 0;
-        //                        for (int i = 1; i < lstTextsToRevise.Count; i++) //遍历修订文字列表从1号（第2个）元素开始的所有元素
-        //                        {
-        //                            if (lstTextsToRevise[i].Contains(matchSentence.Value))  //如果修订文字列表当前元素含有当前中文句子（基准句）
-        //                            {
-        //                                lstTextsToRevise[i] = lstTextsToRevise[i].Replace(matchSentence.Value, ""); //将修订文字列表当前元素中的当前基准句替换为空（删除重复句）
-        //                                sameSentenceCount += 1; //相同中文句子计数加1
-        //                            }
-        //                        }
-
-        //                        //重新赋值给修订文字列表0号元素：如果相同中文句子计数小于修订文字列表元素数量减1（除0号元素外的其他元素并不都含有当前基准句），则得到将0号元素中的当前基准句替换为空后的字符串（删除非共有句）；否则得到0号元素原值
-        //                        lstTextsToRevise[0] = sameSentenceCount < lstTextsToRevise.Count - 1 ? lstTextsToRevise[0].Replace(matchSentence.Value, "") : lstTextsToRevise[0];
-        //                    }
-        //                    return string.Join("", lstTextsToRevise);  //合并修订文字列表的所有元素，赋值给函数返回值
-        //                }
-
-        //            }
-
-        //            if (lstSplitTextCount >= 2) // 如果拆分后文字列表的元素个数大于等于2个
-        //            {
-        //                int insertedRowsCount = lstSplitTextCount - 1; // 计算需要插入的行数：拆分后文字列表元素数-1
-        //                cell.Worksheet.InsertRow(cell.Start.Row + 1, insertedRowsCount); // 从被拆分单元格的下一个单元格开始，插入行
-        //            }
-
-        //            for (int i = 0; i < lstSplitTextCount; i++) //遍历拆分后文字列表的每个元素
-        //            {
-        //                cell.Offset(i, 0).Value = lstSplitTexts[i]; //将拆分后文字列表当前元素赋值给当前单元格向下偏移i行的单元格
-        //                cell.CopyStyles(cell.Offset(i, 0)); //将当前单元格的样式复制到当前单元格向下偏移i行的单元格
-        //                cell.Offset(i, 0).EntireRow.CustomHeight = false; // 当前单元格向下偏移i行的单元格所在行的手动设置行高设为false（即为自动）   
-        //            }
-        //        }
-        //    }
-        //    return contentsChanged; // 将“内容是否改变”变量值赋值给函数返回值
-        //}
 
 
         public static void CreateFolder(string targetFolderPath)
@@ -1552,9 +1381,9 @@ namespace COMIGHT
 
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                ShowExceptionMessage(ex);
+                throw;
             }
         }
 
