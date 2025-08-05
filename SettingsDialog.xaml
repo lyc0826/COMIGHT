@@ -112,7 +112,7 @@
                     
                 </Expander>
 
-                <Expander Header="English Document">
+                <!-- <Expander Header="English Document">
                     
                     <StackPanel Orientation="Vertical">
 
@@ -159,7 +159,7 @@
 
                     </StackPanel>
                     
-                </Expander>
+                </Expander> -->
 
                 <Expander Header="Misc.">
                     
