@@ -49,7 +49,6 @@ namespace COMIGHT
         public class AppSettings
         {
             public string SavingFolderPath { get; set; } = string.Empty;
-            // public string PandocPath { get; set; } = string.Empty;
             public string UserManualUrl { get; set; } = string.Empty;
             public string CnTitleFontName { get; set; } = string.Empty;
             public double CnTitleFontSize { get; set; }
@@ -109,7 +108,14 @@ namespace COMIGHT
             appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
             latestRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
 
-            CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+            try
+            {
+                CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+            }
+            catch (Exception ex)
+            {
+                Methods.ShowExceptionMessage(ex);
+            }
         }
 
         private void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
@@ -181,16 +187,6 @@ namespace COMIGHT
             this.Close();
         }
 
-        //private async void MnuExportDocumentTableIntoWord_Click(object sender, RoutedEventArgs e)
-        //{
-        //    await ExportDocumentTableIntoWordAsync();
-        //}
-
-        //private void MnuImportTextIntoDocumentTable_Click(object sender, RoutedEventArgs e)
-        //{
-        //    ImportTextIntoDocumentTable();
-        //}
-
         private void MnuHelp_Click(object sender, RoutedEventArgs e)
         {
             ShowHelpWindow();
@@ -216,11 +212,6 @@ namespace COMIGHT
             SettingsDialog settingDialog = new SettingsDialog();
             settingDialog.ShowDialog();
         }
-
-        //private async void MnuSystemInfo_Click(object sender, RoutedEventArgs e)
-        //{
-        //    await ShowSystemInfoAsync();
-        //}
 
         private void MnuBatchDisassembleAssembleExcelWorkbooks_Click(object sender, RoutedEventArgs e)
         {
@@ -1235,57 +1226,6 @@ namespace COMIGHT
             }
         }
 
-
-        //private void ConvertMarkdownIntoWord()
-        //{
-        //    try
-        //    {
-        //        InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
-        //        mdText = appSettings.KeepEmojisInMarkdown ? mdText : mdText.RemoveEmojis(); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
-
-        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-        //        List<string> lstParagraphs = mdText
-        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-        //        {
-        //            throw new Exception("No valid text found.");
-        //        }
-
-        //        string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-        //        // 获取目标文件主名：将段落列表0号元素（一般为标题）删除Markdown标记，截取前40个字符
-        //        string targetFileMainName = CleanFileAndFolderName(lstParagraphs[0].RemoveMarkdownMarks());
-
-        //        //导入目标Markdown文档
-        //        string targetMDFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.md"); //获取目标Markdown文档文件路径全名
-        //        File.WriteAllText(targetMDFilePath, mdText); //将导出文本框内的markdown文字导入目标Markdown文档
-
-        //        //将目标Markdown文档转换为目标Word文档
-        //        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径全名
-        //        ConvertDocumentByPandoc("docx", targetMDFilePath, targetWordFilePath); // 将目标Markdown文档转换为目标Word文档
-
-        //        File.Delete(targetMDFilePath); //删除Markdown文件
-
-        //        // 提取目标Word文档中的表格并转存为目标Excel文档
-        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径全名
-
-        //        ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
-
         public void BatchCreatePlaceCards()
         {
             try
@@ -1380,41 +1320,6 @@ namespace COMIGHT
             }
         }
 
-        //private void ImportTextIntoDocumentTable()
-        //{
-        //    try
-        //    {
-        //        InputDialog inputDialog = new InputDialog(question: "Input the text to be imported", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-        //        List<string> lstParagraphs = inputDialog.Answer
-        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-        //        {
-        //            throw new Exception("No valid text found!");
-        //        }
-
-        //        string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-
-        //        //获取目标结构化文档表文件路径全名（移除段落列表0号元素中不能作为文件名的字符，截取前40个字符，作为目标文件主名）
-        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName(lstParagraphs[0])}.xlsx");
-        //        ImportParagraphListIntoDocumentTable(lstParagraphs, targetExcelFilePath); //将段落列表内容导入目标结构化文档表
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-
-        //}
-
         private void BatchCreateFolders()
         {
             try
@@ -1473,29 +1378,6 @@ namespace COMIGHT
             }
 
         }
-
-        //public async Task ExportDocumentTableIntoWordAsync()
-        //{
-        //    try
-        //    {
-        //        List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Document Table File"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-        //        string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-
-        //        string targetWordFilePath = Path.Combine(targetFolderPath, $"{Path.GetFileNameWithoutExtension(filePaths[0])}.docx"); //获取目标Word文件路径全名
-        //        await ExportDocumentTableIntoWordAsyncHelper(filePaths[0], targetWordFilePath); //将结构化文档表导出为目标Word文档
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
 
         private void CreateFileList()
         {
@@ -1865,121 +1747,6 @@ namespace COMIGHT
             }
         }
 
-        //public async Task ShowSystemInfoAsync()
-        //{
-        //    try
-        //    {
-        //        HardwareInfo hardwareInfo = new HardwareInfo();
-
-        //        // 定义异步委托方法，用于刷新硬件信息
-        //        async Task RefreshHardwareInfoAsync()
-        //        {
-        //            await Task.Run(() => hardwareInfo.RefreshAll());
-        //        }
-        //        await taskManager.RunTaskAsync(RefreshHardwareInfoAsync);
-
-        //        // 创建 DataTable
-        //        DataTable systemInfoTable = new DataTable("System Information");
-        //        systemInfoTable.Columns.Add("Hardware Name", typeof(string));
-        //        systemInfoTable.Columns.Add("Hardware Info", typeof(string));
-
-        //        int i;
-
-        //        // 操作系统
-        //        systemInfoTable.Rows.Add($"Operating System", hardwareInfo.OperatingSystem.ToString());
-
-        //        // 计算机系统
-        //        i = 1;
-        //        foreach (var computerSystem in hardwareInfo.ComputerSystemList)
-        //        {
-        //            systemInfoTable.Rows.Add($"Computer System", computerSystem.ToString());
-        //        }
-
-        //        // BIOS
-        //        i = 1;
-        //        foreach (var bios in hardwareInfo.BiosList)
-        //        {
-        //            systemInfoTable.Rows.Add($"BIOS", bios.ToString());
-        //        }
-
-        //        // 主板
-        //        i = 1;
-        //        foreach (var motherboard in hardwareInfo.MotherboardList)
-        //        {
-        //            systemInfoTable.Rows.Add($"Motherboard", motherboard.ToString());
-        //        }
-
-        //        // CPU
-        //        i = 1;
-        //        foreach (var cpu in hardwareInfo.CpuList)
-        //        {
-        //            systemInfoTable.Rows.Add($"CPU {i++}", cpu.ToString());
-        //        }
-
-        //        // 内存
-        //        i = 1;
-        //        long totalMemCapacity = 0;
-        //        foreach (var memory in hardwareInfo.MemoryList)
-        //        {
-        //            systemInfoTable.Rows.Add($"Memory {i++}", memory.ToString());
-        //            totalMemCapacity += (long)(Convert.ToInt64(memory.Capacity) / Math.Pow(1024, 3));  // 将容量从Byte换算到GB
-        //        }
-        //        systemInfoTable.Rows.Add("Total Memory Capacity", $"{totalMemCapacity.ToString()} GB");
-
-        //        // 硬盘
-        //        i = 1;
-        //        foreach (var disk in hardwareInfo.DriveList)
-        //        {
-        //            long diskSize = (long)(Convert.ToInt64(disk.Size) / Math.Pow(1024, 3)); // 将硬盘容量转换为GB
-        //            string diskInfo = $"{disk.ToString()}\nDisk Size: {diskSize.ToString()} GB";
-        //            systemInfoTable.Rows.Add($"Disk {i++}", diskInfo);
-        //        }
-
-        //        // 视频控制器
-        //        i = 1;
-        //        foreach (var videoController in hardwareInfo.VideoControllerList)
-        //        {
-        //            systemInfoTable.Rows.Add($"Video Controller {i++}", videoController.ToString());
-        //        }
-
-        //        // 音频适配器
-        //        i = 1;
-        //        foreach (var soundDevice in hardwareInfo.SoundDeviceList)
-        //        {
-        //            systemInfoTable.Rows.Add($"Sound Device {i++}", soundDevice.ToString());
-        //        }
-
-        //        // 网络适配器
-        //        i = 1;
-        //        foreach (var networkAdapter in hardwareInfo.NetworkAdapterList)
-        //        {
-        //            List<string> lstIPAddressInfos = new List<string>();
-        //            foreach (var ipAddress in networkAdapter.IPAddressList)
-        //            {
-        //                lstIPAddressInfos.Add(ipAddress.ToString());
-        //            }
-        //            string ipAddressInfo = "IP Address: " + string.Join("; ", lstIPAddressInfos);
-        //            string networkAdapterInfo = $"{networkAdapter.ToString()}\n{ipAddressInfo}";
-        //            systemInfoTable.Rows.Add($"Network Adapter {i++}", networkAdapterInfo);
-        //        }
-
-        //        // 显示 DataTable
-        //        if (GetInstanceCountByHandle<DataGridWindow>() < 1) //如果被打开的浏览器窗口数量小于1个，则新建一个浏览器窗口实例并显示
-        //        {
-        //            DataGridWindow systemInfoWindow = new DataGridWindow("System Info", systemInfoTable);
-        //            systemInfoWindow.Show();
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
-
-
-
-
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             this.Top = 50.0;
@@ -2023,9 +1790,6 @@ namespace COMIGHT
             string result = inputDialog.Answer.RemoveMarkdownMarks();
             ShowMessage($"转换后的文字为：\n\n{result}");
         }
-
-
-
 
     }
 

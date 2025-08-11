@@ -36,8 +36,7 @@ namespace COMIGHT
             
             if (!createdNew) // 如果 createdNew 为 false，说明互斥量已经存在，即已有应用程序实例在运行
             {
-                MessageBox.Show("Application already running.", "Warning",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Application already running.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
                                 
                 ActivateExistingWindow(); // 调用方法尝试激活已存在的应用程序窗口
                 

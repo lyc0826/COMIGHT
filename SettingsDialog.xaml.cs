@@ -105,7 +105,15 @@ namespace COMIGHT
 
         private void SettingsDialog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+            try
+            {
+                CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
         }
 
     }
