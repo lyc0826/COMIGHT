@@ -159,7 +159,7 @@ namespace COMIGHT
                                         int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
 
                                         worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
-                                        excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表第一行单元格
+                                        excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表0号（第1）行单元格
 
                                         int excelRowIndex = 1; // 从Excel工作表1号（第2）行开始写入表格数据
                                         foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
@@ -831,7 +831,6 @@ namespace COMIGHT
             if (inText.Length == 0) return false; // 如果全文长度为0，则将false赋值给函数返回值
 
             int nonCnCharCount = Regex.Matches(inText, @"[^\u4e00-\u9fa5]").Count; //获取全文非中文字符数量
-            //int nonCnCharsCount = Regex.Matches(inText, @"[a-zA-Z| ]").Count; //获取全文非中文字符数量
             double nonCnCharsRatio = nonCnCharCount / inText.Length; // 计算非中文字符占全文的比例
             return nonCnCharsRatio < 0.5 ? true : false; //赋值给函数返回值：如果非中文字符比例小于0.5，得到true；否则，得到false
         }
