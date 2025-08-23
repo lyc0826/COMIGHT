@@ -45,29 +45,146 @@ namespace COMIGHT
         public static string settingsJsonFilePath = Path.Combine(appPath, "Settings.json"); //获取应用程序设置Json文件路径全名
         public static string recordsJsonFilePath = Path.Combine(appPath, "Records.json"); //获取用户使用记录Json文件路径全名
 
-        // 定义应用设置类
-        public class AppSettings
+        // 定义应用设置类，继承自 ObservableObject
+        public class AppSettings : ObservableObject
         {
-            public string SavingFolderPath { get; set; } = string.Empty;
-            public string UserManualUrl { get; set; } = string.Empty;
-            public string CnTitleFontName { get; set; } = string.Empty;
-            public double CnTitleFontSize { get; set; }
-            public string CnBodyFontName { get; set; } = string.Empty;
-            public double CnBodyFontSize { get; set; }
-            public string CnHeading0FontName { get; set; } = string.Empty;
-            public double CnHeading0FontSize { get; set; }
-            public string CnHeading1FontName { get; set; } = string.Empty;
-            public double CnHeading1FontSize { get; set; }
-            public string CnHeading2FontName { get; set; } = string.Empty;
-            public double CnHeading2FontSize { get; set; }
-            public string CnHeading3_4FontName { get; set; } = string.Empty;
-            public double CnHeading3_4FontSize { get; set; }
-            public double CnLineSpace { get; set; }
-            public string WorksheetFontName { get; set; } = string.Empty;
-            public double WorksheetFontSize { get; set; }
-            public string NameCardFontName { get; set; } = string.Empty;
-            public bool KeepEmojisInMarkdown { get; set; } = false;
+            // 为每个属性创建私有后备字段
+            private string _savingFolderPath = string.Empty;
+            private string _userManualUrl = string.Empty;
+            private string _cnTitleFontName = string.Empty;
+            private double _cnTitleFontSize;
+            private string _cnBodyFontName = string.Empty;
+            private double _cnBodyFontSize;
+            private string _cnHeading0FontName = string.Empty;
+            private double _cnHeading0FontSize;
+            private string _cnHeading1FontName = string.Empty;
+            private double _cnHeading1FontSize;
+            private string _cnHeading2FontName = string.Empty;
+            private double _cnHeading2FontSize;
+            private string _cnHeading3_4FontName = string.Empty;
+            private double _cnHeading3_4FontSize;
+            private double _cnLineSpace;
+            private string _worksheetFontName = string.Empty;
+            private double _worksheetFontSize;
+            private string _nameCardFontName = string.Empty;
+            private bool _keepEmojisInMarkdown = false;
+
+            // 修改所有属性，使用 SetProperty 来更新字段并触发通知
+            public string SavingFolderPath
+            {
+                get => _savingFolderPath;
+                set => SetProperty(ref _savingFolderPath, value);
+            }
+
+            public string UserManualUrl
+            {
+                get => _userManualUrl;
+                set => SetProperty(ref _userManualUrl, value);
+            }
+
+            public string CnTitleFontName
+            {
+                get => _cnTitleFontName;
+                set => SetProperty(ref _cnTitleFontName, value);
+            }
+
+            public double CnTitleFontSize
+            {
+                get => _cnTitleFontSize;
+                set => SetProperty(ref _cnTitleFontSize, value);
+            }
+
+            public string CnBodyFontName
+            {
+                get => _cnBodyFontName;
+                set => SetProperty(ref _cnBodyFontName, value);
+            }
+
+            public double CnBodyFontSize
+            {
+                get => _cnBodyFontSize;
+                set => SetProperty(ref _cnBodyFontSize, value);
+            }
+
+            public string CnHeading0FontName
+            {
+                get => _cnHeading0FontName;
+                set => SetProperty(ref _cnHeading0FontName, value);
+            }
+
+            public double CnHeading0FontSize
+            {
+                get => _cnHeading0FontSize;
+                set => SetProperty(ref _cnHeading0FontSize, value);
+            }
+
+            public string CnHeading1FontName
+            {
+                get => _cnHeading1FontName;
+                set => SetProperty(ref _cnHeading1FontName, value);
+            }
+
+            public double CnHeading1FontSize
+            {
+                get => _cnHeading1FontSize;
+                set => SetProperty(ref _cnHeading1FontSize, value);
+            }
+
+            public string CnHeading2FontName
+            {
+                get => _cnHeading2FontName;
+                set => SetProperty(ref _cnHeading2FontName, value);
+            }
+
+            public double CnHeading2FontSize
+            {
+                get => _cnHeading2FontSize;
+                set => SetProperty(ref _cnHeading2FontSize, value);
+            }
+
+            public string CnHeading3_4FontName
+            {
+                get => _cnHeading3_4FontName;
+                set => SetProperty(ref _cnHeading3_4FontName, value);
+            }
+
+            public double CnHeading3_4FontSize
+            {
+                get => _cnHeading3_4FontSize;
+                set => SetProperty(ref _cnHeading3_4FontSize, value);
+            }
+
+            public double CnLineSpace
+            {
+                get => _cnLineSpace;
+                set => SetProperty(ref _cnLineSpace, value);
+            }
+
+            public string WorksheetFontName
+            {
+                get => _worksheetFontName;
+                set => SetProperty(ref _worksheetFontName, value);
+            }
+
+            public double WorksheetFontSize
+            {
+                get => _worksheetFontSize;
+                set => SetProperty(ref _worksheetFontSize, value);
+            }
+
+            public string NameCardFontName
+            {
+                get => _nameCardFontName;
+                set => SetProperty(ref _nameCardFontName, value);
+            }
+
+            public bool KeepEmojisInMarkdown
+            {
+                get => _keepEmojisInMarkdown;
+                set => SetProperty(ref _keepEmojisInMarkdown, value);
+            }
         }
+
 
         //定义用户使用记录类
         public class LatestRecords
@@ -114,7 +231,7 @@ namespace COMIGHT
             }
             catch (Exception ex)
             {
-                Methods.ShowExceptionMessage(ex);
+                ShowExceptionMessage(ex);
             }
         }
 
