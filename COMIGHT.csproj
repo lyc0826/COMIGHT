@@ -73,12 +73,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocSharp.Binary.Doc" Version="0.11.0" />
-    <PackageReference Include="DocSharp.Binary.Xls" Version="0.11.0" />
-    <PackageReference Include="DocSharp.Common" Version="0.11.0" />
-    <PackageReference Include="DocSharp.Docx" Version="0.11.0" />
-    <PackageReference Include="DocSharp.Markdown" Version="0.11.0" />
-    <PackageReference Include="EPPlus" Version="8.0.8" />
+    <PackageReference Include="DocSharp.Binary.Doc" Version="0.12.0" />
+    <PackageReference Include="DocSharp.Binary.Xls" Version="0.12.0" />
+    <PackageReference Include="DocSharp.Common" Version="0.12.0" />
+    <PackageReference Include="DocSharp.Docx" Version="0.12.0" />
+    <PackageReference Include="DocSharp.Markdown" Version="0.12.0" />
+    <PackageReference Include="EPPlus" Version="8.1.0" />
     <PackageReference Include="GEmojiSharp" Version="4.0.0" />
     <PackageReference Include="itext" Version="9.2.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.2.0" />
