@@ -31,6 +31,82 @@ namespace COMIGHT
 
                 try
                 {
+
+                    // 定义页边距、行距、字体、字号等的值
+
+                    double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
+                    double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
+                    double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
+                    double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
+                    float lineSpace = (float)appSettings.CnLineSpace; // 行间距
+
+                    string titleFontName = appSettings.CnTitleFontName; // 大标题字体
+                    string bodyFontName = appSettings.CnBodyFontName; // 正文字体
+
+                    string cnHeading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
+                    string cnHeading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
+                    string cnHeading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
+                    string cnHeading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
+                    string cnItemNumFontName = cnHeading1FontName; // 中文条款项小标题字体
+
+                    string tableTitleFontName = cnHeading1FontName; // 表格标题字体
+                    string tableBodyFontName = bodyFontName; // 表格正文字体
+
+                    string footerFontName = "Times New Roman"; // 页脚字体
+
+                    float titleFontSize = (float)appSettings.CnTitleFontSize; // 大标题字号
+                    float bodyFontSize = (float)appSettings.CnBodyFontSize; // 正文字号
+
+                    float cnHeading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
+                    float cnHeading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
+                    float cnHeading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
+                    float cnHeading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
+                    float cnItemNumFontSize = cnHeading1FontSize; // 中文条款项小标题字号
+
+                    float tableTitleFontSize = cnHeading1FontSize; // 表格标题字号
+                    float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
+
+                    float footerFontSize = 14; // 页脚字号为四号
+
+
+                    // 定义正则表达式
+
+                    // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-150个，换行符回车符，后方出现：换行符回车符
+                    Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,150}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+                    // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
+                    Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
+
+                    // 定义中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。；;”分页符换行符回车符的字符0-40个，换行符回车符
+                    Regex regExCnHeading0 = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[^。；;\f\n\r]{0,40}[\n\r]", RegexOptions.Multiline);
+
+                    // 定义中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
+                    Regex regExCnHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
+
+                    // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
+                    Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
+
+                    // 定义中文“X是”编号正则表达式变量，匹配模式为：前方出现换行符回车符“。：:；;，,”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”；后方出现非分页符换行符回车符的字符1个及以上
+                    Regex regExCnShiNum = new Regex(@"(?<=[\n\r。：:；;，,][ |\t]*)[一二三四五六七八九十〇零]+[ |\t]*是(?=[^\f\n\r]{1,})", RegexOptions.Multiline);
+
+                    // 定义中文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
+                    Regex regExCnItemNum = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[条款项][：:| |\t]", RegexOptions.Multiline); // 将正则匹配模式设为条款项编号
+
+                    // 定义清单数字编号列表，包含1、2、3、4级编号匹配模式
+                    List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", @"\d+[ |\t]*[、\.，,）\)]", @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]" };
+
+                    // 定义中文附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”，非“。”分页符换行符回车符的字符0-3个，换行符回车符
+                    Regex regExCnAppendix = new Regex(@"(?<=^|\n|\r)附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r]", RegexOptions.Multiline);
+
+                    // 定义括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
+                    Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
+
+                    // 定义中文落款字符串变量，匹配模式为：签名至少1个，最后为日期
+                    Regex regExSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
+
+                    
+                    // 批量处理Word文档
+
                     foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
                     {
                         msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给Word文档变量
@@ -47,45 +123,6 @@ namespace COMIGHT
                         msWordDocument.ShowRevisions = false;
 
                         string documentText = msWordDocument.Content.Text; // 全文文字变量赋值
-
-                        // 根据是否为中文文档，设置Word文档正文、小标题、表格等的样式
-
-                        // 定义页边距、行距、字体、字号等的值
-
-                        double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
-                        double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
-                        double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
-                        double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
-                        float lineSpace = (float)appSettings.CnLineSpace; // 行间距
-
-                        string titleFontName = appSettings.CnTitleFontName; // 大标题字体
-                        string bodyFontName = appSettings.CnBodyFontName; // 正文字体
-
-                        string cnHeading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
-                        string cnHeading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
-                        string cnHeading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
-                        string cnHeading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
-                        string cnItemNumFontName = cnHeading1FontName; // 中文条款项小标题字体
-
-                        string tableTitleFontName = cnHeading1FontName; // 表格标题字体
-                        string tableBodyFontName = bodyFontName; // 表格正文字体
-
-                        string footerFontName = "Times New Roman"; // 页脚字体
-
-                        float titleFontSize = (float)appSettings.CnTitleFontSize; // 大标题字号
-                        float bodyFontSize = (float)appSettings.CnBodyFontSize; // 正文字号
-
-                        float cnHeading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
-                        float cnHeading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
-                        float cnHeading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
-                        float cnHeading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
-                        float cnItemNumFontSize = cnHeading1FontSize; // 中文条款项小标题字号
-
-                        float tableTitleFontSize = cnHeading1FontSize; // 表格标题字号
-                        float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
-
-                        float footerFontSize = 14; // 页脚字号为四号
-
 
                         // 清除原文格式，替换空格、换行符等
 
@@ -139,7 +176,7 @@ namespace COMIGHT
                                 // 自动编号正则表达式匹配模式设为：中文数字、阿拉伯数字；如果自动编号被匹配成功
                                 if (Regex.IsMatch(paragraph.Range.ListFormat.ListString, @"[一二三四五六七八九十〇零\d]"))
                                 {
-                                    paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + " "); // 在段落文字前添加自动编号（如果不是中文文档，在编号后再加上一个空格）
+                                    paragraph.Range.InsertBefore(paragraph.Range.ListFormat.ListString + " "); // 在段落文字前添加自动编号和一个空格
                                 }
                             }
                         }
@@ -202,14 +239,9 @@ namespace COMIGHT
 
                         documentText = msWordDocument.Content.Text; // 全文文字变量重赋值（前期对文档进行过处理，内容可能已经改变）
 
+
                         // 文档大标题设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-150个，换行符回车符，后方出现：换行符回车符
-                        Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,150}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-                        // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
-                        Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
 
                         int referencePageNum = 0; //参考页码赋值为0
                         MatchCollection matchesTitles = regExTitle.Matches(documentText); // 获取全文文字经过大标题正则表达式匹配后的结果
@@ -276,9 +308,7 @@ namespace COMIGHT
 
                         // 中文0级（部分、篇、章、节）小标题设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。；;”分页符换行符回车符的字符0-40个，换行符回车符
-                        Regex regExCnHeading0 = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[^。；;\f\n\r]{0,40}[\n\r]", RegexOptions.Multiline);
+                        
                         MatchCollection matchesCnHeading0s = regExCnHeading0.Matches(documentText); // 获取全文文字经过中文0级小标题正则表达式匹配的结果
 
                         foreach (Match matchCnHeading0 in matchesCnHeading0s)
@@ -300,9 +330,7 @@ namespace COMIGHT
 
                         // 中文1、2级小标题设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
-                        Regex regExCnHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
+                        
                         MatchCollection matchesCnHeading1_2s = regExCnHeading1_2.Matches(documentText); // 获取全文文字经过中文1、2级小标题正则表达式匹配的结果
 
                         foreach (Match matchCnHeading1_2 in matchesCnHeading1_2s)
@@ -331,9 +359,7 @@ namespace COMIGHT
 
                         // 中文3、4级小标题设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
-                        Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
+                        
                         MatchCollection matchesCnHeading3_4s = regExCnHeading3_4.Matches(documentText); // 获取全文文字经过中文3、4级小标题正则表达式匹配的结果
 
                         foreach (Match matchCnHeading3_4 in matchesCnHeading3_4s)
@@ -354,9 +380,7 @@ namespace COMIGHT
 
                         // 中文“X是”编号设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义中文“X是”编号正则表达式变量，匹配模式为：前方出现换行符回车符“。：:；;，,”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”；后方出现非分页符换行符回车符的字符1个及以上
-                        Regex regExCnShiNum = new Regex(@"(?<=[\n\r。：:；;，,][ |\t]*)[一二三四五六七八九十〇零]+[ |\t]*是(?=[^\f\n\r]{1,})", RegexOptions.Multiline);
+                        
                         MatchCollection matchesCnShiNums = regExCnShiNum.Matches(documentText); // 获取全文文字经过“X是”编号正则表达式匹配的结果
 
                         foreach (Match matchCnShiNum in matchesCnShiNums)
@@ -369,9 +393,7 @@ namespace COMIGHT
 
                         // 中文“条款项”编号设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义中文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
-                        Regex regExCnItemNum = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[条款项][：:| |\t]", RegexOptions.Multiline); // 将正则匹配模式设为条款项编号
+                        
                         MatchCollection matchesCnItemNums = regExCnItemNum.Matches(documentText); // 获取全文文字经过条款项编号正则表达式匹配的结果
 
                         foreach (Match matchCnItemNum in matchesCnItemNums)
@@ -385,13 +407,6 @@ namespace COMIGHT
                         }
 
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
-
-                        // 定义清单数字编号正则表达式列表变量
-                        List<string> listNums;
-
-                        listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]",
-                                @"\d+[ |\t]*[、\.，,）\)]", @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]" };
-
 
                         foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
                         {
@@ -431,9 +446,7 @@ namespace COMIGHT
 
                         // 中文附件注释设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义中文附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”，非“。”分页符换行符回车符的字符0-3个，换行符回车符
-                        Regex regExCnAppendix = new Regex(@"(?<=^|\n|\r)附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r]", RegexOptions.Multiline);
+                        
                         MatchCollection matchesCnAppendixes = regExCnAppendix.Matches(documentText); // 获取全文文字经过附件注释正则表达式匹配的结果
 
                         foreach (Match matchCnAppendix in matchesCnAppendixes)
@@ -529,9 +542,7 @@ namespace COMIGHT
 
                         // 括号注释设置
                         selection.HomeKey(WdUnits.wdStory);
-
-                        // 定义括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
-                        Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
+                        
                         MatchCollection matchesBrakets = regExBracket.Matches(documentText); // 获取全文文字经过括号注释正则表达式匹配的结果
 
                         foreach (Match matchBraket in matchesBrakets)
@@ -551,9 +562,6 @@ namespace COMIGHT
                         // 落款设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        // 定义中文落款字符串变量，匹配模式为：签名至少1个，最后为日期
-                        
-                        Regex regExSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
                         MatchCollection matchesSignOffs = regExSignOff.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
 
                         foreach (Match matchSignOff in matchesSignOffs)
