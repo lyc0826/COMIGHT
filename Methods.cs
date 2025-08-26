@@ -780,7 +780,7 @@ namespace COMIGHT
 
         }
 
-        public static int SelectFunction(List<string> options, object objRecords, string propertyName)
+        public static int SelectFunction(List<string> lstOptions, object objRecords, string propertyName)
         {
             Type type = objRecords.GetType(); // 获取用户使用记录对象类型
             PropertyInfo? property = type.GetProperty(propertyName); // 获取对象的指定属性
@@ -790,20 +790,21 @@ namespace COMIGHT
             }
 
             object value = property.GetValue(objRecords) ?? ""; //  获取对象指定属性的值
-            string latestBatchProcessWorkbookOption = (string)value; //将指定属性的值转换成字符串
+            string latestOption = (string)value; //将指定属性的值转换成字符串
 
-            InputDialog inputDialog = new InputDialog(question: "Select the Function", options: options, defaultAnswer: latestBatchProcessWorkbookOption); //弹出功能选择对话框
+            InputDialog inputDialog = new InputDialog(question: "Select the Function", options: lstOptions, defaultAnswer: latestOption); //弹出功能选择对话框
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则将-1赋值给函数返回值
             {
                 return -1;
             }
-            string batchProcessWorkbookOption = inputDialog.Answer;
+
+            string selectedOption = inputDialog.Answer;
             if (property!.CanWrite) //  如果对象属性可写
             {
-                property.SetValue(objRecords, batchProcessWorkbookOption); //将对话框返回的功能选项字符串赋值给用户使用记录对象指定属性
+                property.SetValue(objRecords, selectedOption); //将对话框返回的功能选项字符串赋值给用户使用记录对象指定属性
             }
 
-            int functionNum = options.Contains(batchProcessWorkbookOption) ? options.IndexOf(batchProcessWorkbookOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
+            int functionNum = lstOptions.Contains(selectedOption) ? lstOptions.IndexOf(selectedOption) : -1; //获取对话框返回的功能选项在功能列表中的索引号：如果功能列表包含功能选项，则得到对应的索引号；否则，得到-1
             return functionNum; // 将功能选项索引号赋值给函数返回值
         }
 
