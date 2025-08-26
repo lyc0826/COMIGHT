@@ -59,7 +59,7 @@
                 <MenuItem Header="Table">
                     
                     <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuBatchDisassembleAssembleExcelWorkbook" Header= "Batch Disassemble/Assemble Excel Workbook" Click="MnuBatchDisassembleAssembleExcelWorkbooks_Click" />
+                    <MenuItem x:Name="mnuBatchDisassembleExcelWorkbook" Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
                     
                     <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />

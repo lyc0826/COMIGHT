@@ -330,7 +330,7 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
-        private void MnuBatchDisassembleAssembleExcelWorkbooks_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchDisassembleExcelWorkbooks_Click(object sender, RoutedEventArgs e)
         {
             BatchDisassembleExcelWorkbooks();
         }
@@ -703,10 +703,11 @@ namespace COMIGHT
                     return;
                 }
 
-                // 定义Excel工作簿索引范围、表头表尾行数、列符号变量（初始值均为“非法”数值）
+                // 定义Excel工作簿索引范围、表头表尾行数、列符号变量（初始值均为非法数值或空）
                 int excelWorksheetStartIndex = -1; int excelWorksheetEndIndex = -1;
                 int headerRowCount = -1; int footerRowCount = -1;
                 string? columnLetter = null;
+                bool createDataDict = false; // 定义“创建数据字典”变量，初始值为false
 
                 (excelWorksheetStartIndex, excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
                 if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
@@ -730,23 +731,18 @@ namespace COMIGHT
                         {
                             return;
                         }
+                        
+                        createDataDict = true; // “是否创建数据字典”赋值为True
+                        
+                        break;
 
+                    default:
+                        createDataDict = false; // “是否创建数据字典”赋值为False
+                        
                         break;
                 }
 
-                bool createDataDict = true; // 定义“是否创建数据字典”变量（默认赋值为True）
                 Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义数据字典（保存按列拆分的数据）
-
-                bool createFolderForEachWorkbook = true; // 定义“是否为每个工作簿创建一个文件夹”变量（默认赋值为true）
-
-                // 根据功能选项，给“是否创建数据字典”和“是否创建数据字典”变量赋值
-                (createDataDict, createFolderForEachWorkbook) = functionNum switch
-                {
-                    1 => (true, true), // 按列拆分为Excel工作簿
-                    2 => (true, true),  // 按列拆分为Excel工作表
-                    3 => (false, true), // 拆分工作表到独立工作簿
-                    _ => (false, false)
-                };
 
                 string targetFolderPath = appSettings.SavingFolderPath; // 获取保存文件夹路径
 
@@ -759,12 +755,9 @@ namespace COMIGHT
 
                     string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePath); //获取当前Excel工作簿文件主名
 
-                    if (createFolderForEachWorkbook) //  如果要为每个工作簿创建一个独立文件夹
-                    {
-                        // 创建目标文件夹（为每个工作簿创建一个独立文件夹）
-                        targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
-                        CreateFolder(targetFolderPath);
-                    }
+                    // 创建目标文件夹（为每个工作簿创建一个独立文件夹）
+                    targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
+                    CreateFolder(targetFolderPath);
 
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) // 打开当前Excel工作簿，赋值给Excel包变量
                     {
