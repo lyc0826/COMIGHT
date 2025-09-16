@@ -796,6 +796,7 @@ namespace COMIGHT
 
         public static int SelectFunction(List<string> lstOptions, object objRecords, string propertyName)
         {
+            // 使用反射方法获取对象属性值
             Type type = objRecords.GetType(); // 获取用户使用记录对象类型
             PropertyInfo? property = type.GetProperty(propertyName); // 获取对象的指定属性
             if (property == null) // 如果对象属性为空，则将-1赋值给函数返回值
@@ -813,6 +814,8 @@ namespace COMIGHT
             }
 
             string selectedOption = inputDialog.Answer;
+            
+            // 使用反射方法设置对象属性值
             if (property!.CanWrite) //  如果对象属性可写
             {
                 property.SetValue(objRecords, selectedOption); //将对话框返回的功能选项字符串赋值给用户使用记录对象指定属性
