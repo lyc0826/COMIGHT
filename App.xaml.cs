@@ -1,30 +1,31 @@
-﻿//using System.Configuration;
-//using System.Data;
-//using System.Windows;
-
-//namespace COMIGHT
-//{
-//    /// <summary>
-//    /// Interaction logic for App.xaml
-//    /// </summary>
-//    public partial class App : Application
-//    {
-
-//    }
-
-//}
-
-using System.Windows;
+﻿using System.Windows;
 
 // 定义应用程序命名空间
 namespace COMIGHT
 {
+
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    
     public partial class App : Application
     {
         
         private static Mutex? _mutex = null;  // 声明静态私有字段，用于存储互斥量对象，初始化为 null
         private const string MutexName = "COMIGHT"; // 声明常量字符串，作为互斥量的唯一标识符，需要在系统范围内唯一
-        
+
+        // 使用 P/Invoke 导入 Windows API 函数 ShowWindow，用于控制窗口的显示状态
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        // 使用 P/Invoke 导入 Windows API 函数 SetForegroundWindow，用于将指定窗口带到前台并激活它
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        // 定义常量，表示恢复窗口的命令值，SW_RESTORE = 9：激活并显示窗口，如果窗口被最小化或最大化，则恢复到原来的尺寸和位置
+        private const int SW_RESTORE = 9;
+
+
         // 重写 Application 类的 OnStartup 方法，在应用程序启动时调用
         protected override void OnStartup(StartupEventArgs e) 
         {
@@ -36,8 +37,6 @@ namespace COMIGHT
             
             if (!createdNew) // 如果 createdNew 为 false，说明互斥量已经存在，即已有应用程序实例在运行
             {
-                //MessageBox.Show("Application already running.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
-                                
                 ActivateExistingWindow(); // 调用方法尝试激活已存在的应用程序窗口
                 
                 Current.Shutdown(); // 关闭当前应用程序实例
@@ -50,9 +49,9 @@ namespace COMIGHT
         // 重写 Application 类的 OnExit 方法，在应用程序退出时调用
         protected override void OnExit(ExitEventArgs e)
         { 
-            _mutex?.ReleaseMutex(); // 使用空条件运算符，如果 _mutex 不为 null，则释放互斥量的所有权
+            _mutex?.ReleaseMutex(); // 如果 _mutex 不为 null，则释放互斥量的所有权
             
-            _mutex?.Dispose(); // 使用空条件运算符，如果 _mutex 不为 null，则释放互斥量占用的系统资源
+            _mutex?.Dispose(); // 如果 _mutex 不为 null，则释放互斥量占用的系统资源
             
             base.OnExit(e); // 调用基类的 OnExit 方法，执行正常的应用程序退出流程
         }
@@ -68,9 +67,6 @@ namespace COMIGHT
             // 遍历所有同名进程
             foreach (var process in processes)
             {
-                // 检查两个条件：
-                // 1. 进程ID不等于当前进程ID（排除自身）
-                // 2. 进程有主窗口句柄（IntPtr.Zero 表示空句柄）
                 // 如果进程ID不等于当前进程ID（排除自身）且进程有主窗口句柄（IntPtr.Zero表示空句柄）
                 if (process.Id != current.Id && process.MainWindowHandle != IntPtr.Zero)
                 {
@@ -83,16 +79,6 @@ namespace COMIGHT
                 }
             }
         }
-
-        // 使用 P/Invoke 导入 Windows API 函数 ShowWindow，用于控制窗口的显示状态
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        // 使用 P/Invoke 导入 Windows API 函数 SetForegroundWindow，用于将指定窗口带到前台并激活它
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        // 定义常量，表示恢复窗口的命令值，SW_RESTORE = 9：激活并显示窗口，如果窗口被最小化或最大化，则恢复到原来的尺寸和位置
-        private const int SW_RESTORE = 9;
+     
     }
 }
