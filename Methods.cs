@@ -1,5 +1,4 @@
-﻿using GEmojiSharp;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -718,11 +717,6 @@ namespace COMIGHT
 
         }
 
-        //public static string RemoveEmojis(this string text)
-        //{
-        //    return Regex.Replace(text, Emoji.RegexPattern, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
-        //}
-        
         // 定义Emoji正则表达式字符串
         static string emojiRegEx = @"\p{So}" + //"Symbol, Other" 的所有字符，涵盖了绝大多数BMP平面内的符号。
                 @"|[\uD800-\uDBFF][\uDC00-\uDFFF]" + //匹配补充平面的主要Emoji范围，包括表情、交通、国旗、卡牌等。
@@ -733,7 +727,7 @@ namespace COMIGHT
 
         public static string RemoveEmojis(this string text)
         {
-          
+
             return regExEmoji.Replace(text, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
         }
 
@@ -814,7 +808,7 @@ namespace COMIGHT
             }
 
             string selectedOption = inputDialog.Answer;
-            
+
             // 使用反射方法设置对象属性值
             if (property!.CanWrite) //  如果对象属性可写
             {

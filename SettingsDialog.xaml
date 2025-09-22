@@ -188,6 +188,7 @@
 
                         <Separator Margin="0,5,0,5" />
 
+                        <Label Content="User Profile" />
                         <StackPanel Orientation="Horizontal">
                             <RadioButton Content="Profile 1" IsChecked="{Binding Path=UserProfile, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter='Profile1', Mode=TwoWay}"/>
                             <RadioButton Content="Profile 2" IsChecked="{Binding Path=UserProfile, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter='Profile2', Mode=TwoWay}"/>

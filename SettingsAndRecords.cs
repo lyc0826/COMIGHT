@@ -148,6 +148,7 @@ namespace COMIGHT
         }
     }
 
+    // 定义用户配置枚举
     public enum EnumUserProfile
     {
         Profile1,
