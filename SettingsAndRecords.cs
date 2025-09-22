@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace COMIGHT
 {
     // 定义应用设置类，继承自 ObservableObject
@@ -25,6 +23,8 @@ namespace COMIGHT
         private double _worksheetFontSize;
         private string _nameCardFontName = string.Empty;
         private bool _keepEmojisInMarkdown = false;
+        private EnumUserProfile _userProfile = EnumUserProfile.Profile1;
+
 
         // 定义所有属性，如果属性变化，使用 SetProperty 来更新字段并触发通知
         public string SavingFolderPath
@@ -140,6 +140,19 @@ namespace COMIGHT
             get => _keepEmojisInMarkdown;
             set => SetProperty(ref _keepEmojisInMarkdown, value);
         }
+
+        public EnumUserProfile UserProfile 
+        {
+            get => _userProfile;
+            set => SetProperty(ref _userProfile, value);
+        }
+    }
+
+    public enum EnumUserProfile
+    {
+        Profile1,
+        Profile2,
+        Profile3
     }
 
     //定义用户使用记录类

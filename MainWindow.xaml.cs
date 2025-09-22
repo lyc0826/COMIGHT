@@ -182,7 +182,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
                 
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
@@ -218,29 +218,7 @@ namespace COMIGHT
                             using (SpreadsheetDocument xlsx = SpreadsheetDocument.Create(targetFilePath, outputType)) //  创建xlsx目标文件
                             {
                                 DocSharpSpreadsheetMapping.Converter.Convert(xls, xlsx); // 将xls文件转换为xlsx文件
-                            }
-
-                            //// 用EPPlus库将转换后的工作簿的每一张工作表复制到新工作簿中，并保存覆盖原工作簿（此过程用来修正DocSharp转换时的错误）
-                            //using (ExcelPackage xlsPackage = new ExcelPackage(new FileInfo(targetFilePath)))
-                            //using (ExcelPackage xlsxPackage = new ExcelPackage())
-                            //{
-                            //    // 获取源工作簿
-                            //    ExcelWorkbook xlsWorkbook = xlsPackage.Workbook; // 定义源工作簿对象
-                            //    // 获取目标工作簿
-                            //    ExcelWorkbook xlsxWorkbook = xlsxPackage.Workbook; // 定义目标工作簿对象
-                            //    foreach (ExcelWorksheet xlsWorksheet in xlsWorkbook.Worksheets) // 遍历源工作簿中的每一张工作表
-                            //    {
-                            //        if (xlsWorksheet == null) //  如果当前工作表为空，则直接跳过进入下一个工作表
-                            //        {
-                            //            continue;
-                            //        }
-                            //        // 使用 Copy 方法将工作表复制到目标工作簿
-                            //        xlsxWorkbook.Worksheets.Add(xlsWorksheet.Name, xlsWorksheet); // 将当前工作表复制到目标工作簿
-                            //    }
-
-                            //    // 保存目标工作簿，覆盖原文件
-                            //    xlsxPackage.SaveAs(targetFilePath);
-                            //}
+                            } 
                         }
                     }
 
@@ -275,7 +253,7 @@ namespace COMIGHT
         }
 
         // 定义批量拆分工作簿功能选项枚举
-        public enum enumDissambleWorkbooksFunction
+        public enum EnumDissambleWorkbooksFunction
         {
             Cancel = 0,
             SplitByColumnIntoWorkbooks = 1,
@@ -297,9 +275,9 @@ namespace COMIGHT
                     return;
                 }
 
-                enumDissambleWorkbooksFunction function = (enumDissambleWorkbooksFunction)functionNum; // 将功能选项枚举的整数值转换为枚举值
+                EnumDissambleWorkbooksFunction function = (EnumDissambleWorkbooksFunction)functionNum; // 将功能选项枚举的整数值转换为枚举值
 
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select the Excel Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Excel, true, "Select the Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -319,8 +297,8 @@ namespace COMIGHT
 
                 switch (function) // 根据功能选项进入相应分支
                 {
-                    case enumDissambleWorkbooksFunction.SplitByColumnIntoWorkbooks: // 按列拆分为Excel工作簿
-                    case enumDissambleWorkbooksFunction.SplitByColumnIntoWorksheets: // 按列拆分为Excel工作表
+                    case EnumDissambleWorkbooksFunction.SplitByColumnIntoWorkbooks: // 按列拆分为Excel工作簿
+                    case EnumDissambleWorkbooksFunction.SplitByColumnIntoWorksheets: // 按列拆分为Excel工作表
 
                         (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
                         if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
@@ -401,7 +379,7 @@ namespace COMIGHT
 
                             switch (function) //根据功能序号进入相应的分支
                             {
-                                case enumDissambleWorkbooksFunction.SplitByColumnIntoWorkbooks: //按列拆分为Excel工作簿
+                                case EnumDissambleWorkbooksFunction.SplitByColumnIntoWorkbooks: //按列拆分为Excel工作簿
 
                                     foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
                                     {
@@ -435,7 +413,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case enumDissambleWorkbooksFunction.SplitByColumnIntoWorksheets:  //按列拆分为Excel工作表
+                                case EnumDissambleWorkbooksFunction.SplitByColumnIntoWorksheets:  //按列拆分为Excel工作表
 
                                     using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
                                     {
@@ -473,7 +451,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case enumDissambleWorkbooksFunction.DissembleByWorksheets: // 拆分工作表到独立工作簿
+                                case EnumDissambleWorkbooksFunction.DissembleByWorksheets: // 拆分工作表到独立工作簿
 
                                     using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
                                     {
@@ -514,7 +492,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Word, true, "Select Word Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Word, true, "Select Word Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -544,7 +522,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Word, true, "Select Word Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Word, true, "Select Word Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -565,7 +543,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Word, true, "Select Word Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Word, true, "Select Word Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -586,7 +564,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Excel, true, "Select Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -623,7 +601,7 @@ namespace COMIGHT
         }
 
         // 定义批处理工作表功能选项枚举
-        private enum enumProcessWorksheetsFunctions
+        private enum EnumProcessWorksheetsFunctions
         {
             Cancel = 0,
             MergeRecords = 1,
@@ -650,10 +628,10 @@ namespace COMIGHT
                     return;
                 }
 
-                enumProcessWorksheetsFunctions function = (enumProcessWorksheetsFunctions)functionNum; // 将功能选项枚举的整数值转换为枚举值
+                EnumProcessWorksheetsFunctions function = (EnumProcessWorksheetsFunctions)functionNum; // 将功能选项枚举的整数值转换为枚举值
 
                 //获取所选文件列表
-                List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files");
+                List<string>? filePaths = SelectFiles(EnumFileType.Excel, true, "Select Excel Files");
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -672,8 +650,8 @@ namespace COMIGHT
 
                 switch (function) //根据功能序号进入相应的分支
                 {
-                    case enumProcessWorksheetsFunctions.MergeRecords: //记录合并
-                    case enumProcessWorksheetsFunctions.AdjustForPrinting: //调整工作表打印版式
+                    case EnumProcessWorksheetsFunctions.MergeRecords: //记录合并
+                    case EnumProcessWorksheetsFunctions.AdjustForPrinting: //调整工作表打印版式
                         (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
                         if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
                         {
@@ -682,10 +660,10 @@ namespace COMIGHT
 
                         break;
 
-                    case enumProcessWorksheetsFunctions.AccumulateValues:
-                    case  enumProcessWorksheetsFunctions.ExtractCellData:
-                    case  enumProcessWorksheetsFunctions.ConvertTextualNumbers:
-                    case  enumProcessWorksheetsFunctions.CopyFormula: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
+                    case EnumProcessWorksheetsFunctions.AccumulateValues:
+                    case EnumProcessWorksheetsFunctions.ExtractCellData:
+                    case EnumProcessWorksheetsFunctions.ConvertTextualNumbers:
+                    case EnumProcessWorksheetsFunctions.CopyFormula: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
                         lstOperatingRangeAddresses = GetWorksheetOperatingRangeAddresses();
                         if (lstOperatingRangeAddresses == null) //如果获取到的操作范围地址列表为null，则结束本过程
                         {
@@ -745,7 +723,7 @@ namespace COMIGHT
                             switch (function) //根据功能序号进入相应的分支
                             {
 
-                                case enumProcessWorksheetsFunctions.MergeRecords: //记录合并
+                                case EnumProcessWorksheetsFunctions.MergeRecords: //记录合并
 
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
@@ -777,7 +755,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case enumProcessWorksheetsFunctions.AccumulateValues: //数值累加
+                                case EnumProcessWorksheetsFunctions.AccumulateValues: //数值累加
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
                                     {
@@ -812,7 +790,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case enumProcessWorksheetsFunctions.ExtractCellData: //提取单元格数据
+                                case EnumProcessWorksheetsFunctions.ExtractCellData: //提取单元格数据
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) //如果是第一个文件的第一个Excel工作表
                                     {
@@ -858,7 +836,7 @@ namespace COMIGHT
                                     }
                                     break;
 
-                                case enumProcessWorksheetsFunctions.ConvertTextualNumbers: //文本型数字转数值型
+                                case EnumProcessWorksheetsFunctions.ConvertTextualNumbers: //文本型数字转数值型
 
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
                                     {
@@ -884,11 +862,11 @@ namespace COMIGHT
 
                                     break;
 
-                                case enumProcessWorksheetsFunctions.CopyFormula: //复制公式到多Excel工作表
+                                case EnumProcessWorksheetsFunctions.CopyFormula: //复制公式到多Excel工作表
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
                                     {
-                                        templateExcelFilePaths = SelectFiles(FileType.Excel, false, "Select the Template Excel File"); //选择模板文件
+                                        templateExcelFilePaths = SelectFiles(EnumFileType.Excel, false, "Select the Template Excel File"); //选择模板文件
                                         if (templateExcelFilePaths == null) //如果文件为null，结束本过程
                                         {
                                             return;
@@ -915,7 +893,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case enumProcessWorksheetsFunctions.AdjustForPrinting: //调整工作表打印版式
+                                case EnumProcessWorksheetsFunctions.AdjustForPrinting: //调整工作表打印版式
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
@@ -937,9 +915,9 @@ namespace COMIGHT
 
                 string? targetExcelWorkbookPrefix = function switch  //根据功能序号返回相应的目标Excel工作簿前缀
                 {
-                    enumProcessWorksheetsFunctions.MergeRecords => "Mrg", //记录合并
-                    enumProcessWorksheetsFunctions.AccumulateValues => "Accu", //数值累加
-                    enumProcessWorksheetsFunctions.ExtractCellData => "Extr", //提取单元格数据
+                    EnumProcessWorksheetsFunctions.MergeRecords => "Mrg", //记录合并
+                    EnumProcessWorksheetsFunctions.AccumulateValues => "Accu", //数值累加
+                    EnumProcessWorksheetsFunctions.ExtractCellData => "Extr", //提取单元格数据
                     _ => null
                 };
 
@@ -949,8 +927,8 @@ namespace COMIGHT
                     //根据功能序号返回相应的目标工作表表头行数
                     int targetHeaderRowCount = function switch
                     {
-                        enumProcessWorksheetsFunctions.MergeRecords => headerRowCount,  //记录合并 - 输出记录合并后的汇总表，表头行数为源数据表格的表头行数
-                        enumProcessWorksheetsFunctions.ExtractCellData => 1,  //提取单元格数据 - 输出提取单元格值后的汇总表，表头行数为1
+                        EnumProcessWorksheetsFunctions.MergeRecords => headerRowCount,  //记录合并 - 输出记录合并后的汇总表，表头行数为源数据表格的表头行数
+                        EnumProcessWorksheetsFunctions.ExtractCellData => 1,  //提取单元格数据 - 输出提取单元格值后的汇总表，表头行数为1
                         _ => 0  //其余情况 - 表头行数为0
                     };
 
@@ -975,8 +953,8 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? startFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Start Data"); //获取所选起始数据文件列表
-                List<string>? endFilePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the End Data"); //获取所选终点数据文件列表
+                List<string>? startFilePaths = SelectFiles(EnumFileType.Excel, false, "Select the Excel File Containing the Start Data"); //获取所选起始数据文件列表
+                List<string>? endFilePaths = SelectFiles(EnumFileType.Excel, false, "Select the Excel File Containing the End Data"); //获取所选终点数据文件列表
 
                 if (startFilePaths == null || endFilePaths == null) //如果起始数据或终点数据文件列表有一个为null，则结束本过程
                 {
@@ -1188,7 +1166,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Name List"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Excel, false, "Select the Excel File Containing the Name List"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1282,7 +1260,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.Excel, false, "Select the Excel File Containing the Directory Tree Data"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.Excel, false, "Select the Excel File Containing the Directory Tree Data"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1480,7 +1458,7 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(FileType.WordAndExcel, true, "Select Word and Excel Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.WordAndExcel, true, "Select Word and Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -1739,14 +1717,18 @@ namespace COMIGHT
             //double result = Val(inputDialog.Answer);
             //ShowMessage("提取后的数字为：" + result.ToString());
 
-            InputDialog inputDialog = new InputDialog(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
-            if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            {
-                return;
-            }
-            //获取对话框返回的功能选项
-            string result = inputDialog.Answer.RemoveMarkdownMarks();
-            ShowMessage($"转换后的文字为：\n\n{result}");
+            //InputDialog inputDialog = new InputDialog(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            ////获取对话框返回的功能选项
+            //string result = inputDialog.Answer.RemoveMarkdownMarks();
+            //ShowMessage($"转换后的文字为：\n\n{result}");
+
+            string userProfile = appSettings.UserProfile.ToString(); // 枚举转字符串
+            bool isAdmin = appSettings.UserProfile == EnumUserProfile.Profile1;
+            MessageBox.Show ($"当前用户为：{userProfile}，是否管理员：{isAdmin.ToString()}");
         }
 
     }
