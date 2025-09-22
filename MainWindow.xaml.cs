@@ -274,264 +274,21 @@ namespace COMIGHT
             }
         }
 
-        //public void BatchDisassembleExcelWorkbooks()
-        //{
-        //    try
-        //    {
-        //        // 定义功能选项列表
-        //        List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split by a Column into Workbooks", "2-Split by a Column into Worksheets", "3-Disassemble Workbooks", "4-Assemble Workbooks" };
-
-        //        //获取功能选项
-        //        int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: latestRecords, propertyName: "LatestDisassembleWorksheetOption");
-        //        if (functionNum <= 0) //如果功能选项小于等于0（选择“Cancel”或不在设定范围），则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select the Excel Files"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        // 定义Excel工作簿索引范围、表头表尾行数、列符号变量（初始值均为“非法”数值）
-        //        int excelWorksheetStartIndex = -1; int excelWorksheetEndIndex = -1;
-        //        int headerRowCount = -1; int footerRowCount = -1;
-        //        string? columnLetter = null;
-
-        //        (excelWorksheetStartIndex, excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
-        //        if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        switch (functionNum) // 根据功能选项进入相应分支
-        //        {
-        //            case 1: // 按列拆分为Excel工作簿
-        //            case 2: // 按列拆分为Excel工作表
-
-        //                (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
-        //                if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
-        //                {
-        //                    return;
-        //                }
-
-        //                columnLetter = GetKeyColumnLetter(); //获取主键列符
-        //                if (columnLetter == null) //如果主键列符为null，则结束本过程
-        //                {
-        //                    return;
-        //                }
-
-        //                break;
-        //        }
-
-        //        bool createDataDict = true; // 定义“是否创建数据字典”变量（默认赋值为True）
-        //        Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义数据字典（保存按列拆分的数据）
-
-        //        bool createFolderForEachWorkbook = true; // 定义“是否为每个工作簿创建一个文件夹”变量（默认赋值为true）
-
-        //        // 根据功能选项，给“是否创建数据字典”和“是否创建数据字典”变量赋值
-        //        (createDataDict, createFolderForEachWorkbook) = functionNum switch
-        //        {
-        //            1 => (true, true), // 按列拆分为Excel工作簿
-        //            2 => (true, true),  // 按列拆分为Excel工作表
-        //            3 => (false, true), // 拆分工作表到独立工作簿
-        //            4 => (false, false), // 集合工作簿
-        //            _ => (false, false)
-        //        };
-
-        //        string targetFolderPath = appSettings.SavingFolderPath; // 获取保存文件夹路径
-
-        //        //定义集合工作簿变量、集合工作表计数变量和集合工作簿文件主名变量（功能4“集合工作簿”时使用）
-        //        ExcelPackage assembledExcelPackage = new ExcelPackage(); // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
-        //        int collectedWorksheetCount = 1;
-        //        string assembledExcelFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); // 获取集合Excel文件主名
-
-        //        foreach (string filePath in filePaths) // 遍历文件列表
-        //        {
-
-        //            string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePath); //获取当前Excel工作簿文件主名
-
-        //            if (createFolderForEachWorkbook) //  如果要为每个工作簿创建一个独立文件夹
-        //            {
-        //                // 创建目标文件夹（为每个工作簿创建一个独立文件夹）
-        //                targetFolderPath = Path.Combine(appSettings.SavingFolderPath, excelWorkbookFileMainName);
-        //                CreateFolder(targetFolderPath);
-        //            }
-
-        //            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) // 打开当前Excel工作簿，赋值给Excel包变量
-        //            {
-        //                ExcelWorkbook excelWorkbook = excelPackage.Workbook;
-
-        //                //获取被处理Excel工作表索引号的起始值和结束值，如果大于工作表数量-1，则限定为工作表数量-1 (EPPlus工作表索引号从0开始，Excel工作表索引号从1开始)
-        //                excelWorksheetStartIndex = Math.Min(excelWorksheetStartIndex, excelWorkbook.Worksheets.Count - 1);
-        //                excelWorksheetEndIndex = Math.Min(excelWorksheetEndIndex, excelWorkbook.Worksheets.Count - 1);
-
-        //                for (int i = excelWorksheetStartIndex; i <= excelWorksheetEndIndex; i++) //遍历所有指定范围的Excel工作表
-        //                {
-        //                    ExcelWorksheet excelWorksheet = excelWorkbook.Worksheets[i]; // 将当前索引号的Excel工作表赋值给Excel工作表变量
-
-        //                    TrimCellStrings(excelWorksheet); //删除Excel工作表内所有文本型单元格值的首尾空格
-        //                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除Excel工作表内所有空白行和空白列
-
-        //                    if (createDataDict) // 如果需要创建数据字典（按列拆分时）
-        //                    {
-        //                        dataDict.Clear(); // 清空数据字典
-        //                        if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果当前Excel工作表已使用行数（如果工作表为空， 则为0）小于等于表头表尾行数和，则直接跳过并进入下一个过程（结束当前工作表，跳至下一个工作表）
-        //                        {
-        //                            continue;
-        //                        }
-
-        //                        for (int j = headerRowCount + 1; j <= excelWorksheet.Dimension!.End.Row - footerRowCount; j++) // 遍历Excel工作表除去表头、表尾的每一行
-        //                        {
-        //                            string key = !string.IsNullOrWhiteSpace(excelWorksheet.Cells[columnLetter + j.ToString()].Text) ?
-        //                                excelWorksheet.Cells[columnLetter + j.ToString()].Text : "-Blank-"; //将当前行拆分基准列的值赋值给键值变量：如果当前行单元格文字不为空，则得到得到单元格文字，否则得到"-Blank-"
-        //                            if (dataDict.ContainsKey(key)) // 如果字典中已经有这个键，就将当前行添加到对应的列表中
-        //                            {
-        //                                dataDict[key].Add(excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column]);
-        //                            }
-        //                            else // 否则，定义一个列表并向其中添加当前行，而后将列表并添加到字典中
-        //                            {
-        //                                dataDict[key] = new List<ExcelRangeBase> { excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column] };
-        //                            }
-        //                        }
-        //                    }
-
-        //                    switch (functionNum) //根据功能序号进入相应的分支
-        //                    {
-        //                        case 1: //按列拆分为Excel工作簿
-
-        //                            foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
-        //                            {
-        //                                using (ExcelPackage targetExcelPackage = new ExcelPackage()) //新建Excel包，赋值给目标Excel包变量（为当前工作表的每个键值对创建一个新工作簿）
-        //                                {
-        //                                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); // 新建Excel工作表，赋值给目标工作表变量
-
-        //                                    // 将表头复制到目标Excel工作表
-        //                                    if (headerRowCount >= 1) //如果表头行数大于等于1，复制表头
-        //                                    {
-        //                                        excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
-        //                                        excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
-        //                                    }
-
-        //                                    // 将字典中的每一行复制到目标Excel工作表
-        //                                    foreach (ExcelRangeBase dictRow in pair.Value) //遍历所有字典数据
-        //                                    {
-        //                                        //获取目标Excel工作表最末行索引号（如果工作表为空， 则为0）
-        //                                        int lastRowIndex = targetExcelWorksheet.Dimension?.End.Row ?? 0;
-        //                                        dictRow.CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的样式复制到目标Excel工作表的第一个非空白行
-        //                                        dictRow.Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的数据复制到目标Excel工作表的第一个非空白行
-        //                                    }
-
-        //                                    FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
-
-        //                                    // 保存目标Excel工作簿文件
-        //                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{pair.Key}_{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-        //                                    targetExcelPackage.SaveAs(targetExcelFile);
-        //                                }
-        //                            }
-
-        //                            break;
-
-        //                        case 2:  //按列拆分为Excel工作表
-
-        //                            using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
-        //                            {
-
-        //                                foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) //遍历所有字典数据
-        //                                {
-        //                                    // 新建Excel工作表，赋值给目标工作表变量
-        //                                    ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add(CleanWorksheetName($"{pair.Key}"));
-
-        //                                    // 将表头复制到目标Excel工作表
-        //                                    if (headerRowCount >= 1) //如果表头行数大于等于1，复制表头
-        //                                    {
-        //                                        excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].CopyStyles(targetExcelWorksheet.Cells["A1"]);
-        //                                        excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].Copy(targetExcelWorksheet.Cells["A1"]);
-        //                                    }
-
-        //                                    // 将字典中的每一行复制到目标Excel工作表
-        //                                    foreach (ExcelRangeBase dictRow in pair.Value) //遍历所有字典数据
-        //                                    {
-        //                                        //获取目标Excel工作表最末行索引号（如果工作表为空， 则为0）
-        //                                        int lastRowIndex = targetExcelWorksheet.Dimension?.End.Row ?? 0;
-        //                                        dictRow.CopyStyles(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的样式复制到目标Excel工作表的第一个非空白行
-        //                                        dictRow.Copy(targetExcelWorksheet.Cells[lastRowIndex + 1, 1]); //将当前行的数据复制到目标Excel工作表的第一个非空白行
-        //                                    }
-
-        //                                    FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
-
-        //                                }
-
-        //                                // 保存目标Excel工作簿文件
-        //                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-        //                                targetExcelPackage.SaveAs(targetExcelFile);
-
-        //                            }
-
-        //                            break;
-
-        //                        case 3: // 拆分工作表到独立工作簿
-
-        //                            using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
-        //                            {
-        //                                ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1");  // 新建Excel工作表
-
-        //                                // 将当前整个工作表复制到目标Excel工作表
-        //                                excelWorksheet.Cells[excelWorksheet.Dimension.Address].CopyStyles(targetExcelWorksheet.Cells["A1"]);
-        //                                excelWorksheet.Cells[excelWorksheet.Dimension.Address].Copy(targetExcelWorksheet.Cells["A1"]);
-
-        //                                FormatExcelWorksheet(targetExcelWorksheet, 0, 0); //设置目标Excel工作表格式
-
-        //                                // 保存目标Excel工作簿文件
-        //                                FileInfo targetExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-        //                                targetExcelPackage.SaveAs(targetExcelFile);
-
-        //                            }
-
-        //                            break;
-
-        //                        case 4: //集合工作簿
-
-        //                            ExcelWorksheet collectedExcelWorksheet = assembledExcelPackage.Workbook.Worksheets.Add(CleanWorksheetName($"{collectedWorksheetCount++}_{excelWorksheet.Name}"));  // 新建收集Excel工作表
-        //                            excelWorksheet.Cells[excelWorksheet.Dimension.Address].CopyStyles(collectedExcelWorksheet.Cells["A1"]);
-        //                            excelWorksheet.Cells[excelWorksheet.Dimension.Address].Copy(collectedExcelWorksheet.Cells["A1"]);
-
-        //                            FormatExcelWorksheet(collectedExcelWorksheet, 0, 0); //设置目标Excel工作表格式
-
-        //                            // 如果当前Excel工作簿是最后一个工作簿，并且当前工作表是最后一个工作表，则将数据写入集合Excel工作表
-        //                            if (filePaths.IndexOf(filePath) == filePaths.Count - 1 && i == excelWorksheetEndIndex)
-        //                            {
-        //                                // 保存目标Excel工作簿文件
-        //                                FileInfo assembledExcelFile = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Coll_{assembledExcelFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径全名信息
-        //                                assembledExcelPackage.SaveAs(assembledExcelFile);
-        //                                assembledExcelPackage.Dispose();
-        //                            }
-
-        //                            break;
-        //                    }
-
-        //                }
-        //            }
-
-        //        }
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-
-        //}
+        // 定义批量拆分工作簿功能选项枚举
+        public enum enumDissambleWorkbooksFunction
+        {
+            Cancel = 0,
+            SplitByColumnIntoWorkbooks = 1,
+            SplitByColumnIntoWorksheets = 2,
+            DissembleByWorksheets = 3
+        }
 
         public void BatchDisassembleExcelWorkbooks()
         {
             try
             {
                 // 定义功能选项列表
-                List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split by a Column into Workbooks", "2-Split by a Column into Worksheets", "3-Disassemble Workbooks" };
+                List<string> lstFunctions = new List<string> { "0-Cancel", "1-Split by a Column into Workbooks", "2-Split by a Column into Worksheets", "3-Dissemble by Worksheets" };
 
                 //获取功能选项
                 int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: latestRecords, propertyName: nameof(latestRecords.LatestDisassembleWorksheetOption));
@@ -539,6 +296,8 @@ namespace COMIGHT
                 {
                     return;
                 }
+
+                enumDissambleWorkbooksFunction function = (enumDissambleWorkbooksFunction)functionNum; // 将功能选项枚举的整数值转换为枚举值
 
                 List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select the Excel Files"); //获取所选文件列表
                 if (filePaths == null) //如果文件列表为null，则结束本过程
@@ -558,10 +317,10 @@ namespace COMIGHT
                     return;
                 }
 
-                switch (functionNum) // 根据功能选项进入相应分支
+                switch (function) // 根据功能选项进入相应分支
                 {
-                    case 1: // 按列拆分为Excel工作簿
-                    case 2: // 按列拆分为Excel工作表
+                    case enumDissambleWorkbooksFunction.SplitByColumnIntoWorkbooks: // 按列拆分为Excel工作簿
+                    case enumDissambleWorkbooksFunction.SplitByColumnIntoWorksheets: // 按列拆分为Excel工作表
 
                         (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数; 
                         if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
@@ -640,9 +399,9 @@ namespace COMIGHT
                                 }
                             }
 
-                            switch (functionNum) //根据功能序号进入相应的分支
+                            switch (function) //根据功能序号进入相应的分支
                             {
-                                case 1: //按列拆分为Excel工作簿
+                                case enumDissambleWorkbooksFunction.SplitByColumnIntoWorkbooks: //按列拆分为Excel工作簿
 
                                     foreach (KeyValuePair<string, List<ExcelRangeBase>> pair in dataDict) // 遍历字典中的每一个键值对
                                     {
@@ -676,7 +435,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 2:  //按列拆分为Excel工作表
+                                case enumDissambleWorkbooksFunction.SplitByColumnIntoWorksheets:  //按列拆分为Excel工作表
 
                                     using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
                                     {
@@ -714,7 +473,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 3: // 拆分工作表到独立工作簿
+                                case enumDissambleWorkbooksFunction.DissembleByWorksheets: // 拆分工作表到独立工作簿
 
                                     using (ExcelPackage targetExcelPackage = new ExcelPackage()) // 新建Excel包，赋值给目标Excel包变量（为当前工作表创建一个新工作簿）
                                     {
@@ -863,6 +622,18 @@ namespace COMIGHT
             }
         }
 
+        // 定义批处理工作表功能选项枚举
+        private enum enumProcessWorksheetsFunctions
+        {
+            Cancel = 0,
+            MergeRecords = 1,
+            AccumulateValues = 2,
+            ExtractCellData = 3,
+            ConvertTextualNumbers = 4,
+            CopyFormula = 5,
+            AdjustForPrinting = 6
+        }
+
         private void BatchProcessExcelWorksheets()
         {
             string currentFilePath = "";
@@ -878,6 +649,8 @@ namespace COMIGHT
                 {
                     return;
                 }
+
+                enumProcessWorksheetsFunctions function = (enumProcessWorksheetsFunctions)functionNum; // 将功能选项枚举的整数值转换为枚举值
 
                 //获取所选文件列表
                 List<string>? filePaths = SelectFiles(FileType.Excel, true, "Select Excel Files");
@@ -897,10 +670,10 @@ namespace COMIGHT
                 int footerRowCount = 0;
                 List<string>? lstOperatingRangeAddresses = null;
 
-                switch (functionNum) //根据功能序号进入相应的分支
+                switch (function) //根据功能序号进入相应的分支
                 {
-                    case 1: //记录合并
-                    case 6: //调整工作表打印版式
+                    case enumProcessWorksheetsFunctions.MergeRecords: //记录合并
+                    case enumProcessWorksheetsFunctions.AdjustForPrinting: //调整工作表打印版式
                         (headerRowCount, footerRowCount) = GetHeaderAndFooterRowCount(); //获取表头、表尾行数
                         if (headerRowCount < 0 || footerRowCount < 0) //如果获取到的表头、表尾行数有一个小于0（范围无效），则结束本过程
                         {
@@ -909,10 +682,10 @@ namespace COMIGHT
 
                         break;
 
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
+                    case enumProcessWorksheetsFunctions.AccumulateValues:
+                    case  enumProcessWorksheetsFunctions.ExtractCellData:
+                    case  enumProcessWorksheetsFunctions.ConvertTextualNumbers:
+                    case  enumProcessWorksheetsFunctions.CopyFormula: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
                         lstOperatingRangeAddresses = GetWorksheetOperatingRangeAddresses();
                         if (lstOperatingRangeAddresses == null) //如果获取到的操作范围地址列表为null，则结束本过程
                         {
@@ -969,10 +742,10 @@ namespace COMIGHT
                                 continue;
                             }
 
-                            switch (functionNum) //根据功能序号进入相应的分支
+                            switch (function) //根据功能序号进入相应的分支
                             {
 
-                                case 1: //记录合并
+                                case enumProcessWorksheetsFunctions.MergeRecords: //记录合并
 
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
@@ -1004,7 +777,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 2: //数值累加
+                                case enumProcessWorksheetsFunctions.AccumulateValues: //数值累加
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
                                     {
@@ -1039,7 +812,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 3: //提取单元格数据
+                                case enumProcessWorksheetsFunctions.ExtractCellData: //提取单元格数据
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) //如果是第一个文件的第一个Excel工作表
                                     {
@@ -1085,7 +858,7 @@ namespace COMIGHT
                                     }
                                     break;
 
-                                case 4: //文本型数字转数值型
+                                case enumProcessWorksheetsFunctions.ConvertTextualNumbers: //文本型数字转数值型
 
                                     foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
                                     {
@@ -1111,7 +884,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 5: //复制公式到多Excel工作表
+                                case enumProcessWorksheetsFunctions.CopyFormula: //复制公式到多Excel工作表
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
                                     {
@@ -1142,7 +915,7 @@ namespace COMIGHT
 
                                     break;
 
-                                case 6: //调整工作表打印版式
+                                case enumProcessWorksheetsFunctions.AdjustForPrinting: //调整工作表打印版式
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
                                     FormatExcelWorksheet(excelWorksheet, headerRowCount, footerRowCount); //设置当前Excel工作表格式
@@ -1162,11 +935,11 @@ namespace COMIGHT
                     fileCount++; //文件计数器加1
                 }
 
-                string? targetExcelWorkbookPrefix = functionNum switch  //根据功能序号返回相应的目标Excel工作簿前缀
+                string? targetExcelWorkbookPrefix = function switch  //根据功能序号返回相应的目标Excel工作簿前缀
                 {
-                    1 => "Mrg", //记录合并
-                    2 => "Accu", //数值累加
-                    3 => "Extr", //提取单元格数据
+                    enumProcessWorksheetsFunctions.MergeRecords => "Mrg", //记录合并
+                    enumProcessWorksheetsFunctions.AccumulateValues => "Accu", //数值累加
+                    enumProcessWorksheetsFunctions.ExtractCellData => "Extr", //提取单元格数据
                     _ => null
                 };
 
@@ -1174,10 +947,10 @@ namespace COMIGHT
                 {
                     //获取目标工作表表头行数
                     //根据功能序号返回相应的目标工作表表头行数
-                    int targetHeaderRowCount = functionNum switch
+                    int targetHeaderRowCount = function switch
                     {
-                        1 => headerRowCount,  //记录合并 - 输出记录合并后的汇总表，表头行数为源数据表格的表头行数
-                        3 => 1,  //提取单元格数据 - 输出提取单元格值后的汇总表，表头行数为1
+                        enumProcessWorksheetsFunctions.MergeRecords => headerRowCount,  //记录合并 - 输出记录合并后的汇总表，表头行数为源数据表格的表头行数
+                        enumProcessWorksheetsFunctions.ExtractCellData => 1,  //提取单元格数据 - 输出提取单元格值后的汇总表，表头行数为1
                         _ => 0  //其余情况 - 表头行数为0
                     };
 
