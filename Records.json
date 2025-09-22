@@ -5,7 +5,7 @@
   "LatestExcelWorksheetIndexesStr": "1-1",
   "LatestOperatingRangeAddresses": "B2:C3",
   "LatestSubpathDepth": 0,
-  "LatestBatchProcessWorkbookOption": "0-Cancel",
-  "LatestDisassembleWorksheetOption": "0-Cancel",
+  "LatestBatchProcessWorkbooksOption": "0-Cancel",
+  "LatestBatchDisassembleWorkbooksOption": "0-Cancel",
   "LatestURL": "https://www.microsoft.com"
 }

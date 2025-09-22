@@ -151,8 +151,8 @@ namespace COMIGHT
         public string LatestExcelWorksheetIndexesStr { get; set; } = string.Empty;
         public string LatestOperatingRangeAddresses { get; set; } = string.Empty;
         public int LatestSubpathDepth { get; set; }
-        public string LatestBatchProcessWorkbookOption { get; set; } = string.Empty;
-        public string LatestDisassembleWorksheetOption { get; set; } = string.Empty;
+        public string LatestBatchProcessWorkbooksOption { get; set; } = string.Empty;
+        public string LatestBatchDisassembleWorkbooksOption { get; set; } = string.Empty;
         public string LatestUrl { get; set; } = string.Empty;
     }
 }
