@@ -1497,13 +1497,14 @@ namespace COMIGHT
                                 {
                                     for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) // 遍历Excel工作表所有列
                                     {
-                                        tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text); // 将当前单元格文字追加到字符串构建器中
+                                        tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text.Replace('|', ';')); // 将当前单元格文字中的表格分隔符替换成分号，并追加到字符串构建器中
                                         tableRowStringBuilder.Append('|'); //追加表格分隔符到字符串构建器中
                                     }
                                     lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
                                     tableRowStringBuilder.Clear(); //清空字符串构建器
                                 }
-                                lstFullText.AddRange(new string[] { "(The End)", "" }); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个"(The End)"元素和一个空字符串元素
+                                
+                                lstFullText.Add(""); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个空字符串元素
                             }
                         }
                     }
@@ -1533,7 +1534,7 @@ namespace COMIGHT
                                         {
                                             foreach (XWPFTableCell cell in row.GetTableCells()) // 遍历当前行的所有列
                                             {
-                                                string cellText = string.Join(" ", cell.Paragraphs.Select(p => p.Text.Trim())); // 提取单元格内的所有段落文本并连接起来
+                                                string cellText = string.Join(" ", cell.Paragraphs.Select(p => p.Text.Trim())).Replace('|',';'); // 提取单元格内的所有段落文本并连接起来（当中用空格隔开），再将表格分隔符替换成分号
                                                 tableRowStringBuilder.Append(cellText); // 将当前单元格文字追加到字符串构建器中
                                                 tableRowStringBuilder.Append('|'); // 追加表格分隔符到字符串构建器中
                                             }
@@ -1548,7 +1549,7 @@ namespace COMIGHT
                                 }
                             }
 
-                            lstFullText.AddRange(new string[] { "(The End)", "" }); // 当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个"(The End)"元素和一个空字符串元素
+                            lstFullText.Add(""); // 当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个空字符串元素
                         }
                     }
                 }
