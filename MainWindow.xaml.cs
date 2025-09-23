@@ -1459,17 +1459,24 @@ namespace COMIGHT
         {
             try
             {
-                List<string>? filePaths = SelectFiles(EnumFileType.DocumentAndTable, true, "Select Document and Table Files"); //获取所选文件列表
+                List<string>? filePaths = SelectFiles(EnumFileType.DocumentAndTable, true, "Select Document and Table Files"); //获取所选文件路径全名列表
+
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
                 }
 
+                if (filePaths.Count < 2) //如果所选文件少于2个，则抛出异常
+                {
+                    throw new Exception("2 or more files need to be selected.");
+                }
 
-                List<string> lstFullText = new List<string>(); //建立全文本列表
+                List<string> pdfToMergeFilePaths = new List<string>(); // 建立待合并PDF文件路径全名列表
+
+                List<string> lstTextToMerge = new List<string>(); // 建立待合并文本列表
                 StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
 
-                foreach (string filePath in filePaths) //遍历所有列表中的文件
+                foreach (string filePath in filePaths) //遍历列表中的所有文件
                 {
                     if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
                     {
@@ -1492,7 +1499,7 @@ namespace COMIGHT
                                     continue;
                                 }
 
-                                lstFullText.Add($"{fileName}: {excelWorksheet.Name}"); //全文本列表中追加当前Excel文件主名和当前工作表名
+                                lstTextToMerge.Add($"{fileName}: {excelWorksheet.Name}"); //待合并文本列表中追加当前Excel文件主名和当前工作表名
 
                                 for (int i = 1; i <= excelWorksheet.Dimension.End.Row; i++) // 遍历Excel工作表所有行
                                 {
@@ -1501,11 +1508,11 @@ namespace COMIGHT
                                         tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text.Replace('|', ';')); // 将当前单元格文字中的表格分隔符替换成分号，并追加到字符串构建器中
                                         tableRowStringBuilder.Append('|'); //追加表格分隔符到字符串构建器中
                                     }
-                                    lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
+                                    lstTextToMerge.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到待合并文本列表中
                                     tableRowStringBuilder.Clear(); //清空字符串构建器
                                 }
 
-                                lstFullText.Add(""); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个空字符串元素
+                                lstTextToMerge.Add(""); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在待合并文本列表最后追加一个空字符串元素
                             }
                         }
                     }
@@ -1516,7 +1523,7 @@ namespace COMIGHT
                         {
                             XWPFDocument wordDocument = new XWPFDocument(fileStream); // 打开Word文档文件流，赋值给Word文档变量
 
-                            lstFullText.Add($"{fileName}"); // 全文本列表中追加当前Word文件主名
+                            lstTextToMerge.Add($"{fileName}"); // 待合并文本列表中追加当前Word文件主名
 
                             foreach (IBodyElement element in wordDocument.BodyElements) // 遍历Word文档所有元素
                             {
@@ -1524,9 +1531,9 @@ namespace COMIGHT
                                 {
                                     case XWPFParagraph paragraph: // 如果当前元素是段落
                                         string paragraphText = paragraph.Text;
-                                        if (!string.IsNullOrWhiteSpace(paragraphText)) // 如果当前段落不为空，则将当前段落文字追加到全文本列表中
+                                        if (!string.IsNullOrWhiteSpace(paragraphText)) // 如果当前段落不为空，则将当前段落文字追加到待合并文本列表中
                                         {
-                                            lstFullText.Add(paragraphText);
+                                            lstTextToMerge.Add(paragraphText);
                                         }
                                         break;
 
@@ -1539,7 +1546,7 @@ namespace COMIGHT
                                                 tableRowStringBuilder.Append(cellText); // 将当前单元格文字追加到字符串构建器中
                                                 tableRowStringBuilder.Append('|'); // 追加表格分隔符到字符串构建器中
                                             }
-                                            lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); // 将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
+                                            lstTextToMerge.Add(tableRowStringBuilder.ToString().TrimEnd('|')); // 将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到待合并文本列表中
                                             tableRowStringBuilder.Clear(); // 清空字符串构建器
                                         }
                                         break;
@@ -1550,9 +1557,16 @@ namespace COMIGHT
                                 }
                             }
 
-                            lstFullText.Add(""); // 当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个空字符串元素
+                            lstTextToMerge.Add(""); // 当前Word文档的所有段落行遍历完后，到了文档末尾，在待合并文本列表最后追加一个空字符串元素
                         }
                     }
+
+                    // 如果当前文件扩展名含有“pdf”（PDF文件），则将当前文件路径全名追加到待合并PDF文件路径全名列表中
+                    else if (fileExtension.Contains("pdf", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        pdfToMergeFilePaths.Add(filePath);
+                    }
+                    
                 }
 
                 string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
@@ -1560,14 +1574,15 @@ namespace COMIGHT
                 string targetTxtFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.txt"); // 获取目标文本文件的路径全名
                 string targetPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.pdf"); // 获取目标文本文件的路径全名
 
-                // 合并Word、Excel文件内容，输出TXT和PDF文件
+                
+                // 合并待合并文本列表中的内容（来自Word、Excel文件内容），输出TXT和PDF文件
 
-                if (lstFullText.Count > 0) // 如果全文本列表中元素数量大于0
+                if (lstTextToMerge.Count > 0) // 如果待合并文本列表中元素数量大于0
                 {
                     // 写入目标txt文档
                     using (StreamWriter writer = new StreamWriter(targetTxtFilePath, false, Encoding.UTF8)) // 创建文本写入器对象（新建或覆盖目标文件，编码为UTF-8），赋值给文本写入器对象
                     {
-                        foreach (string paragraphText in lstFullText) // 遍历全文本列表的所有元素
+                        foreach (string paragraphText in lstTextToMerge) // 遍历待合并文本列表的所有元素
                         {
                             writer.WriteLine(paragraphText); // 将当前元素的段落文字写入文本文件中，并换行
                         }
@@ -1580,45 +1595,47 @@ namespace COMIGHT
                     {
                         PdfFont font = PdfFontFactory.CreateFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED); // 创建pdf字体对象：中文宋体，Adobe-GB1符集UCS-2编码，水平书写，优先嵌入字体
 
-                        // 遍历字符串列表，
-                        foreach (string paragraphText in lstFullText)
+                        // 遍历待合并文本列表
+                        foreach (string textToMerge in lstTextToMerge)
                         {
-                            ITextParagraph paragraph = new ITextParagraph(paragraphText).SetFont(font); // 为当前字符串创建一个段落，使用已定义的字体
+                            ITextParagraph paragraph = new ITextParagraph(textToMerge).SetFont(font); // 为当前字符串创建一个段落，使用已定义的字体
                             document.Add(paragraph); // 将段落添加到文档中
                         }
                     }
 
-                    
-
+                    pdfToMergeFilePaths.Add(targetPdfFilePath); // 将目标PDF文件路径全名添加到待合并PDF文件路径全名列表中
                 }
+
 
                 // 合并所有PDF文件（含原选定文件中的PDF文件和之前由Word、Excel文件合并生成的PDF文件）
 
-                // 获取输入文件列表中扩展名包含pdf的文件
-                List<string> pdfToMergeFilePaths = filePaths.Where(f => Path.GetExtension(f).Contains(".pdf", StringComparison.InvariantCultureIgnoreCase)).ToList();
-
-                if (pdfToMergeFilePaths.Count > 0) // 如果待合并pdf文件列表不为空
+                if (pdfToMergeFilePaths.Count > 1) // 如果待合并PDF文件多于1个
                 {
-                    // 定义最终pdf文件路径
+                    // 获取最终PDF文件路径
                     string finalPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Fnl_{targetFileMainName}")}.pdf");
-
-                    if (File.Exists(targetPdfFilePath)) // 如果存在由Word、Excel合并而成的pdf文件，则将其添加到待合并pdf文件列表中，作为接下来待合并pdf源文件中的一个文件
-                    {
-                        pdfToMergeFilePaths.Add(targetPdfFilePath); 
-                    }
 
                     using (PdfWriter writer = new PdfWriter(finalPdfFilePath))
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
-                        PdfMerger merger = new PdfMerger(pdf); // 创建pdf合并对象，赋值给pdf合并对象
+                        PdfMerger merger = new PdfMerger(pdf); // 创建PDF合并对象，赋值给PDF合并对象
 
-                        foreach (string pdfToMergeFilePath in pdfToMergeFilePaths) // 遍历待合并pdf源文件列表
+                        foreach (string pdfToMergeFilePath in pdfToMergeFilePaths) // 遍历待合并PDF文件列表
                         {
                             using PdfDocument pdfToMerge = new PdfDocument(new PdfReader(pdfToMergeFilePath)); // 打开当前待合并pdf源文件
-                            merger.Merge(pdfToMerge, 1, pdfToMerge.GetNumberOfPages()); // 将源pdf文件中的全部页添加到pdf合并对象中
+                            merger.Merge(pdfToMerge, 1, pdfToMerge.GetNumberOfPages()); // 将源pdf文件中的全部页添加到PDF合并对象中
                         }
                     }
 
+                    // 删除由Word、Excel文件合并而成的文本文件和PDF文件（过程性文件）
+                    if (File.Exists(targetTxtFilePath))
+                    {
+                        File.Delete(targetTxtFilePath);
+                    }
+
+                    if (File.Exists(targetPdfFilePath))
+                    {
+                        File.Delete(targetPdfFilePath);
+                    }
                 }
 
                 ShowSuccessMessage();
@@ -1630,180 +1647,6 @@ namespace COMIGHT
             }
 
         }
-
-
-        //private void MergeDataIntoDocument()
-        //{
-        //    try
-        //    {
-        //        List<string>? filePaths = SelectFiles(EnumFileType.DocumentAndTable, true, "Select Word and Excel Files"); //获取所选文件列表
-        //        if (filePaths == null) //如果文件列表为null，则结束本过程
-        //        {
-        //            return;
-        //        }
-
-
-        //        List<string> lstFullText = new List<string>(); //建立全文本列表
-        //        StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
-
-        //        foreach (string filePath in filePaths) //遍历所有列表中的文件
-        //        {
-        //            if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
-        //            {
-        //                continue;
-        //            }
-
-        //            string fileName = Path.GetFileName(filePath); // 获取当前文件的全名
-        //            string fileExtension = Path.GetExtension(filePath); // 获取当前文件的扩展名
-
-        //            if (fileExtension.Contains("xls", StringComparison.InvariantCultureIgnoreCase)) // 如果当前文件扩展名含有“xls”（Excel文件，xlsx、xlsm）
-        //            {
-        //                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
-        //                {
-        //                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) // 遍历所有Excel工作表
-        //                    {
-        //                        TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
-        //                        RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
-        //                        if (excelWorksheet.Dimension == null) //如果当前Excel工作表为空，则直接跳过当前循环并进入下一个循环
-        //                        {
-        //                            continue;
-        //                        }
-
-        //                        lstFullText.Add($"{fileName}: {excelWorksheet.Name}"); //全文本列表中追加当前Excel文件主名和当前工作表名
-
-        //                        for (int i = 1; i <= excelWorksheet.Dimension.End.Row; i++) // 遍历Excel工作表所有行
-        //                        {
-        //                            for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) // 遍历Excel工作表所有列
-        //                            {
-        //                                tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text.Replace('|', ';')); // 将当前单元格文字中的表格分隔符替换成分号，并追加到字符串构建器中
-        //                                tableRowStringBuilder.Append('|'); //追加表格分隔符到字符串构建器中
-        //                            }
-        //                            lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
-        //                            tableRowStringBuilder.Clear(); //清空字符串构建器
-        //                        }
-
-        //                        lstFullText.Add(""); //当前Excel工作表的所有行遍历完后，到了工作表末尾，在全文本列表最后追加一个空字符串元素
-        //                    }
-        //                }
-        //            }
-
-        //            else if (fileExtension.Contains("doc", StringComparison.InvariantCultureIgnoreCase)) // 如果当前文件扩展名含有“doc”（Word文件，docx、docm）
-        //            {
-        //                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) // 打开Word文档，赋值给文件流变量
-        //                {
-        //                    XWPFDocument wordDocument = new XWPFDocument(fileStream); // 打开Word文档文件流，赋值给Word文档变量
-
-        //                    lstFullText.Add($"{fileName}"); // 全文本列表中追加当前Word文件主名
-
-        //                    foreach (IBodyElement element in wordDocument.BodyElements) // 遍历Word文档所有元素
-        //                    {
-        //                        switch (element) // 根据元素类型进行操作
-        //                        {
-        //                            case XWPFParagraph paragraph: // 如果当前元素是段落
-        //                                string paragraphText = paragraph.Text;
-        //                                if (!string.IsNullOrWhiteSpace(paragraphText)) // 如果当前段落不为空，则将当前段落文字追加到全文本列表中
-        //                                {
-        //                                    lstFullText.Add(paragraphText);
-        //                                }
-        //                                break;
-
-        //                            case XWPFTable table: // 如果当前元素是表格
-        //                                foreach (XWPFTableRow row in table.Rows) // 遍历表格所有行
-        //                                {
-        //                                    foreach (XWPFTableCell cell in row.GetTableCells()) // 遍历当前行的所有列
-        //                                    {
-        //                                        string cellText = string.Join(" ", cell.Paragraphs.Select(p => p.Text.Trim())).Replace('|',';'); // 提取单元格内的所有段落文本并连接起来（当中用空格隔开），再将表格分隔符替换成分号
-        //                                        tableRowStringBuilder.Append(cellText); // 将当前单元格文字追加到字符串构建器中
-        //                                        tableRowStringBuilder.Append('|'); // 追加表格分隔符到字符串构建器中
-        //                                    }
-        //                                    lstFullText.Add(tableRowStringBuilder.ToString().TrimEnd('|')); // 将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到全文本列表中
-        //                                    tableRowStringBuilder.Clear(); // 清空字符串构建器
-        //                                }
-        //                                break;
-
-        //                            default:
-        //                                // 忽略其他类型的元素
-        //                                break;
-        //                        }
-        //                    }
-
-        //                    lstFullText.Add(""); // 当前Word文档的所有段落行遍历完后，到了文档末尾，在全文本列表最后追加一个空字符串元素
-        //                }
-        //            }
-        //        }
-
-        //        string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
-        //        string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-        //        string targetTxtFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.txt"); // 获取目标文本文件的路径全名
-        //        string targetPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.pdf"); // 获取目标文本文件的路径全名
-
-        //        // 合并Word、Excel文件内容，输出TXT和PDF文件
-
-        //        if (lstFullText.Count > 0) // 如果全文本列表中元素数量大于0
-        //        {
-        //            // 写入目标txt文档
-        //            using (StreamWriter writer = new StreamWriter(targetTxtFilePath, false, Encoding.UTF8)) // 创建文本写入器对象（新建或覆盖目标文件，编码为UTF-8），赋值给文本写入器对象
-        //            {
-        //                foreach (string paragraphText in lstFullText) // 遍历全文本列表的所有元素
-        //                {
-        //                    writer.WriteLine(paragraphText); // 将当前元素的段落文字写入文本文件中，并换行
-        //                }
-        //            }
-
-        //            // 写入目标PDF文档
-        //            using (PdfWriter writer = new PdfWriter(targetPdfFilePath)) // 创建PDF写入器对象，赋值给PDF写入器对象
-        //            using (PdfDocument pdf = new PdfDocument(writer)) // 创建PDF文档对象，赋值给PDF文档对象
-        //            using (ITextDocument document = new ITextDocument(pdf)) // 创建文档对象，赋值给文档对象
-        //            {
-        //                PdfFont font = PdfFontFactory.CreateFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED); // 创建pdf字体对象：中文宋体，Adobe-GB1符集UCS-2编码，水平书写，优先嵌入字体
-
-        //                // 遍历字符串列表，
-        //                foreach (string paragraphText in lstFullText)
-        //                {
-        //                    ITextParagraph paragraph = new ITextParagraph(paragraphText).SetFont(font); // 为当前字符串创建一个段落，使用已定义的字体
-        //                    document.Add(paragraph); // 将段落添加到文档中
-        //                }
-        //            }
-
-        //        }
-
-        //        // 合并所有PDF文件（含原选定文件中的PDF文件和之前由Word、Excel文件合并生成的PDF文件）
-
-        //        // 获取输入文件列表中以.pdf结尾的文件
-        //        List<string> pdfToMergeFilePaths = filePaths.Where(f => f.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase)).ToList();
-
-        //        if (pdfToMergeFilePaths.Count > 0) // 如果pdf文件列表不为空
-        //        {
-        //            // 定义最终pdf文件路径
-        //            string finalPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Fnl_{targetFileMainName}")}.pdf"); 
-
-        //            if (File.Exists(targetPdfFilePath)) // 如果之前合并完成的pdf文件存在，则添加到pdf文件列表中，作为接下来待合并pdf源文件中的一个文件
-        //            {
-        //                pdfToMergeFilePaths.Add(targetPdfFilePath); // 将之前合并完成的pdf文件路径添加到pdf文件列表中，作为接下来待合并pdf源文件中的一个文件
-        //            }
-
-        //            using (PdfWriter writer = new PdfWriter(finalPdfFilePath))
-        //            using (PdfDocument pdf = new PdfDocument(writer))
-        //            {
-        //                PdfMerger merger = new PdfMerger(pdf); // 创建pdf合并对象，赋值给pdf合并对象
-
-        //                foreach (string pdfToMergeFilePath in pdfToMergeFilePaths) // 遍历待合并pdf源文件列表
-        //                {
-        //                    using PdfDocument pdfToMerge = new PdfDocument(new PdfReader(pdfToMergeFilePath)); // 打开当前待合并pdf源文件
-        //                    merger.Merge(pdfToMerge, 1, pdfToMerge.GetNumberOfPages()); // 将源pdf文件中的全部页添加到pdf合并对象中
-        //                }
-        //            }
-        //        }
-
-        //        ShowSuccessMessage();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-
-        //}
 
         private static void OpenSavingFolder()
         {
