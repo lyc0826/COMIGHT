@@ -731,7 +731,7 @@ namespace COMIGHT
             return regExEmoji.Replace(text, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
         }
 
-        public enum EnumFileType { Excel, Word, WordAndExcel, Convertible, Executable, All } //定义文件类型枚举
+        public enum EnumFileType { Excel, Word, DocumentAndTable, Convertible, Pdf, All } //定义文件类型枚举
 
         public static List<string>? SelectFiles(EnumFileType fileType, bool isMultiselect, string dialogTitle)
         {
@@ -739,9 +739,9 @@ namespace COMIGHT
             {
                 EnumFileType.Excel => "Excel Files(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|All Files(*.*)|*.*",
                 EnumFileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
-                EnumFileType.WordAndExcel => "Word And Excel Files(*.docx;*.xlsx;*.docm;*.xlsm)|*.docx;*.xlsx;*.docm;*.xlsm|All Files(*.*)|*.*",
+                EnumFileType.DocumentAndTable => "Document And Table Files(*.docx;*.xlsx;*.docm;*.xlsm;*.pdf)|*.docx;*.xlsx;*.docm;*.xlsm;*.pdf|All Files(*.*)|*.*",
                 EnumFileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
-                EnumFileType.Executable => "Executable Files(*.exe)|*.exe|All Files(*.*)|*.*",
+                //EnumFileType.Pdf => "PDF Files(*.pdf)|*.pdf|All Files(*.*)|*.*",
                 _ => "All Files(*.*)|*.*"
             };
 
