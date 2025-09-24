@@ -1,7 +1,4 @@
 ﻿using Microsoft.Win32;
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
-using NPOI.XSSF.UserModel;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Export.ToDataTable;
@@ -16,7 +13,6 @@ using System.Windows.Interop;
 using static COMIGHT.MainWindow;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
-using ICell = NPOI.SS.UserModel.ICell;
 using Window = System.Windows.Window;
 
 namespace COMIGHT
@@ -25,7 +21,9 @@ namespace COMIGHT
     {
 
         // 定义表格标题正则表达式字符串（需要兼顾常规字符串和Word中的文本）
-        public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)";
+        //public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)";
+
+        public static Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {
@@ -96,296 +94,298 @@ namespace COMIGHT
             return chineseNumberStr; // 将中文数字字符串赋值给函数返回值
         }
 
-        public static void ExtractTablesFromWordToExcel(string wordFilePath, string targetExcelFilePath)
+        public static async Task ExtractTablesFromWordToExcelAsync(string wordFilePath, string targetExcelFilePath)
         {
-            try
+            Task task = Task.Run(() => Process());
+            void Process()
             {
-                if (new FileInfo(wordFilePath).Length == 0) //如果当前文件大小为0，则直接结束本过程
+                try
                 {
-                    return;
-                }
-
-                // 使用 NPOI 处理 
-                using (FileStream wordFileStream = File.OpenRead(wordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
-                {
-                    using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
+                    if (new FileInfo(wordFilePath).Length == 0) //如果当前文件大小为0，则直接结束本过程
                     {
-                        if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
-                        {
-                            using (FileStream excelStream = File.Create(targetExcelFilePath)) //创建目标Excel工作簿，赋值给Excel工作簿文件流变量
-                            {
-                                IWorkbook workbook = new XSSFWorkbook(); // 创建Excel工作簿对象，赋值给Excel工作簿变量
-                                int wordTableIndex = 0;
-                                for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
-                                {
-                                    var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
-                                    if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格类型，则将其赋值给新变量 wordTable，然后：
-                                    {
-                                        string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
+                        return;
+                    }
 
-                                        // 获取表格标题
-                                        if (i > 0) // 如果当前Word元素不是0号元素
+                    // 使用 NPOI 处理 
+                    using (FileStream wordFileStream = File.OpenRead(wordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
+                    {
+                        using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
+                        {
+                            if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
+                            {
+                                FileInfo outputExcelFile = new FileInfo(targetExcelFilePath);
+                                using (var excelPackage = new ExcelPackage()) // 创建一个Excel包对象
+                                {
+                                    var workbook = excelPackage.Workbook; // 获取Excel工作簿对象
+                                    int wordTableIndex = 0;
+                                    for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
+                                    {
+                                        var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
+                                        if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格类型，则将其赋值给新变量 wordTable，然后：
                                         {
-                                            List<string> lstBackupTableTitle = new List<string>();
-                                            string preferredTableTitle = string.Empty;
-                                            for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止）
+                                            string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
+                                            // 获取表格标题 (这部分逻辑与Word文档读取相关，保持不变)
+                                            if (i > 0) // 如果当前Word元素不是0号元素
                                             {
-                                                if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
+                                                List<string> lstBackupTableTitle = new List<string>();
+                                                string preferredTableTitle = string.Empty;
+                                                for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止
                                                 {
-                                                    XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
-                                                    // 如果段落文字被表格标题正则表达式匹配成功，将段落文字赋给首选表格标题变量并退出循环
-                                                    if (Regex.IsMatch(paragraph.Text, tableTitleRegEx))
+                                                    if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
                                                     {
-                                                        preferredTableTitle = paragraph.Text;
-                                                        break;
-                                                    }
-                                                    // 否则，备选表格标题正则表达式模式设为：开头标记，不含“。；;：:”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到备用表格标题列表中
-                                                    else if (Regex.IsMatch(paragraph.Text, @"^[^。；;：:]{1,100}$"))
-                                                    {
-                                                        lstBackupTableTitle.Add(paragraph.Text);
+                                                        XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
+                                                        // 如果段落文字被表格标题正则表达式匹配成功，将段落文字赋给首选表格标题变量并退出循环
+                                                        if (regExTableTitle.IsMatch(paragraph.Text))
+                                                        {
+                                                            preferredTableTitle = paragraph.Text;
+                                                            break;
+                                                        }
+                                                        // 否则，备选表格标题正则表达式模式设为：开头标记，不含“。；;：:”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到备用表格标题列表中
+                                                        else if (Regex.IsMatch(paragraph.Text, @"^[^。；;：:]{1,100}$", RegexOptions.Multiline))
+                                                        {
+                                                            lstBackupTableTitle.Add(paragraph.Text);
+                                                        }
                                                     }
                                                 }
+                                                // 获取表格标题：如果首选表格标题变量不为空，则得到该变量值；否则，如果备用表格标题列表不为空，则得到其0号（第1个）元素的值；否则，得到表格标题变量原值
+                                                tableTitle = !string.IsNullOrWhiteSpace(preferredTableTitle) ? preferredTableTitle : lstBackupTableTitle.Count > 0 ? lstBackupTableTitle[0] : tableTitle;
                                             }
-                                            // 获取表格标题：如果首选表格标题变量不为空，则得到该变量值；否则，如果备用表格标题列表不为空，则得到其0号（第1个）元素的值；否则，得到表格标题变量原值
-                                            tableTitle = !string.IsNullOrWhiteSpace(preferredTableTitle) ? preferredTableTitle : lstBackupTableTitle.Count > 0 ? lstBackupTableTitle[0] : tableTitle;
-                                        }
 
-                                        //创建Excel工作表，使用序号加表格标题作为工作表的名称
-                                        ISheet worksheet = workbook.CreateSheet(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}")); // 创建Excel工作表对象
+                                            // 创建Excel工作表，使用序号加表格标题作为工作表的名称
+                                            ExcelWorksheet worksheet = workbook.Worksheets.Add(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}"));
+                                            int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
 
-                                        IRow excelFirstRow = worksheet.CreateRow(0); // 创建Excel 0号（第1）行对象，赋值给Excel第一行变量
-
-                                        int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
-
-                                        worksheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, columnCount - 1)); // 合并Excel工作表第一行单元格
-                                        excelFirstRow.CreateCell(0).SetCellValue(tableTitle); // 将表格标题赋值给Excel工作表0号（第1）行单元格
-
-                                        int excelRowIndex = 1; // 从Excel工作表1号（第2）行开始写入表格数据
-                                        foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
-                                        {
-                                            IRow excelRow = worksheet.CreateRow(excelRowIndex++); // 创建Excel行对象，赋值给Excel行变量
-                                            int excelCellIndex = 0;
-                                            foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
+                                            worksheet.Cells[1, 1, 1, columnCount].Merge = true; // 合并Excel工作表第一行单元格（EPPlus的行和列索引从1开始）
+                                            worksheet.Cells[1, 1].Value = tableTitle; // 将表格标题赋值给Excel工作表1行1列的单元格
+                                            int excelRowIndex = 2; // 从Excel工作表2号（第2）行开始写入表格数据
+                                            foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
                                             {
-                                                ICell excelCell = excelRow.CreateCell(excelCellIndex++); // 创建Excel单元格对象，赋值给Excel单元格变量
-                                                excelCell.SetCellValue(wordTableCell.GetText()); // 将当前Word文档表格的当前行的当前单元格的文字赋值给当前Excel单元格
+                                                int excelColumnIndex = 1; // Excel列索引从1开始
+                                                foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
+                                                {
+                                                    worksheet.Cells[excelRowIndex, excelColumnIndex++].Value = wordTableCell.GetText(); // 将当前Word文档表格的当前行当前单元格的文字赋值给当前行当前列的Excel单元格
+                                                }
+                                                excelRowIndex++; // Excel行索引累加1
                                             }
-                                        }
-                                        wordTableIndex++; // Word文档表格索引号累加1
-                                    }
-                                }
-                                workbook.Write(excelStream); // 将Excel工作簿文件流写入目标Excel工作簿文件
 
-                                // 格式化目标Excel工作簿中的表格
-                                FileInfo targetExcelFile = new FileInfo(targetExcelFilePath); //获取目标Excel文件路径全名信息
-                                using (ExcelPackage excelPackage = new ExcelPackage(targetExcelFile)) //打开目标Excel文件，赋值给Excel包变量
-                                {
-                                    foreach (ExcelWorksheet excelWorksheet in excelPackage.Workbook.Worksheets) //遍历目标Excel工作簿中的所有工作表
-                                    {
-                                        FormatExcelWorksheet(excelWorksheet, 2, 0); // 格式化表格数据区域（表头为2行）
+                                            FormatExcelWorksheet(worksheet, 2, 0); // 格式化表格数据区域（表头为2行）
+
+                                            wordTableIndex++; // Word文档表格索引号累加1
+                                        }
                                     }
-                                    excelPackage.Save(); //保存目标Excel文档
+
+                                    excelPackage.SaveAs(outputExcelFile); // 将Excel包存入文件中
                                 }
                             }
                         }
                     }
                 }
+
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            await task;
+        }
+
+        public static void FormatExcelWorksheet(ExcelWorksheet excelWorksheet, int headerRowCount = 0, int footerRowCount = 0)
+        {
+            try
+            {
+                if (excelWorksheet.Dimension == null) //如果Excel工作表为空，则结束本过程
+                {
+                    return;
+                }
+
+                foreach (ExcelRangeBase cell in excelWorksheet.Cells[excelWorksheet.Dimension.Address]) //遍历所有已使用的单元格
+                {
+                    //如果当前单元格是合并单元格、值是字符串且不含公式，则将文字中的换行符替换为空格后，重新赋值给单元格（避免自动调整行高时文字显示不全）
+                    if (cell.Merge && cell.Value is string && string.IsNullOrWhiteSpace(cell.Formula))
+                    {
+                        cell.Value = cell.Text.Replace('\n', ' ');
+                    }
+                }
+
+                // 获取Excel工作表行数和列数
+                int rowCount = excelWorksheet.Dimension.End.Row;
+                int columnCount = excelWorksheet.Dimension.End.Column;
+
+                //设置表头格式、自动筛选
+                if (headerRowCount >= 1) //如果表头行数大于等于1
+                {
+                    ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerRowCount, columnCount]; //将表头区域赋值给表头区域变量
+
+                    // 设置表头区域字体、对齐
+                    headerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
+                    headerRange.Style.Font.Size = (float)appSettings.WorksheetFontSize; // 获取应用程序设置中的字体大小
+                    headerRange.Style.Font.Bold = true; //表头区域字体加粗
+                    headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
+                    headerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
+                    headerRange.Style.WrapText = true; //设置文字自动换行
+
+                    if (excelWorksheet.AutoFilter.Address == null) // 如果自动筛选区域为null（未开启自动筛选），则将表头最后一行的自动筛选设为true
+                    {
+                        excelWorksheet.Cells[headerRowCount, 1, headerRowCount, columnCount].AutoFilter = true;
+                    }
+
+                    for (int i = 1; i <= headerRowCount; i++) //遍历表头所有行
+                    {
+                        ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, columnCount]; //将当前行所有单元格赋值给表头行单元格变量
+
+                        int mergedCellCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
+                        //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
+                        bool isRowMerged = mergedCellCount >= headerRowCells.Count() * 0.75 ? true : false;
+                        //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
+                        ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
+
+                        //设置当前行所有单元格的边框
+                        headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
+                        headerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
+                        headerRowCells.Style.Border.Left.Style = borderStyle;
+                        headerRowCells.Style.Border.Right.Style = borderStyle;
+                        headerRowCells.Style.Border.Bottom.Style = borderStyle;
+
+                        excelWorksheet.Rows[i].CustomHeight = false; //设置当前行“是否手动调整行高”为false（即为自动）
+
+                    }
+
+                }
+
+                // 将Excel工作表除去表头、表尾的区域赋值给记录区域变量
+                ExcelRange recordRange = excelWorksheet.Cells[headerRowCount + 1, 1, rowCount - footerRowCount, columnCount];
+
+                // 设置记录区域字体、对齐
+                recordRange.Style.Font.Name = appSettings.WorksheetFontName;
+                recordRange.Style.Font.Size = (float)appSettings.WorksheetFontSize;
+                recordRange.Style.Font.Bold = false;
+                recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
+                recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
+                recordRange.Style.WrapText = true; //设置文字自动换行
+
+                // 设置记录区域边框、内部单元格边框为单细线
+                recordRange.Style.Border.BorderAround(ExcelBorderStyle.Thin); //设置整个区域最外侧的边框
+                recordRange.Style.Border.Top.Style = ExcelBorderStyle.Thin; //设置区域内部所有单元格的边框
+                recordRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                recordRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                recordRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+
+                //设置列宽
+                double fullWidth = 0; //全表格宽度赋值为0
+
+                int firstRefRowIndex = Math.Max(1, headerRowCount); //获取起始参考行的索引号：表头最末行的索引号，如果小于1，则限定为1
+                //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
+                int lastRefRowIndex = Math.Max(firstRefRowIndex, rowCount - footerRowCount);
+
+                for (int j = 1; j <= columnCount; j++) //遍历所有列
+                {
+                    if (!excelWorksheet.Columns[j].Hidden) //如果当前列不为隐藏列
+                    {
+                        ExcelRange columnCells = excelWorksheet.Cells[firstRefRowIndex, j, lastRefRowIndex, j]; //将当前列起始参考行至最末参考行的单元格赋值给列单元格集合变量
+                        //从列单元格集合变量中筛选出文本不为null或全空白字符且不是合并的单元格，赋值给合格单元格集合变量
+                        IEnumerable<ExcelRangeBase> qualifiedCells = columnCells.Where(cell => !string.IsNullOrWhiteSpace(cell.Text) && !cell.Merge);
+                        //计算当前列所有合格单元格的字符数平均值：如果合格单元格集合不为空，则得到所有单元格字符数的平均值，否则得到0
+                        double averageCharacterCount = qualifiedCells.Any() ? qualifiedCells.Average(cell => cell.Text.Length) : 0;
+                        excelWorksheet.Columns[j].Style.WrapText = false; //设置当前列文字自动换行为false
+                        excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（能完整显示文字的最适合列宽）
+                        excelWorksheet.Columns[j].Style.WrapText = true; //设置当前列文字自动换行
+                        //在当前列最合适列宽、基于单元格字符数平均值计算出的列宽中取较小值（并限制在8-40的范围），赋值给列宽变量
+                        double columnWidth = Math.Min(excelWorksheet.Columns[j].Width, averageCharacterCount * 2 + 2).Clamp<double>(6, 36);
+                        excelWorksheet.Columns[j].Width = columnWidth; //设置当前列的列宽
+
+                        fullWidth += columnWidth; //将当前列列宽累加至全表格宽度
+                    }
+                }
+
+                //设置记录区域行高
+                for (int i = headerRowCount + 1; i <= rowCount - footerRowCount; i++) //遍历除去表头、表尾的所有行
+                {
+                    if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
+                    {
+                        excelWorksheet.Rows[i].CustomHeight = false;
+                    }
+                }
+
+                // 设置表尾格式
+                if (footerRowCount >= 1) //如果表尾行数大于等于1
+                {
+                    ExcelRange footerRange = excelWorksheet.Cells[rowCount - footerRowCount + 1, 1, rowCount, columnCount]; //将表尾区域赋值给表尾区域变量
+
+                    // 设置表尾区域字体、对齐
+                    footerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
+                    footerRange.Style.Font.Size = (float)appSettings.WorksheetFontSize; // 获取应用程序设置中的字体大小
+
+                    footerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left; //单元格内容水平左对齐
+                    footerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
+                    footerRange.Style.WrapText = true; //设置文字自动换行
+
+                    for (int i = rowCount; i >= rowCount - footerRowCount + 1; i--) //遍历表尾所有行
+                    {
+                        ExcelRange footerRowCells = excelWorksheet.Cells[i, 1, i, columnCount]; //将当前行所有单元格赋值给表尾行单元格变量
+
+                        int mergedCellCount = footerRowCells.Count(cell => cell.Merge); // 计算当前表尾行单元格中被合并的单元格数量
+                        //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
+                        bool isRowMerged = mergedCellCount >= footerRowCells.Count() * 0.75 ? true : false;
+                        //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
+                        ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
+
+                        //设置当前行所有单元格的边框
+                        footerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
+                        footerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
+                        footerRowCells.Style.Border.Left.Style = borderStyle;
+                        footerRowCells.Style.Border.Right.Style = borderStyle;
+                        footerRowCells.Style.Border.Bottom.Style = borderStyle;
+
+                        excelWorksheet.Rows[i].CustomHeight = false; //设置当前行“是否手动调整行高”为false（即为自动）
+
+                    }
+
+                }
+
+                //调整纸张、方向、对齐
+                ExcelPrinterSettings printerSettings = excelWorksheet.PrinterSettings; //将Excel工作表打印设置赋值给打印设置变量
+                printerSettings.PaperSize = ePaperSize.A4; // 纸张设置为A4
+                printerSettings.Orientation = fullWidth < 120 ? eOrientation.Portrait : eOrientation.Landscape; //设置纸张方向：如果全表格宽度小于120，为纵向；否则，为横向
+                //printerSettings.PrintArea = usedRange; //设置打印区域为已使用范围
+                printerSettings.HorizontalCentered = true; //表格水平居中对齐
+                printerSettings.VerticalCentered = false; //表格垂直居中对齐为false
+
+                //设置页边距
+                printerSettings.LeftMargin = 1.2 / 2.54;
+                printerSettings.RightMargin = 1.2 / 2.54;
+                printerSettings.TopMargin = 1.2 / 2.54;
+                printerSettings.BottomMargin = 1.2 / 2.54;
+                printerSettings.HeaderMargin = 0.8 / 2.54;
+                printerSettings.FooterMargin = 0.8 / 2.54;
+
+                //设定打印顶端标题行：如果表头行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
+                printerSettings.RepeatRows = headerRowCount >= 1 ? new ExcelAddress($"$1:${headerRowCount}") : new ExcelAddress("");
+                //设定打印左侧重复列为A列
+                //printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
+
+                // 设置页脚
+                string footerText = "P&P / &N"; //设置页码
+                excelWorksheet.HeaderFooter.OddFooter.CenteredText = footerText; // 设置奇数页页脚
+                excelWorksheet.HeaderFooter.EvenFooter.CenteredText = footerText; // 设置偶数页页脚
+
+                // 设置视图和打印版式
+                ExcelWorksheetView view = excelWorksheet.View; //将Excel工作表视图设置赋值给视图设置变量
+                view.UnFreezePanes(); //取消冻结窗格
+                view.FreezePanes(headerRowCount + 1, 1); // 冻结表头行（参数指定第一个不要冻结的单元格）
+                view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
+                printerSettings.FitToPage = true; // 启用适应页面的打印设置
+                printerSettings.FitToWidth = 1; // 设置缩放为几页宽，1代表即所有列都将打印在一页上
+                printerSettings.FitToHeight = 0; // 设置缩放为几页高，0代表打印页数不受限制，可能会跨越多页
+                printerSettings.PageOrder = ePageOrder.OverThenDown; // 将打印顺序设为“先行后列”
+                view.PageLayoutView = false; // 将页面布局视图设为false（即普通视图）
+
             }
 
             catch (Exception)
             {
                 throw;
             }
-
-        }
-
-        public static void FormatExcelWorksheet(ExcelWorksheet excelWorksheet, int headerRowCount = 0, int footerRowCount = 0)
-        {
-            if (excelWorksheet.Dimension == null) //如果Excel工作表为空，则结束本过程
-            {
-                return;
-            }
-
-            foreach (ExcelRangeBase cell in excelWorksheet.Cells[excelWorksheet.Dimension.Address]) //遍历所有已使用的单元格
-            {
-                //如果当前单元格是合并单元格、值是字符串且不含公式，则将文字中的换行符替换为空格后，重新赋值给单元格（避免自动调整行高时文字显示不全）
-                if (cell.Merge && cell.Value is string && string.IsNullOrWhiteSpace(cell.Formula))
-                {
-                    cell.Value = cell.Text.Replace('\n', ' ');
-                }
-            }
-
-            // 获取Excel工作表行数和列数
-            int rowCount = excelWorksheet.Dimension.End.Row;
-            int columnCount = excelWorksheet.Dimension.End.Column;
-
-            //设置表头格式、自动筛选
-            if (headerRowCount >= 1) //如果表头行数大于等于1
-            {
-                ExcelRange headerRange = excelWorksheet.Cells[1, 1, headerRowCount, columnCount]; //将表头区域赋值给表头区域变量
-
-                // 设置表头区域字体、对齐
-                headerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
-                headerRange.Style.Font.Size = (float)appSettings.WorksheetFontSize; // 获取应用程序设置中的字体大小
-                headerRange.Style.Font.Bold = true; //表头区域字体加粗
-                headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
-                headerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
-                headerRange.Style.WrapText = true; //设置文字自动换行
-
-                if (excelWorksheet.AutoFilter.Address == null) // 如果自动筛选区域为null（未开启自动筛选），则将表头最后一行的自动筛选设为true
-                {
-                    excelWorksheet.Cells[headerRowCount, 1, headerRowCount, columnCount].AutoFilter = true;
-                }
-
-                for (int i = 1; i <= headerRowCount; i++) //遍历表头所有行
-                {
-                    ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, columnCount]; //将当前行所有单元格赋值给表头行单元格变量
-
-                    int mergedCellCount = headerRowCells.Count(cell => cell.Merge); // 计算当前表头行单元格中被合并的单元格数量
-                    //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellCount >= headerRowCells.Count() * 0.75 ? true : false;
-                    //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
-                    ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
-
-                    //设置当前行所有单元格的边框
-                    headerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
-                    headerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
-                    headerRowCells.Style.Border.Left.Style = borderStyle;
-                    headerRowCells.Style.Border.Right.Style = borderStyle;
-                    headerRowCells.Style.Border.Bottom.Style = borderStyle;
-
-                    excelWorksheet.Rows[i].CustomHeight = false; //设置当前行“是否手动调整行高”为false（即为自动）
-
-                }
-
-            }
-
-            // 将Excel工作表除去表头、表尾的区域赋值给记录区域变量
-            ExcelRange recordRange = excelWorksheet.Cells[headerRowCount + 1, 1, rowCount - footerRowCount, columnCount];
-
-            // 设置记录区域字体、对齐
-            recordRange.Style.Font.Name = appSettings.WorksheetFontName;
-            recordRange.Style.Font.Size = (float)appSettings.WorksheetFontSize;
-            recordRange.Style.Font.Bold = false;
-            recordRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; //单元格内容水平居中对齐
-            recordRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
-            recordRange.Style.WrapText = true; //设置文字自动换行
-
-            // 设置记录区域边框、内部单元格边框为单细线
-            recordRange.Style.Border.BorderAround(ExcelBorderStyle.Thin); //设置整个区域最外侧的边框
-            recordRange.Style.Border.Top.Style = ExcelBorderStyle.Thin; //设置区域内部所有单元格的边框
-            recordRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            recordRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            recordRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-
-            //设置列宽
-            double fullWidth = 0; //全表格宽度赋值为0
-
-            int firstRefRowIndex = Math.Max(1, headerRowCount); //获取起始参考行的索引号：表头最末行的索引号，如果小于1，则限定为1
-            //获取最末参考行的索引号：除去表尾后余下行的最后一行的索引号，如果小于起始参考行的索引号，则限定为起始参考行的索引号
-            int lastRefRowIndex = Math.Max(firstRefRowIndex, rowCount - footerRowCount);
-
-            for (int j = 1; j <= columnCount; j++) //遍历所有列
-            {
-                if (!excelWorksheet.Columns[j].Hidden) //如果当前列不为隐藏列
-                {
-                    ExcelRange columnCells = excelWorksheet.Cells[firstRefRowIndex, j, lastRefRowIndex, j]; //将当前列起始参考行至最末参考行的单元格赋值给列单元格集合变量
-                    //从列单元格集合变量中筛选出文本不为null或全空白字符且不是合并的单元格，赋值给合格单元格集合变量
-                    IEnumerable<ExcelRangeBase> qualifiedCells = columnCells.Where(cell => !string.IsNullOrWhiteSpace(cell.Text) && !cell.Merge);
-                    //计算当前列所有合格单元格的字符数平均值：如果合格单元格集合不为空，则得到所有单元格字符数的平均值，否则得到0
-                    double averageCharacterCount = qualifiedCells.Any() ? qualifiedCells.Average(cell => cell.Text.Length) : 0;
-                    excelWorksheet.Columns[j].Style.WrapText = false; //设置当前列文字自动换行为false
-                    excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（能完整显示文字的最适合列宽）
-                    excelWorksheet.Columns[j].Style.WrapText = true; //设置当前列文字自动换行
-                    //在当前列最合适列宽、基于单元格字符数平均值计算出的列宽中取较小值（并限制在8-40的范围），赋值给列宽变量
-                    double columnWidth = Math.Min(excelWorksheet.Columns[j].Width, averageCharacterCount * 2 + 2).Clamp<double>(6, 36);
-                    excelWorksheet.Columns[j].Width = columnWidth; //设置当前列的列宽
-
-                    fullWidth += columnWidth; //将当前列列宽累加至全表格宽度
-                }
-            }
-
-            //设置记录区域行高
-            for (int i = headerRowCount + 1; i <= rowCount - footerRowCount; i++) //遍历除去表头、表尾的所有行
-            {
-                if (!excelWorksheet.Rows[i].Hidden)  // 如果当前行没有被隐藏，设置当前行“是否手动调整行高”为false（即为自动）
-                {
-                    excelWorksheet.Rows[i].CustomHeight = false;
-                }
-            }
-
-            // 设置表尾格式
-            if (footerRowCount >= 1) //如果表尾行数大于等于1
-            {
-                ExcelRange footerRange = excelWorksheet.Cells[rowCount - footerRowCount + 1, 1, rowCount, columnCount]; //将表尾区域赋值给表尾区域变量
-
-                // 设置表尾区域字体、对齐
-                footerRange.Style.Font.Name = appSettings.WorksheetFontName; // 获取应用程序设置中的字体名称
-                footerRange.Style.Font.Size = (float)appSettings.WorksheetFontSize; // 获取应用程序设置中的字体大小
-
-                footerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left; //单元格内容水平左对齐
-                footerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center; //单元格内容垂直居中对齐
-                footerRange.Style.WrapText = true; //设置文字自动换行
-
-                for (int i = rowCount; i >= rowCount - footerRowCount + 1; i--) //遍历表尾所有行
-                {
-                    ExcelRange footerRowCells = excelWorksheet.Cells[i, 1, i, columnCount]; //将当前行所有单元格赋值给表尾行单元格变量
-
-                    int mergedCellCount = footerRowCells.Count(cell => cell.Merge); // 计算当前表尾行单元格中被合并的单元格数量
-                    //获取“行单元格是否合并”值：如果被合并的单元格数量占当前行所有单元格的75%以上，得到true；否则得到false
-                    bool isRowMerged = mergedCellCount >= footerRowCells.Count() * 0.75 ? true : false;
-                    //获取边框样式：如果行单元格被合并，则得到无边框样式；否则得到细线边框样式
-                    ExcelBorderStyle borderStyle = isRowMerged ? ExcelBorderStyle.None : ExcelBorderStyle.Thin;
-
-                    //设置当前行所有单元格的边框
-                    footerRowCells.Style.Border.BorderAround(borderStyle); //设置当前单元格最外侧的边框为之前获取的边框样式
-                    footerRowCells.Style.Border.Top.Style = borderStyle; //设置当前单元格顶部的边框为之前获取的边框样式
-                    footerRowCells.Style.Border.Left.Style = borderStyle;
-                    footerRowCells.Style.Border.Right.Style = borderStyle;
-                    footerRowCells.Style.Border.Bottom.Style = borderStyle;
-
-                    excelWorksheet.Rows[i].CustomHeight = false; //设置当前行“是否手动调整行高”为false（即为自动）
-
-                }
-
-            }
-
-            //调整纸张、方向、对齐
-            ExcelPrinterSettings printerSettings = excelWorksheet.PrinterSettings; //将Excel工作表打印设置赋值给打印设置变量
-            printerSettings.PaperSize = ePaperSize.A4; // 纸张设置为A4
-            printerSettings.Orientation = fullWidth < 120 ? eOrientation.Portrait : eOrientation.Landscape; //设置纸张方向：如果全表格宽度小于120，为纵向；否则，为横向
-            //printerSettings.PrintArea = usedRange; //设置打印区域为已使用范围
-            printerSettings.HorizontalCentered = true; //表格水平居中对齐
-            printerSettings.VerticalCentered = false; //表格垂直居中对齐为false
-
-            //设置页边距
-            printerSettings.LeftMargin = 1.2 / 2.54;
-            printerSettings.RightMargin = 1.2 / 2.54;
-            printerSettings.TopMargin = 1.2 / 2.54;
-            printerSettings.BottomMargin = 1.2 / 2.54;
-            printerSettings.HeaderMargin = 0.8 / 2.54;
-            printerSettings.FooterMargin = 0.8 / 2.54;
-
-            //设定打印顶端标题行：如果表头行数大于等于1，则设为第1行起到表头最后一行的区域；否则设为空（取消顶端标题行）
-            printerSettings.RepeatRows = headerRowCount >= 1 ? new ExcelAddress($"$1:${headerRowCount}") : new ExcelAddress("");
-            //设定打印左侧重复列为A列
-            //printerSettings.RepeatColumns = new ExcelAddress($"$A:$A");
-
-            // 设置页脚
-            string footerText = "P&P / &N"; //设置页码
-            excelWorksheet.HeaderFooter.OddFooter.CenteredText = footerText; // 设置奇数页页脚
-            excelWorksheet.HeaderFooter.EvenFooter.CenteredText = footerText; // 设置偶数页页脚
-
-            // 设置视图和打印版式
-            ExcelWorksheetView view = excelWorksheet.View; //将Excel工作表视图设置赋值给视图设置变量
-            view.UnFreezePanes(); //取消冻结窗格
-            view.FreezePanes(headerRowCount + 1, 1); // 冻结表头行（参数指定第一个不要冻结的单元格）
-            view.PageLayoutView = true; // 将工作表视图设置为页面布局视图
-            printerSettings.FitToPage = true; // 启用适应页面的打印设置
-            printerSettings.FitToWidth = 1; // 设置缩放为几页宽，1代表即所有列都将打印在一页上
-            printerSettings.FitToHeight = 0; // 设置缩放为几页高，0代表打印页数不受限制，可能会跨越多页
-            printerSettings.PageOrder = ePageOrder.OverThenDown; // 将打印顺序设为“先行后列”
-            view.PageLayoutView = false; // 将页面布局视图设为false（即普通视图）
         }
 
         public static string? GetKeyColumnLetter()
@@ -535,65 +535,131 @@ namespace COMIGHT
 
         }
 
-        public static DataTable? ReadExcelWorksheetIntoDataTable(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
+
+        public static async Task<DataTable?> ReadExcelWorksheetIntoDataTable(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
         {
-            try
+            Task<DataTable?> task = Task.Run(() => Process());
+            DataTable? Process()
             {
-                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) // 打开Excel文件，赋值给Excel包变量
+                try
                 {
-                    ExcelWorksheet? excelWorksheet = null;
-                    switch (worksheetID) //根据worksheetID变量类型进入相应的分支
+                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) // 打开Excel文件，赋值给Excel包变量
                     {
-                        case int index: //如果为整数，则赋值给索引号变量
-                            excelWorksheet = excelPackage.Workbook.Worksheets[index]; //将指定索引号的Excel工作表赋值给Excel工作表变量（Excel工作表索引号从1开始，EPPlus从0开始）
-                            break;
-                        case string name: //如果为字符串，则赋值给名称变量
-                            excelWorksheet = excelPackage.Workbook.Worksheets[name]; //将指定名称的Excel工作表赋值给Excel工作表变量
-                            break;
-                        default: //以上均不符合，则抛出异常
-
-                            throw new Exception("Parameter error.");
-                    }
-
-                    TrimCellStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
-                    RemoveWorksheetEmptyRowsAndColumns(excelWorksheet!); //删除Excel工作表内所有空白行和空白列
-                    if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
-                    {
-                        return null;
-                    }
-
-                    foreach (ExcelRangeBase cell in excelWorksheet.Cells[excelWorksheet.Dimension!.Address]) //遍历已使用区域的所有单元格
-                    {
-                        //移除当前单元格文本首尾空白字符后重新赋值给当前单元格（所有单元格均转为文本型）
-                        cell.Value = cell.Text.Trim();
-                    }
-
-                    MergeExcelWorksheetHeader(excelWorksheet, headerRowCount); //将多行表头合并为单行
-
-                    DataTable dataTable = new DataTable(); // 定义DataTable变量
-                    //读取Excel工作表并载入DataTable（第一行为表头，跳过表尾指定行数，将所有错误值视为空值，总是允许无效值）
-                    dataTable = excelWorksheet.Cells[excelWorksheet.Dimension.Address].ToDataTable(
-                        o =>
+                        ExcelWorksheet? excelWorksheet = null;
+                        switch (worksheetID) //根据worksheetID变量类型进入相应的分支
                         {
-                            o.FirstRowIsColumnNames = true;
-                            o.SkipNumberOfRowsEnd = footerRowCount;
-                            o.ExcelErrorParsingStrategy = ExcelErrorParsingStrategy.HandleExcelErrorsAsBlankCells;
-                            o.AlwaysAllowNull = true;
-                        });
+                            case int index: //如果为整数，则赋值给索引号变量
+                                excelWorksheet = excelPackage.Workbook.Worksheets[index]; //将指定索引号的Excel工作表赋值给Excel工作表变量（Excel工作表索引号从1开始，EPPlus从0开始）
+                                break;
+                            case string name: //如果为字符串，则赋值给名称变量
+                                excelWorksheet = excelPackage.Workbook.Worksheets[name]; //将指定名称的Excel工作表赋值给Excel工作表变量
+                                break;
+                            default: //以上均不符合，则抛出异常
 
-                    dataTable = RemoveDataTableEmptyRowsAndColumns(dataTable); // 删除DataTable内所有空白行和空白列
+                                throw new Exception("Parameter error.");
+                        }
 
-                    //将DataTable赋值给函数返回值：如果DataTable的数据行和列数均不为0，则得到DataTable；否则得到null
-                    return (dataTable.Rows.Count * dataTable.Columns.Count > 0) ? dataTable : null;
+                        TrimCellStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
+                        RemoveWorksheetEmptyRowsAndColumns(excelWorksheet!); //删除Excel工作表内所有空白行和空白列
+                        if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
+                        {
+                            return null;
+                        }
+
+                        foreach (ExcelRangeBase cell in excelWorksheet.Cells[excelWorksheet.Dimension!.Address]) //遍历已使用区域的所有单元格
+                        {
+                            //移除当前单元格文本首尾空白字符后重新赋值给当前单元格（所有单元格均转为文本型）
+                            cell.Value = cell.Text.Trim();
+                        }
+
+                        MergeExcelWorksheetHeader(excelWorksheet, headerRowCount); //将多行表头合并为单行
+
+                        DataTable dataTable = new DataTable(); // 定义DataTable变量
+                                                               //读取Excel工作表并载入DataTable（第一行为表头，跳过表尾指定行数，将所有错误值视为空值，总是允许无效值）
+                        dataTable = excelWorksheet.Cells[excelWorksheet.Dimension.Address].ToDataTable(
+                            o =>
+                            {
+                                o.FirstRowIsColumnNames = true;
+                                o.SkipNumberOfRowsEnd = footerRowCount;
+                                o.ExcelErrorParsingStrategy = ExcelErrorParsingStrategy.HandleExcelErrorsAsBlankCells;
+                                o.AlwaysAllowNull = true;
+                            });
+
+                        dataTable = RemoveDataTableEmptyRowsAndColumns(dataTable); // 删除DataTable内所有空白行和空白列
+
+                        //将DataTable赋值给函数返回值：如果DataTable的数据行和列数均不为0，则得到DataTable；否则得到null
+                        return (dataTable.Rows.Count * dataTable.Columns.Count > 0) ? dataTable : null;
+                    }
+                }
+
+                catch (Exception) // 捕获错误
+                {
+                    return null; //函数返回值赋值为null
                 }
             }
 
-            catch (Exception) // 捕获错误
-            {
-                return null; //函数返回值赋值为null
-            }
-
+            return await task; 
         }
+
+        //public static DataTable? ReadExcelWorksheetIntoDataTable(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
+        //{
+        //    try
+        //    {
+        //        using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) // 打开Excel文件，赋值给Excel包变量
+        //        {
+        //            ExcelWorksheet? excelWorksheet = null;
+        //            switch (worksheetID) //根据worksheetID变量类型进入相应的分支
+        //            {
+        //                case int index: //如果为整数，则赋值给索引号变量
+        //                    excelWorksheet = excelPackage.Workbook.Worksheets[index]; //将指定索引号的Excel工作表赋值给Excel工作表变量（Excel工作表索引号从1开始，EPPlus从0开始）
+        //                    break;
+        //                case string name: //如果为字符串，则赋值给名称变量
+        //                    excelWorksheet = excelPackage.Workbook.Worksheets[name]; //将指定名称的Excel工作表赋值给Excel工作表变量
+        //                    break;
+        //                default: //以上均不符合，则抛出异常
+
+        //                    throw new Exception("Parameter error.");
+        //            }
+
+        //            TrimCellStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
+        //            RemoveWorksheetEmptyRowsAndColumns(excelWorksheet!); //删除Excel工作表内所有空白行和空白列
+        //            if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
+        //            {
+        //                return null;
+        //            }
+
+        //            foreach (ExcelRangeBase cell in excelWorksheet.Cells[excelWorksheet.Dimension!.Address]) //遍历已使用区域的所有单元格
+        //            {
+        //                //移除当前单元格文本首尾空白字符后重新赋值给当前单元格（所有单元格均转为文本型）
+        //                cell.Value = cell.Text.Trim();
+        //            }
+
+        //            MergeExcelWorksheetHeader(excelWorksheet, headerRowCount); //将多行表头合并为单行
+
+        //            DataTable dataTable = new DataTable(); // 定义DataTable变量
+        //            //读取Excel工作表并载入DataTable（第一行为表头，跳过表尾指定行数，将所有错误值视为空值，总是允许无效值）
+        //            dataTable = excelWorksheet.Cells[excelWorksheet.Dimension.Address].ToDataTable(
+        //                o =>
+        //                {
+        //                    o.FirstRowIsColumnNames = true;
+        //                    o.SkipNumberOfRowsEnd = footerRowCount;
+        //                    o.ExcelErrorParsingStrategy = ExcelErrorParsingStrategy.HandleExcelErrorsAsBlankCells;
+        //                    o.AlwaysAllowNull = true;
+        //                });
+
+        //            dataTable = RemoveDataTableEmptyRowsAndColumns(dataTable); // 删除DataTable内所有空白行和空白列
+
+        //            //将DataTable赋值给函数返回值：如果DataTable的数据行和列数均不为0，则得到DataTable；否则得到null
+        //            return (dataTable.Rows.Count * dataTable.Columns.Count > 0) ? dataTable : null;
+        //        }
+        //    }
+
+        //    catch (Exception) // 捕获错误
+        //    {
+        //        return null; //函数返回值赋值为null
+        //    }
+
+        //}
 
         public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
         {

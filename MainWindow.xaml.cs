@@ -85,9 +85,9 @@ namespace COMIGHT
             BatchConvertOfficeFileTypes();
         }
 
-        private void MnuBatchCreateFolders_Click(object sender, RoutedEventArgs e)
+        private async void MnuBatchCreateFolders_Click(object sender, RoutedEventArgs e)
         {
-            BatchCreateFolders();
+            await BatchCreateFolders();
         }
 
         private void MnuBatchCreatePlaceCards_Click(object sender, RoutedEventArgs e)
@@ -95,9 +95,9 @@ namespace COMIGHT
             BatchCreatePlaceCards();
         }
 
-        private void MnuBatchExtractTablesFromWord_Click(object sender, RoutedEventArgs e)
+        private async void MnuBatchExtractTablesFromWord_Click(object sender, RoutedEventArgs e)
         {
-            BatchExtractTablesFromWord();
+            await BatchExtractTablesFromWordAsync();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -129,14 +129,14 @@ namespace COMIGHT
             }
         }
 
-        private void MnuCompareExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        private async void MnuCompareExcelWorksheets_Click(object sender, RoutedEventArgs e)
         {
-            CompareExcelWorksheets();
+            await CompareExcelWorksheets();
         }
 
-        private void MnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
+        private async void MnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
         {
-            ConvertMarkdownIntoWord();
+            await ConvertMarkdownIntoWordAsync();
         }
 
         private void MnuCreateFileList_Click(object sender, RoutedEventArgs e)
@@ -156,7 +156,7 @@ namespace COMIGHT
 
         private async void MnuMergeDataIntoDocument_Click(object sender, RoutedEventArgs e)
         {
-            await MergeDataIntoDocument();
+            await MergeDataIntoDocumentAsync();
         }
 
         private void MnuOpenSavingFolder_Click(object sender, RoutedEventArgs e)
@@ -486,11 +486,9 @@ namespace COMIGHT
             {
                 ShowExceptionMessage(ex);
             }
-
         }
 
-
-        private void BatchExtractTablesFromWord()
+        private async Task BatchExtractTablesFromWordAsync()
         {
             try
             {
@@ -500,16 +498,7 @@ namespace COMIGHT
                     return;
                 }
 
-                foreach (string filePath in filePaths) // 遍历所有文件
-                {
-                    if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过并进入下一个循环
-                    {
-                        continue;
-                    }
-
-                    string targetExcelFilePath = Path.Combine(appSettings.SavingFolderPath, $"{CleanFileAndFolderName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径全名
-                    ExtractTablesFromWordToExcel(filePath, targetExcelFilePath); // 从Word文档中提取表格并保存为目标Excel工作簿
-                }
+                await taskManager.RunTaskAsync(() => BatchExtractTablesFromWordHelperAsync(filePaths));
 
                 ShowSuccessMessage();
             }
@@ -518,6 +507,35 @@ namespace COMIGHT
             {
                 ShowExceptionMessage(ex);
             }
+        }
+
+        private static async Task BatchExtractTablesFromWordHelperAsync(List<string> filePaths)
+        {
+
+            Task task = Task.Run(() => Process());
+            async Task Process()
+            {
+                try
+                {
+                    foreach (string filePath in filePaths) // 遍历所有文件
+                    {
+                        if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过并进入下一个循环
+                        {
+                            continue;
+                        }
+
+                        string targetExcelFilePath = Path.Combine(appSettings.SavingFolderPath, $"{CleanFileAndFolderName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径全名
+                        await ExtractTablesFromWordToExcelAsync(filePath, targetExcelFilePath); // 从Word文档中提取表格并保存为目标Excel工作簿
+                    }
+                }
+
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            await task;
         }
 
         private async Task BatchFormatWordDocumentsAsync()
@@ -951,7 +969,7 @@ namespace COMIGHT
 
         }
 
-        private void CompareExcelWorksheets()
+        private async Task CompareExcelWorksheets()
         {
             try
             {
@@ -988,8 +1006,8 @@ namespace COMIGHT
                     for (int i = worksheetStartIndex; i <= worksheetEndIndex; i++)
                     {
 
-                        DataTable? startDataTable = ReadExcelWorksheetIntoDataTable(startFilePaths[0], i, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
-                        DataTable? endDataTable = ReadExcelWorksheetIntoDataTable(endFilePaths[0], i, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
+                        DataTable? startDataTable = await ReadExcelWorksheetIntoDataTable(startFilePaths[0], i, headerRowCount, footerRowCount); //读取起始数据Excel工作簿的第1张工作表，赋值给起始DataTable变量
+                        DataTable? endDataTable = await ReadExcelWorksheetIntoDataTable(endFilePaths[0], i, headerRowCount, footerRowCount); //读取终点数据Excel工作簿的第1张工作表，赋值给终点DataTable变量
 
                         if (startDataTable == null || endDataTable == null) //如果起始DataTable或终点DataTable有一个为null，则直接退出循环
                         {
@@ -1114,7 +1132,7 @@ namespace COMIGHT
             }
         }
 
-        private void ConvertMarkdownIntoWord()
+        private async Task ConvertMarkdownIntoWordAsync()
         {
             try
             {
@@ -1148,12 +1166,12 @@ namespace COMIGHT
                 {
                     //ImagesBaseUri = Path.GetDirectoryName(targetMDFilePath)  // 设置图片的路径
                 };
-                converter.ToDocx(markdown, targetWordFilePath); // 将Markdown文档转换成Word文档
+                converter.ToDocx(markdown, targetWordFilePath, append:false); // 将Markdown文档转换成Word文档
 
                 // 提取目标Word文档中的表格并转存为目标Excel文档
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径全名
 
-                ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档
+                await ExtractTablesFromWordToExcelAsync(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档
 
                 ShowSuccessMessage();
             }
@@ -1258,7 +1276,7 @@ namespace COMIGHT
             }
         }
 
-        private void BatchCreateFolders()
+        private async Task BatchCreateFolders()
         {
             try
             {
@@ -1268,7 +1286,7 @@ namespace COMIGHT
                     return;
                 }
 
-                DataTable? dataTable = ReadExcelWorksheetIntoDataTable(filePaths[0], 0); //读取Excel工作簿的第1张（0号）工作表，赋值给DataTable变量
+                DataTable? dataTable = await ReadExcelWorksheetIntoDataTable(filePaths[0], 0); //读取Excel工作簿的第1张（0号）工作表，赋值给DataTable变量
 
                 if (dataTable == null) //如果DataTable为null，则抛出异常
                 {
@@ -1456,7 +1474,7 @@ namespace COMIGHT
             }
         }
 
-        private async Task MergeDataIntoDocument()
+        private async Task MergeDataIntoDocumentAsync()
         {
             try
             {
@@ -1486,8 +1504,8 @@ namespace COMIGHT
 
         private static async Task MergeDataIntoDocumentHelperAsync(List<string> filePaths)
         {
-            Task task = Task.Run(() => process());
-            void process()
+            Task task = Task.Run(() => Process());
+            void Process()
             {
                 try
                 {

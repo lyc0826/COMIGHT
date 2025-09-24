@@ -474,7 +474,7 @@ namespace COMIGHT
                             selection.MoveStart(WdUnits.wdLine, -5); // 选区向上扩大5行
 
                             // 定义表格上方标题正则表达式变量
-                            Regex regExTableTitle = new Regex(tableTitleRegEx, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                            //Regex regExTableTitle = new Regex(tableTitleRegEx, RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
                             MatchCollection matchesTableTitles = regExTableTitle.Matches(selection.Text); // 获取选区文字经过表格上方标题正则表达式匹配的结果
 
@@ -622,6 +622,7 @@ namespace COMIGHT
             }
 
             await task;
+
         }
 
         public static async Task BatchRepairWordDocumentsHelperAsync(List<string> filePaths)
@@ -657,6 +658,7 @@ namespace COMIGHT
             }
 
             await task;
+            
         }
 
     }
