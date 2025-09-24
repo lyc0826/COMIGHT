@@ -529,7 +529,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsAsyncHelper(filePaths)); // 调用任务管理器执行批量格式化Word文档的方法
+                await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsHelperAsync(filePaths)); // 调用任务管理器执行批量格式化Word文档的方法
                 ShowSuccessMessage();
             }
 
@@ -550,7 +550,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchRepairWordDocumentsAsyncHelper(filePaths)); // 调用任务管理器执行批量修复Word文档的方法
+                await taskManager.RunTaskAsync(() => BatchRepairWordDocumentsHelperAsync(filePaths)); // 调用任务管理器执行批量修复Word文档的方法
                 ShowSuccessMessage();
             }
 

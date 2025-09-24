@@ -18,7 +18,7 @@ namespace COMIGHT
 {
     public partial class MSOfficeInterop
     {
-        public static async Task BatchFormatWordDocumentsAsyncHelper(List<string> filePaths)
+        public static async Task BatchFormatWordDocumentsHelperAsync(List<string> filePaths)
         {
             Task task = Task.Run(() => process()); // 创建一个异步任务，执行过程为process()
             void process()
@@ -624,7 +624,7 @@ namespace COMIGHT
             await task;
         }
 
-        public static async Task BatchRepairWordDocumentsAsyncHelper(List<string> filePaths)
+        public static async Task BatchRepairWordDocumentsHelperAsync(List<string> filePaths)
         {
             Task task = Task.Run(() => process());
             void process()
