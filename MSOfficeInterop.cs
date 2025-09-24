@@ -655,6 +655,7 @@ namespace COMIGHT
                     KillOfficeApps(new object[] { msWordApp });
                 }
             }
+
             await task;
         }
 
