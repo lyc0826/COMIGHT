@@ -12,7 +12,6 @@ namespace COMIGHT
         private readonly DispatcherTimer timer = new DispatcherTimer();
         private readonly List<Task> lstTasks = new List<Task>();
         private int _activeTasksCount; // 定义活动任务数私有字段
-        private string _statusText = ""; // 定义状态文字私有字段
                                        
         private int ActiveTasksCount // 定义 ActiveTasksCount 属性
         {
@@ -21,7 +20,7 @@ namespace COMIGHT
         }
 
         // 获取StatusText的值：当 ActiveTasksCount 大于 0 时，返回 "Operation in progress..."，否则返回 "Idle"
-        public string StatusText => ActiveTasksCount > 0 ? _statusText : "Active";
+        public string StatusText => ActiveTasksCount > 0 ? "Task Running in Backgroud..." : "No Task Running in Backgroud.";
         //显示当前时间
 
         public TaskManager()
@@ -41,10 +40,8 @@ namespace COMIGHT
             ActiveTasksCount = lstTasks.Count(t => !t.IsCompleted); // 获取当前激活的任务数量，等于任务列表的元素数量
         }
 
-        public async Task RunTaskAsync(Func<Task> taskFunc, string statusText = "Operation in progress...")
+        public async Task RunTaskAsync(Func<Task> taskFunc)
         {
-            this._statusText = statusText; // 设置任务状态文本
-
             var task = taskFunc(); // 创建任务
             lstTasks.Add(task); // 将任务添加到任务列表中
             UpdateActiveTasksCount(); // 任务开始时立即更新一次，提供即时反馈
