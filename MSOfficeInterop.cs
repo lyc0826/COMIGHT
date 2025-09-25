@@ -20,8 +20,8 @@ namespace COMIGHT
     {
         public static async Task BatchFormatWordDocumentsHelperAsync(List<string> filePaths)
         {
-            Task task = Task.Run(() => process()); // 创建一个异步任务，执行过程为process()
-            void process()
+            Task task = Task.Run(() => Process()); // 创建一个异步任务，执行过程为process()
+            void Process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
                 msWordApp.ScreenUpdating = false; //关闭屏幕更新
@@ -627,8 +627,8 @@ namespace COMIGHT
 
         public static async Task BatchRepairWordDocumentsHelperAsync(List<string> filePaths)
         {
-            Task task = Task.Run(() => process());
-            void process()
+            Task task = Task.Run(() => Process());
+            void Process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
                 try

@@ -8,11 +8,10 @@ namespace COMIGHT
     {
         // 将枚举值转换为布尔值（用于确定RadioButton是否选中）
         // "value"：源枚举值（来自DataContext中的属性值）
-        // "targetType"：目标类型（应该是typeof(bool)）
+        // "targetType"：目标类型（typeof(bool)）
         // "parameter"：转换参数（来自XAML中ConverterParameter指定的枚举值字符串）
         // "culture"当前区域性信息
         // 如果value与parameter匹配则返回true，否则返回false
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null || parameter == null)
@@ -26,11 +25,10 @@ namespace COMIGHT
 
         // 将布尔值转换回枚举值（当RadioButton被选中时更新源属性）
         // "value" 源布尔值（来自RadioButton的IsChecked属性）
-        // "targetType"目标类型（应该是枚举类型）
+        // "targetType"目标类型（枚举类型）
         // "parameter">转换参数（来自XAML中ConverterParameter指定的枚举值字符串）
         // "culture">当前区域性信息
         // 如果value为true则返回对应的枚举值，否则返回Binding.DoNothing表示不进行更新
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null || parameter == null)
