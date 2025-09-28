@@ -75,7 +75,7 @@ namespace COMIGHT
             }
         }
 
-        private void OnTextBoxChanged(object sender, RoutedEventArgs e)
+        private void TextBoxChanged(object sender, RoutedEventArgs e)
         {
             TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
             if (textBox != null) // 如果事件源对象不为空
@@ -88,7 +88,7 @@ namespace COMIGHT
             }
         }
 
-        private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
+        private void TextBoxLostFocus(object sender, RoutedEventArgs e)
         {
             TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
             if (textBox != null) // 如果事件源对象不为空

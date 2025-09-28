@@ -34,8 +34,8 @@
                         <Setter Property="MinWidth" Value="20"/>
                         <Setter Property="MaxWidth" Value="300"/>
                         <Setter Property="TextWrapping" Value="Wrap"/>
-                        <EventSetter Event="TextChanged" Handler="OnTextBoxChanged"/>
-                        <EventSetter Event="LostFocus" Handler="OnTextBoxLostFocus"/>
+                        <EventSetter Event="TextChanged" Handler="TextBoxChanged"/>
+                        <EventSetter Event="LostFocus" Handler="TextBoxLostFocus"/>
                     </Style>
                     <Style TargetType="CheckBox">
                         <Setter Property="Margin" Value="0,3,0,3"/>
