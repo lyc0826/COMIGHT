@@ -20,7 +20,7 @@ namespace COMIGHT
         }
 
         // 获取StatusText的值：当 ActiveTasksCount 大于 0 时，返回 "Operation in progress..."，否则返回 "Idle"
-        public string StatusText => ActiveTasksCount > 0 ? "Task Running in Backgroud..." : "No Task Running in Backgroud.";
+        public string StatusText => ActiveTasksCount > 0 ? "Task Running in Background..." : "No Task Running in Background.";
         //显示当前时间
 
         public TaskManager()
