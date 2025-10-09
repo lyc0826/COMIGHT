@@ -75,7 +75,7 @@ namespace COMIGHT
             }
         }
 
-        private void TextBoxChanged(object sender, RoutedEventArgs e)
+        private void TextBoxChanged(object sender, RoutedEventArgs e)  // 确保文本框内容改变时，强制更新绑定源
         {
             TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
             if (textBox != null) // 如果事件源对象不为空
