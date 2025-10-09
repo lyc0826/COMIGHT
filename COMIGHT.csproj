@@ -78,13 +78,13 @@
     <PackageReference Include="DocSharp.Common" Version="0.15.0" />
     <PackageReference Include="DocSharp.Docx" Version="0.15.0" />
     <PackageReference Include="DocSharp.Markdown" Version="0.15.0" />
-    <PackageReference Include="EPPlus" Version="8.2.0" />
+    <PackageReference Include="EPPlus" Version="8.2.1" />
     <PackageReference Include="itext" Version="9.3.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0" />
     <PackageReference Include="itext.font-asian" Version="9.3.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3485.44" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="NPOI" Version="2.7.4" />
+    <PackageReference Include="NPOI" Version="2.7.5" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.9" />
   </ItemGroup>
 
