@@ -71,8 +71,8 @@ namespace COMIGHT
 
                     // 定义正则表达式
 
-                    // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-150个，换行符回车符，后方出现：换行符回车符
-                    Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,150}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                    // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-80个，换行符回车符，后方出现：换行符回车符
+                    Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,80}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
                     // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
                     Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
@@ -339,7 +339,7 @@ namespace COMIGHT
                             find.Execute();
                             if (paragraphs[1].Range.Sentences.Count == 1)
                             {
-                                if (!matchCnHeading1_2.Groups[1].Success) //如果正则表达式匹配捕获组失败（ 编号开头不含“（” ）
+                                if (!matchCnHeading1_2.Groups[1].Success) //如果正则表达式匹配捕获组失败（编号开头不含“（” ）
                                 {
                                     paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
                                     font.Name = cnHeading1FontName;

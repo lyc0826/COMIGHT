@@ -75,25 +75,19 @@ namespace COMIGHT
             }
         }
 
-        private void TextBoxChanged(object sender, RoutedEventArgs e)  // 确保文本框内容改变时，强制更新绑定源
-        {
-            TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
-            if (textBox != null) // 如果事件源对象不为空
-            {
-                BindingExpression binding = textBox.GetBindingExpression(TextBox.TextProperty); // 获取TextBox控件文本属性的绑定表达式
-                if (binding != null) // 如果绑定表达式不为空
-                {
-                    binding.UpdateSource(); // 强制触发绑定源更新
-                }
-            }
-        }
-
         private void TextBoxLostFocus(object sender, RoutedEventArgs e)
         {
             TextBox? textBox = e.Source as TextBox; // 将事件源对象转换为TextBox类型
             if (textBox != null) // 如果事件源对象不为空
             {
                 textBox.Text = textBox.Text.Trim(); // 去除文本框中的空格
+
+                // 当文本框失去焦点时，绑定的数据源在Trim之前已经更新，因此Trim以后需要再次强制更新绑定源！！
+                BindingExpression binding = textBox.GetBindingExpression(TextBox.TextProperty); // 获取TextBox控件文本属性的绑定表达式
+                if (binding != null) // 如果绑定表达式不为空
+                {
+                    binding.UpdateSource(); // 强制触发绑定源更新
+                }
             }
         }
 

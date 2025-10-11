@@ -20,10 +20,8 @@ namespace COMIGHT
     public static partial class Methods
     {
 
-        // 定义表格标题正则表达式字符串（需要兼顾常规字符串和Word中的文本）
-        //public static string tableTitleRegEx = @"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)";
-
-        public static Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)[^。：:；;\f\n\r]{0,100}(?:表|单|录|册|回执|table|form|list|roll|roster)[\d\.一二三四五六七八九十〇零（）\(\)：:\-| |\t]*[^。：:；;\f\n\r]{0,100}(?:[\n\r]|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        // 定义表格标题正则表达式（需要兼顾常规字符串和Word中的文本；总长度限制在100个字符内；字符中不允许出现“。；;”）
+        public static Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,100}(?:[\n\r]|$))[^。；;\f\n\r]*(?:表|单|录|册|回执|table|form|list|roll|roster)[^。；;\f\n\r]*(?:[\n\r]|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> //泛型参数T，T必须实现IComparable<T>接口
         {

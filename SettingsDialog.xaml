@@ -18,11 +18,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0,5,0,5" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 
             <StackPanel Orientation="Vertical">
                 
                 <StackPanel.Resources>
+                    
+                    <Style TargetType="Expander">
+                        <Setter Property="IsExpanded" Value="True"/>
+                        <Setter Property="Margin" Value="0,3,0,3"/>
+                        <Setter Property="Background" Value="#F0F0F0"/>
+                    </Style>
                     <Style TargetType="Label">
                         <Setter Property="Margin" Value="0,3,0,3"/>
                     </Style>
@@ -34,7 +40,6 @@
                         <Setter Property="MinWidth" Value="20"/>
                         <Setter Property="MaxWidth" Value="300"/>
                         <Setter Property="TextWrapping" Value="Wrap"/>
-                        <EventSetter Event="TextChanged" Handler="TextBoxChanged"/>
                         <EventSetter Event="LostFocus" Handler="TextBoxLostFocus"/>
                     </Style>
                     <Style TargetType="CheckBox">
@@ -46,11 +51,7 @@
                     <Style TargetType="RadioButton">
                         <Setter Property="Margin" Value="10,3,10,3"/>
                     </Style>
-                    <Style TargetType="Expander">
-                        <Setter Property="IsExpanded" Value="True"/>
-                        <Setter Property="Margin" Value="0,3,0,3"/>
-                        <Setter Property="Background" Value="#F0F0F0"/>
-                    </Style>
+                    
                 </StackPanel.Resources>
 
                 <Expander Header="General" IsExpanded="True">
@@ -180,15 +181,16 @@
                             <ComboBox x:Name ="cmbbxNameCardFontName" SelectedItem ="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                         </StackPanel>
 
-                        <Separator Margin="0,5,0,5" />
+                        <Separator/>
 
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
                         </StackPanel>
 
-                        <Separator Margin="0,5,0,5" />
+                        <Separator/>
 
                         <Label Content="User Profile" />
+                        
                         <StackPanel Orientation="Horizontal">
                             <RadioButton Content="Profile 1" IsChecked="{Binding Path=UserProfile, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter='Profile1', Mode=TwoWay}"/>
                             <RadioButton Content="Profile 2" IsChecked="{Binding Path=UserProfile, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter='Profile2', Mode=TwoWay}"/>
