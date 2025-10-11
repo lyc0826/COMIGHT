@@ -16,10 +16,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using static COMIGHT.Methods;
-using static COMIGHT.MSOfficeInterop;
 using DataTable = System.Data.DataTable;
 using DocSharpSpreadsheetMapping = DocSharp.Binary.SpreadsheetMLMapping;
 using DocSharpWordMapping = DocSharp.Binary.WordprocessingMLMapping;
@@ -185,7 +183,7 @@ namespace COMIGHT
             try
             {
                 List<string>? filePaths = SelectFiles(EnumFileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
-                
+
                 if (filePaths == null) //如果文件列表为null，则结束本过程
                 {
                     return;
@@ -220,7 +218,7 @@ namespace COMIGHT
                             using (SpreadsheetDocument xlsx = SpreadsheetDocument.Create(targetFilePath, outputType)) //  创建xlsx目标文件
                             {
                                 DocSharpSpreadsheetMapping.Converter.Convert(xls, xlsx); // 将xls文件转换为xlsx文件
-                            } 
+                            }
                         }
                     }
 
@@ -313,14 +311,14 @@ namespace COMIGHT
                         {
                             return;
                         }
-                        
+
                         createDataDict = true; // “是否创建数据字典”赋值为True
-                        
+
                         break;
 
                     default:
                         createDataDict = false; // “是否创建数据字典”赋值为False
-                        
+
                         break;
                 }
 
@@ -1146,7 +1144,7 @@ namespace COMIGHT
                 {
                     //ImagesBaseUri = Path.GetDirectoryName(targetMDFilePath)  // 设置图片的路径
                 };
-                converter.ToDocx(markdown, targetWordFilePath, append:false); // 将Markdown文档转换成Word文档
+                converter.ToDocx(markdown, targetWordFilePath, append: false); // 将Markdown文档转换成Word文档
 
                 // 提取目标Word文档中的表格并转存为目标Excel文档
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径全名
@@ -1768,7 +1766,7 @@ namespace COMIGHT
 
             string userProfile = appSettings.UserProfile.ToString(); // 枚举转字符串
             bool isAdmin = appSettings.UserProfile == EnumUserProfile.Profile1;
-            MessageBox.Show ($"当前用户为：{userProfile}，是否管理员：{isAdmin.ToString()}");
+            MessageBox.Show($"当前用户为：{userProfile}，是否管理员：{isAdmin.ToString()}");
         }
 
     }
