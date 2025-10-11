@@ -606,8 +606,7 @@ namespace COMIGHT
             AccumulateValues = 2,
             ExtractCellData = 3,
             ConvertTextualNumbers = 4,
-            CopyFormula = 5,
-            AdjustForPrinting = 6
+            AdjustForPrinting = 5
         }
 
         private void BatchProcessExcelWorksheets()
@@ -616,8 +615,7 @@ namespace COMIGHT
             try
             {
                 // 定义功能选项列表
-                List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric",
-                    "5-Copy Formula to Multiple Worksheets", "6-Adjust Worksheet Format for Printing"};
+                List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric", "5-Adjust Worksheet Format for Printing"};
                 //  获取功能选项
                 int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: latestRecords, propertyName: nameof(latestRecords.LatestBatchProcessWorkbooksOption));
 
@@ -660,8 +658,7 @@ namespace COMIGHT
 
                     case EnumProcessFunctions.AccumulateValues:
                     case EnumProcessFunctions.ExtractCellData:
-                    case EnumProcessFunctions.ConvertTextualNumbers:
-                    case EnumProcessFunctions.CopyFormula: //2-数值累加, 3-提取单元格数据, 4-文本型数字转数值型, 5-复制公式到多Excel工作表
+                    case EnumProcessFunctions.ConvertTextualNumbers: //数值累加, 提取单元格数据, 文本型数字转数值型
                         lstOperatingRangeAddresses = GetWorksheetOperatingRangeAddresses();
                         if (lstOperatingRangeAddresses == null) //如果获取到的操作范围地址列表为null，则结束本过程
                         {
@@ -682,11 +679,6 @@ namespace COMIGHT
                 // 定义数据表、数据行（功能3“提取单元格数据”时使用）
                 DataTable? dataTable = null; //定义DataTable变量
                 DataRow? dataRow = null; //定义DataTable行变量
-
-                //定义模板Excel文件列表、模板Excel包和模板Excel工作表（功能5“复制公式到多Excel工作表”时使用）
-                List<string>? templateExcelFilePaths = null; //定义模板Excel文件列表变量
-                ExcelPackage? templateExcelPackage = null; //定义模板Excel包变量
-                ExcelWorksheet? templateExcelWorksheet = null; //定义模板Excel工作表变量
 
                 int fileCount = 1;
 
@@ -860,37 +852,6 @@ namespace COMIGHT
 
                                     break;
 
-                                case EnumProcessFunctions.CopyFormula: //复制公式到多Excel工作表
-
-                                    if (fileCount == 1 && i == excelWorksheetStartIndex) // 如果是第一个文件的第一个Excel工作表
-                                    {
-                                        templateExcelFilePaths = SelectFiles(EnumFileType.Excel, false, "Select the Template Excel File"); //选择模板文件
-                                        if (templateExcelFilePaths == null) //如果文件为null，结束本过程
-                                        {
-                                            return;
-                                        }
-                                        templateExcelPackage = new ExcelPackage(new FileInfo(templateExcelFilePaths[0])); //打开模板Excel工作簿，赋值给模板Excel包变量
-                                        templateExcelWorksheet = templateExcelPackage.Workbook.Worksheets[0]; //将模板Excel工作簿第一个（0号）工作表赋值给模板工作表变量
-                                    }
-
-                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
-                                    {
-                                        templateExcelWorksheet?.Cells[anOperatingRange].Copy(excelWorksheet.Cells[anOperatingRange]); //将模板Excel工作表指定区域的公式复制到当前工作表中
-                                    }
-
-                                    if (i == excelWorksheetEndIndex) //如果当前Excel工作表是最后一个，则保存当前被处理Excel工作簿
-                                    {
-                                        excelPackage.Save();
-
-                                        // 如果当前Excel文件是最后一个，则关闭模板工作簿
-                                        if (filePaths.IndexOf(excelFilePath) == filePaths.Count - 1)
-                                        {
-                                            templateExcelPackage?.Dispose();
-                                        }
-                                    }
-
-                                    break;
-
                                 case EnumProcessFunctions.AdjustForPrinting: //调整工作表打印版式
                                     TrimCellStrings(excelWorksheet); //删除当前Excel工作表内所有文本型单元格值的首尾空格
                                     RemoveWorksheetEmptyRowsAndColumns(excelWorksheet); //删除当前Excel工作表内所有空白行和空白列
@@ -921,7 +882,6 @@ namespace COMIGHT
 
                 if (targetExcelWorkbookPrefix != null)  //如果目标Excel工作簿前缀不为null（执行功能1-3时，将生成新工作簿并保存）
                 {
-                    //获取目标工作表表头行数
                     //根据功能序号返回相应的目标工作表表头行数
                     int targetHeaderRowCount = function switch
                     {
