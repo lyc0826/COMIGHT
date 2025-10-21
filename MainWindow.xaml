@@ -60,12 +60,11 @@
                     <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
                     <MenuItem x:Name="mnuBatchDisassembleExcelWorkbook" Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
                     <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuCompareExcelWorksheets" Header= "Compare Excel Worksheets" Click="MnuCompareExcelWorksheets_Click" />
+                    <MenuItem x:Name="mnuBatchExtractTablesFromWord" Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Document">
                     <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
-                    <MenuItem x:Name="mnuBatchExtractTablesFromWord" Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
                     <MenuItem x:Name="mnuMergeDataIntoDocument" Header= "Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
                     <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
                     <MenuItem x:Name="mnuBatchRepairWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />

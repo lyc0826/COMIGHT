@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 // 一个可复用的基类，用于实现属性变更通知
 public class ObservableObject : INotifyPropertyChanged
 {
-    // 定义INotifyPropertyChanged 接口要求的事件
+    // 定义INotifyPropertyChanged接口要求的事件
     public event PropertyChangedEventHandler? PropertyChanged;
 
 
