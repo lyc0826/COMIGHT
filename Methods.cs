@@ -1190,8 +1190,7 @@ namespace COMIGHT
             return await task;
         }
 
-
-        public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
+        public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable)
         {
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
