@@ -1127,60 +1127,7 @@ namespace COMIGHT
             GC.WaitForPendingFinalizers();
         }
 
-        public static void MergeExcelWorksheetHeader(ExcelWorksheet excelWorksheet, int headerRowCount)
-        {
-            if (excelWorksheet.Dimension == null || headerRowCount < 2) //如果工作表为空或者表头行数小于2，则结束本过程
-            {
-                return;
-            }
-
-            excelWorksheet.Cells[1, 1, headerRowCount, excelWorksheet.Dimension.End.Column].Merge = false; //表头所有单元格的合并状态设为false
-
-            //删除表头行中只含一个有效数据单元格的行（该行没有任何分类意义）
-            for (int i = headerRowCount; i >= 1; i--) //遍历表头所有行
-            {
-                ExcelRange headerRowCells = excelWorksheet.Cells[i, 1, i, excelWorksheet.Dimension.End.Column]; //将当前行所有单元格赋值给表头行单元格变量
-
-                int usedCellCount = headerRowCells.Count(cell => !string.IsNullOrWhiteSpace(cell.Text)); // 计算当前表头行单元格中不为null或全空白字符的单元格数量，赋值给已使用单元格数量变量
-                if (usedCellCount <= 1) //如果已使用单元格数量小于等于1
-                {
-                    excelWorksheet.DeleteRow(i); //删除当前行
-                    headerRowCount--; //表头行数减1
-                }
-            }
-
-            for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) //遍历工作表所有列
-            {
-                List<string> lstFullColumnName = new List<string>(); //定义完整列名称列表
-                for (int i = 1; i <= headerRowCount; i++) //遍历表头所有行
-                {
-                    bool copyLeftCell = false; //“是否复制左侧单元格”赋值为false
-                    if (j > 1 && string.IsNullOrWhiteSpace(excelWorksheet.Cells[i, j].Text)) //如果当前列索引号大于1，且当前单元格为null或全空白字符
-                    {
-                        if (i == 1) //如果当前行是第1行，则“是否复制左侧单元格”赋值为true
-                        {
-                            copyLeftCell = true;
-                        }
-                        //否则，如果比当前行索引号小1、列索引号相同（上方）的单元格的值和比当前行索引号小1、比当前列索引号小1（左上方）的单元格相同，则“是否复制左侧单元格”赋值为true
-                        else if (excelWorksheet.Cells[i - 1, j].Value == excelWorksheet.Cells[i - 1, j - 1].Value)
-                        {
-                            copyLeftCell = true;
-                        }
-                    }
-                    //重新赋值给当前行、列的单元格：如果要复制左侧单元格，则得到比当前列索引号小1（左侧）单元格的值；否则得到当前单元格原值
-                    excelWorksheet.Cells[i, j].Value = copyLeftCell ? excelWorksheet.Cells[i, j - 1].Text : excelWorksheet.Cells[i, j].Text;
-                    lstFullColumnName.Add(excelWorksheet.Cells[i, j].Text); //将当前单元格值添加到完整列名称列表
-                }
-                //将完整列名称列表中不为null或全空白字符的元素合并（以下划线分隔），赋值给表头最后一行当前列的单元格
-                excelWorksheet.Cells[headerRowCount, j].Value = string.Join('_', lstFullColumnName.Where(e => !string.IsNullOrWhiteSpace(e)));
-
-            }
-            excelWorksheet.DeleteRow(1, headerRowCount - 1); //删除表头除了最后一行的所有行
-
-        }
-
-
-        public static async Task<DataTable?> ReadExcelWorksheetIntoDataTableAsync(string filePath, object worksheetID, int headerRowCount = 1, int footerRowCount = 0)
+        public static async Task<DataTable?> ReadExcelWorksheetIntoDataTableAsync(string filePath, object worksheetID)
         {
             Task<DataTable?> task = Task.Run(() => Process());
             DataTable? Process()
@@ -1205,7 +1152,7 @@ namespace COMIGHT
 
                         TrimCellStrings(excelWorksheet!, true); //删除Excel工作表内所有单元格值的首尾空格，并全部转换为文本型
                         RemoveWorksheetEmptyRowsAndColumns(excelWorksheet!); //删除Excel工作表内所有空白行和空白列
-                        if ((excelWorksheet.Dimension?.Rows ?? 0) <= headerRowCount + footerRowCount) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于表头表尾行数和，则函数返回值赋值为null
+                        if ((excelWorksheet.Dimension?.Rows ?? 0) <= 1) //如果Excel工作表已使用行数（如果工作表为空，则为0）小于等于1，则函数返回值赋值为null
                         {
                             return null;
                         }
@@ -1216,15 +1163,13 @@ namespace COMIGHT
                             cell.Value = cell.Text.Trim();
                         }
 
-                        MergeExcelWorksheetHeader(excelWorksheet, headerRowCount); //将多行表头合并为单行
-
                         DataTable dataTable = new DataTable(); // 定义DataTable变量
-                                                               //读取Excel工作表并载入DataTable（第一行为表头，跳过表尾指定行数，将所有错误值视为空值，总是允许无效值）
+                                                               //读取Excel工作表并载入DataTable（第一行为表头，将所有错误值视为空值，总是允许无效值）
                         dataTable = excelWorksheet.Cells[excelWorksheet.Dimension.Address].ToDataTable(
                             o =>
                             {
                                 o.FirstRowIsColumnNames = true;
-                                o.SkipNumberOfRowsEnd = footerRowCount;
+                                //o.SkipNumberOfRowsEnd = footerRowCount; // 跳过表尾指定行数
                                 o.ExcelErrorParsingStrategy = ExcelErrorParsingStrategy.HandleExcelErrorsAsBlankCells;
                                 o.AlwaysAllowNull = true;
                             });
@@ -1245,28 +1190,17 @@ namespace COMIGHT
             return await task;
         }
 
+
         public static DataTable RemoveDataTableEmptyRowsAndColumns(DataTable dataTable, bool removeRowsWithSingleValue = false)
         {
-            int valueCountThreshold = removeRowsWithSingleValue ? 2 : 1; //获取数据元素计数阈值：如果要移除仅含单个数据的数据行，则为2（每行都必须有2个及以上的数据才不会被移除）；否则为1
-
             //清除空白数据行
             for (int i = dataTable.Rows.Count - 1; i >= 0; i--) // 遍历DataTable所有数据行
             {
-                // 统计当前数据行不为数据库空值且不为null或全空白字符的数据元素的数量
-                int valueCount = dataTable.Rows[i].ItemArray.Count(value =>
-                    value != DBNull.Value && !string.IsNullOrWhiteSpace(value?.ToString()));
-
-                // 如果以上数据元素的数量小于数据元素计数阈值（该行视为无意义），则删除这一行
-                if (valueCount < valueCountThreshold)
+                // 如果当前数据行的所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
+                if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
                 {
                     dataTable.Rows[i].Delete();
                 }
-
-                //// 如果当前数据行的所有数据列的值均为数据库空值，或为null或全空白字符，则删除当前数据行
-                //if (dataTable.Rows[i].ItemArray.All(value => value == DBNull.Value || string.IsNullOrWhiteSpace(value?.ToString())))
-                //{
-                //    dataTable.Rows[i].Delete();
-                //}
 
                 dataTable.AcceptChanges();
             }
@@ -1281,6 +1215,7 @@ namespace COMIGHT
                 }
             }
             dataTable.AcceptChanges(); //接受上述更改
+
             return dataTable; // 将DataTable赋值给函数返回值
         }
 

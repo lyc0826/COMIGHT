@@ -60,8 +60,6 @@ namespace COMIGHT
 
             ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
 
-            this.Title = $"COMIGHT Assistant {DateTime.Now:yyyy}";
-
             lblStatus.DataContext = taskManager; // 将状态标签控件的数据环境设为任务管理器对象
             lblIntro.Content = $"For Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
 
@@ -610,7 +608,7 @@ namespace COMIGHT
             try
             {
                 // 定义功能选项列表
-                List<string> lstFunctions = new List<string> {"0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric", "5-Adjust Worksheet Format for Printing"};
+                List<string> lstFunctions = new List<string> { "0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric", "5-Adjust Worksheet Format for Printing" };
                 //  获取功能选项
                 int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: latestRecords, propertyName: nameof(latestRecords.LatestBatchProcessWorkbooksOption));
 
