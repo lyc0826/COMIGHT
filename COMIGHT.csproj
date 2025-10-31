@@ -73,11 +73,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocSharp.Binary.Doc" Version="0.15.0" />
-    <PackageReference Include="DocSharp.Binary.Xls" Version="0.15.0" />
-    <PackageReference Include="DocSharp.Common" Version="0.15.0" />
-    <PackageReference Include="DocSharp.Docx" Version="0.15.0" />
-    <PackageReference Include="DocSharp.Markdown" Version="0.15.0" />
+    <PackageReference Include="DocSharp.Binary.Doc" Version="0.16.0" />
+    <PackageReference Include="DocSharp.Binary.Xls" Version="0.16.0" />
+    <PackageReference Include="DocSharp.Common" Version="0.16.0" />
+    <PackageReference Include="DocSharp.Docx" Version="0.16.0" />
+    <PackageReference Include="DocSharp.Markdown" Version="0.16.0" />
     <PackageReference Include="EPPlus" Version="8.2.1" />
     <PackageReference Include="itext" Version="9.3.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0" />
