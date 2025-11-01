@@ -1,18 +1,15 @@
-﻿using NPOI.SS.Formula.Functions;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Threading;
+﻿using System.Windows.Threading;
 
 
 namespace COMIGHT
 {
-    
+
     public class TaskManager : ObservableObject
     {
         private readonly DispatcherTimer timer = new DispatcherTimer();
         private readonly List<Task> lstTasks = new List<Task>();
         private int _activeTasksCount; // 定义活动任务数私有字段
-                                       
+
         private int ActiveTasksCount // 定义 ActiveTasksCount 属性
         {
             get => _activeTasksCount;
