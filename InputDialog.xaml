@@ -20,8 +20,8 @@
         <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Grid.Column="0" Margin="0,5,0,5"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
         
         <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button IsDefault="True" x:Name="btnDialogOk" Content="OK" Width="50" Height="30" Click="btnDialogOk_Click" />
-            <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Width="50" Height="30" Click="btnDialogCancel_Click" />
+            <Button IsDefault="True" x:Name="btnDialogOk" Content="OK" Click="btnDialogOk_Click" />
+            <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Click="btnDialogCancel_Click" />
         </StackPanel>
     </Grid>
 </Window>

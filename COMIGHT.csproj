@@ -127,4 +127,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="UniversalStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
 </Project>
