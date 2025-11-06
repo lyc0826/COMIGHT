@@ -1359,7 +1359,7 @@ namespace COMIGHT
                 string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
                 string targetTxtFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.txt"); // 获取目标文本文件的路径全名
-                string targetPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.pdf"); // 获取目标文本文件的路径全名
+                string targetPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.pdf"); // 获取目标PDF文件的路径全名
 
 
                 // 合并待合并文本列表中的内容（来自Word、Excel文件内容），输出TXT和PDF文件
@@ -1409,7 +1409,9 @@ namespace COMIGHT
                         foreach (string pdfToMergeFilePath in pdfToMergeFilePaths) // 遍历待合并PDF文件列表
                         {
                             using PdfDocument pdfToMerge = new PdfDocument(new PdfReader(pdfToMergeFilePath)); // 打开当前待合并pdf源文件
-                            merger.Merge(pdfToMerge, 1, pdfToMerge.GetNumberOfPages()); // 将源pdf文件中的全部页添加到PDF合并对象中
+                            {
+                                merger.Merge(pdfToMerge, 1, pdfToMerge.GetNumberOfPages()); // 将源pdf文件中的全部页添加到PDF合并对象中
+                            }
                         }
                     }
 
