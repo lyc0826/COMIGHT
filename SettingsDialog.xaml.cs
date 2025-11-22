@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using System.Data;
 using System.Drawing.Text;
 using System.Globalization;
 using System.Windows;
@@ -95,7 +96,8 @@ namespace COMIGHT
         {
             InstalledFontCollection installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            FillComboBoxes(this, lstFontNames, "FontName"); // 将字体名称列表填充到窗体的所有字体选择组合框中
+            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源字典中的ListItemsSource对象赋值给listItemsSource对象
+            listItemsSource.FontList = lstFontNames; // 将字体名称列表赋值给listItemsSource对象中的字体列表属性
         }
 
         private void SettingsDialog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

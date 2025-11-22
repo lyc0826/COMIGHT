@@ -6,6 +6,7 @@
 
     <Window.Resources>
         <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+        <local:ListItemsSource x:Key="ListItemsSource"/>
     </Window.Resources>
     
     <Grid Margin="10,10,10,10">
@@ -74,37 +75,37 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Title Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxCnTitleFontName" SelectedItem ="{Binding Path = CnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem = "{Binding Path = CnTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Body Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxCnBodyFontName" SelectedItem ="{Binding Path = CnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CnBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv0 Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxCnHeading0FontName" SelectedItem ="{Binding Path = CnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CnHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv1 Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxCnHeading1FontName" SelectedItem ="{Binding Path = CnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CnHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv2 Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxCnHeading2FontName" SelectedItem ="{Binding Path = CnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CnHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Chinese Heading Lv3/4 Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxCnHeading3_4FontName" SelectedItem ="{Binding Path = CnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CnHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = CnHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
@@ -172,13 +173,13 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Worksheet Font Name/Size:" />
-                            <ComboBox x:Name ="cmbbxWorksheetFontName" SelectedItem ="{Binding Path = WorksheetFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = WorksheetFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                             <TextBox Text="{Binding Path = WorksheetFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Name Card Font Name:" />
-                            <ComboBox x:Name ="cmbbxNameCardFontName" SelectedItem ="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
                         </StackPanel>
 
                         <Separator/>
