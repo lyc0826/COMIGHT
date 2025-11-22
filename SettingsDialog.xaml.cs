@@ -96,7 +96,7 @@ namespace COMIGHT
         {
             InstalledFontCollection installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源字典中的ListItemsSource对象赋值给listItemsSource对象
+            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
             listItemsSource.FontList = lstFontNames; // 将字体名称列表赋值给listItemsSource对象中的字体列表属性
         }
 
