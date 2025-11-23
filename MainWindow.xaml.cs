@@ -58,6 +58,13 @@ namespace COMIGHT
         {
             InitializeComponent();
 
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Top = 50.0;
+            this.Left = SystemParameters.WorkArea.Width - this.Width - 150.0;
+
             ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
 
             lblStatus.DataContext = taskManager; // 将状态标签控件的数据环境设为任务管理器对象
@@ -74,7 +81,17 @@ namespace COMIGHT
             {
                 ShowExceptionMessage(ex);
             }
+
         }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            settingsManager.SaveSettings(appSettings); // 保存应用程序设置到Json文件
+            recordsManager.SaveSettings(latestRecords);  // 保存最近记录到Json文件
+
+            Environment.Exit(0); // 退出程序，关闭所有窗口
+        }
+
 
         private void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
         {
@@ -1513,19 +1530,7 @@ namespace COMIGHT
             }
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Top = 50.0;
-            this.Left = SystemParameters.WorkArea.Width - this.Width - 150.0;
-        }
-
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            settingsManager.SaveSettings(appSettings); // 保存应用程序设置到Json文件
-            recordsManager.SaveSettings(latestRecords);  // 保存最近记录到Json文件
-
-            Environment.Exit(0); // 退出程序，关闭所有窗口
-        }
+        
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {

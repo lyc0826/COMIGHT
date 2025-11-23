@@ -23,12 +23,34 @@ namespace COMIGHT
         {
             InitializeComponent();
 
-            this.DataContext = appSettings; // 将应用设置窗口的数据环境设为应用设置对象
-
             this.Loaded += SettingsDialog_Loaded; // 窗口加载完成后，执行SettingsDialog_Loaded过程
             this.Closing += SettingsDialog_Closing; // 窗口关闭前，执行SettingsDialog_Closing过程
 
         }
+
+        private void SettingsDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
+            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
+            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
+            listItemsSource.FontList = lstFontNames; // 将字体名称列表赋值给listItemsSource对象中的字体列表属性
+
+            this.DataContext = appSettings; // 将应用设置窗口的数据环境设为应用设置对象
+        }
+
+        private void SettingsDialog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+            }
+
+            catch (Exception ex)
+            {
+                ShowExceptionMessage(ex);
+            }
+        }
+
 
         private void BtnDialogOK_Click(object sender, RoutedEventArgs e)
         {
@@ -89,27 +111,6 @@ namespace COMIGHT
                 {
                     binding.UpdateSource(); // 强制触发绑定源更新
                 }
-            }
-        }
-
-        private void SettingsDialog_Loaded(object sender, RoutedEventArgs e)
-        {
-            InstalledFontCollection installedFontCollention = new InstalledFontCollection();
-            List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
-            listItemsSource.FontList = lstFontNames; // 将字体名称列表赋值给listItemsSource对象中的字体列表属性
-        }
-
-        private void SettingsDialog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
-        {
-            try
-            {
-                CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
-            }
-
-            catch (Exception ex)
-            {
-                ShowExceptionMessage(ex);
             }
         }
 

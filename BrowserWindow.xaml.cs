@@ -213,62 +213,6 @@ namespace COMIGHT
 
             await webView2.ExecuteScriptAsync(jsScript);
 
-            //await webView2.ExecuteScriptAsync(@"
-
-            //    document.body.addEventListener('mouseover', 
-            //        function(event) 
-            //        {
-            //            if (event.target.tagName.toLowerCase() === 'div') 
-            //            {
-            //                event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; // 内阴影，水平偏移0，垂直偏移0，模糊半径0，颜色rgba(80, 255, 80, 0.8)
-            //            }  
-            //        });
-
-            //    document.body.addEventListener('mouseout', 
-            //        function(event) 
-            //        {
-            //            if (event.target.tagName.toLowerCase() === 'div') 
-            //            {
-            //                event.target.style.boxShadow = '' 
-            //            }
-            //        });
-
-            //    document.body.addEventListener('dblclick', 
-            //        function(event) 
-            //        {
-            //            if (event.target.tagName.toLowerCase() === 'div') 
-            //            {
-            //                var originalBoxShadow = event.target.style.boxShadow;
-            //                var textToCopy = event.target.innerText;
-
-            //                textToCopy = textToCopy.replace(/^\s*[\r\n]/gm, '')  // 移除空白段落
-            //                                       .replace(/^\s+|\s+$/gm, '');   // 移除每行首尾空白 （全局+多行模式）
-
-            //                var textArea = document.createElement('textarea');
-            //                textArea.value = textToCopy;
-            //                document.body.appendChild(textArea);
-            //                textArea.select();
-            //                var successful = document.execCommand('copy');
-            //                document.body.removeChild(textArea);
-
-            //                if(successful)
-            //                {
-            //                    event.target.style.boxShadow = 'inset 0 0 0 3px rgba(255, 80, 80, 0.8)' 
-            //                    setTimeout(
-            //                        function() 
-            //                        {
-            //                            event.target.style.boxShadow = originalBoxShadow 
-            //                        }
-            //                        , 500);    
-            //                } 
-            //                else 
-            //                {
-            //                    alert('Copying Failed!');
-            //                }
-            //            }
-            //        });
-            //    ");
-
         }
 
         private void WebView_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)

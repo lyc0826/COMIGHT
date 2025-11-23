@@ -20,6 +20,7 @@ namespace COMIGHT
         public DataGridWindow()
         {
             InitializeComponent();
+
             dataTable = new DataTable(); // 初始化一个空的DataTable
             myDataGrid.ItemsSource = dataTable.DefaultView; //  将DataTable绑定到DataGrid
         }
