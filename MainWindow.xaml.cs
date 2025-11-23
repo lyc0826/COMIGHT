@@ -133,14 +133,14 @@ namespace COMIGHT
             BatchUnhideExcelWorksheets();
         }
 
-        private void MnuBrowser_Click(object sender, RoutedEventArgs e)
-        {
-            if (GetInstanceCountByHandle<BrowserWindow>() < 3) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
-            {
-                BrowserWindow browserWindow = new BrowserWindow();
-                browserWindow.Show();
-            }
-        }
+        //private void MnuBrowser_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (GetInstanceCountByHandle<BrowserWindow>() < 3) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
+        //    {
+        //        BrowserWindow browserWindow = new BrowserWindow();
+        //        browserWindow.Show();
+        //    }
+        //}
 
         private void MnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
         {

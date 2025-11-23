@@ -23,8 +23,8 @@ namespace COMIGHT
         {
             InitializeComponent();
 
-            this.Loaded += SettingsDialog_Loaded; // 窗口加载完成后，执行SettingsDialog_Loaded过程
-            this.Closing += SettingsDialog_Closing; // 窗口关闭前，执行SettingsDialog_Closing过程
+            //this.Loaded += SettingsDialog_Loaded; // 窗口加载完成后，执行SettingsDialog_Loaded过程
+            //this.Closing += SettingsDialog_Closing; // 窗口关闭前，执行SettingsDialog_Closing过程
 
         }
 
