@@ -36,8 +36,9 @@ namespace COMIGHT
 
             bool isChecked = (bool)value;
             if (!isChecked)
+            {
                 return Binding.DoNothing;
-
+            }
             return Enum.Parse(targetType, parameter.ToString()!); // 枚举值字符串转换成枚举值，返回
         }
     }
