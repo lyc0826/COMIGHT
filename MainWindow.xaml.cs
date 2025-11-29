@@ -58,6 +58,11 @@ namespace COMIGHT
         {
             InitializeComponent();
 
+            ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
+
+            appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
+            latestRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
+
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -65,13 +70,8 @@ namespace COMIGHT
             this.Top = 50.0;
             this.Left = SystemParameters.WorkArea.Width - this.Width - 150.0;
 
-            ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
-
             lblStatus.DataContext = taskManager; // 将状态标签控件的数据环境设为任务管理器对象
             lblIntro.Content = $"For Better Productivity. © Yuechen Lou 2022-{DateTime.Now:yyyy}";
-
-            appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
-            latestRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
 
             try
             {
