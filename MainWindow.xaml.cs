@@ -1566,6 +1566,11 @@ namespace COMIGHT
             MessageBox.Show($"当前用户为：{userProfile}，是否管理员：{isAdmin.ToString()}");
         }
 
+        private void MnuCreateQRCode_Click(object sender, RoutedEventArgs e)
+        {
+            QRCodeWindow qRCodeWindow = new QRCodeWindow();
+            qRCodeWindow.Show();
+        }
     }
 
 }
