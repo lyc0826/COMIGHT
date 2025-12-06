@@ -17,7 +17,7 @@
         
         <Label Grid.Row="0" Content="Input Text:" Margin="5" />
 
-        <TextBox x:Name="InputTextBox" Grid.Row="1" Margin="5" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextChanged="InputTextBox_TextChanged" />
+        <TextBox x:Name="InputTextBox" Grid.Row="1" Margin="5" MaxHeight="60" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextChanged="InputTextBox_TextChanged" />
 
         <Image x:Name="QRImage" Grid.Row="2" Margin="10" Stretch="Uniform"/>
 

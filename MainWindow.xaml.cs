@@ -179,7 +179,7 @@ namespace COMIGHT
 
         private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsDialog settingDialog = new SettingsDialog();
+            SettingsWindow settingDialog = new SettingsWindow();
             settingDialog.ShowDialog();
         }
 

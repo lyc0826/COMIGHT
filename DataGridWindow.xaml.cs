@@ -40,13 +40,18 @@ namespace COMIGHT
 
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
-            ExportData(); // 调用ExportData方法，导出数据
+            ExportData(dataTable); // 调用ExportData方法，导出数据存为Excel工作簿
         }
 
-        private void ExportData()
+        private void ExportData(DataTable? dataTable)
         {
             try
             {
+                if (dataTable == null || dataTable.Rows.Count == 0) // 如果DataTable为null或者没有数据行，则抛出异常
+                {
+                    throw new Exception("No valid data found!");
+                }
+                
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
                 string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(windowTitle)}.xlsx"); //获取目标Excel工作簿文件路径全名
                 WriteDataTableIntoExcelWorkbook(new List<DataTable>() { dataTable }, targetExcelFile); //将DataTable数据写入Excel工作簿

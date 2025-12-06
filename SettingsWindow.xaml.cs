@@ -16,10 +16,10 @@ namespace COMIGHT
     /// </summary>
     /// 
 
-    public partial class SettingsDialog : Window
+    public partial class SettingsWindow : Window
     {
 
-        public SettingsDialog()
+        public SettingsWindow()
         {
             InitializeComponent();
 

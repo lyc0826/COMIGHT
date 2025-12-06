@@ -1,18 +1,15 @@
-﻿using iText.Signatures.Validation.Lotl;
-using Microsoft.Win32;
-using QRCoder; 
-using System;
+﻿using QRCoder;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using static COMIGHT.MainWindow;
-using static COMIGHT.Methods; 
+using static COMIGHT.Methods;
 
 namespace COMIGHT
 {
     public partial class QRCodeWindow : Window
     {
-        private byte[]? qrCodeBytes = null;
+        private byte[]? qrCodeBytes = null; // 定义二维码图片字节数组
 
         public QRCodeWindow()
         {
@@ -34,20 +31,46 @@ namespace COMIGHT
             this.Close();
         }
 
+        // 点击 Save 按钮触发
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SavePic(qrCodeBytes);
+        }
+
+        // 辅助方法：将字节数组转换为 BitmapImage
+        private BitmapImage? ByteToImage(byte[] blob)
+        {
+            if (blob == null || blob.Length == 0) // 如果二维码字节数组为空，则返回 null
+            {
+                return null;
+            }
+
+            BitmapImage bitmap = new BitmapImage(); // 创建 BitmapImage 对象
+            using (MemoryStream ms = new MemoryStream(blob)) // 创建内存流
+            {
+                bitmap.BeginInit(); // 开始初始化
+                bitmap.CacheOption = BitmapCacheOption.OnLoad; // 缓存选项, 表示图片加载完成后缓存图片（必须设置，否则流关闭后图片会消失）
+                bitmap.StreamSource = ms; // 设置流源
+                bitmap.EndInit(); // 结束初始化
+                bitmap.Freeze(); // 冻结对象，使其可以跨线程访问（虽然这里是在UI线程）
+            }
+            return bitmap;
+        }
+
         /// 核心方法：生成二维码并显示
         /// <param name="content">要编码的文本内容</param>
-        private void GenerateQRCode(string content)
+        private void GenerateQRCode(string? content)
         {
             try
             {
-                // 如果内容为空，清空图片并返回
+                // 如果内容为空，清空二维码字节数组和图片控件，并返回
                 if (string.IsNullOrEmpty(content))
                 {
                     qrCodeBytes = null;
                     QRImage.Source = null;
                     return;
                 }
-            
+
                 // 创建二维码生成器实例
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
@@ -70,49 +93,20 @@ namespace COMIGHT
             }
         }
 
-        /// <summary>
-        /// 辅助方法：将字节数组转换为 BitmapImage
-        /// </summary>
-        private BitmapImage? ByteToImage(byte[] blob)
-        {
-            if (blob == null || blob.Length == 0) // 如果图块字节数组为空，则返回 null
-            {
-                return null;
-            }
-
-            BitmapImage bitmap = new BitmapImage(); // 创建 BitmapImage 对象
-            using (MemoryStream ms = new MemoryStream(blob)) // 创建内存流
-            {
-                bitmap.BeginInit(); // 开始初始化
-                bitmap.CacheOption = BitmapCacheOption.OnLoad; // 缓存选项, 表示图片加载完成后缓存图片（必须设置，否则流关闭后图片会消失）
-                bitmap.StreamSource = ms; // 设置流源
-                bitmap.EndInit(); // 结束初始化
-                bitmap.Freeze(); // 冻结对象，使其可以跨线程访问（虽然这里是在UI线程）
-            }
-            return bitmap;
-        }
-
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
-        {
-            SavePic();
-        }
-
-        private void SavePic()
+        // 保存图片
+        private void SavePic(byte[]? qrCodeBytes)
         {
             try
             {
-                string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetPNGFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(InputTextBox.Text)}.png"); //获取目标图片文件路径全名
-
-                // 将图片保存
-                // 直接保存字节数组（最简单）
-
-                if (qrCodeBytes == null)
+                if (qrCodeBytes == null) // 如果图块字节数组为空，则抛出异常
                 {
                     throw new Exception("No QR Code to Save.");
                 }
 
-                File.WriteAllBytes(targetPNGFile, qrCodeBytes);
+                string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
+                string targetPNGFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(InputTextBox.Text)}.png"); //获取目标图片文件路径全名
+
+                File.WriteAllBytes(targetPNGFile, qrCodeBytes); // 将字节数组保存为PNG图片
 
                 ShowSuccessMessage();
 
@@ -126,7 +120,6 @@ namespace COMIGHT
                 //    File.WriteAllBytes(saveDialog.FileName, _currentQRCodeBytes);
                 //    MessageBox.Show("保存成功！");
                 //}
-
             }
 
             catch (Exception ex)
