@@ -5,39 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="QR Code Generator" Height="450" Width="600">
-    <Grid>
+        Title="QR Code Generator" Height="480" Width="480" FontSize="13" WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin = "3,3,3,3">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        
+        <Label Grid.Row="0" Content="Input Text:" Margin="5" />
 
-        <!-- 上部文本框 -->
-        <TextBox x:Name="InputTextBox" 
-                 Grid.Row="0" 
-                 Margin="10" 
-                 Padding="5"
-                 TextChanged="InputTextBox_TextChanged"
-                 VerticalAlignment="Top"
-                 HorizontalAlignment="Stretch"/>
+        <TextBox x:Name="InputTextBox" Grid.Row="1" Margin="5" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextChanged="InputTextBox_TextChanged" />
 
-        <!-- 中间二维码显示区域 -->
-        <Image x:Name="QRImage" 
-               Grid.Row="1" 
-               Margin="10"
-               Stretch="Uniform"/>
+        <Image x:Name="QRImage" Grid.Row="2" Margin="10" Stretch="Uniform"/>
 
-        <!-- 底部按钮区域 -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="10">
-            <Button x:Name="OKButton" 
-                    Content="OK" 
-                    Width="80" 
-                    Height="30"
-                    Click="OKButton_Click"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="Save" Click="BtnSave_Click"/>
+            <Button Content="Exit" Click="BtnExit_Click"/>
         </StackPanel>
     </Grid>
 </Window>

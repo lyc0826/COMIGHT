@@ -66,8 +66,8 @@
         </DataGrid>
         
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10" HorizontalAlignment="Right">
-            <Button Content="Export Data" Click="BtnExportData_Click" Height="30" Width="80"/>
-            <Button Content="Exit" Click="BtnExit_Click" Height="30" Width="80"/>
+            <Button Content="Export" Click="BtnExport_Click" />
+            <Button Content="Exit" Click="BtnExit_Click" />
         </StackPanel>
         
     </Grid>

@@ -38,7 +38,7 @@ namespace COMIGHT
             this.Close();
         }
 
-        private void BtnExportData_Click(object sender, RoutedEventArgs e)
+        private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
             ExportData(); // 调用ExportData方法，导出数据
         }
@@ -48,7 +48,7 @@ namespace COMIGHT
             try
             {
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(windowTitle)}.xlsx"); //获取目标Excel工作簿文件路径全名信息
+                string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(windowTitle)}.xlsx"); //获取目标Excel工作簿文件路径全名
                 WriteDataTableIntoExcelWorkbook(new List<DataTable>() { dataTable }, targetExcelFile); //将DataTable数据写入Excel工作簿
 
                 ShowSuccessMessage();
