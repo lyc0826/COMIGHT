@@ -6,17 +6,14 @@
         mc:Ignorable="d"
         Title="COMIGHT Assistant 365" Width="400" SizeToContent="Height" FontSize="14" ResizeMode="CanMinimize" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing"   >
 
-    <Grid Margin="3,0,3,3">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <Grid>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Grid.Column="0" >
+        <DockPanel Grid.Row="0" >
             
             <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding Path=FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
 
@@ -86,9 +83,9 @@
             
         </DockPanel>
 
-        <StackPanel Grid.Row="1" Orientation="Vertical">
-            <Label x:Name="lblStatus" Height="30"  Content ="{Binding Path=StatusText, Mode=Default}"/>
-            <Label x:Name="lblIntro" Height="30"  />
+        <StackPanel Grid.Row="1" Margin ="5" Orientation="Vertical">
+            <Label x:Name="lblStatus" Height="30" Content ="{Binding Path=StatusText, Mode=Default}"/>
+            <Label x:Name="lblIntro" Height="30"/>
         </StackPanel>
         
     </Grid>

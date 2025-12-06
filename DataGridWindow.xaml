@@ -7,14 +7,16 @@
         mc:Ignorable="d"
         Title="DataGrid Window" Height="480" Width="640" FontSize="13" WindowStartupLocation="CenterScreen">
     
-    <Grid>
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DataGrid Grid.Row="0"
-                  x:Name="myDataGrid"
+        <DataGrid x:Name="myDataGrid"
+                  Grid.Row="0"
+                  Margin="5"
+                  FontSize="11"
                   AutoGenerateColumns="True"
                   CanUserAddRows="True"
                   CanUserDeleteRows="True"
@@ -23,8 +25,6 @@
                   CanUserResizeRows="True" 
                   HeadersVisibility="Column"
                   RowHeaderWidth="20"
-                  Margin="10"
-                  FontSize="11"
                   AlternatingRowBackground="LightCyan"
                   RowBackground="White"
                   GridLinesVisibility="All"
@@ -65,7 +65,7 @@
 
         </DataGrid>
         
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="1" Margin="5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Export" Click="BtnExport_Click" />
             <Button Content="Exit" Click="BtnExit_Click" />
         </StackPanel>

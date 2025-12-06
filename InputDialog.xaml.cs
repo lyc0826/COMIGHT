@@ -15,7 +15,7 @@ namespace COMIGHT
         {
             InitializeComponent();
 
-            txtblkQuestion.Text = question; //将问题值赋值给问题文本块
+            txtbxQuestion.Text = question; //将问题值赋值给问题文本块
 
             if (options != null) //如果选项列表不为null
             {

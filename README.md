@@ -134,3 +134,7 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 ### Remove Markdown Marks in Copied Text
 
 - Removes all Markdown marks in the text copied to the clipboard, and then write the cleaned text back to the clipboard.
+
+### **Create QR Code**
+
+- Creates the QR code from the input text. The text and code are all processed locally to prevent leakage onto the internet.

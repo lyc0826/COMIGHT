@@ -1,27 +1,27 @@
 ﻿<Window x:Class="COMIGHT.InputDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Input" Width="480" SizeToContent="Height" FontSize="13" WindowStartupLocation="CenterScreen" ContentRendered="InputDialog_ContentRendered" >
+        Title="Input" Width="480" MaxHeight="960" SizeToContent="Height" FontSize="13" WindowStartupLocation="CenterScreen" ContentRendered="InputDialog_ContentRendered" >
     
-    <Grid Margin="10,10,10,10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width= "*"/>
-        </Grid.ColumnDefinitions>
+    <Grid Margin="10">
         
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="txtblkQuestion" MaxHeight="480" Grid.Row ="0" Grid.Column="0" Margin="0,5,0,5" TextWrapping="Wrap" />
-        <ComboBox x:Name="cmbbxOptions" Grid.Row ="1" Grid.Column="0" Margin="0,5,0,5"  SelectedIndex="0" IsEditable="False" />
-        <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Grid.Column="0" Margin="0,5,0,5"  TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
+        <TextBox x:Name="txtbxQuestion" Grid.Row="0" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" BorderBrush="Transparent" BorderThickness="0" Background="Transparent"/>
         
-        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,5,0,5" Orientation="Horizontal" HorizontalAlignment="Right">
+        <ComboBox x:Name="cmbbxOptions" Grid.Row ="1" Margin="5" SelectedIndex="0" IsEditable="False" />
+        
+        <TextBox x:Name="txtbxAnswer" Grid.Row ="2" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MouseDoubleClick="txtbxAnswer_MouseDoubleClick" />
+        
+        <StackPanel Grid.Row="3" Margin="5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" x:Name="btnDialogOk" Content="OK" Click="btnDialogOk_Click" />
             <Button IsCancel="True" x:Name="btnDialogCancel" Content="Cancel" Click="btnDialogCancel_Click" />
         </StackPanel>
+    
     </Grid>
 </Window>
