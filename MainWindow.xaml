@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="COMIGHT Assistant 365" Width="400" SizeToContent="Height" FontSize="14" ResizeMode="CanMinimize" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing"   >
+        Title="COMIGHT Assistant 365" Style="{StaticResource BaseWindowStyle}" Width="400" SizeToContent="Height" ResizeMode="CanMinimize" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing"   >
 
     <Grid>
 
@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" >
-            
+
             <Menu DockPanel.Dock="Top" Height="30" FontSize="{Binding Path=FontSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" UseLayoutRounding="True" VerticalContentAlignment="Center" >
 
                 <Menu.Resources>

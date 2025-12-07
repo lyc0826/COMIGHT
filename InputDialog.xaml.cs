@@ -11,7 +11,7 @@ namespace COMIGHT
     public partial class InputDialog : Window
     {
 
-        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double textboxHeight = 30, bool acceptsReturn = false)
+        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double answerboxHeight = 30, bool acceptsReturn = false)
         {
             InitializeComponent();
 
@@ -30,7 +30,7 @@ namespace COMIGHT
                 cmbbxOptions.Visibility = Visibility.Collapsed; // 隐藏功能选项组合框
 
                 txtbxAnswer.Text = defaultAnswer; //将默认答案值赋值给答案文本框
-                txtbxAnswer.Height = textboxHeight; //将答案文本框的高度设为输入参数的高度，默认为30
+                txtbxAnswer.Height = answerboxHeight; //将答案文本框的高度设为输入参数的高度，默认为30
                 txtbxAnswer.AcceptsReturn = acceptsReturn; //将答案文本框是否接受回车键设为输入参数的值，默认为false
             }
 
@@ -52,15 +52,6 @@ namespace COMIGHT
                 this.DialogResult = false; //对话框返回值设为false
             }
             this.Close();
-        }
-
-        private void txtbxAnswer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            //弹出对话框，如果返回true（点击了OK），则清除“输入文字”文本框
-            if (ShowMessage("Do you want to clear the content?"))
-            {
-                txtbxAnswer.Text = "";
-            }
         }
 
         private void InputDialog_ContentRendered(object sender, EventArgs e)

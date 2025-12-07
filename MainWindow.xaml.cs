@@ -921,7 +921,7 @@ namespace COMIGHT
         {
             try
             {
-                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", textboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
+                InputDialog inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", answerboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
                 if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
                 {
                     return;

@@ -5,25 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="QR Code Generator" Height="480" Width="480" FontSize="13" WindowStartupLocation="CenterScreen">
+        Title="QR Code Generator" Style="{StaticResource BaseWindowStyle}" Height="480" Width="480" WindowStartupLocation="CenterScreen">
     
     <Grid Margin = "10">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="5" Orientation="Vertical">
+        <StackPanel Grid.Row="0" Orientation="Vertical">
             <Label Content="Input Text:" Margin="5" />
-            <TextBox x:Name="InputTextBox" Margin="5" Height ="30" MaxHeight="60" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="InputTextBox_TextChanged"/>
+            <TextBox x:Name="InputTextBox" Margin="5" MaxHeight="60" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="InputTextBox_TextChanged"/>
         </StackPanel>
         
         <Image x:Name="QRImage" Grid.Row="1" Margin="5" Stretch="Uniform"/>
 
-        <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal" HorizontalAlignment="Right" >
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
             <Button Content="Save" Click="BtnSave_Click"/>
             <Button Content="Exit" Click="BtnExit_Click"/>
         </StackPanel>
+        
     </Grid>
 </Window>

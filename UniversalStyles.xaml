@@ -1,10 +1,32 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
+    <!-- 定义统一的Window样式（隐式样式不自动应用于派生类，需要定义名称，在派生类中通过名称引用-->
+    <Style x:Key="BaseWindowStyle" TargetType="Window">
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
     <!-- 定义统一的Button样式 -->
     <Style TargetType="Button">
         <Setter Property="Width" Value="50"/>
         <Setter Property="Height" Value="30"/>
     </Style>
-    
+
+    <!-- 定义统一的TextBox样式 -->
+    <Style TargetType="TextBox">
+        <Setter Property="MinHeight" Value="30"/>
+        <!-- 定义右键菜单 -->
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <!-- 使用内置命令，无需后台代码 -->
+                    <MenuItem Command="ApplicationCommands.Cut" Header="Cut" />
+                    <MenuItem Command="ApplicationCommands.Copy" Header="Copy" />
+                    <MenuItem Command="ApplicationCommands.Paste" Header="Paste" />
+                    <MenuItem Command="ApplicationCommands.SelectAll" Header="Select All" />
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

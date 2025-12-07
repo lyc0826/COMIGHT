@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMIGHT"
         mc:Ignorable="d"
-        Title="DataGrid Window" Height="480" Width="640" FontSize="13" WindowStartupLocation="CenterScreen">
+        Title="DataGrid Window" Style="{StaticResource BaseWindowStyle}" Height="480" Width="640" WindowStartupLocation="CenterScreen">
     
     <Grid Margin="10">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
