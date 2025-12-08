@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 // 定义应用程序命名空间
 namespace COMIGHT
@@ -79,6 +80,6 @@ namespace COMIGHT
                 }
             }
         }
-     
+
     }
 }

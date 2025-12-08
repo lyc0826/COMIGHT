@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:COMIGHT">
 
     <!-- 定义统一的Window样式（隐式样式不自动应用于派生类，需要定义名称，在派生类中通过名称引用-->
     <Style x:Key="BaseWindowStyle" TargetType="Window">
@@ -24,6 +25,8 @@
                     <MenuItem Command="ApplicationCommands.Copy" Header="Copy" />
                     <MenuItem Command="ApplicationCommands.Paste" Header="Paste" />
                     <MenuItem Command="ApplicationCommands.SelectAll" Header="Select All" />
+                    <!-- 自定义ClearAll命令，需要后台代码-->
+                    <MenuItem Header="Clear All" Command="{x:Static local:TextBoxCommands.Clear}" CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}" InputGestureText="Ctrl+D" />  
                 </ContextMenu>
             </Setter.Value>
         </Setter>
