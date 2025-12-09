@@ -1031,28 +1031,28 @@ namespace COMIGHT
 
         public static string? GetKeyColumnLetter()
         {
-            string latestColumnLetter = latestRecords.LatestKeyColumnLetter; //读取设置中保存的主键列符
+            string latestColumnLetter = userRecords.LatestKeyColumnLetter; //读取设置中保存的主键列符
             InputDialog inputDialog = new InputDialog(question: "Input the key column letter (e.g. \"A\"）", defaultAnswer: latestColumnLetter); //弹出对话框，输入主键列符
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
             string columnLetter = inputDialog.Answer;
-            latestRecords.LatestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
+            userRecords.LatestKeyColumnLetter = columnLetter; // 将对话框返回的列符存入设置
 
             return columnLetter; //将列符赋值给函数返回值
         }
 
         public static List<string>? GetWorksheetOperatingRangeAddresses()
         {
-            string latestOperatingRangeAddresses = latestRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
+            string latestOperatingRangeAddresses = userRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
             InputDialog inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
             string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
-            latestRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
+            userRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
 
             //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符，赋值给函数返回值
             return operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
@@ -1060,7 +1060,7 @@ namespace COMIGHT
 
         public static (int startIndex, int endIndex) GetWorksheetRange()
         {
-            string latestExcelWorksheetIndexesStr = latestRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
+            string latestExcelWorksheetIndexesStr = userRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
             InputDialog inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
 
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则工作表索引号范围起始值均-1，赋值给函数返回值
@@ -1069,7 +1069,7 @@ namespace COMIGHT
             }
 
             string excelWorksheetIndexesStr = inputDialog.Answer;
-            latestRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
+            userRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
             //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，减去1（EPPlus工作表索引号从0开始，Excel从1开始），赋值给Excel工作表索引号列表
             List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
             int index1 = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号界值1：列表的0号元素的值
@@ -1079,7 +1079,7 @@ namespace COMIGHT
 
         public static (int headerRowCount, int footerRowCount) GetHeaderAndFooterRowCount()
         {
-            string lastestHeaderFooterRowCountStr = latestRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
+            string lastestHeaderFooterRowCountStr = userRecords.LastestHeaderAndFooterRowCountStr; //读取设置中保存的表头表尾行数字符串
             InputDialog inputDialog = new InputDialog(question: "Input the row count of the table header and footer (separated by a comma, e.g. \"2,0\")", defaultAnswer: lastestHeaderFooterRowCountStr); //弹出对话框，输入表头表尾行数
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则表头、表尾行数均为-1，赋值给函数返回值元组
             {
@@ -1087,7 +1087,7 @@ namespace COMIGHT
             }
 
             string headerFooterRowCountStr = inputDialog.Answer; //获取对话框返回的表头、表尾行数字符串
-            latestRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
+            userRecords.LastestHeaderAndFooterRowCountStr = headerFooterRowCountStr; // 将对话框返回的表头、表尾行数字符串存入设置
 
             //将表头、表尾字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，如果小于0则限定为0，并赋值给表头表尾行数列表
             List<int> lstHeaderFooterRowCount = headerFooterRowCountStr.Split(',').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => Math.Max(0, e));
@@ -1326,7 +1326,7 @@ namespace COMIGHT
                 _ => "All Files(*.*)|*.*"
             };
 
-            string initialDirectory = latestRecords.LatestFolderPath; //获取保存在设置中的文件夹路径
+            string initialDirectory = userRecords.LatestFolderPath; //获取保存在设置中的文件夹路径
             //重新赋值给初始文件夹路径变量：如果初始文件夹路径存在，则得到初始文件夹路径原值；否则得到C盘根目录
             initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
             OpenFileDialog openFileDialog = new OpenFileDialog() //打开文件选择对话框
@@ -1339,7 +1339,7 @@ namespace COMIGHT
 
             if (openFileDialog.ShowDialog() == true) //如果对话框返回true（选择了OK）
             {
-                latestRecords.LatestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0])!; // 将本次选择的文件的文件夹路径保存到设置中
+                userRecords.LatestFolderPath = Path.GetDirectoryName(openFileDialog.FileNames[0])!; // 将本次选择的文件的文件夹路径保存到设置中
 
                 return openFileDialog.FileNames.ToList(); // 将被选中的文件数组转换成列表，赋给函数返回值
             }
@@ -1348,7 +1348,7 @@ namespace COMIGHT
 
         public static string? SelectFolder(string dialogTitle)
         {
-            string initialDirectory = latestRecords.LatestFolderPath; // 读取用户使用记录中保存的文件夹路径
+            string initialDirectory = userRecords.LatestFolderPath; // 读取用户使用记录中保存的文件夹路径
             // 重新赋值给文件夹路径变量：如果文件夹路径存在，则得到该文件夹路径原值；否则得到C盘根目录
             initialDirectory = Directory.Exists(initialDirectory) ? initialDirectory : "C:" + Path.DirectorySeparatorChar;
 
@@ -1362,7 +1362,7 @@ namespace COMIGHT
             if (openFolderDialog.ShowDialog() == true) // 如果对话框返回值为true（点击OK）
             {
                 string folderPath = openFolderDialog.FolderName;
-                latestRecords.LatestFolderPath = folderPath;  // 将文件夹路径赋值给用户使用记录
+                userRecords.LatestFolderPath = folderPath;  // 将文件夹路径赋值给用户使用记录
                 return folderPath; // 将文件夹路径赋值给函数返回值
             }
             return null; // 如果上一个if未执行，没有文件夹路径赋给函数返回值，则函数返回值赋值为null

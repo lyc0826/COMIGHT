@@ -210,7 +210,7 @@ namespace COMIGHT
     }
 
     //定义用户使用记录类
-    public class LatestRecords
+    public class UserRecords
     {
         public string LatestFolderPath { get; set; } = string.Empty;
         public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
@@ -233,9 +233,9 @@ namespace COMIGHT
 
         // 定义应用设置管理器、用户使用记录管理器对象，应用设置类、用户使用记录类对象，用于读取、保存应用设置和用户使用记录
         public static SettingsManager<AppSettings> settingsManager = new SettingsManager<AppSettings>(settingsJsonFilePath);
-        public static SettingsManager<LatestRecords> recordsManager = new SettingsManager<LatestRecords>(recordsJsonFilePath);
+        public static SettingsManager<UserRecords> recordsManager = new SettingsManager<UserRecords>(recordsJsonFilePath);
         public static AppSettings appSettings = new AppSettings();
-        public static LatestRecords latestRecords = new LatestRecords();
+        public static UserRecords userRecords = new UserRecords();
     }
 
 }
