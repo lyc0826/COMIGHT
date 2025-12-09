@@ -2,9 +2,8 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
-using static COMIGHT.UniversalObjects;
+using static COMIGHT.Settings;
 
 namespace COMIGHT
 {
@@ -31,13 +30,13 @@ namespace COMIGHT
         {
             SavePic(qrCodeBytes);
         }
-        
+
         // 点击 Exit 按钮触发
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
-        
+
         // 辅助方法：将字节数组转换为 BitmapImage
         private BitmapImage? ByteToImage(byte[] blob)
         {

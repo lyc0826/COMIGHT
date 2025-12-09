@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Interop;
-using static COMIGHT.MainWindow;
+using static COMIGHT.Settings;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
 using MSWord = Microsoft.Office.Interop.Word;
@@ -21,17 +21,13 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using static COMIGHT.UniversalObjects;
+using static COMIGHT.Constants;
 
 
 namespace COMIGHT
 {
     public static partial class Methods
     {
-
-        // 定义表格标题正则表达式（需要兼顾常规字符串和Word中的文本；总长度限制在100个字符内；字符中不允许出现“。；;”）
-        public static Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,100}(?:[\n\r]|$))[^。；;\f\n\r]*(?:表|单|录|册|回执|table|form|list|roll|roster)[^。；;\f\n\r]*(?:[\n\r]|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
         public static async Task BatchFormatWordDocumentsHelperAsync(List<string> filePaths)
         {
             Task task = Task.Run(() => Process()); // 创建一个异步任务，执行过程为process()

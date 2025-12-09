@@ -4,7 +4,7 @@
 
     <!-- 定义统一的Window样式（隐式样式不自动应用于派生类，需要定义名称，在派生类中通过名称引用-->
     <Style x:Key="BaseWindowStyle" TargetType="Window">
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontSize" Value="14"/>
     </Style>
 
     <!-- 定义统一的Button样式 -->
@@ -25,7 +25,7 @@
                     <MenuItem Command="ApplicationCommands.Copy" Header="Copy" />
                     <MenuItem Command="ApplicationCommands.Paste" Header="Paste" />
                     <MenuItem Command="ApplicationCommands.SelectAll" Header="Select All" />
-                    <!-- 自定义ClearAll命令，需要后台代码-->
+                    <!-- 自定义Clear命令（清除所有内容），需要后台代码-->
                     <MenuItem Header="Clear All" Command="{x:Static local:TextBoxCommands.Clear}" CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}" InputGestureText="Ctrl+D" />  
                 </ContextMenu>
             </Setter.Value>

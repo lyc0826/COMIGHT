@@ -55,4 +55,9 @@ namespace COMIGHT
         }
     }
 
+    public static class Tasks
+    {
+        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量，用于执行异步任务，并提供任务执行状态数据
+    }
+    
 }

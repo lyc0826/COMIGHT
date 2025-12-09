@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Windows;
-using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
+using static COMIGHT.Settings;
 using DataTable = System.Data.DataTable;
 using Window = System.Windows.Window;
-using static COMIGHT.UniversalObjects;
 
 
 namespace COMIGHT
@@ -52,7 +51,7 @@ namespace COMIGHT
                 {
                     throw new Exception("No valid data found!");
                 }
-                
+
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
                 string targetExcelFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(windowTitle)}.xlsx"); //获取目标Excel工作簿文件路径全名
                 WriteDataTableIntoExcelWorkbook(new List<DataTable>() { dataTable }, targetExcelFile); //将DataTable数据写入Excel工作簿

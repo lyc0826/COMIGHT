@@ -18,6 +18,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.Methods;
+using static COMIGHT.Settings;
+using static COMIGHT.Tasks;
 using DataTable = System.Data.DataTable;
 using DocSharpSpreadsheetMapping = DocSharp.Binary.SpreadsheetMLMapping;
 using DocSharpWordMapping = DocSharp.Binary.WordprocessingMLMapping;
@@ -27,7 +29,7 @@ using SpreadsheetDocument = DocSharp.Binary.OpenXmlLib.SpreadsheetML.Spreadsheet
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
 using WordprocessingDocument = DocSharp.Binary.OpenXmlLib.WordprocessingML.WordprocessingDocument;
-using static COMIGHT.UniversalObjects;
+
 
 namespace COMIGHT
 {
@@ -1514,7 +1516,7 @@ namespace COMIGHT
             }
         }
 
-        
+
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {

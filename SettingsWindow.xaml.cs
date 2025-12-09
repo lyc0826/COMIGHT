@@ -3,9 +3,8 @@ using System.Drawing.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
-using static COMIGHT.UniversalObjects;
+using static COMIGHT.Settings;
 
 
 namespace COMIGHT
