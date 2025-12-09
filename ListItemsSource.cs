@@ -1,6 +1,8 @@
-﻿namespace COMIGHT
+﻿using System.Drawing.Text;
+
+namespace COMIGHT
 {
-    class ListItemsSource : ObservableObject
+    public class ListItemsSource : ObservableObject
     {
         // 为每个属性创建私有后备字段
         private List<string> _fontList = new List<string>(); // 定义字体列表
@@ -12,4 +14,6 @@
             set => SetProperty(ref _fontList, value);
         }
     }
+
+    
 }
