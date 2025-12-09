@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
+using static COMIGHT.UniversalObjects;
 
 namespace COMIGHT
 {

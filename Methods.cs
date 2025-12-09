@@ -21,6 +21,7 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
+using static COMIGHT.UniversalObjects;
 
 
 namespace COMIGHT

@@ -4,6 +4,7 @@ using static COMIGHT.MainWindow;
 using static COMIGHT.Methods;
 using DataTable = System.Data.DataTable;
 using Window = System.Windows.Window;
+using static COMIGHT.UniversalObjects;
 
 
 namespace COMIGHT
