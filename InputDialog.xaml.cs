@@ -38,16 +38,16 @@ namespace COMIGHT
 
         private void btnDialogOk_Click(object sender, RoutedEventArgs e)
         {
-            if (this.DialogResult.HasValue)
+            //if (this.DialogResult.HasValue)
             {
-                this.DialogResult = true; //对话框返回值设为false
+                this.DialogResult = true; //对话框返回值设为true
             }
             this.Close();
         }
 
         private void btnDialogCancel_Click(object sender, RoutedEventArgs e)
         {
-            if (this.DialogResult.HasValue)
+            //if (this.DialogResult.HasValue)
             {
                 this.DialogResult = false; //对话框返回值设为false
             }

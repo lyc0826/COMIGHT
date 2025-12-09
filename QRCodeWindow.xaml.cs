@@ -25,18 +25,18 @@ namespace COMIGHT
             GenerateQRCode(InputTextBox.Text); // 调用核心方法，生成二维码并显示
         }
 
-        // 点击 OK 按钮触发
-        private void BtnExit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         // 点击 Save 按钮触发
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             SavePic(qrCodeBytes);
         }
-
+        
+        // 点击 Exit 按钮触发
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        
         // 辅助方法：将字节数组转换为 BitmapImage
         private BitmapImage? ByteToImage(byte[] blob)
         {
