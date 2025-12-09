@@ -93,10 +93,10 @@
     <None Update="Prompts.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Records.json">
+    <None Update="Settings\Records.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Settings.json">
+    <None Update="Settings\Settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Place Card Creation Template.xlsx">
