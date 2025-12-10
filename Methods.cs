@@ -770,28 +770,22 @@ namespace COMIGHT
                                         // 获取表格标题 (这部分逻辑与Word文档读取相关，保持不变)
                                         if (i > 0) // 如果当前Word元素不是0号元素
                                         {
-                                            List<string> lstAlternativeTableTitle = new List<string>();
-                                            string preferredTableTitle = string.Empty;
+                                            List<string> lstTableTitle = new List<string>();
                                             for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止
                                             {
                                                 if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
                                                 {
                                                     XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
-                                                    // 如果段落文字被表格标题正则表达式匹配成功，将段落文字赋给首选表格标题变量并退出循环
-                                                    if (regExTableTitle.IsMatch(paragraph.Text))
+
+                                                    // 表格标题正则表达式模式设为：开头标记，不含“。；;”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到表格标题列表中
+                                                    if (Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,100}$", RegexOptions.Multiline))
                                                     {
-                                                        preferredTableTitle = paragraph.Text;
-                                                        break;
-                                                    }
-                                                    // 否则，备选表格标题正则表达式模式设为：开头标记，不含“。；;：:”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到备用表格标题列表中
-                                                    else if (Regex.IsMatch(paragraph.Text, @"^[^。；;：:]{1,100}$", RegexOptions.Multiline))
-                                                    {
-                                                        lstAlternativeTableTitle.Add(paragraph.Text);
+                                                        lstTableTitle.Add(paragraph.Text);
                                                     }
                                                 }
                                             }
-                                            // 获取表格标题：如果首选表格标题变量不为空，则得到该变量值；否则，如果备用表格标题列表不为空，则得到其0号（第1个）元素的值；否则，得到表格标题变量原值
-                                            tableTitle = !string.IsNullOrWhiteSpace(preferredTableTitle) ? preferredTableTitle : lstAlternativeTableTitle.Count > 0 ? lstAlternativeTableTitle[0] : tableTitle;
+                                            // 获取表格标题：如果表格标题列表不为空，则得到其中长度最短的字符串元素；否则，得到表格标题变量原值
+                                            tableTitle = lstTableTitle.Count > 0 ? lstTableTitle.OrderBy(s => s.Length).First() : tableTitle;
                                         }
 
                                         // 创建Excel工作表，使用序号加表格标题作为工作表的名称
