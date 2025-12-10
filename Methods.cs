@@ -770,7 +770,7 @@ namespace COMIGHT
                                         // 获取表格标题 (这部分逻辑与Word文档读取相关，保持不变)
                                         if (i > 0) // 如果当前Word元素不是0号元素
                                         {
-                                            List<string> lstBackupTableTitle = new List<string>();
+                                            List<string> lstAlternativeTableTitle = new List<string>();
                                             string preferredTableTitle = string.Empty;
                                             for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止
                                             {
@@ -786,12 +786,12 @@ namespace COMIGHT
                                                     // 否则，备选表格标题正则表达式模式设为：开头标记，不含“。；;：:”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到备用表格标题列表中
                                                     else if (Regex.IsMatch(paragraph.Text, @"^[^。；;：:]{1,100}$", RegexOptions.Multiline))
                                                     {
-                                                        lstBackupTableTitle.Add(paragraph.Text);
+                                                        lstAlternativeTableTitle.Add(paragraph.Text);
                                                     }
                                                 }
                                             }
                                             // 获取表格标题：如果首选表格标题变量不为空，则得到该变量值；否则，如果备用表格标题列表不为空，则得到其0号（第1个）元素的值；否则，得到表格标题变量原值
-                                            tableTitle = !string.IsNullOrWhiteSpace(preferredTableTitle) ? preferredTableTitle : lstBackupTableTitle.Count > 0 ? lstBackupTableTitle[0] : tableTitle;
+                                            tableTitle = !string.IsNullOrWhiteSpace(preferredTableTitle) ? preferredTableTitle : lstAlternativeTableTitle.Count > 0 ? lstAlternativeTableTitle[0] : tableTitle;
                                         }
 
                                         // 创建Excel工作表，使用序号加表格标题作为工作表的名称
