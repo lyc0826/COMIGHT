@@ -2,32 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="bak\**" />
-    <Compile Remove="Templates\导出文档\**" />
-    <EmbeddedResource Remove="bak\**" />
-    <EmbeddedResource Remove="Templates\导出文档\**" />
-    <None Remove="bak\**" />
-    <None Remove="Templates\导出文档\**" />
-    <Page Remove="bak\**" />
-    <Page Remove="Templates\导出文档\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="MsgWin.xaml.cs" />
-    <Compile Remove="WordTypeSetting.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="MsgWin.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
@@ -86,41 +66,14 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NPOI" Version="2.7.5" />
     <PackageReference Include="QRCoder" Version="1.7.0" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Prompts.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Settings\Records.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Settings\Settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\Place Card Creation Template.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="使用说明和模板\COMIGHT Assistant使用说明.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="使用说明和模板\COMIGHT助手使用说明.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\Directory Creation Template.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\Document Table Template.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="模板文件\COMIGHT Assistant使用说明.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="模板文件\创建文件夹模板.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="模板文件\结构化文档表模板.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
