@@ -94,6 +94,11 @@ namespace COMIGHT
             BatchCreatePlaceCards();
         }
 
+        private void MnuBatchDisassembleExcelWorkbooks_Click(object sender, RoutedEventArgs e)
+        {
+            BatchDisassembleExcelWorkbooks();
+        }
+
         private void MnuBatchExtractTablesFromWord_Click(object sender, RoutedEventArgs e)
         {
             BatchExtractTablesFromWord();
@@ -143,6 +148,11 @@ namespace COMIGHT
             this.Close();
         }
 
+        private void MnuGenerateQRCode_Click(object sender, RoutedEventArgs e)
+        {
+            GenerateQRCode();
+        }
+
         private void MnuHelp_Click(object sender, RoutedEventArgs e)
         {
             ShowHelpWindow();
@@ -165,14 +175,41 @@ namespace COMIGHT
 
         private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingDialog = new SettingsWindow();
-            settingDialog.ShowDialog();
+            ShowSettingsWindow();
         }
 
-        private void MnuBatchDisassembleExcelWorkbooks_Click(object sender, RoutedEventArgs e)
+        private void MnuTest_Click(object sender, RoutedEventArgs e)
         {
-            BatchDisassembleExcelWorkbooks();
+            //InputDialog inputDialog = new InputDialog(question:"Number", defaultAnswer:"1000"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            //int numbers = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
+            //string result = ConvertArabicNumberIntoChinese(numbers);
+            //MessageBox.Show("转换后的中文数字为：" + result);
+
+            //InputDialog inputDialog = new InputDialog(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            ////获取对话框返回的功能选项
+            //double result = Val(inputDialog.Answer);
+            //ShowMessage("提取后的数字为：" + result.ToString());
+
+            //InputDialog inputDialog = new InputDialog(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
+            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
+            //{
+            //    return;
+            //}
+            ////获取对话框返回的功能选项
+            //string result = inputDialog.Answer.RemoveMarkdownMarks();
+            //ShowMessage($"转换后的文字为：\n\n{result}");
         }
+
+
+        // 以下为功能逻辑代码
 
         public void BatchConvertOfficeFileTypes()
         {
@@ -1245,6 +1282,12 @@ namespace COMIGHT
             }
         }
 
+        private static void GenerateQRCode()
+        {
+            QRCodeWindow qRCodeWindow = new QRCodeWindow(); // 创建建二维码窗口对象
+            qRCodeWindow.Show();
+        }
+
         private void MergeDataIntoDocument()
         {
             try
@@ -1516,47 +1559,15 @@ namespace COMIGHT
             }
         }
 
-
-
-        private void MnuTest_Click(object sender, RoutedEventArgs e)
+        private static void ShowSettingsWindow()
         {
-            //InputDialog inputDialog = new InputDialog(question:"Number", defaultAnswer:"1000"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            //int numbers = Convert.ToInt32(inputDialog.Answer); //获取对话框返回的功能选项
-            //string result = ConvertArabicNumberIntoChinese(numbers);
-            //MessageBox.Show("转换后的中文数字为：" + result);
-
-            //InputDialog inputDialog = new InputDialog(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            ////获取对话框返回的功能选项
-            //double result = Val(inputDialog.Answer);
-            //ShowMessage("提取后的数字为：" + result.ToString());
-
-            //InputDialog inputDialog = new InputDialog(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
-            //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
-            //{
-            //    return;
-            //}
-            ////获取对话框返回的功能选项
-            //string result = inputDialog.Answer.RemoveMarkdownMarks();
-            //ShowMessage($"转换后的文字为：\n\n{result}");
-
-            string userProfile = appSettings.UserProfile.ToString(); // 枚举转字符串
-            bool isAdmin = appSettings.UserProfile == EnumUserProfile.Profile1;
-            MessageBox.Show($"当前用户为：{userProfile}，是否管理员：{isAdmin.ToString()}");
+            SettingsWindow settingDialog = new SettingsWindow();
+            settingDialog.ShowDialog();
         }
 
-        private void MnuCreateQRCode_Click(object sender, RoutedEventArgs e)
-        {
-            QRCodeWindow qRCodeWindow = new QRCodeWindow();
-            qRCodeWindow.Show();
-        }
+        
+
+        
     }
 
 }

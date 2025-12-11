@@ -49,7 +49,6 @@ namespace COMIGHT
             }
         }
 
-
         private void BtnDialogOK_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -58,7 +57,6 @@ namespace COMIGHT
         private void BtnSavingFolderSelector_Click(object sender, RoutedEventArgs e)
         {
             string? savingFolderPath = SelectFolder("Select the Saving Folder"); // 选择保存文件夹路径，赋值给保存文件夹路径变量：如果用户选择了文件夹路径并点击了OK，则返回选择的文件夹路径；否则，返回null
-
             txtbxSavingFolder.Text = savingFolderPath ?? txtbxSavingFolder.Text; // 将保存文件夹路径赋值给对应的文本框（如果保存文件夹路径变量为null，则得到文本框原值）
         }
 
