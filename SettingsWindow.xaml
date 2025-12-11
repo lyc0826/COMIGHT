@@ -36,7 +36,7 @@
                     <Style TargetType="TextBox">
                         <Setter Property="Margin" Value="5"/>
                         <Setter Property="MinWidth" Value="20"/>
-                        <Setter Property="MaxWidth" Value="300"/>
+                        <Setter Property="MaxWidth" Value="240"/>
                         <Setter Property="TextWrapping" Value="Wrap"/>
                         <EventSetter Event="LostFocus" Handler="TextBoxLostFocus"/>
                     </Style>
@@ -58,8 +58,8 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Saving Folder:" />
-                            <TextBox x:Name ="txtbxSavingFolder" Text="{Binding Path = SavingFolderPath, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True" />
-                            <Button x:Name ="btnSavingFolderSelector" Content="..." Width="25" Height="25" Click="BtnSavingFolderSelector_Click"  />
+                            <TextBox Text="{Binding Path = SavingFolderPath, Mode = TwoWay, UpdateSourceTrigger = Default}" IsReadOnly="True" />
+                            <Button Content="..." Width="25" Height="25" Click="BtnSavingFolderSelector_Click"  />
                         </StackPanel>
 
                     </StackPanel>

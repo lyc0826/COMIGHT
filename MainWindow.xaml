@@ -46,38 +46,38 @@
                 </Menu.Resources>
 
                 <MenuItem Header="Start">
-                    <MenuItem x:Name="mnuOpenSavingFolder" Header="Open Saving Folder" Click="MnuOpenSavingFolder_Click" />
-                    <MenuItem x:Name="mnuSettings" Header="Settings" Click="MnuSettings_Click"  />
-                    <MenuItem x:Name="mnuHelp" Header="Help" Click="MnuHelp_Click" />
-                    <MenuItem x:Name="mnuExit" Header="Exit" Click="MnuExit_Click" />
-                    <!-- <MenuItem x:Name="mnuTest" Header="Test" Click="MnuTest_Click" /> -->
+                    <MenuItem Header="Open Saving Folder" Click="MnuOpenSavingFolder_Click" />
+                    <MenuItem Header="Settings" Click="MnuSettings_Click"  />
+                    <MenuItem Header="Help" Click="MnuHelp_Click" />
+                    <MenuItem Header="Exit" Click="MnuExit_Click" />
+                    <!-- <MenuItem Header="Test" Click="MnuTest_Click" /> -->
                 </MenuItem>
 
                 <MenuItem Header="Table">
-                    <MenuItem x:Name="mnuBatchProcessExcelWorksheets" Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuBatchDisassembleExcelWorkbook" Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
-                    <MenuItem x:Name="mnuBatchUnhideExcelWorksheets" Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
-                    <MenuItem x:Name="mnuBatchExtractTablesFromWord" Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
+                    <MenuItem Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
+                    <MenuItem Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
+                    <MenuItem Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
+                    <MenuItem Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Document">
-                    <MenuItem x:Name="mnuConvertMarkdownIntoWord" Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
-                    <MenuItem x:Name="mnuMergeDataIntoDocument" Header= "Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
-                    <MenuItem x:Name="mnuBatchFormatWordDocuments" Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
-                    <MenuItem x:Name="mnuBatchRepairWordDocuments" Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
+                    <MenuItem Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
+                    <MenuItem Header= "Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
+                    <MenuItem Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
+                    <MenuItem Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
                 </MenuItem>
 
                 <MenuItem Header="Tools">
-                    <MenuItem x:Name="mnuBatchConvertOfficeFileTypes" Header= "Batch Convert Office File Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
-                    <MenuItem x:Name="mnuCreateFileList" Header= "Create File List" Click="MnuCreateFileList_Click" />
-                    <MenuItem x:Name="mnuBatchCreateFolders" Header= "Batch Create Folders" Click="MnuBatchCreateFolders_Click" />
-                    <MenuItem x:Name="mnuBatchCreatePlaceCards" Header= "Batch Create Place Cards" Click="MnuBatchCreatePlaceCards_Click" />
-                    <MenuItem x:Name="mnuRemoveMarkdownMarksInCopiedText" Header="Remove Markdown Marks In Copied Text" Click="MnuRemoveMarkdownMarksInCopiedText_Click" />
-                    <MenuItem x:Name="mnuGenerateQRCode" Header="Generate QR Code" Click="MnuGenerateQRCode_Click" />
+                    <MenuItem Header= "Batch Convert Office File Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
+                    <MenuItem Header= "Create File List" Click="MnuCreateFileList_Click" />
+                    <MenuItem Header= "Batch Create Folders" Click="MnuBatchCreateFolders_Click" />
+                    <MenuItem Header= "Batch Create Place Cards" Click="MnuBatchCreatePlaceCards_Click" />
+                    <MenuItem Header="Remove Markdown Marks In Copied Text" Click="MnuRemoveMarkdownMarksInCopiedText_Click" />
+                    <MenuItem Header="Generate QR Code" Click="MnuGenerateQRCode_Click" />
                 </MenuItem>
 
                 <!-- <MenuItem Header="Web">
-                    <MenuItem x:Name="mnuBrowser" Header="Browser" Click="MnuBrowser_Click" />
+                    <MenuItem Header="Browser" Click="MnuBrowser_Click" />
                 </MenuItem> -->
             </Menu>
             
