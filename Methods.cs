@@ -1422,6 +1422,19 @@ namespace COMIGHT
             return nonCnCharsRatio < 0.5 ? true : false; //赋值给函数返回值：如果非中文字符比例小于0.5，得到true；否则，得到false
         }
 
+        public static bool IsModal(this Window window)
+        {
+            // 使用反射获取 Window 类的私有字段 "_showingAsDialog",该字段是 WPF 内部用于标记窗口是否通过 ShowDialog() 方法显示的布尔值
+            // 查找实例成员（非静态）、查找非公开成员（private/internal）
+            var field = typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic); 
+
+            // 返回判断结果：
+            // 1. field != null：确保成功获取到字段信息（防止未来版本字段名变更导致异常）
+            // 2. (bool)field.GetValue(window)：获取该字段在当前窗口实例中的值并转为 bool
+            // 使用短路运算 && ：如果 field 为 null，不会执行 GetValue，避免空引用异常
+            return field != null && (bool)field.GetValue(window)!;
+        }
+
         public static void CreateFolder(string targetFolderPath)
         {
             try

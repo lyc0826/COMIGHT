@@ -36,7 +36,7 @@ namespace COMIGHT
 
         private void btnDialogOk_Click(object sender, RoutedEventArgs e)
         {
-            //if (this.DialogResult.HasValue)
+            if (this.IsModal())
             {
                 this.DialogResult = true; //对话框返回值设为true
             }
@@ -45,7 +45,7 @@ namespace COMIGHT
 
         private void btnDialogCancel_Click(object sender, RoutedEventArgs e)
         {
-            //if (this.DialogResult.HasValue)
+            if (this.IsModal())
             {
                 this.DialogResult = false; //对话框返回值设为false
             }
