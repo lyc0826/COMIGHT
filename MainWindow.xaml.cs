@@ -1204,7 +1204,9 @@ namespace COMIGHT
 
                             DataRow dataRow = dataTable.NewRow(); // 创建一个新的数据行
 
-                            dataRow["Path"] = file.FullName; // 将文件路径赋值给数据行的Path列
+                            dataRow["Path"] = file.FullName; // 将文件路径全名赋值给数据行的Path列
+                            //在文件路径全名中删除第一级文件夹路径、首尾路径分隔符，和最末级文件名
+                            dataRow["Subpath"]= file.FullName.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar + file.Name, "");
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Item列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
                             dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
@@ -1224,6 +1226,8 @@ namespace COMIGHT
                             DataRow dataRow = dataTable.NewRow();
 
                             dataRow["Path"] = subdirectory.FullName; // 将子文件夹路径赋值给数据行的Path列
+                            //在子文件夹路径中删除第一级文件夹路径、首尾路径分隔符，和最末级文件夹名
+                            dataRow["Subpath"] = subdirectory.FullName.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar + subdirectory.Name, "");
                             dataRow["Item"] = subdirectory.Name; // 将子文件夹名赋值给数据行的Item列
                             dataRow["Type"] = "Directory"; // 将"Directory"赋值给数据行的Type列
                             dataRow["Date"] = subdirectory.CreationTime; // 将子文件夹创建日期赋值给数据行的Date列  
@@ -1256,11 +1260,6 @@ namespace COMIGHT
                         pathCell.Hyperlink = new Uri($"file:///{pathCell.Text}"); //将当前行路径单元格的超链接设定为单元格内的路径（使用file://协议）
                         pathCell.Style.Font.UnderLine = true; //将当前行路径单元格文字加下划线
                         pathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行路径单元格文字颜色设为蓝色
-
-                        //将当前行路径单元格中第一级文件夹路径替换为空，去除首尾路径分隔符，剩下的部分以路径分隔符为分隔拆分成数组，转换成列表，赋值给子路径列表
-                        List<string> lstSubPath = pathCell.Text.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).ToList();
-                        lstSubPath.RemoveAt(lstSubPath.Count - 1); //删去子路径列表中最末一个元素（最末级文件夹名或文件名）
-                        targetExcelWorksheet.Cells[i, 3].Value = string.Join(Path.DirectorySeparatorChar, lstSubPath); //将子路径列表所有元素以路径分隔符为分隔合并成字符串，赋值给当前行的子路径（第3）列单元格
 
                     }
 
