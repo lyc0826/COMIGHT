@@ -1204,11 +1204,10 @@ namespace COMIGHT
 
                             DataRow dataRow = dataTable.NewRow(); // 创建一个新的数据行
 
-                            DateTime fileSystemDate = file.CreationTime < file.LastWriteTime ? file.CreationTime.Date : file.LastWriteTime.Date; // 获取文件的系统日期：：如果创建日期小于最后修改时间，则得到创建日期；否则，得到最后修改日期
                             dataRow["Path"] = file.FullName; // 将文件路径赋值给数据行的Path列
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Item列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
-                            dataRow["Date"] = fileSystemDate; // 将文件日期赋值给数据行的Date列
+                            dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
                         }
                     }
@@ -1224,11 +1223,10 @@ namespace COMIGHT
                         {
                             DataRow dataRow = dataTable.NewRow();
 
-                            DateTime subdirectorySystemDate = subdirectory.CreationTime < subdirectory.LastWriteTime ? subdirectory.CreationTime.Date : subdirectory.LastWriteTime.Date; // 获取子文件夹的系统日期：如果创建日期小于最后修改时间，则得到创建日期；否则，得到最后修改日期
                             dataRow["Path"] = subdirectory.FullName; // 将子文件夹路径赋值给数据行的Path列
                             dataRow["Item"] = subdirectory.Name; // 将子文件夹名赋值给数据行的Item列
                             dataRow["Type"] = "Directory"; // 将"Directory"赋值给数据行的Type列
-                            dataRow["Date"] = subdirectorySystemDate; // 将子文件夹日期赋值给数据行的Date列  
+                            dataRow["Date"] = subdirectory.CreationTime; // 将子文件夹创建日期赋值给数据行的Date列  
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
 
                             stack.Push((subdirectory.FullName, currentSubpathDepth + 1)); // 将当前子文件夹路径及其相对于第一级路径的子路径深度累加1后的数值压入栈
