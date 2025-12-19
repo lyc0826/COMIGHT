@@ -1205,8 +1205,8 @@ namespace COMIGHT
                             DataRow dataRow = dataTable.NewRow(); // 创建一个新的数据行
 
                             dataRow["Path"] = file.FullName; // 将文件路径全名赋值给数据行的Path列
-                            //在文件路径全名中删除第一级文件夹路径、首尾路径分隔符，和最末级文件名
-                            dataRow["Subpath"]= file.FullName.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar + file.Name, "");
+                            //在文件路径全名中删除第一级文件夹路径和最末级文件名
+                            dataRow["Subpath"] = file.FullName.Replace(folderPath, "").Replace(file.Name, "");
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Item列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
                             dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
@@ -1226,8 +1226,8 @@ namespace COMIGHT
                             DataRow dataRow = dataTable.NewRow();
 
                             dataRow["Path"] = subdirectory.FullName; // 将子文件夹路径赋值给数据行的Path列
-                            //在子文件夹路径中删除第一级文件夹路径、首尾路径分隔符，和最末级文件夹名
-                            dataRow["Subpath"] = subdirectory.FullName.Replace(folderPath, "").Trim(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar + subdirectory.Name, "");
+                            //在子文件夹路径中删除第一级文件夹路径和最末级文件夹名
+                            dataRow["Subpath"] = subdirectory.FullName.Replace(folderPath, "").Replace(subdirectory.Name, "");
                             dataRow["Item"] = subdirectory.Name; // 将子文件夹名赋值给数据行的Item列
                             dataRow["Type"] = "Directory"; // 将"Directory"赋值给数据行的Type列
                             dataRow["Date"] = subdirectory.CreationTime; // 将子文件夹创建日期赋值给数据行的Date列  
