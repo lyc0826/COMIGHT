@@ -21,7 +21,6 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using static COMIGHT.Constants;
 
 
 namespace COMIGHT
@@ -102,6 +101,9 @@ namespace COMIGHT
                     // 定义中文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
                     Regex regExCnItemNum = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[条款项][：:| |\t]", RegexOptions.Multiline); // 将正则匹配模式设为条款项编号
 
+                    // 定义表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-40个字符），非“。；;”分页符换行符回车符的字符任意多个，“表、单、录、册、回执”，换行符回车符
+                    Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,40}[\n\r])[^。；;\f\n\r]*(?:表|单|录|册|回执)[^。；;\f\n\r]*[\n\r]", RegexOptions.Multiline);
+
                     // 定义清单数字编号列表，包含1、2、3、4级编号匹配模式
                     List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", @"\d+[ |\t]*[、\.，,）\)]", @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]" };
 
@@ -111,7 +113,7 @@ namespace COMIGHT
                     // 定义括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
                     Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
 
-                    // 定义中文落款字符串变量，匹配模式为：签名至少1个，最后为日期
+                    // 定义中文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
                     Regex regExSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。：:；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
 
 
