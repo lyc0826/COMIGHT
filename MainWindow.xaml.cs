@@ -79,9 +79,9 @@ namespace COMIGHT
         }
 
 
-        private void MnuBatchConvertOfficeFileTypes_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchConvertOfficeFiles_Click(object sender, RoutedEventArgs e)
         {
-            BatchConvertOfficeFileTypes();
+            BatchConvertOfficeFiles();
         }
 
         private async void MnuBatchCreateFolders_Click(object sender, RoutedEventArgs e)
@@ -133,9 +133,9 @@ namespace COMIGHT
         //    }
         //}
 
-        private void MnuConvertMarkdownIntoWord_Click(object sender, RoutedEventArgs e)
+        private void MnuConvertMarkdownIntoWordDocument_Click(object sender, RoutedEventArgs e)
         {
-            ConvertMarkdownIntoWord();
+            ConvertMarkdownIntoWordDocument();
         }
 
         private void MnuCreateFileList_Click(object sender, RoutedEventArgs e)
@@ -211,7 +211,7 @@ namespace COMIGHT
 
         // 以下为功能逻辑代码
 
-        public void BatchConvertOfficeFileTypes()
+        public void BatchConvertOfficeFiles()
         {
             try
             {
@@ -718,7 +718,7 @@ namespace COMIGHT
                 foreach (string excelFilePath in filePaths) //遍历所有文件
                 {
                     currentFilePath = excelFilePath; //将当前Excel文件路径全名赋值给当前文件路径全名变量
-                    List<string> lstPrefixes = new List<string>(); //定义文件名前缀列表（给Excel文件名加前缀用）
+                    //List<string> lstPrefixes = new List<string>(); //定义文件名前缀列表（给Excel文件名加前缀用）
 
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -940,7 +940,7 @@ namespace COMIGHT
 
         }
 
-        private void ConvertMarkdownIntoWord()
+        private void ConvertMarkdownIntoWordDocument()
         {
             try
             {

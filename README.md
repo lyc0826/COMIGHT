@@ -73,11 +73,15 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
 - Extracts tables from Word documents and imports them into Excel workbooks.
 
+### **Create File List**
+
+- Creates a list of all subfolders and files within a specified folder path, including hyperlinks, subpaths, file/folder names, types, and creation times, and saves it into an Excel workbook.
+
 ## Document
 
-### **Convert Markdown into Word**
+### **Convert Markdown into Word Document**
 
-- Converts Markdown text into Word documents, keeping formats and styles as the original. If there are tables in the document, the tables will be extracted into Excel worksheets in the meantime.
+- Converts Markdown text into Word document, keeping formats and styles as the original. If there are tables in the document, the tables will be extracted into Excel worksheets in the meantime.
 
 ### **Merge Data Into Document**
 
@@ -118,10 +122,6 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 ### **Batch Convert Office File Types**
 
 - Converts older Excel (.xls), Word (.doc), WPS Spreadsheet (.et), and WPS Document (.wps) files into .xlsx and .docx formats.
-
-### **Create File List**
-
-- Creates a list of all subfolders and files within a specified folder path, including hyperlinks, subpaths, file/folder names, types, and creation times.
 
 ### **Batch Create Folders**
 

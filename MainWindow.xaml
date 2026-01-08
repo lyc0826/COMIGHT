@@ -55,21 +55,21 @@
 
                 <MenuItem Header="Table">
                     <MenuItem Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
-                    <MenuItem Header= "Batch Disassemble Excel Workbook" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
+                    <MenuItem Header= "Batch Disassemble Excel Workbooks" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
                     <MenuItem Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
                     <MenuItem Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
+                    <MenuItem Header= "Create File List" Click="MnuCreateFileList_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Document">
-                    <MenuItem Header="Convert Markdown Into Word" Click="MnuConvertMarkdownIntoWord_Click"  />
+                    <MenuItem Header="Convert Markdown Into Word Document" Click="MnuConvertMarkdownIntoWordDocument_Click"  />
                     <MenuItem Header= "Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
                     <MenuItem Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
                     <MenuItem Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
                 </MenuItem>
 
                 <MenuItem Header="Tools">
-                    <MenuItem Header= "Batch Convert Office File Types" Click="MnuBatchConvertOfficeFileTypes_Click" />
-                    <MenuItem Header= "Create File List" Click="MnuCreateFileList_Click" />
+                    <MenuItem Header= "Batch Convert Office Files" Click="MnuBatchConvertOfficeFiles_Click" />
                     <MenuItem Header= "Batch Create Folders" Click="MnuBatchCreateFolders_Click" />
                     <MenuItem Header= "Batch Create Place Cards" Click="MnuBatchCreatePlaceCards_Click" />
                     <MenuItem Header="Remove Markdown Marks In Copied Text" Click="MnuRemoveMarkdownMarksInCopiedText_Click" />
