@@ -104,9 +104,9 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetPNGFile = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(InputTextBox.Text)}.png"); //获取目标图片文件路径全名
+                string targetPNGFilePath = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(InputTextBox.Text)}.png"); //获取目标图片文件路径全名
 
-                File.WriteAllBytes(targetPNGFile, qrCodeBytes); // 将字节数组保存为PNG图片
+                File.WriteAllBytes(targetPNGFilePath, qrCodeBytes); // 将图块字节数组保存为PNG图片
 
                 ShowSuccessMessage();
 
