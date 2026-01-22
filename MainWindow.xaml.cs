@@ -213,6 +213,7 @@ namespace COMIGHT
 
         public void BatchConvertOfficeFiles()
         {
+            string currentFilePath = "";
             try
             {
                 List<string>? filePaths = SelectFiles(EnumFileType.Convertible, true, "Select Old Version Office or WPS Files"); //获取所选文件列表
@@ -231,6 +232,8 @@ namespace COMIGHT
 
                 foreach (string filePath in filePaths) //遍历所有文件
                 {
+                    currentFilePath = filePath;
+
                     if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
                     {
                         continue;
@@ -281,7 +284,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex);
+                ShowExceptionMessage(ex, currentFilePath);
             }
         }
 
@@ -296,6 +299,7 @@ namespace COMIGHT
 
         public void BatchDisassembleExcelWorkbooks()
         {
+            string currentFilePath = "";
             try
             {
                 // 定义功能选项列表
@@ -365,7 +369,8 @@ namespace COMIGHT
 
                 foreach (string filePath in filePaths) // 遍历文件列表
                 {
-
+                    currentFilePath = filePath;
+                    
                     string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePath); //获取当前Excel工作簿文件主名
 
                     // 创建目标文件夹（为每个工作簿创建一个独立文件夹）
@@ -515,12 +520,13 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex);
+                ShowExceptionMessage(ex, currentFilePath);
             }
         }
 
         private void BatchExtractTablesFromWord()
         {
+            string currentFilePath = "";
             try
             {
                 List<string>? filePaths = SelectFiles(EnumFileType.Word, true, "Select Word Files"); //获取所选文件列表
@@ -531,6 +537,8 @@ namespace COMIGHT
 
                 foreach (string filePath in filePaths) // 遍历所有文件
                 {
+                    currentFilePath = filePath;
+                    
                     if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过并进入下一个循环
                     {
                         continue;
@@ -545,7 +553,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex);
+                ShowExceptionMessage(ex, currentFilePath);
             }
         }
 
@@ -593,6 +601,7 @@ namespace COMIGHT
 
         private void BatchUnhideExcelWorksheets()
         {
+            string currentFilePath = "";
             try
             {
                 List<string>? filePaths = SelectFiles(EnumFileType.Excel, true, "Select Excel Files"); //获取所选文件列表
@@ -604,6 +613,8 @@ namespace COMIGHT
                 int fileNum = 0;
                 foreach (string filePath in filePaths) //遍历所有文件
                 {
+                    currentFilePath = filePath;
+                    
                     int hiddenExcelWorksheetCount = 0;
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -622,12 +633,13 @@ namespace COMIGHT
                         excelPackage.Save(); //保存Excel工作簿
                     }
                 }
-                ShowMessage($"{fileNum} files processed.");
+
+                ShowSuccessMessage($"{fileNum} files processed.");
             }
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex);
+                ShowExceptionMessage(ex, currentFilePath);
             }
         }
 
@@ -718,7 +730,6 @@ namespace COMIGHT
                 foreach (string excelFilePath in filePaths) //遍历所有文件
                 {
                     currentFilePath = excelFilePath; //将当前Excel文件路径全名赋值给当前文件路径全名变量
-                    //List<string> lstPrefixes = new List<string>(); //定义文件名前缀列表（给Excel文件名加前缀用）
 
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -935,7 +946,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowMessage($"{ex.Message} at {currentFilePath}.");
+                ShowExceptionMessage(ex, currentFilePath);
             }
 
         }

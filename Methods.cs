@@ -38,6 +38,7 @@ namespace COMIGHT
                 msWordApp.Visible = false; //“程序窗口可见”设为否
                 MSWordDocument? msWordDocument = null; //定义Word文档变量
 
+                string currentFilePath = "";
                 try
                 {
 
@@ -121,6 +122,8 @@ namespace COMIGHT
 
                     foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
                     {
+                        currentFilePath = filePath;
+                        
                         msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给Word文档变量
 
                         // 判断是否为空文档
@@ -619,9 +622,9 @@ namespace COMIGHT
 
                 }
 
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw; // 抛出异常，包含异步过程中发生的异常的所有信息，以便让调用者处理
+                    throw new Exception($"{ex.Message}\n{currentFilePath}"); // 抛出异常，包含异步过程中发生的异常的所有信息，以便让调用者处理
                 }
 
                 finally
@@ -643,10 +646,14 @@ namespace COMIGHT
             void Process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
+                
+                string currentFilePath = "";
                 try
                 {
                     foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
                     {
+                        currentFilePath = filePath;
+                        
                         string targetFilePath = Path.Combine(Path.GetDirectoryName(filePath)!, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
                         MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开Word文档，赋值给Word文档变量
                         MSWordDocument targetMSWordDocument = msWordApp.Documents.Add(); // 新建Word文档并赋值给目标Word文档变量
@@ -658,9 +665,10 @@ namespace COMIGHT
                         targetMSWordDocument.Close(); //关闭目标Word文件
                     }
                 }
-                catch (Exception)
+
+                catch (Exception ex)
                 {
-                    throw;
+                    throw new Exception($"{ex.Message}\n{currentFilePath}");
                 }
 
                 finally
@@ -1395,9 +1403,10 @@ namespace COMIGHT
             return functionNum; // 将功能选项索引号赋值给函数返回值
         }
 
-        public static void ShowExceptionMessage(Exception ex)
+        public static void ShowExceptionMessage(Exception ex, string? additionalInfo = null)
         {
-            MessageDialog messageDialog = new MessageDialog($"{ex.Message}\n{ex.InnerException?.Message ?? ""}");
+            string exceptionMessage = $"{ex.Message}\n{ex.InnerException?.Message ?? ""}\n{additionalInfo ?? ""}";
+            MessageDialog messageDialog = new MessageDialog(exceptionMessage.Trim());
             messageDialog.ShowDialog();
         }
 
@@ -1407,9 +1416,10 @@ namespace COMIGHT
             return messageDialog.ShowDialog() ?? false; // 将对话框返回值（点击OK为true，点击Cancel为false）赋值给函数返回值（如果对话框返回null，则为false)
         }
 
-        public static void ShowSuccessMessage()
+        public static void ShowSuccessMessage(string? additionalInfo = null)
         {
-            MessageDialog messageDialog = new MessageDialog("Operation completed.");
+            string successMessage = $"Operation completed.\n{additionalInfo ?? ""}";
+            MessageDialog messageDialog = new MessageDialog(successMessage.Trim());
             messageDialog.ShowDialog();
         }
 
