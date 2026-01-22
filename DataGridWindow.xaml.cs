@@ -49,7 +49,7 @@ namespace COMIGHT
             {
                 if (dataTable == null || dataTable.Rows.Count == 0) // 如果DataTable为null或者没有数据行，则抛出异常
                 {
-                    throw new Exception("No valid data found!");
+                    throw new Exception("No valid data found.");
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径

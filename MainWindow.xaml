@@ -57,7 +57,7 @@
                     <MenuItem Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
                     <MenuItem Header= "Batch Disassemble Excel Workbooks" Click="MnuBatchDisassembleExcelWorkbooks_Click" />
                     <MenuItem Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
-                    <MenuItem Header= "Batch Extract Tables From Word" Click="MnuBatchExtractTablesFromWord_Click" />
+                    <MenuItem Header= "Batch Extract Tables From Word Documents" Click="MnuBatchExtractTablesFromWordDocuments_Click" />
                     <MenuItem Header= "Create File List" Click="MnuCreateFileList_Click" />
                 </MenuItem>
 

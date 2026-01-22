@@ -100,7 +100,7 @@ namespace COMIGHT
             {
                 if (qrCodeBytes == null) // 如果图块字节数组为空，则抛出异常
                 {
-                    throw new Exception("No QR Code to Save.");
+                    throw new Exception("No QR code to save.");
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径

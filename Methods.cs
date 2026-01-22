@@ -624,7 +624,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    throw new Exception($"{ex.Message}\n{currentFilePath}"); // 抛出异常，包含异步过程中发生的异常的所有信息，以便让调用者处理
+                    throw new Exception($"{ex.Message}\nError occurred when processing '{currentFilePath}'."); // 抛出异常，包含异步过程中发生的异常的所有信息，以便让调用者处理
                 }
 
                 finally
@@ -668,7 +668,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    throw new Exception($"{ex.Message}\n{currentFilePath}");
+                    throw new Exception($"{ex.Message}\nError occurred when processing '{currentFilePath}'.");
                 }
 
                 finally
@@ -750,13 +750,13 @@ namespace COMIGHT
             return chineseNumberStr; // 将中文数字字符串赋值给函数返回值
         }
 
-        public static void ExtractTablesFromWordToExcel(string wordFilePath, string targetExcelFilePath)
+        public static bool ExtractTablesFromWordToExcel(string wordFilePath, string targetExcelFilePath)
         {
             try
             {
-                if (new FileInfo(wordFilePath).Length == 0) //如果当前文件大小为0，则直接结束本过程
+                if (new FileInfo(wordFilePath).Length == 0) //如果当前文件大小为0，则直接结束本过程，并返回false
                 {
-                    return;
+                    return false;
                 }
 
                 // 使用 NPOI 处理 
@@ -823,17 +823,111 @@ namespace COMIGHT
 
                                 excelPackage.SaveAs(outputExcelFile); // 将Excel包存入文件中
                             }
+
+                            return true;
+                        }
+
+                        else
+                        {
+                            return false;
                         }
                     }
-                }
+                }              
             }
 
             catch (Exception)
             {
+                return false;
                 throw;
             }
 
         }
+
+
+        //public static void ExtractTablesFromWordToExcel(string wordFilePath, string targetExcelFilePath)
+        //{
+        //    try
+        //    {
+        //        if (new FileInfo(wordFilePath).Length == 0) //如果当前文件大小为0，则直接结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        // 使用 NPOI 处理 
+        //        using (FileStream wordFileStream = File.OpenRead(wordFilePath)) //打开目标Word文档，赋值给Word文档文件流变量
+        //        {
+        //            using XWPFDocument wordDocument = new XWPFDocument(wordFileStream); //创建Word文档对象，赋值给Word文档变量
+        //            {
+        //                if (wordDocument.Tables.Count > 0) // 如果目标Word文档中包含表格
+        //                {
+        //                    FileInfo outputExcelFile = new FileInfo(targetExcelFilePath);
+        //                    using (var excelPackage = new ExcelPackage()) // 创建一个Excel包对象
+        //                    {
+        //                        var workbook = excelPackage.Workbook; // 获取Excel工作簿对象
+        //                        int wordTableIndex = 0;
+        //                        for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
+        //                        {
+        //                            var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
+        //                            if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格类型，则将其赋值给新变量 wordTable，然后：
+        //                            {
+        //                                string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
+        //                                // 获取表格标题 (这部分逻辑与Word文档读取相关，保持不变)
+        //                                if (i > 0) // 如果当前Word元素不是0号元素
+        //                                {
+        //                                    List<string> lstTableTitle = new List<string>();
+        //                                    for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止
+        //                                    {
+        //                                        if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
+        //                                        {
+        //                                            XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
+
+        //                                            // 表格标题正则表达式模式设为：开头标记，不含“。；;”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到表格标题列表中
+        //                                            if (Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,100}$", RegexOptions.Multiline))
+        //                                            {
+        //                                                lstTableTitle.Add(paragraph.Text);
+        //                                            }
+        //                                        }
+        //                                    }
+        //                                    // 获取表格标题：如果表格标题列表不为空，则得到其中长度最短的字符串元素；否则，得到表格标题变量原值
+        //                                    tableTitle = lstTableTitle.Count > 0 ? lstTableTitle.OrderBy(s => s.Length).First() : tableTitle;
+        //                                }
+
+        //                                // 创建Excel工作表，使用序号加表格标题作为工作表的名称
+        //                                ExcelWorksheet worksheet = workbook.Worksheets.Add(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}"));
+        //                                int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
+
+        //                                worksheet.Cells[1, 1, 1, columnCount].Merge = true; // 合并Excel工作表第一行单元格（EPPlus的行和列索引从1开始）
+        //                                worksheet.Cells[1, 1].Value = tableTitle; // 将表格标题赋值给Excel工作表1行1列的单元格
+        //                                int excelRowIndex = 2; // 从Excel工作表2号（第2）行开始写入表格数据
+        //                                foreach (XWPFTableRow wordTableRow in wordTable.Rows) // 遍历当前Word文档表格中的所有行
+        //                                {
+        //                                    int excelColumnIndex = 1; // Excel列索引从1开始
+        //                                    foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
+        //                                    {
+        //                                        worksheet.Cells[excelRowIndex, excelColumnIndex++].Value = wordTableCell.GetText(); // 将当前Word文档表格的当前行当前单元格的文字赋值给当前行当前列的Excel单元格
+        //                                    }
+        //                                    excelRowIndex++; // Excel行索引累加1
+        //                                }
+
+        //                                FormatExcelWorksheet(worksheet, 2, 0); // 格式化表格数据区域（表头为2行）
+
+        //                                wordTableIndex++; // Word文档表格索引号累加1
+        //                            }
+        //                        }
+
+        //                        excelPackage.SaveAs(outputExcelFile); // 将Excel包存入文件中
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+
+        //}
 
         public static void FormatExcelWorksheet(ExcelWorksheet excelWorksheet, int headerRowCount = 0, int footerRowCount = 0)
         {

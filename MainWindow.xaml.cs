@@ -99,9 +99,9 @@ namespace COMIGHT
             BatchDisassembleExcelWorkbooks();
         }
 
-        private void MnuBatchExtractTablesFromWord_Click(object sender, RoutedEventArgs e)
+        private void MnuBatchExtractTablesFromWordDocuments_Click(object sender, RoutedEventArgs e)
         {
-            BatchExtractTablesFromWord();
+            BatchExtractTablesFromWordDocuments();
         }
 
         private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
@@ -284,7 +284,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, currentFilePath);
+                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
             }
         }
 
@@ -520,11 +520,11 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, currentFilePath);
+                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
             }
         }
 
-        private void BatchExtractTablesFromWord()
+        private void BatchExtractTablesFromWordDocuments()
         {
             string currentFilePath = "";
             try
@@ -536,28 +536,67 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath;
+                bool tableExtracted = false;
 
                 foreach (string filePath in filePaths) // 遍历所有文件
                 {
                     currentFilePath = filePath;
-                    
+
                     if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过并进入下一个循环
                     {
                         continue;
                     }
 
                     string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径全名
-                    ExtractTablesFromWordToExcel(filePath, targetExcelFilePath); // 从Word文档中提取表格并保存为目标Excel工作簿
+                    
+                    tableExtracted = ExtractTablesFromWordToExcel(filePath, targetExcelFilePath) || tableExtracted; // 从Word文档中提取表格并保存为目标Excel工作簿，如果提取到表格则将true赋值给“表格已提取”变量；只要有一个文件提取表格成功，“表格已提取”变量就为true
                 }
 
-                ShowSuccessMessage($"Files saved in '{targetFolderPath}'.");
+                // 获取结果消息
+                string resultMessage = tableExtracted ? $"Files saved in '{targetFolderPath}'." : "No tables found.";
+                ShowSuccessMessage(resultMessage);
             }
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, currentFilePath);
+                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
             }
         }
+
+        //private void BatchExtractTablesFromWordDocuments()
+        //{
+        //    string currentFilePath = "";
+        //    try
+        //    {
+        //        List<string>? filePaths = SelectFiles(EnumFileType.Word, true, "Select Word Files"); //获取所选文件列表
+        //        if (filePaths == null) //如果文件列表为null，则结束本过程
+        //        {
+        //            return;
+        //        }
+
+        //        string targetFolderPath = appSettings.SavingFolderPath;
+
+        //        foreach (string filePath in filePaths) // 遍历所有文件
+        //        {
+        //            currentFilePath = filePath;
+
+        //            if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过并进入下一个循环
+        //            {
+        //                continue;
+        //            }
+
+        //            string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径全名
+        //            ExtractTablesFromWordToExcel(filePath, targetExcelFilePath); // 从Word文档中提取表格并保存为目标Excel工作簿
+        //        }
+
+        //        ShowSuccessMessage($"Files saved in '{targetFolderPath}'.");
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
+        //    }
+        //}
 
         private async Task BatchFormatWordDocumentsAsync()
         {
@@ -641,7 +680,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, currentFilePath);
+                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
             }
         }
 
@@ -953,7 +992,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, currentFilePath);
+                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
             }
 
         }
@@ -997,9 +1036,11 @@ namespace COMIGHT
                 // 提取目标Word文档中的表格并转存为目标Excel文档
                 string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径全名
 
-                ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档
+                bool tableExtracted = ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档，如果成功则将true赋值给“表格已提取”变量
 
-                ShowSuccessMessage($"File saved as '{targetWordFilePath}' (and '{targetExcelFilePath}' if applicable).");
+                // 获取结果消息
+                string resultMessage = $"File saved as '{targetWordFilePath}'" + (tableExtracted? $" and '{targetExcelFilePath}'" : "") + ".";
+                ShowSuccessMessage(resultMessage);
             }
 
             catch (Exception ex)
@@ -1505,7 +1546,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, currentFilePath);
+                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
             }
 
         }
