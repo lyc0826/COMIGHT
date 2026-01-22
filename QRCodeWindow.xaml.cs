@@ -86,7 +86,7 @@ namespace COMIGHT
                 // GetGraphic(20) 中的 20 是指每个模块(像素点)的大小
                 qrCodeBytes = qrCode.GetGraphic(20);
 
-                // 将字节数组转换为 WPF 可识别的 ImageSource
+                // 将字节数组转换为 WPF 可识别的 ImageSource，并显示在图片控件中
                 imgbxQR.Source = ByteToImage(qrCodeBytes);
             }
             catch (Exception ex)

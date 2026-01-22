@@ -1141,24 +1141,24 @@ namespace COMIGHT
             return columnLetter; //将列符赋值给函数返回值
         }
 
-        public static List<string>? GetWorksheetOperatingRangeAddresses()
+        public static List<string>? GetWorksheetOperatingRanges()
         {
-            string latestOperatingRangeAddresses = userRecords.LatestOperatingRangeAddresses; //读取用户使用记录中保存的操作区域
-            InputDialog inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRangeAddresses); //弹出对话框，输入操作区域
+            string latestOperatingRanges = userRecords.LatestOperatingRanges; //读取用户使用记录中保存的操作区域
+            InputDialog inputDialog = new InputDialog(question: "Input the operating range addresses (separated by a comma, e.g. \"B2:C3,B4:C5\")", defaultAnswer: latestOperatingRanges); //弹出对话框，输入操作区域
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则函数返回值赋值为null
             {
                 return null;
             }
-            string operatingRangeAddresses = inputDialog.Answer; //获取对话框返回的操作区域
-            userRecords.LatestOperatingRangeAddresses = operatingRangeAddresses; //将对话框返回的操作区域赋值给用户使用记录
+            string operatingRanges = inputDialog.Answer; //获取对话框返回的操作区域
+            userRecords.LatestOperatingRanges = operatingRanges; //将对话框返回的操作区域赋值给用户使用记录
 
             //将操作区域地址拆分为数组，转换成列表，并移除每个元素的首尾空白字符，赋值给函数返回值
-            return operatingRangeAddresses.Split(',').ToList().ConvertAll(e => e.Trim());
+            return operatingRanges.Split(',').ToList().ConvertAll(e => e.Trim());
         }
 
         public static (int startIndex, int endIndex) GetWorksheetRange()
         {
-            string latestExcelWorksheetIndexesStr = userRecords.LatestExcelWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
+            string latestExcelWorksheetIndexesStr = userRecords.LatestWorksheetIndexesStr; //读取用户使用记录中保存的Excel工作表索引号范围字符串
             InputDialog inputDialog = new InputDialog(question: "Input the index number or range of worksheets to be processed (a single number, e.g. \"1\", or 2 numbers separated by a hyphen, e.g. \"1-3\")", defaultAnswer: latestExcelWorksheetIndexesStr); //弹出对话框，输入工作表索引号范围
 
             if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则工作表索引号范围起始值均-1，赋值给函数返回值
@@ -1167,7 +1167,7 @@ namespace COMIGHT
             }
 
             string excelWorksheetIndexesStr = inputDialog.Answer;
-            userRecords.LatestExcelWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
+            userRecords.LatestWorksheetIndexesStr = excelWorksheetIndexesStr; // 将对话框返回的Excel工作表索引号范围字符串赋值给用户使用记录
             //将Excel工作表索引号字符串拆分成数组，转换成列表，移除每个元素的首尾空白字符，转换成数值，减去1（EPPlus工作表索引号从0开始，Excel从1开始），赋值给Excel工作表索引号列表
             List<int> lstExcelWorksheetIndexesStr = excelWorksheetIndexesStr.Split('-').ToList().ConvertAll(e => Convert.ToInt32(e.Trim())).ConvertAll(e => e - 1);
             int index1 = lstExcelWorksheetIndexesStr[0]; //获取Excel工作表索引号界值1：列表的0号元素的值

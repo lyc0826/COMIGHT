@@ -215,8 +215,8 @@ namespace COMIGHT
         public string LatestFolderPath { get; set; } = string.Empty;
         public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
         public string LatestKeyColumnLetter { get; set; } = string.Empty;
-        public string LatestExcelWorksheetIndexesStr { get; set; } = string.Empty;
-        public string LatestOperatingRangeAddresses { get; set; } = string.Empty;
+        public string LatestWorksheetIndexesStr { get; set; } = string.Empty;
+        public string LatestOperatingRanges { get; set; } = string.Empty;
         public int LatestSubpathDepth { get; set; }
         public string LatestBatchProcessWorkbooksOption { get; set; } = string.Empty;
         public string LatestBatchDisassembleWorkbooksOption { get; set; } = string.Empty;

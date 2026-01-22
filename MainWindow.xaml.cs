@@ -728,7 +728,7 @@ namespace COMIGHT
 
                 int headerRowCount = 0;
                 int footerRowCount = 0;
-                List<string>? lstOperatingRangeAddresses = null;
+                List<string>? lstOperatingRanges = null;
 
                 switch (function) //根据功能序号进入相应的分支
                 {
@@ -745,8 +745,8 @@ namespace COMIGHT
                     case EnumProcessFunctions.AccumulateValues:
                     case EnumProcessFunctions.ExtractCellData:
                     case EnumProcessFunctions.ConvertTextualNumbers: //数值累加, 提取单元格数据, 文本型数字转数值型
-                        lstOperatingRangeAddresses = GetWorksheetOperatingRangeAddresses();
-                        if (lstOperatingRangeAddresses == null) //如果获取到的操作范围地址列表为null，则结束本过程
+                        lstOperatingRanges = GetWorksheetOperatingRanges();
+                        if (lstOperatingRanges == null) //如果获取到的操作范围地址列表为null，则结束本过程
                         {
                             return;
                         }
@@ -839,26 +839,26 @@ namespace COMIGHT
                                         excelWorksheet.Cells[excelWorksheet.Dimension.Address].Copy(targetExcelWorksheet.Cells["A1"]); //将被处理Excel工作表的已使用区域的数据复制到目标工作表
 
                                         // 清除操作区域数据
-                                        foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
+                                        foreach (string operatingRange in lstOperatingRanges!) //遍历所有操作区域
                                         {
-                                            targetExcelWorksheet.Cells[anOperatingRange].Clear(); // 清除目标Excel工作表当前操作区域数据
+                                            targetExcelWorksheet.Cells[operatingRange].Clear(); // 清除目标Excel工作表当前操作区域数据
                                         }
                                     }
 
                                     // 累加操作区域数值
-                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
+                                    foreach (string operatingRange in lstOperatingRanges!) //遍历所有操作区域
                                     {
-                                        for (int k = 0; k < targetExcelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        for (int k = 0; k < targetExcelWorksheet.Cells[operatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
                                         {
-                                            for (int l = 0; l < targetExcelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            for (int l = 0; l < targetExcelWorksheet.Cells[operatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
                                             {
-                                                string cellStr1 = targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text; //将目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
-                                                string cellStr2 = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Text; //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
+                                                string cellStr1 = targetExcelWorksheet.Cells[operatingRange].Offset(k, l, 1, 1).Text; //将目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
+                                                string cellStr2 = excelWorksheet.Cells[operatingRange].Offset(k, l, 1, 1).Text; //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值转换成字符串
                                                 double cellNumVal1 = 0, cellNumVal2 = 0;
                                                 double.TryParse(cellStr1, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal1); //将单元格字符串1转换成数值，如果成功则将转换后的数值赋值给单元格数值1变量
                                                 double.TryParse(cellStr2, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal2); //将单元格字符串2转换成数值，如果成功则将转换后的数值赋值给单元格数值2变量
                                                 //将转换结果值之和赋值给目标Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格
-                                                targetExcelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Value = cellNumVal1 + cellNumVal2;
+                                                targetExcelWorksheet.Cells[operatingRange].Offset(k, l, 1, 1).Value = cellNumVal1 + cellNumVal2;
                                             }
                                         }
                                     }
@@ -873,13 +873,13 @@ namespace COMIGHT
                                         dataTable.Columns.Add("Source Workbook"); //添加列
                                         dataTable.Columns.Add("Source Worksheet");
 
-                                        foreach (string anOperatingRange in lstOperatingRangeAddresses!)
+                                        foreach (string operatingRange in lstOperatingRanges!)
                                         {
-                                            for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                            for (int k = 0; k < excelWorksheet.Cells[operatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
                                             {
-                                                for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                                for (int l = 0; l < excelWorksheet.Cells[operatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
                                                 {
-                                                    dataTable.Columns.Add(excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1).Address.ToString()); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格地址作为数据列加入DataTable
+                                                    dataTable.Columns.Add(excelWorksheet.Cells[operatingRange].Offset(k, l, 1, 1).Address.ToString()); //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格地址作为数据列加入DataTable
                                                 }
                                             }
                                         }
@@ -888,14 +888,14 @@ namespace COMIGHT
                                     dataRow = dataTable!.NewRow(); //定义DataTable新数据行
                                     dataRow["Source Workbook"] = excelFileName;
                                     dataRow["Source Worksheet"] = excelWorksheet.Name;
-                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) //遍历所有操作区域
+                                    foreach (string operatingRange in lstOperatingRanges!) //遍历所有操作区域
                                     {
-                                        for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        for (int k = 0; k < excelWorksheet.Cells[operatingRange].Rows; k++) //遍历目标Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
                                         {
-                                            for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            for (int l = 0; l < excelWorksheet.Cells[operatingRange].Columns; l++) //遍历目标Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
                                             {
                                                 //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格值赋值给DataTable数据行中对应单元格地址的数据列元素中
-                                                ExcelRangeBase cell = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1);
+                                                ExcelRangeBase cell = excelWorksheet.Cells[operatingRange].Offset(k, l, 1, 1);
                                                 dataRow[cell.Address.ToString()] = cell?.Value;
                                             }
                                         }
@@ -913,15 +913,15 @@ namespace COMIGHT
 
                                 case EnumProcessFunctions.ConvertTextualNumbers: //文本型数字转数值型
 
-                                    foreach (string anOperatingRange in lstOperatingRangeAddresses!) // 遍历所有操作区域
+                                    foreach (string operatingRange in lstOperatingRanges!) // 遍历所有操作区域
                                     {
-                                        for (int k = 0; k < excelWorksheet.Cells[anOperatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
+                                        for (int k = 0; k < excelWorksheet.Cells[operatingRange].Rows; k++) //遍历Excel工作表操作区域行偏移值（第1行相对第1行的偏移值为0，最后一行相对第1行的偏移值为区域总行数-1）
                                         {
-                                            for (int l = 0; l < excelWorksheet.Cells[anOperatingRange].Columns; l++) //遍历Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
+                                            for (int l = 0; l < excelWorksheet.Cells[operatingRange].Columns; l++) //遍历Excel工作表操作区域列偏移值（第1列相对第1列的偏移值为0，最后一列相对第1列的偏移值为区域总列数-1）
                                             {
                                                 //将被处理Excel工作表操作区域第1行第1列的单元格向右、向下偏移k、l个单位的单元格数据转换成数值型
                                                 double cellNumVal;
-                                                ExcelRangeBase cell = excelWorksheet.Cells[anOperatingRange].Offset(k, l, 1, 1);
+                                                ExcelRangeBase cell = excelWorksheet.Cells[operatingRange].Offset(k, l, 1, 1);
                                                 if (double.TryParse(cell.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out cellNumVal)) //将当前单元格转换为数值，如果成功则将转换得到的数值赋值给单元格数值变量，然后：
                                                 {
                                                     cell.Style.Numberformat.Format = ""; //将当前单元格的格式设为常规
