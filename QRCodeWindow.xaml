@@ -17,10 +17,10 @@
 
         <StackPanel Grid.Row="0" Orientation="Vertical">
             <Label Content="Input Text:" Margin="5" />
-            <TextBox x:Name="InputTextBox" Margin="5" MaxHeight="60" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="InputTextBox_TextChanged"/>
+            <TextBox x:Name="txtbxInput" Margin="5" MaxHeight="60" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="TxtbxInput_TextChanged"/>
         </StackPanel>
         
-        <Image x:Name="QRImage" Grid.Row="1" Margin="5" Stretch="Uniform"/>
+        <Image x:Name="imgbxQR" Grid.Row="1" Margin="5" Stretch="Uniform"/>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
             <Button Content="Save" Click="BtnSave_Click"/>

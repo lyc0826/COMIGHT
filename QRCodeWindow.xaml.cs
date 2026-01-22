@@ -15,14 +15,16 @@ namespace COMIGHT
         {
             InitializeComponent();
 
+            txtbxInput.Focus(); // 获取焦点
+
             // 窗体加载时，如果文本框有默认值，也可以触发一次生成
-            // GenerateQRCode(InputTextBox.Text); 
+            // GenerateQRCode(txtbxInput.Text); 
         }
 
         // 文本框内容改变时触发
-        private void InputTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void TxtbxInput_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            GenerateQRCode(InputTextBox.Text); // 调用核心方法，生成二维码并显示
+            GenerateQRCode(txtbxInput.Text); // 调用核心方法，生成二维码并显示
         }
 
         // 点击 Save 按钮触发
@@ -67,7 +69,7 @@ namespace COMIGHT
                 if (string.IsNullOrEmpty(content))
                 {
                     qrCodeBytes = null;
-                    QRImage.Source = null;
+                    imgbxQR.Source = null;
                     return;
                 }
 
@@ -85,7 +87,7 @@ namespace COMIGHT
                 qrCodeBytes = qrCode.GetGraphic(20);
 
                 // 将字节数组转换为 WPF 可识别的 ImageSource
-                QRImage.Source = ByteToImage(qrCodeBytes);
+                imgbxQR.Source = ByteToImage(qrCodeBytes);
             }
             catch (Exception ex)
             {
@@ -104,7 +106,7 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetPNGFilePath = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(InputTextBox.Text)}.png"); //获取目标图片文件路径全名
+                string targetPNGFilePath = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(txtbxInput.Text)}.png"); //获取目标图片文件路径全名
 
                 File.WriteAllBytes(targetPNGFilePath, qrCodeBytes); // 将图块字节数组保存为PNG图片
 
