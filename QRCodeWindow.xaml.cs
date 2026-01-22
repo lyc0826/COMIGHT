@@ -108,7 +108,7 @@ namespace COMIGHT
 
                 File.WriteAllBytes(targetPNGFilePath, qrCodeBytes); // 将图块字节数组保存为PNG图片
 
-                ShowSuccessMessage();
+                ShowSuccessMessage($"File saved as '{targetPNGFilePath}'.");
 
                 //SaveFileDialog saveDialog = new SaveFileDialog
                 //{
