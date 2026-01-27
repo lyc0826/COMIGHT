@@ -61,8 +61,6 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
   - Example: A student roster worksheet contains class information in column B (Class 1, Class 2, Class 3). Splitting by column B creates separate roster worksheets for each class, each stored in a different workbook.
 
-- **Split by a Column into Worksheets:** Same as above, but the split data are stored in different worksheets within a new workbook. 
-
 - **Disassemble by Worksheets:** Disperse the worksheets of a workbook into separate workbooks.
   
 ### **Batch Unhide Excel Worksheets**
@@ -75,7 +73,7 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
 ### **Create File List**
 
-- Creates a list of all subfolders and files within a specified folder path, including hyperlinks, subpaths, file/folder names, types, and creation times, and saves it into an Excel workbook.
+- Creates a list of all subfolders and files within a specified folder path, including hyperlinks, subpaths, filenames, types, and creation times, and saves it into an Excel workbook.
 
 ## Document
 
