@@ -1301,10 +1301,11 @@ namespace COMIGHT
             qRCodeWindow.Show();
         }
 
+
         private void MergeDataIntoDocument()
         {
             string currentFilePath = "";
-            
+
             try
             {
                 List<string>? filePaths = SelectFiles(EnumFileType.DocumentAndTable, true, "Select Document and Table Files"); //获取所选文件路径全名列表
@@ -1327,7 +1328,7 @@ namespace COMIGHT
                 foreach (string filePath in filePaths) //遍历列表中的所有文件
                 {
                     currentFilePath = filePath;
-                    
+
                     if (new FileInfo(filePath).Length == 0) //如果当前文件大小为0，则直接跳过当前循环并进入下一个循环
                     {
                         continue;
@@ -1355,7 +1356,7 @@ namespace COMIGHT
                                 {
                                     for (int j = 1; j <= excelWorksheet.Dimension.End.Column; j++) // 遍历Excel工作表所有列
                                     {
-                                        tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text.Replace('|', ';')); // 将当前单元格文字中的表格分隔符替换成分号，并追加到字符串构建器中
+                                        tableRowStringBuilder.Append(excelWorksheet.Cells[i, j].Text.Trim().Replace('|', ';')); // 将当前单元格文字中的表格分隔符替换成分号，并追加到字符串构建器中
                                         tableRowStringBuilder.Append('|'); //追加表格分隔符到字符串构建器中
                                     }
                                     lstTextToMerge.Add(tableRowStringBuilder.ToString().TrimEnd('|')); //将字符串构建器中当前行数据转换成字符串，移除尾部的分隔符，并追加到待合并文本列表中
@@ -1491,12 +1492,12 @@ namespace COMIGHT
 
                     ShowSuccessMessage($"File saved as '{finalPdfFilePath}'.");
                 }
-                
+
                 else
                 {
                     ShowSuccessMessage($"Files saved as '{targetTxtFilePath}' and '{targetPdfFilePath}'.");
                 }
-                    
+
             }
 
             catch (Exception ex)
