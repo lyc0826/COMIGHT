@@ -1295,7 +1295,7 @@ namespace COMIGHT
             }
         }
 
-        private static void GenerateQRCode()
+        private void GenerateQRCode()
         {
             QRCodeWindow qRCodeWindow = new QRCodeWindow(); // 创建建二维码窗口对象
             qRCodeWindow.Show();
