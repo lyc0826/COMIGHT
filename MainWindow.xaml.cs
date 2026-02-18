@@ -46,8 +46,8 @@ namespace COMIGHT
 
             ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
 
-            appSettings = settingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
-            userRecords = recordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
+            appSettings = appSettingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
+            userRecords = userRecordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
 
         }
 
@@ -72,8 +72,8 @@ namespace COMIGHT
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            settingsManager.SaveSettings(appSettings); // 保存应用程序设置到Json文件
-            recordsManager.SaveSettings(userRecords);  // 保存最近记录到Json文件
+            appSettingsManager.SaveSettings(appSettings); // 保存应用程序设置到Json文件
+            userRecordsManager.SaveSettings(userRecords);  // 保存最近记录到Json文件
 
             Environment.Exit(0); // 退出程序，关闭所有窗口
         }

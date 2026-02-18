@@ -51,10 +51,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Settings\Records.json">
+    <None Update="Settings\UserRecords.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Settings\Settings.json">
+    <None Update="Settings\AppSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

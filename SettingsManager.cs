@@ -223,17 +223,18 @@ namespace COMIGHT
         public string LatestUrl { get; set; } = string.Empty;
     }
 
+    // 定义设置类（含应用设置和用户使用记录）
     public static class Settings
     {
         // 获取路径
         public static readonly string appPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings"); //获取程序所在文件夹路径
         //public static readonly string websitesJsonFilePath = Path.Combine(appPath, "Websites.json"); //获取网址Json文件路径全名
-        public static readonly string settingsJsonFilePath = Path.Combine(appPath, "Settings.json"); //获取应用程序设置Json文件路径全名
-        public static readonly string recordsJsonFilePath = Path.Combine(appPath, "Records.json"); //获取用户使用记录Json文件路径全名
+        public static readonly string appSettingsJsonFilePath = Path.Combine(appPath, "AppSettings.json"); //获取应用程序设置Json文件路径全名
+        public static readonly string userRecordsJsonFilePath = Path.Combine(appPath, "UserRecords.json"); //获取用户使用记录Json文件路径全名
 
         // 定义应用设置管理器、用户使用记录管理器对象，应用设置类、用户使用记录类对象，用于读取、保存应用设置和用户使用记录
-        public static SettingsManager<AppSettings> settingsManager = new SettingsManager<AppSettings>(settingsJsonFilePath);
-        public static SettingsManager<UserRecords> recordsManager = new SettingsManager<UserRecords>(recordsJsonFilePath);
+        public static SettingsManager<AppSettings> appSettingsManager = new SettingsManager<AppSettings>(appSettingsJsonFilePath);
+        public static SettingsManager<UserRecords> userRecordsManager = new SettingsManager<UserRecords>(userRecordsJsonFilePath);
         public static AppSettings appSettings = new AppSettings();
         public static UserRecords userRecords = new UserRecords();
     }

@@ -9,7 +9,7 @@
         <local:ListItemsSource x:Key="ListItemsSource"/>
     </Window.Resources>
     
-    <Grid Margin="10">
+    <Grid Margin="5">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -24,7 +24,8 @@
                     
                     <Style TargetType="Expander">
                         <Setter Property="IsExpanded" Value="True"/>
-                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="Margin" Value="2"/>
+                        <Setter Property="Padding" Value="5"/>
                         <Setter Property="Background" Value="#F0F0F0"/>
                     </Style>
                     <Style TargetType="Label">
@@ -66,7 +67,7 @@
                     
                 </Expander>
 
-                <Expander Header="Chinese Document">
+                <Expander Header="Chinese Document Format">
 
                     <StackPanel Orientation="Vertical">
 
@@ -115,7 +116,7 @@
 
                 </Expander>
 
-                <Expander Header="Misc.">
+                <Expander Header="Worksheet Format">
                     
                     <StackPanel Orientation="Vertical">
 
@@ -125,21 +126,40 @@
                             <TextBox Text="{Binding Path = WorksheetFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" TextWrapping="Wrap" />
                         </StackPanel>
 
+                    </StackPanel>
+                    
+                </Expander>
+                
+                <Expander Header="Place Card Format"> 
+                    
+                    <StackPanel Orientation="Vertical"> 
+                        
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Place Card Font Name:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = NameCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <Label Content="Place Card Font Name/Size:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = PlaceCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = PlaceCardFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
+                        
+                    </StackPanel>
+                    
+                </Expander>
 
-                        <Separator/>
-
+                <Expander Header="Markdown Processing">
+                    
+                    <StackPanel Orientation="Vertical"> 
+                        
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
-                        </StackPanel>
-
-                        <Separator/>
-
-                        <Label Content="User Profile" />
+                         </StackPanel>
                         
+                    </StackPanel>
+                    
+                </Expander>
+                
+                <Expander Header="Misc.">
+
+                    <StackPanel Orientation="Vertical">
+
                         <StackPanel Orientation="Horizontal">
                             <RadioButton Content="Profile 1" IsChecked="{Binding Path=UserProfile, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter='Profile1', Mode=TwoWay}"/>
                             <RadioButton Content="Profile 2" IsChecked="{Binding Path=UserProfile, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter='Profile2', Mode=TwoWay}"/>
@@ -149,7 +169,7 @@
                     </StackPanel>
                     
                 </Expander>
-
+                      
             </StackPanel>
 
         </ScrollViewer>
