@@ -1200,7 +1200,7 @@ namespace COMIGHT
                         new DataColumn("Item"),
                         new DataColumn("Type"),
                         new DataColumn("Date", typeof(DateTime)),
-                        new DataColumn("Size(MB)")
+                        new DataColumn("Size(MB)", typeof(double))
                     });  // 向DataTable添加列
 
                 Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其相对于第一级文件夹路径的子路径深度
