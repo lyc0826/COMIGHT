@@ -1199,7 +1199,8 @@ namespace COMIGHT
                         new DataColumn("Subpath"),
                         new DataColumn("Item"),
                         new DataColumn("Type"),
-                        new DataColumn("Date", typeof(DateTime))
+                        new DataColumn("Date", typeof(DateTime)),
+                        new DataColumn("Size(MB)")
                     });  // 向DataTable添加列
 
                 Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其相对于第一级文件夹路径的子路径深度
@@ -1235,6 +1236,7 @@ namespace COMIGHT
                             dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Item列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
                             dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
+                            dataRow["Size(MB)"] = Math.Round(file.Length/(1024.0 * 1024.0), 2); // 将文件大小（MB）保留2位小数并赋值给数据行的Size列
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
                         }
                     }
@@ -1251,7 +1253,7 @@ namespace COMIGHT
                             stack.Push((subdirectory.FullName, currentSubpathDepth + 1)); // 将当前子文件夹路径及其相对于第一级路径的子路径深度累加1后的数值压入栈
                         }
                     }
-            }
+                }
 
                 if (dataTable.Rows.Count * dataTable.Columns.Count == 0) //如果DataTable的行数或列数有一个为0，则抛出异常
                 {
@@ -1270,7 +1272,6 @@ namespace COMIGHT
                     for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
                     {
                         targetExcelWorksheet.Cells[i, 1].Formula = "= ROW() - 1"; //将当前行的序号（第1）列单元格的公式设置为行索引号减1
-
                         ExcelRange pathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行路径（第2）列单元格赋值给路径单元格变量
                         pathCell.Hyperlink = new Uri($"file:///{pathCell.Text}"); //将当前行路径单元格的超链接设定为单元格内的路径（使用file://协议）
                         pathCell.Style.Font.UnderLine = true; //将当前行路径单元格文字加下划线
