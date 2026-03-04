@@ -1192,16 +1192,18 @@ namespace COMIGHT
 
                 DataTable dataTable = new DataTable(); // 定义DataTable，赋值给DataTable变量
 
+                // 向DataTable添加列
                 dataTable.Columns.AddRange(new DataColumn[]
                     {
                         new DataColumn("Index"),
-                        new DataColumn("Path"),
+                        new DataColumn("FilePath"),
+                        new DataColumn("FolderPath"),
                         new DataColumn("Subpath"),
-                        new DataColumn("Item"),
+                        new DataColumn("Filename"),
                         new DataColumn("Type"),
                         new DataColumn("Date", typeof(DateTime)),
                         new DataColumn("Size(MB)", typeof(double))
-                    });  // 向DataTable添加列
+                    });  
 
                 Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其相对于第一级文件夹路径的子路径深度
 
@@ -1227,13 +1229,13 @@ namespace COMIGHT
                         if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
                             (attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
                         {
-
                             DataRow dataRow = dataTable.NewRow(); // 创建一个新的数据行
 
-                            dataRow["Path"] = file.FullName; // 将文件路径全名赋值给数据行的Path列
-                            //在文件路径全名中删除第一级文件夹路径和最末级文件名
+                            dataRow["FilePath"] = file.FullName; // 将文件路径全名赋值给数据行的FilePath列
+                            dataRow["FolderPath"] = file.DirectoryName; // 将文件所在文件夹的路径赋值给数据行的FolderPath列
+                            //在文件路径全名中删除第一级文件夹路径和最末级文件名，并将结果赋值给数据行的Subpath列
                             dataRow["Subpath"] = file.FullName.Replace(folderPath, "").Replace(file.Name, "");
-                            dataRow["Item"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Item列
+                            dataRow["Filename"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Filename列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
                             dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
                             dataRow["Size(MB)"] = Math.Round(file.Length/(1024.0 * 1024.0), 2); // 将文件大小（MB）保留2位小数并赋值给数据行的Size列
@@ -1244,7 +1246,6 @@ namespace COMIGHT
                     DirectoryInfo[] subdirectories = directories.GetDirectories(); // 获取当前文件夹中的所有子文件夹信息
                     foreach (DirectoryInfo subdirectory in subdirectories) // 遍历每个子文件夹信息
                     {
-
                         FileAttributes attributes = File.GetAttributes(subdirectory.FullName); // 获取子文件夹的属性
                         // 如果当前子文件夹不是隐藏或临时文件夹
                         if ((attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
@@ -1272,11 +1273,16 @@ namespace COMIGHT
                     for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
                     {
                         targetExcelWorksheet.Cells[i, 1].Formula = "= ROW() - 1"; //将当前行的序号（第1）列单元格的公式设置为行索引号减1
-                        ExcelRange pathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行路径（第2）列单元格赋值给路径单元格变量
-                        pathCell.Hyperlink = new Uri($"file:///{pathCell.Text}"); //将当前行路径单元格的超链接设定为单元格内的路径（使用file://协议）
-                        pathCell.Style.Font.UnderLine = true; //将当前行路径单元格文字加下划线
-                        pathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行路径单元格文字颜色设为蓝色
+                        
+                        ExcelRange filePathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行文件路径（第2）列单元格赋值给文件路径单元格变量
+                        filePathCell.Hyperlink = new Uri($"file:///{filePathCell.Text}"); //将当前行文件路径单元格超链接设定为单元格内的路径（使用file://协议）
+                        filePathCell.Style.Font.UnderLine = true; //将当前行文件路径单元格文字加下划线
+                        filePathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行文件路径单元格文字颜色设为蓝色
 
+                        ExcelRange folderPathCell = targetExcelWorksheet.Cells[i, 3]; //将当前行路径（第3）列单元格赋值给文件夹路径单元格变量
+                        folderPathCell.Hyperlink = new Uri($"file:///{folderPathCell.Text}"); //将当前行文件夹路径单元格的超链接设定为单元格内的路径（使用file://协议）
+                        folderPathCell.Style.Font.UnderLine = true; //将当前行文件夹路径单元格文字加下划线
+                        folderPathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行文件夹路径单元格文字颜色设为蓝色  
                     }
 
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
