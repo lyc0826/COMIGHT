@@ -120,7 +120,7 @@ namespace COMIGHT
 
                     // 批量处理Word文档
 
-                    foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
+                    foreach (string filePath in filePaths) //遍历文件路径列表所有元素
                     {
                         currentFilePath = filePath;
                         
@@ -650,11 +650,11 @@ namespace COMIGHT
                 string currentFilePath = "";
                 try
                 {
-                    foreach (string filePath in filePaths) //遍历文件路径全名列表所有元素
+                    foreach (string filePath in filePaths) //遍历文件路径列表所有元素
                     {
                         currentFilePath = filePath;
                         
-                        string targetFilePath = Path.Combine(Path.GetDirectoryName(filePath)!, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径全名
+                        string targetFilePath = Path.Combine(Path.GetDirectoryName(filePath)!, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径
                         MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开Word文档，赋值给Word文档变量
                         MSWordDocument targetMSWordDocument = msWordApp.Documents.Add(); // 新建Word文档并赋值给目标Word文档变量
                         msWordDocument.Content.Copy(); // 复制当前Word文档全文
@@ -1601,7 +1601,7 @@ namespace COMIGHT
 
         public static void WriteDataTableIntoExcelWorkbook(List<DataTable> lstDataTable, string filePath)
         {
-            FileInfo targetExcelFile = new FileInfo(filePath); //获取目标Excel工作簿文件路径全名信息
+            FileInfo targetExcelFile = new FileInfo(filePath); //获取目标Excel工作簿文件路径信息
 
             using (ExcelPackage excelPackage = new ExcelPackage()) //新建Excel包，赋值给Excel包变量
             {
