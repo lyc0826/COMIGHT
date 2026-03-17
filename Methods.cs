@@ -1499,7 +1499,7 @@ namespace COMIGHT
 
         public static void ShowExceptionMessage(Exception ex, string? additionalInfo = null)
         {
-            string exceptionMessage = $"{ex.Message}\n{ex.InnerException?.Message ?? ""}\n{additionalInfo ?? ""}";
+            string exceptionMessage = $"{ex.Message}\n{ex.InnerException?.Message ?? ""}\n\n{additionalInfo ?? ""}";
             MessageDialog messageDialog = new MessageDialog(exceptionMessage.Trim());
             messageDialog.ShowDialog();
         }
@@ -1512,7 +1512,7 @@ namespace COMIGHT
 
         public static void ShowSuccessMessage(string? additionalInfo = null)
         {
-            string successMessage = $"Operation completed.\n{additionalInfo ?? ""}";
+            string successMessage = $"Operation completed.\n\n{additionalInfo ?? ""}";
             MessageDialog messageDialog = new MessageDialog(successMessage.Trim());
             messageDialog.ShowDialog();
         }
