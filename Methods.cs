@@ -1417,9 +1417,9 @@ namespace COMIGHT
             {
                 EnumFileType.Excel => "Excel Files(*.xlsx;*.xlsm)|*.xlsx;*.xlsm|All Files(*.*)|*.*",
                 EnumFileType.Word => "Word Files(*.docx;*.docm)|*.docx;*.docm|All Files(*.*)|*.*",
-                EnumFileType.DocumentAndTable => "Document And Table Files(*.docx;*.xlsx;*.docm;*.xlsm;*.pdf)|*.docx;*.xlsx;*.docm;*.xlsm;*.pdf|All Files(*.*)|*.*",
+                EnumFileType.DocumentAndTable => "Document And Table Files(*.docx;*.xlsx;*.docm;*.xlsm)|*.docx;*.xlsx;*.docm;*.xlsm|All Files(*.*)|*.*",
                 EnumFileType.Convertible => "Convertible Files(*.doc;*.xls;*.wps;*.et)|*.doc;*.xls;*.wps;*.et|All Files(*.*)|*.*",
-                //EnumFileType.Pdf => "PDF Files(*.pdf)|*.pdf|All Files(*.*)|*.*",
+                EnumFileType.Pdf => "PDF Files(*.pdf)|*.pdf|All Files(*.*)|*.*",
                 _ => "All Files(*.*)|*.*"
             };
 

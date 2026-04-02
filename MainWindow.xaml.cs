@@ -1327,8 +1327,6 @@ namespace COMIGHT
                     throw new Exception("2 or more files need to be selected.");
                 }
 
-                List<string> pdfToMergeFilePaths = new List<string>(); // 建立待合并PDF文件路径列表
-
                 List<string> lstTextToMerge = new List<string>(); // 建立待合并文本列表
                 StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
 
@@ -1419,21 +1417,13 @@ namespace COMIGHT
                         }
                     }
 
-                    // 如果当前文件扩展名含有“pdf”（PDF文件），则将当前文件路径追加到待合并PDF文件路径列表中
-                    else if (fileExtension.Contains("pdf", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        pdfToMergeFilePaths.Add(filePath);
-                    }
-
                 }
 
                 string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
                 string targetTxtFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.txt"); // 获取目标文本文件的路径全名
-                string targetPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Mrg_{targetFileMainName}")}.pdf"); // 获取目标PDF文件的路径全名
 
-
-                // 合并待合并文本列表中的内容（来自Word、Excel文件内容），输出TXT和PDF文件
+                // 合并待合并文本列表中的内容（来自Word、Excel文件内容），输出TXT文件
 
                 if (lstTextToMerge.Count > 0) // 如果待合并文本列表中元素数量大于0
                 {
@@ -1446,63 +1436,8 @@ namespace COMIGHT
                         }
                     }
 
-                    // 写入目标PDF文档
-                    using (PdfWriter writer = new PdfWriter(targetPdfFilePath)) // 创建PDF写入器对象，赋值给PDF写入器对象
-                    using (PdfDocument pdf = new PdfDocument(writer)) // 创建PDF文档对象，赋值给PDF文档对象
-                    using (ITextDocument document = new ITextDocument(pdf)) // 创建文档对象，赋值给文档对象
-                    {
-                        PdfFont font = PdfFontFactory.CreateFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED); // 创建pdf字体对象：中文宋体，Adobe-GB1符集UCS-2编码，水平书写，优先嵌入字体
+                    ShowSuccessMessage($"File saved as '{targetTxtFilePath}'.");
 
-                        // 遍历待合并文本列表
-                        foreach (string textToMerge in lstTextToMerge)
-                        {
-                            ITextParagraph paragraph = new ITextParagraph(textToMerge).SetFont(font); // 为当前字符串创建一个段落，使用已定义的字体
-                            document.Add(paragraph); // 将段落添加到文档中
-                        }
-                    }
-
-                    pdfToMergeFilePaths.Add(targetPdfFilePath); // 将目标PDF文件路径添加到待合并PDF文件路径列表中
-                }
-
-
-                // 合并所有PDF文件（含原选定文件中的PDF文件和之前由Word、Excel文件合并生成的PDF文件）
-
-                if (pdfToMergeFilePaths.Count > 1) // 如果待合并PDF文件多于1个
-                {
-                    // 获取最终PDF文件路径
-                    string finalPdfFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Fnl_{targetFileMainName}")}.pdf");
-
-                    using (PdfWriter writer = new PdfWriter(finalPdfFilePath))
-                    using (PdfDocument pdf = new PdfDocument(writer))
-                    {
-                        PdfMerger merger = new PdfMerger(pdf); // 创建PDF合并对象，赋值给PDF合并对象
-
-                        foreach (string pdfToMergeFilePath in pdfToMergeFilePaths) // 遍历待合并PDF文件列表
-                        {
-                            using PdfDocument pdfToMerge = new PdfDocument(new PdfReader(pdfToMergeFilePath)); // 打开当前待合并pdf源文件
-                            {
-                                merger.Merge(pdfToMerge, 1, pdfToMerge.GetNumberOfPages()); // 将源pdf文件中的全部页添加到PDF合并对象中
-                            }
-                        }
-                    }
-
-                    // 删除由Word、Excel文件合并而成的文本文件和PDF文件（过程性文件，如果存在的话）
-                    if (File.Exists(targetTxtFilePath))
-                    {
-                        File.Delete(targetTxtFilePath);
-                    }
-
-                    if (File.Exists(targetPdfFilePath))
-                    {
-                        File.Delete(targetPdfFilePath);
-                    }
-
-                    ShowSuccessMessage($"File saved as '{finalPdfFilePath}'.");
-                }
-
-                else
-                {
-                    ShowSuccessMessage($"Files saved as '{targetTxtFilePath}' and '{targetPdfFilePath}'.");
                 }
 
             }
