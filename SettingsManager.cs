@@ -219,7 +219,7 @@ namespace COMIGHT
         public string LatestOperatingRanges { get; set; } = string.Empty;
         public int LatestSubpathDepth { get; set; }
         public string LatestBatchProcessWorkbooksOption { get; set; } = string.Empty;
-        public string LatestBatchDisassembleWorkbooksOption { get; set; } = string.Empty;
+        public string LatestDisassembleWorkbookOption { get; set; } = string.Empty;
         public string LatestUrl { get; set; } = string.Empty;
     }
 
