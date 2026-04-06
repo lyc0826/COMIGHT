@@ -3,9 +3,6 @@ using DocSharp.Binary.OpenXmlLib;
 using DocSharp.Binary.Spreadsheet.XlsFileFormat;
 using DocSharp.Binary.StructuredStorage.Reader;
 using DocSharp.Markdown;
-using iText.Kernel.Font;
-using iText.Kernel.Pdf;
-using iText.Kernel.Utils;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -23,8 +20,6 @@ using static COMIGHT.Tasks;
 using DataTable = System.Data.DataTable;
 using DocSharpSpreadsheetMapping = DocSharp.Binary.SpreadsheetMLMapping;
 using DocSharpWordMapping = DocSharp.Binary.WordprocessingMLMapping;
-using ITextDocument = iText.Layout.Document;
-using ITextParagraph = iText.Layout.Element.Paragraph;
 using SpreadsheetDocument = DocSharp.Binary.OpenXmlLib.SpreadsheetML.SpreadsheetDocument;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
@@ -79,19 +74,19 @@ namespace COMIGHT
         }
 
 
-        private void MnuBatchConvertOfficeFiles_Click(object sender, RoutedEventArgs e)
+        private void MnuConvertOfficeFiles_Click(object sender, RoutedEventArgs e)
         {
-            BatchConvertOfficeFiles();
+            ConvertOfficeFiles();
         }
 
-        private async void MnuBatchCreateFolders_Click(object sender, RoutedEventArgs e)
+        private async void MnuCreateFolders_Click(object sender, RoutedEventArgs e)
         {
-            await BatchCreateFolders();
+            await CreateFolders();
         }
 
-        private void MnuBatchCreatePlaceCards_Click(object sender, RoutedEventArgs e)
+        private void MnuCreatePlaceCards_Click(object sender, RoutedEventArgs e)
         {
-            BatchCreatePlaceCards();
+            CreatePlaceCards();
         }
 
         private void MnuDisassembleExcelWorkbook_Click(object sender, RoutedEventArgs e)
@@ -99,29 +94,29 @@ namespace COMIGHT
             DisassembleExcelWorkbook();
         }
 
-        private void MnuBatchExtractTablesFromWordDocuments_Click(object sender, RoutedEventArgs e)
+        private void MnuExtractTablesFromWordDocuments_Click(object sender, RoutedEventArgs e)
         {
-            BatchExtractTablesFromWordDocuments();
+            ExtractTablesFromWordDocuments();
         }
 
-        private async void MnuBatchFormatWordDocuments_Click(object sender, RoutedEventArgs e)
+        private async void MnuFormatWordDocuments_Click(object sender, RoutedEventArgs e)
         {
-            await BatchFormatWordDocumentsAsync();
+            await FormatWordDocumentsAsync();
         }
 
-        private void MnuBatchProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        private void MnuProcessExcelWorksheets_Click(object sender, RoutedEventArgs e)
         {
-            BatchProcessExcelWorksheets();
+            ProcessExcelWorksheets();
         }
 
-        private async void MnuBatchRepairWordDocuments_Click(object sender, RoutedEventArgs e)
+        private async void MnuRepairWordDocuments_Click(object sender, RoutedEventArgs e)
         {
-            await BatchRepairWordDocumentsAsync();
+            await RepairWordDocumentsAsync();
         }
 
-        private void MnuBatchUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
+        private void MnuUnhideExcelWorksheets_Click(object sender, RoutedEventArgs e)
         {
-            BatchUnhideExcelWorksheets();
+            UnhideExcelWorksheets();
         }
 
         //private void MnuBrowser_Click(object sender, RoutedEventArgs e)
@@ -211,7 +206,7 @@ namespace COMIGHT
 
         // 以下为功能逻辑代码
 
-        public void BatchConvertOfficeFiles()
+        public void ConvertOfficeFiles()
         {
             string currentFilePath = "";
             try
@@ -479,7 +474,7 @@ namespace COMIGHT
             }
         }
 
-        private void BatchExtractTablesFromWordDocuments()
+        private void ExtractTablesFromWordDocuments()
         {
             string currentFilePath = "";
             try
@@ -503,7 +498,7 @@ namespace COMIGHT
                     }
 
                     string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径
-                    
+
                     tableExtracted = ExtractTablesFromWordToExcel(filePath, targetExcelFilePath) || tableExtracted; // 从Word文档中提取表格并保存为目标Excel工作簿，如果提取到表格则将true赋值给“表格已提取”变量；只要有一个文件提取表格成功，“表格已提取”变量就为true
                 }
 
@@ -518,7 +513,7 @@ namespace COMIGHT
             }
         }
 
-        //private void BatchExtractTablesFromWordDocuments()
+        //private void ExtractTablesFromWordDocuments()
         //{
         //    string currentFilePath = "";
         //    try
@@ -553,7 +548,7 @@ namespace COMIGHT
         //    }
         //}
 
-        private async Task BatchFormatWordDocumentsAsync()
+        private async Task FormatWordDocumentsAsync()
         {
             try
             {
@@ -574,7 +569,7 @@ namespace COMIGHT
 
         }
 
-        private async Task BatchRepairWordDocumentsAsync()
+        private async Task RepairWordDocumentsAsync()
         {
             try
             {
@@ -595,7 +590,7 @@ namespace COMIGHT
 
         }
 
-        private void BatchUnhideExcelWorksheets()
+        private void UnhideExcelWorksheets()
         {
             string currentFilePath = "";
             try
@@ -610,7 +605,7 @@ namespace COMIGHT
                 foreach (string filePath in filePaths) //遍历所有文件
                 {
                     currentFilePath = filePath;
-                    
+
                     int hiddenExcelWorksheetCount = 0;
                     using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath))) //打开当前Excel工作簿，赋值给Excel包变量
                     {
@@ -650,7 +645,7 @@ namespace COMIGHT
             AdjustForPrinting = 5
         }
 
-        private void BatchProcessExcelWorksheets()
+        private void ProcessExcelWorksheets()
         {
             string currentFilePath = "";
             try
@@ -942,7 +937,7 @@ namespace COMIGHT
                 {
                     ShowSuccessMessage();
                 }
-                    
+
             }
 
             catch (Exception ex)
@@ -994,7 +989,7 @@ namespace COMIGHT
                 bool tableExtracted = ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档，如果成功则将true赋值给“表格已提取”变量
 
                 // 获取结果消息
-                string resultMessage = $"File saved as '{targetWordFilePath}'" + (tableExtracted? $" and '{targetExcelFilePath}'" : "") + ".";
+                string resultMessage = $"File saved as '{targetWordFilePath}'" + (tableExtracted ? $" and '{targetExcelFilePath}'" : "") + ".";
                 ShowSuccessMessage(resultMessage);
             }
 
@@ -1004,7 +999,7 @@ namespace COMIGHT
             }
         }
 
-        public void BatchCreatePlaceCards()
+        public void CreatePlaceCards()
         {
             try
             {
@@ -1087,7 +1082,7 @@ namespace COMIGHT
                     string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
                     string targetFilePath = Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"PlCd_{Path.GetFileNameWithoutExtension(filePaths[0])}")}.xlsx"); //获取目标Excel工作簿文件路径
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
-                    
+
                     ShowSuccessMessage($"File saved as '{targetFilePath}'.");
                 }
 
@@ -1099,7 +1094,7 @@ namespace COMIGHT
             }
         }
 
-        private async Task BatchCreateFolders()
+        private async Task CreateFolders()
         {
             try
             {
@@ -1193,7 +1188,7 @@ namespace COMIGHT
                         new DataColumn("Type"),
                         new DataColumn("Date", typeof(DateTime)),
                         new DataColumn("Size(MB)", typeof(double))
-                    });  
+                    });
 
                 Stack<(string FolderPath, int Depth)> stack = new Stack<(string, int)>(); // 创建栈，用于存储待处理的文件夹路径及其相对于第一级文件夹路径的子路径深度
 
@@ -1228,7 +1223,7 @@ namespace COMIGHT
                             dataRow["Filename"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Filename列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
                             dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
-                            dataRow["Size(MB)"] = Math.Round(file.Length/(1024.0 * 1024.0), 2); // 将文件大小（MB）保留2位小数并赋值给数据行的Size列
+                            dataRow["Size(MB)"] = Math.Round(file.Length / (1024.0 * 1024.0), 2); // 将文件大小（MB）保留2位小数并赋值给数据行的Size列
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
                         }
                     }
@@ -1263,7 +1258,7 @@ namespace COMIGHT
                     for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
                     {
                         targetExcelWorksheet.Cells[i, 1].Formula = "= ROW() - 1"; //将当前行的序号（第1）列单元格的公式设置为行索引号减1
-                        
+
                         ExcelRange filePathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行文件路径（第2）列单元格赋值给文件路径单元格变量
                         filePathCell.Hyperlink = new Uri($"file:///{filePathCell.Text}"); //将当前行文件路径单元格超链接设定为单元格内的路径（使用file://协议）
                         filePathCell.Style.Font.UnderLine = true; //将当前行文件路径单元格文字加下划线
@@ -1280,10 +1275,10 @@ namespace COMIGHT
                     string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
                     FileInfo targetExcelFilePath = new FileInfo(Path.Combine(targetFolderPath, $"{CleanFileAndFolderName($"Lst_{folderPath}")}.xlsx")); //获取目标Excel工作簿文件路径信息
                     targetExcelPackage.SaveAs(targetExcelFilePath); //保存目标Excel工作簿文件
-                    
+
                     ShowSuccessMessage($"File saved as '{targetExcelFilePath}'.");
                 }
- 
+
             }
 
             catch (Exception ex)
@@ -1519,9 +1514,9 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
-        
 
-        
+
+
     }
 
 }

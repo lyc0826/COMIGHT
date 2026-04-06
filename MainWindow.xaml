@@ -54,24 +54,24 @@
                 </MenuItem>
 
                 <MenuItem Header="Table">
-                    <MenuItem Header= "Batch Process Excel Worksheets" Click="MnuBatchProcessExcelWorksheets_Click" />
-                    <MenuItem Header= "Disassemble Excel Workbook" Click="MnuDisassembleExcelWorkbook_Click" />
-                    <MenuItem Header= "Batch Unhide Excel Worksheets" Click="MnuBatchUnhideExcelWorksheets_Click" />
-                    <MenuItem Header= "Batch Extract Tables From Word Documents" Click="MnuBatchExtractTablesFromWordDocuments_Click" />
-                    <MenuItem Header= "Create File List" Click="MnuCreateFileList_Click" />
+                    <MenuItem Header="Process Excel Worksheets" Click="MnuProcessExcelWorksheets_Click" />
+                    <MenuItem Header="Disassemble Excel Workbook" Click="MnuDisassembleExcelWorkbook_Click" />
+                    <MenuItem Header="Unhide Excel Worksheets" Click="MnuUnhideExcelWorksheets_Click" />
+                    <MenuItem Header="Extract Tables From Word Documents" Click="MnuExtractTablesFromWordDocuments_Click" />
+                    <MenuItem Header="Create File List" Click="MnuCreateFileList_Click" />
                 </MenuItem>
 
                 <MenuItem Header="Document">
                     <MenuItem Header="Convert Markdown Into Word Document" Click="MnuConvertMarkdownIntoWordDocument_Click"  />
-                    <MenuItem Header= "Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
-                    <MenuItem Header="Batch Format Word Documents" Click="MnuBatchFormatWordDocuments_Click" />
-                    <MenuItem Header="Batch Repair Word Documents" Click="MnuBatchRepairWordDocuments_Click"  />
+                    <MenuItem Header="Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
+                    <MenuItem Header="Format Word Documents" Click="MnuFormatWordDocuments_Click" />
+                    <MenuItem Header="Repair Word Documents" Click="MnuRepairWordDocuments_Click"  />
                 </MenuItem>
 
                 <MenuItem Header="Tools">
-                    <MenuItem Header= "Batch Convert Office Files" Click="MnuBatchConvertOfficeFiles_Click" />
-                    <MenuItem Header= "Batch Create Folders" Click="MnuBatchCreateFolders_Click" />
-                    <MenuItem Header= "Batch Create Place Cards" Click="MnuBatchCreatePlaceCards_Click" />
+                    <MenuItem Header="Convert Office Files" Click="MnuConvertOfficeFiles_Click" />
+                    <MenuItem Header="Create Folders" Click="MnuCreateFolders_Click" />
+                    <MenuItem Header="Create Place Cards" Click="MnuCreatePlaceCards_Click" />
                     <MenuItem Header="Remove Markdown Marks In Copied Text" Click="MnuRemoveMarkdownMarksInCopiedText_Click" />
                     <MenuItem Header="Generate QR Code" Click="MnuGenerateQRCode_Click" />
                 </MenuItem>
