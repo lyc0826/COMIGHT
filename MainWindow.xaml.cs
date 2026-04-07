@@ -1257,17 +1257,23 @@ namespace COMIGHT
 
                     for (int i = 2; i <= targetExcelWorksheet.Dimension.End.Row; i++) //遍历目标Excel工作表从第2行开始到末尾的所有行
                     {
-                        targetExcelWorksheet.Cells[i, 1].Formula = "= ROW() - 1"; //将当前行的序号（第1）列单元格的公式设置为行索引号减1
+                        // 获取目标Excel工作表序号列单元格、文件路径列单元格和文件夹路径列单元格索引号
+                        int indexColumnIndex = dataTable.Columns["Index"]!.Ordinal + 1;
+                        int filePathColumnIndex = dataTable.Columns["FilePath"]!.Ordinal + 1;
+                        int folderPathColumnIndex = dataTable.Columns["FolderPath"]!.Ordinal + 1;
 
-                        ExcelRange filePathCell = targetExcelWorksheet.Cells[i, 2]; //将当前行文件路径（第2）列单元格赋值给文件路径单元格变量
+                        targetExcelWorksheet.Cells[i, indexColumnIndex].Formula = "= ROW() - 1"; //将当前行的序号列单元格的公式设置为行索引号减1
+
+                        ExcelRange folderPathCell = targetExcelWorksheet.Cells[i, folderPathColumnIndex]; //将当前行文件夹路径列单元格赋值给文件夹路径单元格变量
+                        folderPathCell.Hyperlink = new Uri($"file:///{folderPathCell.Text}"); //将当前行文件夹路径单元格的超链接设定为单元格内的路径（使用file://协议）
+                        folderPathCell.Style.Font.UnderLine = true; //将当前行文件夹路径单元格文字加下划线
+                        folderPathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行文件夹路径单元格文字颜色设为蓝色  
+
+                        ExcelRange filePathCell = targetExcelWorksheet.Cells[i, filePathColumnIndex]; //将当前行文件路径列单元格赋值给文件路径单元格变量
                         filePathCell.Hyperlink = new Uri($"file:///{filePathCell.Text}"); //将当前行文件路径单元格超链接设定为单元格内的路径（使用file://协议）
                         filePathCell.Style.Font.UnderLine = true; //将当前行文件路径单元格文字加下划线
                         filePathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行文件路径单元格文字颜色设为蓝色
 
-                        ExcelRange folderPathCell = targetExcelWorksheet.Cells[i, 3]; //将当前行路径（第3）列单元格赋值给文件夹路径单元格变量
-                        folderPathCell.Hyperlink = new Uri($"file:///{folderPathCell.Text}"); //将当前行文件夹路径单元格的超链接设定为单元格内的路径（使用file://协议）
-                        folderPathCell.Style.Font.UnderLine = true; //将当前行文件夹路径单元格文字加下划线
-                        folderPathCell.Style.Font.Color.SetColor(Color.Blue); //将当前行文件夹路径单元格文字颜色设为蓝色  
                     }
 
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
