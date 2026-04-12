@@ -137,7 +137,6 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Place Card Font Name/Size:" />
                             <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = PlaceCardFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = PlaceCardFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
                         
                     </StackPanel>

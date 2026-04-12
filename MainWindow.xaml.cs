@@ -1043,7 +1043,7 @@ namespace COMIGHT
                         cellB.Style.TextRotation = 90; //设定单元格B文字角度：从X轴开始逆时针旋转，旋转角度为正值，设定值等于旋转角度（最多不超过90°）
 
                         ExcelStyle cellABStyle = targetExcelWorksheet.Cells["A1:B1"].Style; //将单元格A、B样式赋值给单元格A、B样式变量
-                        cellABStyle.Font.Name = appSettings.NameCardFontName; // 获取应用程序设置中的字体名称，设置单元格A、B字体
+                        cellABStyle.Font.Name = appSettings.PlaceCardFontName; // 获取应用程序设置中的字体名称，设置单元格A、B字体
                         int charLimit = IsChineseText(name) ? 8 : 16; // 计算字符上限：如果是中文名称，则得到8；否则得到16
                         cellABStyle.Font.Size = (float)((!name.Contains('\n') ? 160 : 90)
                             * (1 - (name.Length - charLimit) * 0.04).Clamp(0.5, 1)); //设置字体大小：如果单元格文字不含换行符，为160；否则为90。再乘以一个缩小字体的因子

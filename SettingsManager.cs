@@ -74,7 +74,7 @@ namespace COMIGHT
         private double _cnLineSpace;
         private string _worksheetFontName = string.Empty;
         private double _worksheetFontSize;
-        private string _nameCardFontName = string.Empty;
+        private string _placeCardFontName = string.Empty;
         private bool _keepEmojisInMarkdown = false;
         private EnumUserProfile _userProfile = EnumUserProfile.Profile1;
 
@@ -182,10 +182,10 @@ namespace COMIGHT
             set => SetProperty(ref _worksheetFontSize, value);
         }
 
-        public string NameCardFontName
+        public string PlaceCardFontName
         {
-            get => _nameCardFontName;
-            set => SetProperty(ref _nameCardFontName, value);
+            get => _placeCardFontName;
+            set => SetProperty(ref _placeCardFontName, value);
         }
 
         public bool KeepEmojisInMarkdown

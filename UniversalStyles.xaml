@@ -16,6 +16,8 @@
     <!-- 定义统一的TextBox样式 -->
     <Style TargetType="TextBox">
         <Setter Property="MinHeight" Value="30"/>
+        <Setter Property="Padding" Value="4,5"/>
+        
         <!-- 定义右键菜单 -->
         <Setter Property="ContextMenu">
             <Setter.Value>
@@ -31,5 +33,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+
 
 </ResourceDictionary>
