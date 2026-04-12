@@ -989,7 +989,8 @@ namespace COMIGHT
                 bool tableExtracted = ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档，如果成功则将true赋值给“表格已提取”变量
 
                 // 获取结果消息
-                string resultMessage = $"File saved as '{targetWordFilePath}'" + (tableExtracted ? $" and '{targetExcelFilePath}'" : "") + ".";
+                string resultMessage = $"File saved as '{targetWordFilePath}'{(tableExtracted ? $" and '{targetExcelFilePath}'" : "")}.";
+
                 ShowSuccessMessage(resultMessage);
             }
 
