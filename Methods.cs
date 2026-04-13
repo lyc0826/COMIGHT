@@ -21,6 +21,9 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
+using Microsoft.WindowsAPICodePack.Shell;
+using System;
+using System.Collections.Generic;
 
 
 namespace COMIGHT
@@ -1616,5 +1619,118 @@ namespace COMIGHT
                 excelPackage.SaveAs(targetExcelFile);
             }
         }
+
+        public static DateTime? GetFileCreationDate(string filePath)
+        {
+            List<string> GetPropertyPriorityByFileType(string ext)
+            {
+                if (IsImage(ext))
+                {
+                    return new List<string>
+                    {
+                        "System.Photo.DateTaken",
+                        "System.Media.DateEncoded",
+                        "System.Document.DateCreated",
+                        "System.DateCreated"
+                    };
+                }
+                if (IsVideo(ext))
+                {
+                    return new List<string>
+                    {
+                        "System.Media.DateEncoded",
+                        "System.Photo.DateTaken",
+                        "System.Document.DateCreated",
+                        "System.DateCreated"
+                    };
+                }
+                if (IsOfficeOrPdf(ext))
+                {
+                    return new List<string>
+                    {
+                        "System.Document.DateSaved",
+                        "System.Document.DateCreated",
+                        "System.Media.DateEncoded",
+                        "System.Photo.DateTaken",
+                        "System.DateCreated"
+                    };
+                }
+                return new List<string>
+                {
+                    "System.Photo.DateTaken",
+                    "System.Media.DateEncoded",
+                    "System.Document.DateCreated",
+                    "System.DateCreated"
+                };
+            }
+
+            DateTime? TryReadShellDate(ShellFile shellFile, string canonicalName)
+            {
+                object? value = shellFile.Properties.GetProperty(canonicalName)?.ValueAsObject;
+                
+                if (value == null)
+                { 
+                    return null; 
+                }     
+                
+                if (value is DateTime dt)
+                {
+                    return dt;
+                }
+                
+                if (value is DateTimeOffset dto)
+                {
+                    return dto.DateTime;
+                }
+                    
+                if (DateTime.TryParse(value.ToString(), out var parsed))
+                {
+                    return parsed;
+                }
+                    
+                return null;
+            }
+
+            bool IsImage(string ext)
+            {
+                return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".bmp" ||
+                       ext == ".gif" || ext == ".tif" || ext == ".tiff" || ext == ".heic" ||
+                       ext == ".webp";
+            }
+            
+            bool IsVideo(string ext)
+            {
+                return ext == ".mp4" || ext == ".mov" || ext == ".avi" || ext == ".mkv" ||
+                       ext == ".wmv" || ext == ".m4v" || ext == ".3gp";
+            }
+            
+            bool IsOfficeOrPdf(string ext)
+            {
+                return ext == ".doc" || ext == ".docx" ||
+                       ext == ".xls" || ext == ".xlsx" ||
+                       ext == ".ppt" || ext == ".pptx" ||
+                       ext == ".pdf";
+            }
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                    return null;
+                string ext = Path.GetExtension(filePath).ToLowerInvariant();
+                using var shellFile = ShellFile.FromFilePath(filePath);
+                foreach (var propertyName in GetPropertyPriorityByFileType(ext))
+                {
+                    var date = TryReadShellDate(shellFile, propertyName);
+                    if (date.HasValue)
+                        return date.Value;
+                }
+                return File.GetCreationTime(filePath);
+            }
+            catch
+            {
+                return File.Exists(filePath) ? File.GetCreationTime(filePath) : null;
+            }
+        }
+        
     }
 }
