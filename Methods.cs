@@ -24,6 +24,8 @@ using Window = System.Windows.Window;
 using Microsoft.WindowsAPICodePack.Shell;
 using System;
 using System.Collections.Generic;
+using Microsoft.Recognizers.Text;
+using Microsoft.Recognizers.Text.DateTime;
 
 
 namespace COMIGHT
@@ -690,8 +692,9 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanFileAndFolderName(string inputName, int maxLength = 254)
+        public static string CleanPathName(string inputName, int maxLength = 254)
         {
+            Regex regExRepeatedUnderlines = new Regex(@"_+", RegexOptions.Compiled);
             string cleanedName = inputName.Trim(); // 去除首尾空白字符
 
             // 定义文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
@@ -699,7 +702,7 @@ namespace COMIGHT
 
             // 遍历文件名和文件夹名中的字符：如果为不允许出现的字符，则得到'_'；否则，得到原字符；将以上字符形成数组，再转换成字符串，赋值给清理后的名称变量
             cleanedName = new string(inputName.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray());
-
+            cleanedName = regExRepeatedUnderlines.Replace(cleanedName, "_"); // 将重复的下划线替换成一个
             // 截取到指定长度
             //return cleanedName.Length > maxLength ? cleanedName.Substring(0, maxLength) : cleanedName;
             cleanedName = cleanedName[..Math.Min(maxLength, cleanedName.Length)]; //截取目标字数
@@ -897,7 +900,7 @@ namespace COMIGHT
 
         //                                // 创建Excel工作表，使用序号加表格标题作为工作表的名称
         //                                ExcelWorksheet worksheet = workbook.Worksheets.Add(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}"));
-        //                                int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
+        //                                int columnCount = wordTable.Rows.Max(result => result.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
 
         //                                worksheet.Cells[1, 1, 1, columnCount].Merge = true; // 合并Excel工作表第一行单元格（EPPlus的行和列索引从1开始）
         //                                worksheet.Cells[1, 1].Value = tableTitle; // 将表格标题赋值给Excel工作表1行1列的单元格
@@ -1620,117 +1623,258 @@ namespace COMIGHT
             }
         }
 
-        public static DateTime? GetFileCreationDate(string filePath)
+        public static DateTime? GetFileSavedDate(string filePath)
         {
-            List<string> GetPropertyPriorityByFileType(string ext)
+            // 定义方法：根据文件扩展名，判断图片、视频、音频、Office和PDF文件
+            static bool IsImage(string ext)
             {
-                if (IsImage(ext))
-                {
-                    return new List<string>
-                    {
-                        "System.Photo.DateTaken",
-                        "System.Media.DateEncoded",
-                        "System.Document.DateCreated",
-                        "System.DateCreated"
-                    };
-                }
-                if (IsVideo(ext))
-                {
-                    return new List<string>
-                    {
-                        "System.Media.DateEncoded",
-                        "System.Photo.DateTaken",
-                        "System.Document.DateCreated",
-                        "System.DateCreated"
-                    };
-                }
-                if (IsOfficeOrPdf(ext))
-                {
-                    return new List<string>
-                    {
-                        "System.Document.DateSaved",
-                        "System.Document.DateCreated",
-                        "System.Media.DateEncoded",
-                        "System.Photo.DateTaken",
-                        "System.DateCreated"
-                    };
-                }
-                return new List<string>
-                {
-                    "System.Photo.DateTaken",
-                    "System.Media.DateEncoded",
-                    "System.Document.DateCreated",
-                    "System.DateCreated"
-                };
-            }
+                ext = ext.ToLowerInvariant();
 
-            DateTime? TryReadShellDate(ShellFile shellFile, string canonicalName)
-            {
-                object? value = shellFile.Properties.GetProperty(canonicalName)?.ValueAsObject;
-                
-                if (value == null)
-                { 
-                    return null; 
-                }     
-                
-                if (value is DateTime dt)
-                {
-                    return dt;
-                }
-                
-                if (value is DateTimeOffset dto)
-                {
-                    return dto.DateTime;
-                }
-                    
-                if (DateTime.TryParse(value.ToString(), out var parsed))
-                {
-                    return parsed;
-                }
-                    
-                return null;
-            }
-
-            bool IsImage(string ext)
-            {
                 return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".bmp" ||
                        ext == ".gif" || ext == ".tif" || ext == ".tiff" || ext == ".heic" ||
                        ext == ".webp";
             }
-            
-            bool IsVideo(string ext)
+
+            static bool IsVideo(string ext)
             {
+                ext = ext.ToLowerInvariant();
+
                 return ext == ".mp4" || ext == ".mov" || ext == ".avi" || ext == ".mkv" ||
                        ext == ".wmv" || ext == ".m4v" || ext == ".3gp";
             }
-            
-            bool IsOfficeOrPdf(string ext)
+
+            static bool IsAudio(string ext)
             {
+                ext = ext.ToLowerInvariant();
+
+                return ext == ".mp3" || ext == ".wav" || ext == ".flac" || ext == ".aac" ||
+                       ext == ".m4a" || ext == ".wma" || ext == ".ogg" || ext == ".opus";
+            }
+
+            static bool IsOfficeOrPdf(string ext)
+            {
+                ext = ext.ToLowerInvariant();
+
                 return ext == ".doc" || ext == ".docx" ||
                        ext == ".xls" || ext == ".xlsx" ||
                        ext == ".ppt" || ext == ".pptx" ||
                        ext == ".pdf";
             }
 
+
+            // 定义方法：根据文件类型，创建时间属性优先级列表
+            static List<string> GetPropertyPriorityByFileType(string ext)
+            {
+                return ext switch
+                {
+                    var e when IsImage(e) => new List<string>
+                    {
+                        "System.Photo.DateTaken",
+                        "System.Media.DateEncoded",
+                        "System.Document.DateCreated",
+                        "System.DateCreated"
+                    },
+                    
+                    var e when IsVideo(e) || IsAudio(e) => new List<string>
+                    {
+                        "System.Media.DateEncoded",
+                        "System.Photo.DateTaken",
+                        "System.Document.DateCreated",
+                        "System.DateCreated"
+                    },
+                    
+                    var e when IsOfficeOrPdf(e) => new List<string>
+                    {
+                        "System.Document.DateSaved",
+                        "System.Document.DateCreated",
+                        "System.Media.DateEncoded",
+                        "System.Photo.DateTaken",
+                        "System.DateCreated"
+                    },
+                    
+                    _ => new List<string>
+                    {
+                        "System.Photo.DateTaken",
+                        "System.Media.DateEncoded",
+                        "System.Document.DateCreated",
+                        "System.DateCreated"
+                    }
+                };
+            }
+
+            // 定义方法：读取文件各时间属性的时间
+            DateTime? TryReadShellDate(ShellFile shellFile, string timeProperty)
+            {
+                object? value = shellFile.Properties.GetProperty(timeProperty)?.ValueAsObject;
+                
+                // 根据时间属性值类型，将时间属性值转换为DateTime对象
+                return value switch
+                {
+                    null => null,
+                    DateTime dt => dt,
+                    DateTimeOffset dto => dto.DateTime,
+                    var v when DateTime.TryParse(v?.ToString(), out var parsed) => parsed,
+                    _ => null
+                };
+            }
+  
+            // 尝试读取文件各时间属性的时间
             try
             {
-                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
-                    return null;
-                string ext = Path.GetExtension(filePath).ToLowerInvariant();
-                using var shellFile = ShellFile.FromFilePath(filePath);
-                foreach (var propertyName in GetPropertyPriorityByFileType(ext))
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) // 如果文件路径为空或文件不存在，则返回null
                 {
-                    var date = TryReadShellDate(shellFile, propertyName);
-                    if (date.HasValue)
-                        return date.Value;
+                    return null;
                 }
-                return File.GetCreationTime(filePath);
+                    
+                string ext = Path.GetExtension(filePath);
+                using var shellFile = ShellFile.FromFilePath(filePath);
+
+                foreach (var timeProperty in GetPropertyPriorityByFileType(ext)) // 遍历时间属性优先级列表
+                {
+                    var date = TryReadShellDate(shellFile, timeProperty); // 尝试读取时间属性的时间
+                    if (date.HasValue) // 如果时间属性有值，则返回该时间
+                    {
+                        return date.Value;
+                    }
+                }
+
+                return File.GetCreationTime(filePath); // 返回文件创建时间
             }
+
             catch
             {
-                return File.Exists(filePath) ? File.GetCreationTime(filePath) : null;
+                return File.Exists(filePath) ? File.GetCreationTime(filePath) : null; // 获取文件创建时间：如果文件存在，则返回文件创建时间；否则返回null
             }
         }
-        
+
+        public static DateTime? GetEarliestDate(string text)
+        {
+            // 定义方法：判断文本是否含有数字年份（距当前年份前后30年以内）
+            static bool IsNumericYear(string text)
+            {
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    return false;
+                }
+                    
+                int currentYear = DateTime.Now.Year;
+                int minYear = currentYear - 30;
+                int maxYear = currentYear + 30;
+                var matches = Regex.Matches(text, @"(?<!\d)\d{4}(?=[年\.\-/]|\b)"); // 匹配数字年份
+                foreach (Match match in matches)
+                {
+                    // 如果正则表达式匹配的字符串能被转换为年份，且在距当前年份前后30年之间，则返回true
+                    if (int.TryParse(match.Value, out int year) && 
+                        year >= minYear &&
+                        year <= maxYear)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(text) || !IsNumericYear(text))
+                {
+                    return null;
+                }
+
+                string[] cultures = new[]
+                {
+                    Culture.Chinese,
+                    Culture.English
+                }; // 定义语言列表
+
+                // 用多个文化区解析 text 里的日期时间表达式，合并所有识别结果，并对重复结果去重，最后转成列表（对每个 culture 识别 text 中的日期时间，并把所有结果合并；按位置、类型、文本内容对重复结果分组；取每组第一个值，并转成 List）
+                var results = cultures
+                    .SelectMany(c => DateTimeRecognizer.RecognizeDateTime(text, c, fallbackToDefaultCulture: false))
+                    .GroupBy(r => $"{r.Start}-{r.End}-{r.TypeName}-{r.Text}")
+                    .Select(g => g.First())
+                    .ToList();
+
+                var dates = new List<DateTime>();
+
+                foreach (var result in results)
+                {
+                    // 如果不是日期时间，则跳过
+                    if (result.TypeName != "datetimeV2.date" &&
+                        result.TypeName != "datetimeV2.daterange")
+                    {
+                        continue;
+                    }
+                    // 如果没有数字年份，则跳过
+                    if (!IsNumericYear(result.Text))
+                    {
+                        continue;
+                    }
+
+                    // 如果Resolution 为空， 或者 values键值获取失败，则跳过；否则，将values键值赋值给dictValues
+                    if (result.Resolution == null || !result.Resolution.TryGetValue("values", out var dictValues))
+                    {
+                        continue;
+                    }
+
+                    // 如果dictValues不是 IEnumerable<Dictionary<string, string>> 类型，则跳过；否则，将dictValues赋值给values
+                    if (dictValues is not IEnumerable<Dictionary<string, string>> values)
+                    {
+                        continue;
+                    }
+
+                    foreach (var value in values) // 遍历values
+                    {
+                        //如果timex键值取值失败，则跳过；否则赋值给timex
+                        if (!value.TryGetValue("timex", out var timex) || string.IsNullOrWhiteSpace(timex))
+                        {
+                            continue;
+                        }
+                        // 如果timex包含X，则跳过
+                        if (timex.Contains('X', StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+                        // 将timex按'-'分割成parts
+                        var parts = timex.Split('-');
+                        // 如果parts长度小于1或大于3，则跳过
+                        if (parts.Length < 1 || parts.Length > 3)
+                        {
+                            continue;
+                        }
+                        // 如果parts[0]不能被转换为年份，则跳过
+                        if (!int.TryParse(parts[0], out int year))
+                        {
+                            continue;
+                        }
+
+                        int month = 1;
+                        int day = 1;
+
+                        // 如果parts长度大于等于2，但parts[1]不能被转换为月，则跳过
+                        if (parts.Length >= 2 && !int.TryParse(parts[1], out month))
+                        {
+                            continue;
+                        }
+                        // 如果parts长度等于3，但parts[2]不能被转换为日，则跳过
+                        if (parts.Length == 3 && !int.TryParse(parts[2], out day))
+                        {
+                            continue;
+                        }
+
+                        dates.Add(new DateTime(year, month, day)); // 将日期添加到dates列表中
+
+                    }
+                }
+
+                return dates.Count > 0 ? dates.Min() : null ; // 返回日期列表中的最小值；如果列表为空则返回null
+            }
+
+            catch
+            {
+                return null; // 处理异常并返回null
+            }
+            
+        }
+
     }
 }

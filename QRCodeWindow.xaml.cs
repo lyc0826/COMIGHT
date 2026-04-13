@@ -106,7 +106,7 @@ namespace COMIGHT
                 }
 
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetPNGFilePath = Path.Combine(targetFolderPath!, $"{CleanFileAndFolderName(txtbxInput.Text)}.png"); //获取目标图片文件路径
+                string targetPNGFilePath = Path.Combine(targetFolderPath!, $"{CleanPathName(txtbxInput.Text)}.png"); //获取目标图片文件路径
 
                 File.WriteAllBytes(targetPNGFilePath, qrCodeBytes); // 将图块字节数组保存为PNG图片
 
