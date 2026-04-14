@@ -1,5 +1,8 @@
 ﻿using Microsoft.Office.Interop.Word;
+using Microsoft.Recognizers.Text;
+using Microsoft.Recognizers.Text.DateTime;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Shell;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Export.ToDataTable;
@@ -21,11 +24,6 @@ using MSWordSection = Microsoft.Office.Interop.Word.Section;
 using MSWordTable = Microsoft.Office.Interop.Word.Table;
 using Task = System.Threading.Tasks.Task;
 using Window = System.Windows.Window;
-using Microsoft.WindowsAPICodePack.Shell;
-using System;
-using System.Collections.Generic;
-using Microsoft.Recognizers.Text;
-using Microsoft.Recognizers.Text.DateTime;
 
 
 namespace COMIGHT
@@ -128,7 +126,7 @@ namespace COMIGHT
                     foreach (string filePath in filePaths) //遍历文件路径列表所有元素
                     {
                         currentFilePath = filePath;
-                        
+
                         msWordDocument = msWordApp.Documents.Open(filePath); // 打开word文档并赋值给Word文档变量
 
                         // 判断是否为空文档
@@ -651,14 +649,14 @@ namespace COMIGHT
             void Process()
             {
                 MSWord.Application msWordApp = new MSWord.Application(); //打开Word应用程序并赋值给word应用程序变量
-                
+
                 string currentFilePath = "";
                 try
                 {
                     foreach (string filePath in filePaths) //遍历文件路径列表所有元素
                     {
                         currentFilePath = filePath;
-                        
+
                         string targetFilePath = Path.Combine(Path.GetDirectoryName(filePath)!, $"{Path.GetFileNameWithoutExtension(filePath)}.docx"); //获取目标Word文件路径
                         MSWordDocument msWordDocument = msWordApp!.Documents.Open(filePath); //打开Word文档，赋值给Word文档变量
                         MSWordDocument targetMSWordDocument = msWordApp.Documents.Add(); // 新建Word文档并赋值给目标Word文档变量
@@ -838,7 +836,7 @@ namespace COMIGHT
                             return false;
                         }
                     }
-                }              
+                }
             }
 
             catch (Exception)
@@ -1503,7 +1501,7 @@ namespace COMIGHT
                         //根据worksheetID的类型（索引号或名称），获取相应的Excel工作表
                         excelWorksheet = worksheetID switch
                         {
-                            int index => excelPackage.Workbook.Worksheets[index], 
+                            int index => excelPackage.Workbook.Worksheets[index],
                             string name => excelPackage.Workbook.Worksheets[name],
                             _ => throw new Exception("Parameter error.")
                         };
@@ -1794,7 +1792,7 @@ namespace COMIGHT
         {
             // 使用反射获取 Window 类的私有字段 "_showingAsDialog",该字段是 WPF 内部用于标记窗口是否通过 ShowDialog() 方法显示的布尔值
             // 查找实例成员（非静态）、查找非公开成员（private/internal）
-            var field = typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic); 
+            var field = typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic);
 
             // 返回判断结果：
             // 1. field != null：确保成功获取到字段信息（防止未来版本字段名变更导致异常）
