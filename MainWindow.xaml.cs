@@ -1187,8 +1187,8 @@ namespace COMIGHT
                         new DataColumn("Subpath"),
                         new DataColumn("Filename"),
                         new DataColumn("Type"),
-                        new DataColumn("Valid", typeof(DateTime)),
-                        new DataColumn("Saved", typeof(DateTime)),
+                        new DataColumn("LiteralDate", typeof(DateTime)),
+                        new DataColumn("InternalDate", typeof(DateTime)),
                         new DataColumn("Size(MB)", typeof(double))
                     });
 
@@ -1224,8 +1224,8 @@ namespace COMIGHT
                             dataRow["Subpath"] = file.FullName.Replace(folderPath, "").Replace(file.Name, "");
                             dataRow["Filename"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Filename列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
-                            dataRow["Valid"] = (object?)GetEarliestDate(Path.GetFileNameWithoutExtension(file.Name)) ?? DBNull.Value; // 将文件推测生效日期赋值给数据行的Valid列
-                            dataRow["Saved"] = (object?)GetFileSavedDate(file.FullName) ?? DBNull.Value; //将文件的保存日期赋值给数据行的Saved列
+                            dataRow["LiteralDate"] = (object?)GetEarliestDate(Path.GetFileNameWithoutExtension(file.Name)) ?? DBNull.Value; // 将文件推测生效日期赋值给数据行的Valid列
+                            dataRow["InternalDate"] = (object?)GetFileInternalDate(file.FullName) ?? DBNull.Value; //将文件的保存日期赋值给数据行的Saved列
                             //dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
                             dataRow["Size(MB)"] = Math.Round(file.Length / (1024.0 * 1024.0), 2); // 将文件大小（MB）保留2位小数并赋值给数据行的Size列
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
@@ -1255,13 +1255,11 @@ namespace COMIGHT
                     ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //新建“文件列表”Excel工作表，赋值给目标Excel工作表变量
                     targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true); //将DataTable数据导入目标工作表（true代表将表头赋给第一行）
                     int endRowIndex = targetExcelWorksheet.Dimension.End.Row; //获取目标Excel工作表最末行的行索引号
-
-                    int dateColumnIndex = dataTable.Columns["Valid"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
-                    //将目标Excel工作表时间列从第2行到最末行所有单元格的数据格式设为“年-月-日”
-                    targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
                     
-                    dateColumnIndex = dataTable.Columns["Saved"]!.Ordinal + 1; //获取目标Excel工作表日期列的索引号（工作表列索引号从1开始，DataTable从0开始）
-                    //将目标Excel工作表时间列从第2行到最末行所有单元格的数据格式设为“年-月-日”
+                    //获取目标Excel工作表字面日期列和内部日期列的索引号（工作表列索引号从1开始，DataTable从0开始），并将该两列从第2行到最末行所有单元格的数据格式设为“年-月-日”
+                    int dateColumnIndex = dataTable.Columns["LiteralDate"]!.Ordinal + 1; 
+                    targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d"; 
+                    dateColumnIndex = dataTable.Columns["InternalDate"]!.Ordinal + 1; 
                     targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
 
 
