@@ -1224,8 +1224,8 @@ namespace COMIGHT
                             dataRow["Subpath"] = file.FullName.Replace(folderPath, "").Replace(file.Name, "");
                             dataRow["Filename"] = Path.GetFileNameWithoutExtension(file.Name); // 将文件主名赋值给数据行的Filename列
                             dataRow["Type"] = file.Extension; // 将文件扩展名赋值给数据行的Type列
-                            dataRow["LiteralDate"] = (object?)GetEarliestDate(Path.GetFileNameWithoutExtension(file.Name)) ?? DBNull.Value; // 将文件推测生效日期赋值给数据行的Valid列
-                            dataRow["InternalDate"] = (object?)GetFileInternalDate(file.FullName) ?? DBNull.Value; //将文件的保存日期赋值给数据行的Saved列
+                            dataRow["LiteralDate"] = (object?)GetEarliestDateTime(Path.GetFileNameWithoutExtension(file.Name))?.Date ?? DBNull.Value; // 将文件推测生效日期赋值给数据行的Valid列
+                            dataRow["InternalDate"] = (object?)GetFileInternalDateTime(file.FullName)?.Date ?? DBNull.Value; //将文件的保存日期赋值给数据行的Saved列
                             //dataRow["Date"] = file.CreationTime; // 将文件创建日期赋值给数据行的Date列
                             dataRow["Size(MB)"] = Math.Round(file.Length / (1024.0 * 1024.0), 2); // 将文件大小（MB）保留2位小数并赋值给数据行的Size列
                             dataTable.Rows.Add(dataRow); // 将数据行添加到 DataTable 中
