@@ -774,13 +774,13 @@ namespace COMIGHT
                             using (var excelPackage = new ExcelPackage()) // 创建一个Excel包对象
                             {
                                 var workbook = excelPackage.Workbook; // 获取Excel工作簿对象
-                                int wordTableIndex = 0;
+                                int wordTableIndex = 1;
                                 for (int i = 0; i < wordDocument.BodyElements.Count; i++) // 遍历目标Word文档中的所有元素
                                 {
                                     var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
                                     if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格类型，则将其赋值给新变量 wordTable，然后：
                                     {
-                                        string tableTitle = "Sheet" + (wordTableIndex + 1); // 定义表格标题，默认为“Sheet”与当前word文档表格索引号加1
+                                        string tableTitle = "Sheet" + wordTableIndex; // 定义表格标题，默认为“Sheet”与当前word文档表格索引号
                                         // 获取表格标题 (这部分逻辑与Word文档读取相关，保持不变)
                                         if (i > 0) // 如果当前Word元素不是0号元素
                                         {
@@ -803,7 +803,7 @@ namespace COMIGHT
                                         }
 
                                         // 创建Excel工作表，使用序号加表格标题作为工作表的名称
-                                        ExcelWorksheet worksheet = workbook.Worksheets.Add(CleanWorksheetName($"{wordTableIndex + 1}_{tableTitle}"));
+                                        ExcelWorksheet worksheet = workbook.Worksheets.Add(CleanWorksheetName($"{wordTableIndex}_{tableTitle}"));
                                         int columnCount = wordTable.Rows.Max(r => r.GetTableCells().Count); //获取Word文档表格所有行里包含单元格数量最多的那一行的单元格数量，即Word文档表格列数，赋值给表格列数变量
 
                                         worksheet.Cells[1, 1, 1, columnCount].Merge = true; // 合并Excel工作表第一行单元格（EPPlus的行和列索引从1开始）
