@@ -40,7 +40,7 @@
     <PackageReference Include="DocSharp.Common" Version="0.18.1" />
     <PackageReference Include="DocSharp.Docx" Version="0.18.1" />
     <PackageReference Include="DocSharp.Markdown" Version="0.18.1" />
-    <PackageReference Include="EPPlus" Version="8.5.1" />
+    <PackageReference Include="EPPlus" Version="8.5.3" />
     <PackageReference Include="itext" Version="9.6.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.6.0" />
     <PackageReference Include="itext.font-asian" Version="9.6.0" />
@@ -48,7 +48,7 @@
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NPOI" Version="2.8.0" />
-    <PackageReference Include="NuGet.CommandLine" Version="7.3.0">
+    <PackageReference Include="NuGet.CommandLine" Version="7.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

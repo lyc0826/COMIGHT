@@ -4,12 +4,12 @@
 namespace COMIGHT
 {
     /// <summary>
-    /// InputDialog.xaml 的交互逻辑
+    /// MarkdownConverterWindow.xaml 的交互逻辑
     /// </summary>
     public partial class InputDialog : Window
     {
 
-        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "", double answerboxHeight = 30, bool acceptsReturn = false)
+        public InputDialog(string question, List<string>? options = null, string defaultAnswer = "")
         {
             InitializeComponent();
 
@@ -28,13 +28,11 @@ namespace COMIGHT
                 cmbbxOptions.Visibility = Visibility.Collapsed; // 隐藏功能选项组合框
 
                 txtbxAnswer.Text = defaultAnswer; //将默认答案值赋值给答案文本框
-                txtbxAnswer.Height = answerboxHeight; //将答案文本框的高度设为输入参数的高度，默认为30
-                txtbxAnswer.AcceptsReturn = acceptsReturn; //将答案文本框是否接受回车键设为输入参数的值，默认为false
             }
 
         }
 
-        private void btnDialogOk_Click(object sender, RoutedEventArgs e)
+        private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             if (this.IsModal())
             {
@@ -43,7 +41,7 @@ namespace COMIGHT
             this.Close();
         }
 
-        private void btnDialogCancel_Click(object sender, RoutedEventArgs e)
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             if (this.IsModal())
             {
