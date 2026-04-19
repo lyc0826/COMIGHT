@@ -22,18 +22,12 @@ namespace COMIGHT
 
         }
 
-        private void btnOk_Click(object sender, RoutedEventArgs e)
+        private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
             ConvertMarkdownIntoWordDocument();
-
-            if (this.IsModal())
-            {
-                this.DialogResult = true; //对话框返回值设为true
-            }
-            this.Close();
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             if (this.IsModal())
             {

@@ -16,8 +16,8 @@
         <TextBox x:Name="txtbxMarkdown" Grid.Row ="1" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="False" AcceptsReturn="True"/>
 
         <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button IsDefault="True" Content="OK" Click="btnOk_Click" />
-            <Button IsCancel="True" Content="Cancel" Click="btnCancel_Click" />
+            <Button IsDefault="True" Content="Convert" Click="btnConvert_Click" />
+            <Button IsCancel="True" Content="Exit" Click="btnExit_Click" />
         </StackPanel>
 
     </Grid>
