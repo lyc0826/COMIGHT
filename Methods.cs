@@ -1096,7 +1096,7 @@ namespace COMIGHT
 
         public static DateTime? GetEarliestDateTime(string text)
         {
-            // 定义年份正则表达式：
+            // 定义年份正则表达式
             Regex regExYear = new Regex(@"(?<!\d)\d{4}(?=[年\.\-/]|\b)", RegexOptions.Compiled);
 
             try
@@ -1139,7 +1139,7 @@ namespace COMIGHT
                     Culture.English
                 }; // 定义语言列表
 
-                // 用多个文化区解析 text 里的日期时间表达式，合并所有识别结果，并对重复结果去重，最后转成列表（对每个 culture 识别 text 中的日期时间，并把所有结果合并；按位置、类型、文本内容对重复结果分组；取每组第一个值，并转成 List）
+                // 按多个文化区解析文本中的日期时间表达式，合并所有识别结果，并对重复结果去重，最后转成列表（按每个文化区识别文本中的日期时间，并把所有结果合并；按位置、类型、文本内容对重复结果分组；取每组第一个值，并转成 List）
                 var results = cultures
                     .SelectMany(c => DateTimeRecognizer.RecognizeDateTime(text, c, fallbackToDefaultCulture: false))
                     .GroupBy(r => $"{r.Start}-{r.End}-{r.TypeName}-{r.Text}")
