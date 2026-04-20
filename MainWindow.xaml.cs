@@ -897,7 +897,7 @@ namespace COMIGHT
                     targetExcelPackage.SaveAs(targetExcelFilePath);
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
 
-                    ShowSuccessMessage($"File saved as '{targetExcelFilePath}'.");
+                    ShowSuccessMessage($"File saved as:\n'{targetExcelFilePath}'");
                 }
                 else
                 {
@@ -908,7 +908,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
+                ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
             }
 
         }
@@ -918,59 +918,6 @@ namespace COMIGHT
             MarkdownConverterWindow markdownConverterWindow = new MarkdownConverterWindow("");
             markdownConverterWindow.Show();
         }
-
-        //private void ConvertMarkdownIntoWordDocument()
-        //{
-        //    try
-        //    {
-        //        MarkdownConverterWindow inputDialog = new InputDialog(question: "Input the text to be converted", defaultAnswer: "", answerboxHeight: 300, acceptsReturn: true); //弹出对话框，输入功能选项
-        //        if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
-        //        {
-        //            return;
-        //        }
-
-        //        string mdText = inputDialog.Answer; //获取对话框返回的文本，赋值给Markdown文本变量
-        //        mdText = appSettings.KeepEmojisInMarkdown ? mdText : mdText.RemoveEmojis(); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
-
-        //        //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
-        //        List<string> lstParagraphs = mdText
-        //            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //        if (lstParagraphs.Count == 0) //如果段落列表元素数为0，则抛出异常
-        //        {
-        //            throw new Exception("No valid text found.");
-        //        }
-
-        //        string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-        //        // 获取目标文件主名：将段落列表所有元素的Markdown标记和不能作为文件名的字符删除后，将不为null或空的字符串的元素的第一个，作为目标文件主名
-        //        string targetFileMainName = lstParagraphs.ConvertAll(e => CleanPathName(e.RemoveMarkdownMarks())).Where(e => !string.IsNullOrWhiteSpace(e)).First();
-
-        //        //将目标Markdown文档转换为目标Word文档
-        //        string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径
-
-        //        MarkdownSource markdown = MarkdownSource.FromMarkdownString(mdText); // 创建Markdown源对象
-        //        MarkdownConverter converter = new MarkdownConverter() //  创建Markdown转换器对象
-        //        {
-        //            //ImagesBaseUri = Path.GetDirectoryName(targetMDFilePath)  // 设置图片的路径
-        //        };
-        //        converter.ToDocx(markdown, targetWordFilePath, append: false); // 将Markdown文档转换成Word文档
-
-        //        // 提取目标Word文档中的表格并转存为目标Excel文档
-        //        string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanPathName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径
-
-        //        bool tableExtracted = ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档，如果成功则将true赋值给“表格已提取”变量
-
-        //        // 获取结果消息
-        //        string resultMessage = $"File saved as '{targetWordFilePath}'{(tableExtracted ? $" and '{targetExcelFilePath}'" : "")}.";
-
-        //        ShowSuccessMessage(resultMessage);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        ShowExceptionMessage(ex);
-        //    }
-        //}
 
         public void CreatePlaceCards()
         {
@@ -1056,7 +1003,7 @@ namespace COMIGHT
                     string targetFilePath = Path.Combine(targetFolderPath, $"{CleanPathName($"PlCd_{Path.GetFileNameWithoutExtension(filePaths[0])}")}.xlsx"); //获取目标Excel工作簿文件路径
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
 
-                    ShowSuccessMessage($"File saved as '{targetFilePath}'.");
+                    ShowSuccessMessage($"File saved as:\n'{targetFilePath}'");
                 }
 
             }
@@ -1262,7 +1209,7 @@ namespace COMIGHT
                     FileInfo targetExcelFilePath = new FileInfo(Path.Combine(targetFolderPath, $"{CleanPathName($"Lst_{folderPath}")}.xlsx")); //获取目标Excel工作簿文件路径信息
                     targetExcelPackage.SaveAs(targetExcelFilePath); //保存目标Excel工作簿文件
 
-                    ShowSuccessMessage($"File saved as '{targetExcelFilePath}'.");
+                    ShowSuccessMessage($"File saved as:\n'{targetExcelFilePath}'");
                 }
 
             }
@@ -1407,7 +1354,7 @@ namespace COMIGHT
                         }
                     }
 
-                    ShowSuccessMessage($"File saved as '{targetTxtFilePath}'.");
+                    ShowSuccessMessage($"File saved as:\n'{targetTxtFilePath}'");
 
                 }
 

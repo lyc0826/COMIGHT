@@ -56,7 +56,7 @@ namespace COMIGHT
                 string targetExcelFilePath = Path.Combine(targetFolderPath!, $"{CleanPathName(windowTitle)}.xlsx"); //获取目标Excel工作簿文件路径
                 WriteDataTableIntoExcelWorkbook(new List<DataTable>() { dataTable }, targetExcelFilePath); //将DataTable数据写入Excel工作簿
 
-                ShowSuccessMessage($"File saved as '{targetExcelFilePath}'.");
+                ShowSuccessMessage($"File saved as:\n'{targetExcelFilePath}'");
             }
 
             catch (Exception ex)

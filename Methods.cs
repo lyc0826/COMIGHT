@@ -1096,36 +1096,38 @@ namespace COMIGHT
 
         public static DateTime? GetEarliestDateTime(string text)
         {
-            // 定义方法：判断文本是否含有数字年份（距当前年份前后30年以内）
+            // 定义年份正则表达式：
             Regex regExYear = new Regex(@"(?<!\d)\d{4}(?=[年\.\-/]|\b)", RegexOptions.Compiled);
-
-            bool IsNumericYear(string text)
-            {
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    return false;
-                }
-
-                int currentYear = DateTime.Now.Year;
-                int minYear = currentYear - 30;
-                int maxYear = currentYear + 30;
-                var matchesYear = regExYear.Matches(text); // 匹配数字年份
-
-                foreach (Match matchYear in matchesYear)
-                {
-                    // 如果正则表达式匹配的字符串能被转换为年份，且在距当前年份前后30年之间，则返回true
-                    if (int.TryParse(matchYear.Value, out int year) &&
-                        year >= minYear &&
-                        year <= maxYear)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
 
             try
             {
+                // 定义方法：判断文本是否含有数字年份（距当前年份前后30年以内）
+                bool IsNumericYear(string text)
+                {
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        return false;
+                    }
+
+                    int currentYear = DateTime.Now.Year;
+                    int minYear = currentYear - 30;
+                    int maxYear = currentYear + 30;
+                    var matchesYear = regExYear.Matches(text); // 匹配数字年份
+
+                    foreach (Match matchYear in matchesYear)
+                    {
+                        // 如果正则表达式匹配的字符串能被转换为年份，且在距当前年份前后30年之间，则返回true
+                        if (int.TryParse(matchYear.Value, out int year) &&
+                            year >= minYear &&
+                            year <= maxYear)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+            
                 if (string.IsNullOrWhiteSpace(text) || !IsNumericYear(text))
                 {
                     return null;
@@ -1232,101 +1234,102 @@ namespace COMIGHT
 
         public static DateTime? GetFileInternalDateTime(string filePath)
         {
-            // 定义方法：根据文件扩展名，判断图片、视频、音频、Office和PDF文件
-            static bool IsImage(string ext)
-            {
-                ext = ext.ToLowerInvariant();
-
-                return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".bmp" ||
-                       ext == ".gif" || ext == ".tif" || ext == ".tiff" || ext == ".heic" ||
-                       ext == ".webp";
-            }
-
-            static bool IsVideo(string ext)
-            {
-                ext = ext.ToLowerInvariant();
-
-                return ext == ".mp4" || ext == ".mov" || ext == ".avi" || ext == ".mkv" ||
-                       ext == ".wmv" || ext == ".m4v" || ext == ".3gp";
-            }
-
-            static bool IsAudio(string ext)
-            {
-                ext = ext.ToLowerInvariant();
-
-                return ext == ".mp3" || ext == ".wav" || ext == ".flac" || ext == ".aac" ||
-                       ext == ".m4a" || ext == ".wma" || ext == ".ogg" || ext == ".opus";
-            }
-
-            static bool IsOfficeOrPdf(string ext)
-            {
-                ext = ext.ToLowerInvariant();
-
-                return ext == ".doc" || ext == ".docx" ||
-                       ext == ".xls" || ext == ".xlsx" ||
-                       ext == ".ppt" || ext == ".pptx" ||
-                       ext == ".pdf";
-            }
-
-
-            // 定义方法：根据文件类型，创建时间属性优先级列表
-            static List<string> GetPropertyPriorityByFileType(string ext)
-            {
-                return ext switch
-                {
-                    var e when IsImage(e) => new List<string>
-                    {
-                        "System.Photo.DateTaken",
-                        "System.ItemDate",
-                        "System.DateModified",
-                        "System.DateCreated"
-                    },
-
-                    var e when IsVideo(e) || IsAudio(e) => new List<string>
-                    {
-                        "System.Media.DateEncoded",
-                        "System.ItemDate",
-                        "System.DateModified",
-                        "System.DateCreated"
-                    },
-
-                    var e when IsOfficeOrPdf(e) => new List<string>
-                    {
-                        "System.Document.DateSaved",
-                        "System.Document.DateCreated",
-                        "System.ItemDate",
-                        "System.DateModified",
-                        "System.DateCreated"
-                    },
-
-                    _ => new List<string>
-                    {
-                        "System.ItemDate",
-                        "System.DateModified",
-                        "System.DateCreated"
-                    }
-                };
-            }
-
-            // 定义方法：读取文件各时间属性的时间
-            DateTime? TryReadShellDate(ShellFile shellFile, string timeProperty)
-            {
-                object? value = shellFile.Properties.GetProperty(timeProperty)?.ValueAsObject;
-
-                // 根据时间属性值类型，将时间属性值转换为DateTime对象
-                return value switch
-                {
-                    null => null,
-                    DateTime dt => dt,
-                    DateTimeOffset dto => dto.DateTime,
-                    var v when DateTime.TryParse(v?.ToString(), out var parsed) => parsed,
-                    _ => null
-                };
-            }
-
-            // 尝试读取文件各时间属性的时间
             try
             {
+
+                // 定义方法：根据文件扩展名，判断图片、视频、音频、Office和PDF文件
+                static bool IsImage(string ext)
+                {
+                    ext = ext.ToLowerInvariant();
+
+                    return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".bmp" ||
+                            ext == ".gif" || ext == ".tif" || ext == ".tiff" || ext == ".heic" ||
+                            ext == ".webp";
+                }
+
+                static bool IsVideo(string ext)
+                {
+                    ext = ext.ToLowerInvariant();
+
+                    return ext == ".mp4" || ext == ".mov" || ext == ".avi" || ext == ".mkv" ||
+                           ext == ".wmv" || ext == ".m4v" || ext == ".3gp";
+                }
+
+                static bool IsAudio(string ext)
+                {
+                    ext = ext.ToLowerInvariant();
+
+                    return ext == ".mp3" || ext == ".wav" || ext == ".flac" || ext == ".aac" ||
+                           ext == ".m4a" || ext == ".wma" || ext == ".ogg" || ext == ".opus";
+                }
+
+                static bool IsOfficeOrPdf(string ext)
+                {
+                    ext = ext.ToLowerInvariant();
+
+                    return ext == ".doc" || ext == ".docx" ||
+                           ext == ".xls" || ext == ".xlsx" ||
+                           ext == ".ppt" || ext == ".pptx" ||
+                           ext == ".pdf";
+                }
+
+
+                // 定义方法：根据文件类型，创建时间属性优先级列表
+                static List<string> GetPropertyPriorityByFileType(string ext)
+                {
+                    return ext switch
+                    {
+                        var e when IsImage(e) => new List<string>
+                        {
+                            "System.Photo.DateTaken",
+                            "System.ItemDate",
+                            "System.DateModified",
+                            "System.DateCreated"
+                        },
+
+                        var e when IsVideo(e) || IsAudio(e) => new List<string>
+                        {
+                            "System.Media.DateEncoded",
+                            "System.ItemDate",
+                            "System.DateModified",
+                            "System.DateCreated"
+                        },
+
+                        var e when IsOfficeOrPdf(e) => new List<string>
+                        {
+                            "System.Document.DateSaved",
+                            "System.Document.DateCreated",
+                            "System.ItemDate",
+                            "System.DateModified",
+                            "System.DateCreated"
+                        },
+
+                        _ => new List<string>
+                        {
+                            "System.ItemDate",
+                            "System.DateModified",
+                            "System.DateCreated"
+                        }
+                    };
+                }
+
+                // 定义方法：读取文件各时间属性的时间
+                DateTime? TryReadShellDate(ShellFile shellFile, string timeProperty)
+                {
+                    object? value = shellFile?.Properties?.GetProperty(timeProperty)?.ValueAsObject;
+
+                    // 根据时间属性值类型，将时间属性值转换为DateTime对象
+                    return value switch
+                    {
+                        null => null,
+                        DateTime dt => dt,
+                        DateTimeOffset dto => dto.DateTime,
+                        var v when DateTime.TryParse(v?.ToString(), out var parsed) => parsed,
+                        _ => null
+                    };
+                }
+
+                // 尝试读取文件各时间属性的时间
                 if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) // 如果文件路径为空或文件不存在，则返回null
                 {
                     return null;
@@ -1676,6 +1679,7 @@ namespace COMIGHT
         public static void ShowExceptionMessage(Exception ex, string? additionalInfo = null)
         {
             string exceptionMessage = $"{ex.Message}\n{ex.InnerException?.Message ?? ""}\n\n{additionalInfo ?? ""}";
+            exceptionMessage = Regex.Replace(exceptionMessage, "\n{3,}", "\n\n"); // 将连续3个以上换行符替换为2个换行符
             MessageDialog messageDialog = new MessageDialog(exceptionMessage.Trim());
             messageDialog.ShowDialog();
         }
@@ -1689,6 +1693,7 @@ namespace COMIGHT
         public static void ShowSuccessMessage(string? additionalInfo = null)
         {
             string successMessage = $"Operation completed.\n\n{additionalInfo ?? ""}";
+            successMessage = Regex.Replace(successMessage, "\n{3,}", "\n\n"); // 将连续3个以上换行符替换为2个换行符
             MessageDialog messageDialog = new MessageDialog(successMessage.Trim());
             messageDialog.ShowDialog();
         }
