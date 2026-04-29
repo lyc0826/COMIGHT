@@ -1102,7 +1102,7 @@ namespace COMIGHT
             try
             {
                 // 定义方法：判断文本是否含有数字年份（距当前年份前后30年以内）
-                bool IsNumericYear(string text)
+                bool ContainsNumericYear(string text)
                 {
                     if (string.IsNullOrWhiteSpace(text))
                     {
@@ -1126,9 +1126,8 @@ namespace COMIGHT
                     }
                     return false;
                 }
-
             
-                if (string.IsNullOrWhiteSpace(text) || !IsNumericYear(text))
+                if (string.IsNullOrWhiteSpace(text) || !ContainsNumericYear(text))
                 {
                     return null;
                 }
@@ -1158,7 +1157,7 @@ namespace COMIGHT
                     }
 
                     // 如果没有数字年份，则跳过
-                    if (!IsNumericYear(result.Text))
+                    if (!ContainsNumericYear(result.Text))
                     {
                         continue;
                     }
