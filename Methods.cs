@@ -30,7 +30,7 @@ namespace COMIGHT
 {
     public static partial class Methods
     {
-        public static async Task BatchFormatWordDocumentsHelperAsync(List<string> filePaths)
+        public static async Task FormatWordDocumentsHelperAsync(List<string> filePaths)
         {
             Task task = Task.Run(() => Process()); // 创建一个异步任务，执行过程为process()
             void Process()
@@ -627,7 +627,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    throw new Exception($"{ex.Message}\nError occurred when processing '{currentFilePath}'."); // 抛出异常，包含异步过程中发生的异常的所有信息，以便让调用者处理
+                    ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'"); 
                 }
 
                 finally
@@ -643,7 +643,7 @@ namespace COMIGHT
 
         }
 
-        public static async Task BatchRepairWordDocumentsHelperAsync(List<string> filePaths)
+        public static async Task RepairWordDocumentsHelperAsync(List<string> filePaths)
         {
             Task task = Task.Run(() => Process());
             void Process()
@@ -671,7 +671,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    throw new Exception($"{ex.Message}\nError occurred when processing '{currentFilePath}'.");
+                    ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
                 }
 
                 finally

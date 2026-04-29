@@ -279,7 +279,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
+                ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
             }
         }
 
@@ -509,7 +509,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
+                ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
             }
         }
 
@@ -524,7 +524,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchFormatWordDocumentsHelperAsync(filePaths)); // 调用任务管理器执行批量格式化Word文档的方法
+                await taskManager.RunTaskAsync(() => FormatWordDocumentsHelperAsync(filePaths)); // 调用任务管理器执行批量格式化Word文档的方法
                 ShowSuccessMessage();
             }
 
@@ -545,7 +545,7 @@ namespace COMIGHT
                     return;
                 }
 
-                await taskManager.RunTaskAsync(() => BatchRepairWordDocumentsHelperAsync(filePaths)); // 调用任务管理器执行批量修复Word文档的方法
+                await taskManager.RunTaskAsync(() => RepairWordDocumentsHelperAsync(filePaths)); // 调用任务管理器执行批量修复Word文档的方法
                 ShowSuccessMessage();
             }
 
@@ -596,7 +596,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
+                ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
             }
         }
 
@@ -1362,7 +1362,7 @@ namespace COMIGHT
 
             catch (Exception ex)
             {
-                ShowExceptionMessage(ex, $"Error occurred when processing '{currentFilePath}'.");
+                ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
             }
 
         }
