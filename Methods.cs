@@ -1163,28 +1163,18 @@ namespace COMIGHT
                         continue;
                     }
 
-                    // 如果Resolution 为空， 或者 values键值获取失败，则跳过；否则，将values键值赋值给dictValues
-                    if (result.Resolution == null || !result.Resolution.TryGetValue("values", out var dictValues))
-                    {
-                        continue;
-                    }
-
-                    // 如果dictValues不是 IEnumerable<Dictionary<string, string>> 类型，则跳过；否则，将dictValues赋值给values
-                    if (dictValues is not IEnumerable<Dictionary<string, string>> values)
+                    // 如果Resolution为空， 或者无values键，或values键值不是IEnumerable<Dictionary<string, string>> 类型，则跳过；否则，将values键值赋值给values
+                    if (result.Resolution == null || !result.Resolution.ContainsKey("values") || result.Resolution["values"] is not IEnumerable<Dictionary<string, string>> values)
                     {
                         continue;
                     }
 
                     foreach (var value in values) // 遍历values集合
                     {
-                        string? dateStr = null;
-                        // 如果value["start"]（起始日期）取值失败或者为空，则尝试获取value["value"]（单点日期）的值
-                        if (!value.TryGetValue("start", out dateStr) || string.IsNullOrWhiteSpace(dateStr))
-                        {
-                            value.TryGetValue("value", out dateStr);
-                        }
+                        // 获取日期字符串：先读取start值，如无则再读取value值，如仍无则返回null
+                        string? dateStr = value.ContainsKey("start") ? value["start"] : value.ContainsKey("value") ? value["value"] : null;
 
-                        if (string.IsNullOrWhiteSpace(dateStr)) // 如果dateStr为空，则跳过
+                        if (string.IsNullOrWhiteSpace(dateStr))
                         {
                             continue;
                         }
