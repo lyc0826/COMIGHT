@@ -627,7 +627,7 @@ namespace COMIGHT
 
                 catch (Exception ex)
                 {
-                    ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'"); 
+                    ShowExceptionMessage(ex, $"Error occurred when processing:\n'{currentFilePath}'");
                 }
 
                 finally
@@ -1126,7 +1126,7 @@ namespace COMIGHT
                     }
                     return false;
                 }
-            
+
                 if (string.IsNullOrWhiteSpace(text) || !ContainsNumericYear(text))
                 {
                     return null;

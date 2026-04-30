@@ -2,7 +2,6 @@
 using DocSharp.Binary.OpenXmlLib;
 using DocSharp.Binary.Spreadsheet.XlsFileFormat;
 using DocSharp.Binary.StructuredStorage.Reader;
-using DocSharp.Markdown;
 using NPOI.XWPF.UserModel;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -118,15 +117,6 @@ namespace COMIGHT
         {
             UnhideExcelWorksheets();
         }
-
-        //private void MnuBrowser_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (GetInstanceCountByHandle<BrowserWindow>() < 3) //如果被打开的浏览器窗口数量小于3个，则新建一个浏览器窗口实例并显示
-        //    {
-        //        BrowserWindow browserWindow = new BrowserWindow();
-        //        browserWindow.Show();
-        //    }
-        //}
 
         private void MnuConvertMarkdownIntoWordDocument_Click(object sender, RoutedEventArgs e)
         {
@@ -914,7 +904,7 @@ namespace COMIGHT
         }
 
         private void ConvertMarkdownIntoWordDocument()
-        { 
+        {
             MarkdownConverterWindow markdownConverterWindow = new MarkdownConverterWindow("");
             markdownConverterWindow.Show();
         }
@@ -1174,11 +1164,11 @@ namespace COMIGHT
                     ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //新建“文件列表”Excel工作表，赋值给目标Excel工作表变量
                     targetExcelWorksheet.Cells["A1"].LoadFromDataTable(dataTable, true); //将DataTable数据导入目标工作表（true代表将表头赋给第一行）
                     int endRowIndex = targetExcelWorksheet.Dimension.End.Row; //获取目标Excel工作表最末行的行索引号
-                    
+
                     //获取目标Excel工作表字面日期列和内部日期列的索引号（工作表列索引号从1开始，DataTable从0开始），并将该两列从第2行到最末行所有单元格的数据格式设为“年-月-日”
-                    int dateColumnIndex = dataTable.Columns["LiteralDate"]!.Ordinal + 1; 
-                    targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d"; 
-                    dateColumnIndex = dataTable.Columns["InternalDate"]!.Ordinal + 1; 
+                    int dateColumnIndex = dataTable.Columns["LiteralDate"]!.Ordinal + 1;
+                    targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
+                    dateColumnIndex = dataTable.Columns["InternalDate"]!.Ordinal + 1;
                     targetExcelWorksheet.Cells[2, dateColumnIndex, endRowIndex, dateColumnIndex].Style.Numberformat.Format = "yyyy-m-d";
 
 
