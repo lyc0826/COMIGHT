@@ -424,7 +424,7 @@ namespace COMIGHT
                                         FormatExcelWorksheet(targetExcelWorksheet, headerRowCount, 0); //设置目标Excel工作表格式
 
                                         // 保存目标Excel工作簿文件
-                                        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetSubfolderPath, $"{CleanPathName($"{pair.Key}_{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径信息
+                                        FileInfo targetExcelFile = new FileInfo(Path.Combine(targetSubfolderPath, $"{CleanPathAndFileName($"{pair.Key}_{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径信息
                                         targetExcelPackage.SaveAs(targetExcelFile);
                                     }
                                 }
@@ -444,7 +444,7 @@ namespace COMIGHT
                                     FormatExcelWorksheet(targetExcelWorksheet, 0, 0); //设置目标Excel工作表格式
 
                                     // 保存目标Excel工作簿文件
-                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetSubfolderPath, $"{CleanPathName($"{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径信息
+                                    FileInfo targetExcelFile = new FileInfo(Path.Combine(targetSubfolderPath, $"{CleanPathAndFileName($"{excelWorksheet.Name}_{excelWorkbookFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径信息
                                     targetExcelPackage.SaveAs(targetExcelFile);
 
                                 }
@@ -487,7 +487,7 @@ namespace COMIGHT
                         continue;
                     }
 
-                    string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanPathName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径
+                    string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanPathAndFileName($"Tbl_{Path.GetFileNameWithoutExtension(filePath)}")}.xlsx"); // 获取目标Excel文件路径
 
                     tableExtracted = ExtractTablesFromWordToExcel(filePath, targetExcelFilePath) || tableExtracted; // 从Word文档中提取表格并保存为目标Excel工作簿，如果提取到表格则将true赋值给“表格已提取”变量；只要有一个文件提取表格成功，“表格已提取”变量就为true
                 }
@@ -883,7 +883,7 @@ namespace COMIGHT
 
                     FormatExcelWorksheet(targetExcelWorksheet, targetHeaderRowCount, 0); //设置目标工作表格式
 
-                    FileInfo targetExcelFilePath = new FileInfo(Path.Combine(targetFolderPath!, $"{CleanPathName($"{targetExcelWorkbookPrefix}_{targetFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径信息
+                    FileInfo targetExcelFilePath = new FileInfo(Path.Combine(targetFolderPath!, $"{CleanPathAndFileName($"{targetExcelWorkbookPrefix}_{targetFileMainName}")}.xlsx")); //获取目标Excel工作簿文件路径信息
                     targetExcelPackage.SaveAs(targetExcelFilePath);
                     targetExcelPackage.Dispose(); //关闭目标Excel工作簿
 
@@ -990,7 +990,7 @@ namespace COMIGHT
 
                     // 保存目标工作簿
                     string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-                    string targetFilePath = Path.Combine(targetFolderPath, $"{CleanPathName($"PlCd_{Path.GetFileNameWithoutExtension(filePaths[0])}")}.xlsx"); //获取目标Excel工作簿文件路径
+                    string targetFilePath = Path.Combine(targetFolderPath, $"{CleanPathAndFileName($"PlCd_{Path.GetFileNameWithoutExtension(filePaths[0])}")}.xlsx"); //获取目标Excel工作簿文件路径
                     targetExcelPackage.SaveAs(new FileInfo(targetFilePath)); //保存目标Excel工作簿
 
                     ShowSuccessMessage($"File saved as:\n'{targetFilePath}'");
@@ -1035,7 +1035,7 @@ namespace COMIGHT
                 }
 
                 // 创建目标文件夹路径
-                string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanPathName($"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}")); //获取目标文件夹路径
+                string targetFolderPath = Path.Combine(appSettings.SavingFolderPath, CleanPathAndFileName($"Dir_{Path.GetFileNameWithoutExtension(filePaths[0])}")); //获取目标文件夹路径
 
                 CreateFolder(targetFolderPath);
 
@@ -1047,7 +1047,7 @@ namespace COMIGHT
                     {
                         if (dataTable.Rows[i][j] != null) //如果当前数据行当前数据列的数据不为空
                         {
-                            newPath = Path.Combine(newPath, CleanPathName(Convert.ToString(dataTable.Rows[i][j])!)); //将现有新文件夹路径和当前数据行当前数据列的文件夹名合并，重新赋值给自身
+                            newPath = Path.Combine(newPath, CleanPathAndFileName(Convert.ToString(dataTable.Rows[i][j])!)); //将现有新文件夹路径和当前数据行当前数据列的文件夹名合并，重新赋值给自身
                             CreateFolder(newPath);
                         }
                     }
@@ -1196,7 +1196,7 @@ namespace COMIGHT
                     FormatExcelWorksheet(targetExcelWorksheet, 1, 0); //设置目标Excel工作表格式
 
                     string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
-                    FileInfo targetExcelFilePath = new FileInfo(Path.Combine(targetFolderPath, $"{CleanPathName($"Lst_{folderPath}")}.xlsx")); //获取目标Excel工作簿文件路径信息
+                    FileInfo targetExcelFilePath = new FileInfo(Path.Combine(targetFolderPath, $"{CleanPathAndFileName($"Lst_{folderPath}")}.xlsx")); //获取目标Excel工作簿文件路径信息
                     targetExcelPackage.SaveAs(targetExcelFilePath); //保存目标Excel工作簿文件
 
                     ShowSuccessMessage($"File saved as:\n'{targetExcelFilePath}'");
@@ -1329,7 +1329,7 @@ namespace COMIGHT
 
                 string targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取列表中第一个（0号）文件的主名，赋值给目标文件主名变量
                 string targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
-                string targetTxtFilePath = Path.Combine(targetFolderPath, $"{CleanPathName($"Mrg_{targetFileMainName}")}.txt"); // 获取目标文本文件的路径全名
+                string targetTxtFilePath = Path.Combine(targetFolderPath, $"{CleanPathAndFileName($"Mrg_{targetFileMainName}")}.txt"); // 获取目标文本文件的路径全名
 
                 // 合并待合并文本列表中的内容（来自Word、Excel文件内容），输出TXT文件
 
