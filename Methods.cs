@@ -869,6 +869,7 @@ namespace COMIGHT
                 // 获取Excel工作表行数和列数
                 int rowCount = excelWorksheet.Dimension.End.Row;
                 int columnCount = excelWorksheet.Dimension.End.Column;
+                int maxColumnWidth = (int)Math.Min(120 / columnCount * 1.5, 120); // 计算最大列宽
 
                 //设置表头格式、自动筛选
                 if (headerRowCount >= 1) //如果表头行数大于等于1
@@ -948,8 +949,8 @@ namespace COMIGHT
                         excelWorksheet.Columns[j].Style.WrapText = false; //设置当前列文字自动换行为false
                         excelWorksheet.Columns[j].AutoFit(); //设置当前列自动调整列宽（能完整显示文字的最适合列宽）
                         excelWorksheet.Columns[j].Style.WrapText = true; //设置当前列文字自动换行
-                        //在当前列最合适列宽、基于单元格字符数平均值计算出的列宽中取较小值（并限制在8-40的范围），赋值给列宽变量
-                        double columnWidth = Math.Min(excelWorksheet.Columns[j].Width, averageCharacterCount * 1.5 + 2).Clamp<double>(6, 36);
+                        //在当前列最合适列宽、基于单元格字符数平均值计算出的列宽中取较小值（并限制在6-最大列宽的范围），赋值给列宽变量
+                        double columnWidth = Math.Min(excelWorksheet.Columns[j].Width, averageCharacterCount * 1.5 + 2).Clamp<double>(6, maxColumnWidth);
                         excelWorksheet.Columns[j].Width = columnWidth; //设置当前列的列宽
 
                         fullWidth += columnWidth; //将当前列列宽累加至全表格宽度
