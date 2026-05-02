@@ -28,6 +28,7 @@
                     <MenuItem Command="ApplicationCommands.Paste" Header="Paste" />
                     <MenuItem Command="ApplicationCommands.SelectAll" Header="Select All" />
                     <!-- 自定义Clear命令（清除所有内容），需要后台代码-->
+                    <!-- RelativeSource={RelativeSource AncestorType=ContextMenu}：向上查找当前菜单项的父级，即上下文菜单（ContextMenu）；Path=PlacementTarget：PlacementTarget是 ContextMenu的专属属性，代表挂载这个右键菜单的目标控件（此处为TextBox文本框）；CommandTarget=：把「命令的执行目标」设置为这个文本框-->
                     <MenuItem Header="Clear All" Command="{x:Static local:TextBoxCommands.Clear}" CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}" InputGestureText="Ctrl+D" />  
                 </ContextMenu>
             </Setter.Value>
