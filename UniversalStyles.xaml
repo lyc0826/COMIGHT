@@ -27,7 +27,8 @@
                     <MenuItem Command="ApplicationCommands.Copy" Header="Copy" />
                     <MenuItem Command="ApplicationCommands.Paste" Header="Paste" />
                     <MenuItem Command="ApplicationCommands.SelectAll" Header="Select All" />
-                    <!-- 自定义Clear命令（清除所有内容），需要后台代码-->
+                    <!-- 自定义Clear命令（清除所有内容），需要后台代码；
+                    CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"是核心绑定逻辑，通过RelativeSource找到父级的ContextMenu（上下文菜单），再绑定菜单的PlacementTarget属性（该属性固定指向触发右键菜单的目标控件，即文本框 TextBox）-->
                     <MenuItem Header="Clear All" Command="{x:Static local:TextBoxCommands.Clear}" CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}" InputGestureText="Ctrl+D" />  
                 </ContextMenu>
             </Setter.Value>
