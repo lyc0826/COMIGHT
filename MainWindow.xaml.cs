@@ -40,9 +40,6 @@ namespace COMIGHT
 
             ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
 
-            appSettings = appSettingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
-            userRecords = userRecordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
-
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
