@@ -237,6 +237,12 @@ namespace COMIGHT
         public static SettingsManager<UserRecords> userRecordsManager = new SettingsManager<UserRecords>(userRecordsJsonFilePath);
         public static AppSettings appSettings = new AppSettings();
         public static UserRecords userRecords = new UserRecords();
+
+        static Settings() // 静态构造函数，在类被首次引用时自动执行
+        {
+            appSettings = appSettingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
+            userRecords = userRecordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
+        }
     }
 
 }
