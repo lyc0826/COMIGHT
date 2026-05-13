@@ -1569,13 +1569,25 @@ namespace COMIGHT
                 @"|[\uD800-\uDBFF][\uDC00-\uDFFF]" + //匹配补充平面的主要Emoji范围，包括表情、交通、国旗、卡牌等。
                 @"|[\u200D\uFE0F]"; //匹配用于组合Emoji的零宽连字和变体选择器。
 
-        // 创建一个静态的Regex对象，用于匹配Emoji字符
+        // 定义Emoji字符正则表达式对象
         static Regex regExEmoji = new Regex(emojiRegEx, RegexOptions.Compiled);
 
         public static string RemoveEmojis(this string text)
         {
 
             return regExEmoji.Replace(text, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
+        }
+        
+        // 定义HTML标签正则表达式对象
+        static Regex regExHtmlTag = new Regex(@"<.*?>", RegexOptions.Compiled);
+        
+        public static string RemoveHtmlTags(this string html)
+        {
+            if (string.IsNullOrWhiteSpace(html))
+                return string.Empty;
+
+            // 正则表达式匹配所有HTML标签并替换为空
+            return regExHtmlTag.Replace(html, string.Empty).Trim();
         }
 
         public enum EnumFileType { Excel, Word, DocumentAndTable, Convertible, Pdf, All } //定义文件类型枚举

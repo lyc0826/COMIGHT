@@ -162,7 +162,7 @@ namespace COMIGHT
 
         private void MnuTest_Click(object sender, RoutedEventArgs e)
         {
-            //MarkdownConverterWindow inputDialog = new MarkdownConverterWindow(question:"Number", defaultAnswer:"1000"); //弹出功能选择对话框
+            //MarkupTextConverterWindow inputDialog = new MarkupTextConverterWindow(question:"Number", defaultAnswer:"1000"); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回值为false（点击了Cancel），则结束本过程
             //{
             //    return;
@@ -171,7 +171,7 @@ namespace COMIGHT
             //string result = ConvertArabicNumberIntoChinese(numbers);
             //MessageBox.Show("转换后的中文数字为：" + result);
 
-            //MarkdownConverterWindow inputDialog = new MarkdownConverterWindow(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
+            //MarkupTextConverterWindow inputDialog = new MarkupTextConverterWindow(question: "Number", defaultAnswer: "1000"); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
             //{
             //    return;
@@ -180,7 +180,7 @@ namespace COMIGHT
             //double result = Val(inputDialog.Answer);
             //ShowMessage("提取后的数字为：" + result.ToString());
 
-            //MarkdownConverterWindow inputDialog = new MarkdownConverterWindow(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
+            //MarkupTextConverterWindow inputDialog = new MarkupTextConverterWindow(question: "Markdown", defaultAnswer: "ABC", acceptsReturn: true); //弹出功能选择对话框
             //if (inputDialog.ShowDialog() == false) //如果对话框返回false（点击了Cancel），则结束本过程
             //{
             //    return;
@@ -902,7 +902,7 @@ namespace COMIGHT
 
         private void ConvertMarkdownIntoWordDocument()
         {
-            MarkdownConverterWindow markdownConverterWindow = new MarkdownConverterWindow("");
+            MarkupTextConverterWindow markdownConverterWindow = new MarkupTextConverterWindow("");
             markdownConverterWindow.Show();
         }
 
@@ -1392,7 +1392,7 @@ namespace COMIGHT
 
                 string originalText = Clipboard.GetText(); // 从剪贴板获取文本
                 string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
-                cleanedText = appSettings.KeepEmojisInMarkdown ? cleanedText : cleanedText.RemoveEmojis();
+                cleanedText = appSettings.KeepEmojisInMarkup ? cleanedText : cleanedText.RemoveEmojis();
                 Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
 
             }

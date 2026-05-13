@@ -188,7 +188,7 @@ namespace COMIGHT
             set => SetProperty(ref _placeCardFontName, value);
         }
 
-        public bool KeepEmojisInMarkdown
+        public bool KeepEmojisInMarkup
         {
             get => _keepEmojisInMarkdown;
             set => SetProperty(ref _keepEmojisInMarkdown, value);

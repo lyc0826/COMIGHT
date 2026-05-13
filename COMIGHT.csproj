@@ -41,6 +41,7 @@
     <PackageReference Include="DocSharp.Docx" Version="0.18.1" />
     <PackageReference Include="DocSharp.Markdown" Version="0.18.1" />
     <PackageReference Include="EPPlus" Version="8.5.3" />
+    <PackageReference Include="HtmlToOpenXml.dll" Version="3.3.2" />
     <PackageReference Include="itext" Version="9.6.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.6.0" />
     <PackageReference Include="itext.font-asian" Version="9.6.0" />

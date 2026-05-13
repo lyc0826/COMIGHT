@@ -1,8 +1,13 @@
-﻿<Window x:Class="COMIGHT.MarkdownConverterWindow"
+﻿<Window x:Class="COMIGHT.MarkupTextConverterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Markdown Converter" Style="{StaticResource BaseWindowStyle}" Width="600" Height="480" WindowStartupLocation="CenterScreen" >
+        xmlns:local="clr-namespace:COMIGHT"
+        Title="Markdown Converter" Style="{StaticResource BaseWindowStyle}" Width="600" Height="480" WindowStartupLocation="CenterScreen" Loaded="MarkupTextConverterWindow_Loaded" >
 
+    <Window.Resources>
+        <local:ListItemsSource x:Key="ListItemsSource"/>
+    </Window.Resources>
+    
     <Grid Margin="10">
 
         <Grid.RowDefinitions>
@@ -13,8 +18,12 @@
 
         <TextBox x:Name="txtbxHint" Grid.Row="0" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Text="Input text below:"/>
 
-        <TextBox x:Name="txtbxMarkdown" Grid.Row ="1" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="False" AcceptsReturn="True"/>
+        <TextBox x:Name="txtbxMarkup" Grid.Row ="1" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="False" AcceptsReturn="True"/>
 
+        <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal" HorizontalAlignment="Left">
+            <ComboBox x:Name="cmbbxMarkupType" ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = MarkupTypeList, Mode = OneWay}" SelectedIndex="0" />
+        </StackPanel>
+        
         <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" Content="Convert" Click="btnConvert_Click" />
             <Button IsCancel="True" Content="Exit" Click="btnExit_Click" />
