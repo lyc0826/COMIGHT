@@ -11,7 +11,6 @@ using static COMIGHT.Settings;
 using Window = System.Windows.Window;
 
 
-
 namespace COMIGHT
 {
     /// <summary>
@@ -75,7 +74,7 @@ namespace COMIGHT
                     throw new Exception("No valid Markup Type selected.");
                 }
 
-                switch (enumMarkupType)
+                switch (enumMarkupType) // 根据Markdown类型枚举变量，选择转换方法
                 {
                     case EnumMarkupType.Markdown:
 
@@ -89,7 +88,7 @@ namespace COMIGHT
                         break;
                     
                     case EnumMarkupType.HTML:
-                        //无需转换，因为已经是HTML了
+
                         using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(targetWordFilePath, WordprocessingDocumentType.Document))
                         {
                             MainDocumentPart mainPart = wordDocument.AddMainDocumentPart(); //创建主文档部分
