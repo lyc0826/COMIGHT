@@ -117,7 +117,7 @@ namespace COMIGHT
 
         private void MnuConvertMarkdownIntoWordDocument_Click(object sender, RoutedEventArgs e)
         {
-            ConvertMarkdownIntoWordDocument();
+            ConvertMarkupTextIntoWordDocument();
         }
 
         private void MnuCreateFileList_Click(object sender, RoutedEventArgs e)
@@ -900,10 +900,10 @@ namespace COMIGHT
 
         }
 
-        private void ConvertMarkdownIntoWordDocument()
+        private void ConvertMarkupTextIntoWordDocument()
         {
-            MarkupTextConverterWindow markdownConverterWindow = new MarkupTextConverterWindow("");
-            markdownConverterWindow.Show();
+            MarkupTextConverterWindow markupTextConverterWindow = new MarkupTextConverterWindow("");
+            markupTextConverterWindow.Show();
         }
 
         public void CreatePlaceCards()
@@ -1392,7 +1392,7 @@ namespace COMIGHT
 
                 string originalText = Clipboard.GetText(); // 从剪贴板获取文本
                 string cleanedText = originalText.RemoveMarkdownMarks(); // 清除文本中的Markdown标记
-                cleanedText = appSettings.KeepEmojisInMarkup ? cleanedText : cleanedText.RemoveEmojis();
+                cleanedText = appSettings.KeepEmojisInMarkupText ? cleanedText : cleanedText.RemoveEmojis();
                 Clipboard.SetDataObject(cleanedText, true); // 将清理后的文本放回剪贴板
 
             }

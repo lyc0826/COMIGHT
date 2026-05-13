@@ -75,7 +75,7 @@ namespace COMIGHT
         private string _worksheetFontName = string.Empty;
         private double _worksheetFontSize;
         private string _placeCardFontName = string.Empty;
-        private bool _keepEmojisInMarkdown = false;
+        private bool _keepEmojisInMarkupText = false;
         private EnumUserProfile _userProfile = EnumUserProfile.Profile1;
 
 
@@ -188,10 +188,10 @@ namespace COMIGHT
             set => SetProperty(ref _placeCardFontName, value);
         }
 
-        public bool KeepEmojisInMarkup
+        public bool KeepEmojisInMarkupText
         {
-            get => _keepEmojisInMarkdown;
-            set => SetProperty(ref _keepEmojisInMarkdown, value);
+            get => _keepEmojisInMarkupText;
+            set => SetProperty(ref _keepEmojisInMarkupText, value);
         }
 
         public EnumUserProfile UserProfile 
@@ -209,18 +209,91 @@ namespace COMIGHT
         Profile3
     }
 
+    public enum EnumMarkupType { Markdown, HTML };
+
     //定义用户使用记录类
-    public class UserRecords
+    //public class UserRecords
+    //{
+    //    public string LatestFolderPath { get; set; } = string.Empty;
+    //    public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
+    //    public string LatestKeyColumnLetter { get; set; } = string.Empty;
+    //    public string LatestWorksheetIndexesStr { get; set; } = string.Empty;
+    //    public string LatestOperatingRanges { get; set; } = string.Empty;
+    //    public int LatestSubpathDepth { get; set; }
+    //    public string LatestBatchProcessWorkbooksOption { get; set; } = string.Empty;
+    //    public string LatestDisassembleWorkbookOption { get; set; } = string.Empty;
+    //    public EnumMarkupType LatestMarkupType { get; set; } = EnumMarkupType.Markdown;
+    //}
+
+
+    // 定义用户使用记录类，继承自 ObservableObject
+    public class UserRecords : ObservableObject
     {
-        public string LatestFolderPath { get; set; } = string.Empty;
-        public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
-        public string LatestKeyColumnLetter { get; set; } = string.Empty;
-        public string LatestWorksheetIndexesStr { get; set; } = string.Empty;
-        public string LatestOperatingRanges { get; set; } = string.Empty;
-        public int LatestSubpathDepth { get; set; }
-        public string LatestBatchProcessWorkbooksOption { get; set; } = string.Empty;
-        public string LatestDisassembleWorkbookOption { get; set; } = string.Empty;
-        public string LatestUrl { get; set; } = string.Empty;
+        // 为每个属性创建私有后备字段，默认值与原类保持一致
+        private string _latestFolderPath = string.Empty;
+        private string _lastestHeaderAndFooterRowCountStr = string.Empty;
+        private string _latestKeyColumnLetter = string.Empty;
+        private string _latestWorksheetIndexesStr = string.Empty;
+        private string _latestOperatingRanges = string.Empty;
+        private int _latestSubpathDepth;
+        private string _latestBatchProcessWorkbooksOption = string.Empty;
+        private string _latestDisassembleWorkbookOption = string.Empty;
+        private EnumMarkupType _latestMarkupType = EnumMarkupType.Markdown;
+
+        // 定义所有属性，如果属性变化，使用 SetProperty 来更新字段并触发通知（与AppSettings格式统一）
+        public string LatestFolderPath
+        {
+            get => _latestFolderPath;
+            set => SetProperty(ref _latestFolderPath, value);
+        }
+
+        public string LastestHeaderAndFooterRowCountStr
+        {
+            get => _lastestHeaderAndFooterRowCountStr;
+            set => SetProperty(ref _lastestHeaderAndFooterRowCountStr, value);
+        }
+
+        public string LatestKeyColumnLetter
+        {
+            get => _latestKeyColumnLetter;
+            set => SetProperty(ref _latestKeyColumnLetter, value);
+        }
+
+        public string LatestWorksheetIndexesStr
+        {
+            get => _latestWorksheetIndexesStr;
+            set => SetProperty(ref _latestWorksheetIndexesStr, value);
+        }
+
+        public string LatestOperatingRanges
+        {
+            get => _latestOperatingRanges;
+            set => SetProperty(ref _latestOperatingRanges, value);
+        }
+
+        public int LatestSubpathDepth
+        {
+            get => _latestSubpathDepth;
+            set => SetProperty(ref _latestSubpathDepth, value);
+        }
+
+        public string LatestBatchProcessWorkbooksOption
+        {
+            get => _latestBatchProcessWorkbooksOption;
+            set => SetProperty(ref _latestBatchProcessWorkbooksOption, value);
+        }
+
+        public string LatestDisassembleWorkbookOption
+        {
+            get => _latestDisassembleWorkbookOption;
+            set => SetProperty(ref _latestDisassembleWorkbookOption, value);
+        }
+
+        public EnumMarkupType LatestMarkupType
+        {
+            get => _latestMarkupType;
+            set => SetProperty(ref _latestMarkupType, value);
+        }
     }
 
     // 定义设置类（含应用设置和用户使用记录）

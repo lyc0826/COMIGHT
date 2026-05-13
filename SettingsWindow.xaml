@@ -143,12 +143,12 @@
                     
                 </Expander>
 
-                <Expander Header="Markdown Processing">
+                <Expander Header="Markup Text Processing">
                     
                     <StackPanel Orientation="Vertical"> 
                         
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="Keep Emojis In Markdown" IsChecked="{Binding Path = KeepEmojisInMarkdown, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
+                            <CheckBox Content="Keep Emojis In Markup Text" IsChecked="{Binding Path = KeepEmojisInMarkupText, Mode = TwoWay, UpdateSourceTrigger = Default}"/>
                          </StackPanel>
                         
                     </StackPanel>
