@@ -4,7 +4,7 @@
 namespace COMIGHT
 {
     /// <summary>
-    /// MarkdownConverterWindow.xaml 的交互逻辑
+    /// MarkupTextConverterWindow.xaml 的交互逻辑
     /// </summary>
     public partial class InputDialog : Window
     {
