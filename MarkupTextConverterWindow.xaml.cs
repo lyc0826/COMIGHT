@@ -26,13 +26,6 @@ namespace COMIGHT
         {
             InitializeComponent();
             txtbxMarkup.Text = defaultText;
-            // 设置下拉列表框的项源为枚举类型EnumMarkupType的所有值，并将该项源转换为字符串列表
-            //cmbbxMarkupType.ItemsSource = new List<string>{ EnumMarkupType.Markdown.ToString(), EnumMarkupType.HTML.ToString() };
-            cmbbxMarkupType.ItemsSource = Enum.GetValues(typeof(EnumMarkupType))
-                                 .Cast<EnumMarkupType>()
-                                 .Select(type => type.ToString())
-                                 .ToList();
-            cmbbxMarkupType.SelectedIndex = 0; // 设置下拉列表框的选中项为第一个
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
@@ -298,6 +291,23 @@ namespace COMIGHT
             }
         }
 
+        private void MarkupTextConverterWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+            // 设置下拉列表框的项源为枚举类型EnumMarkupType的所有值，并将该项源转换为字符串列表
+            //cmbbxMarkupType.ItemsSource = new List<string>{ EnumMarkupType.Markdown.ToString(), EnumMarkupType.HTML.ToString() };
+            //cmbbxMarkupType.ItemsSource = Enum.GetValues(typeof(EnumMarkupType))
+            //                     .Cast<EnumMarkupType>()
+            //                     .Select(type => type.ToString())
+            //                     .ToList();
+            //cmbbxMarkupType.SelectedIndex = 0; // 设置下拉列表框的选中项为第一个
 
+            List<string> lstMarkupTypes = Enum.GetValues(typeof(EnumMarkupType))
+                                 .Cast<EnumMarkupType>()
+                                 .Select(type => type.ToString())
+                                 .ToList();
+            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
+            listItemsSource.MarkupTypeList =lstMarkupTypes; // 将标记文本类型列表赋值给listItemsSource对象中的字体列表属性
+        }
     }
 }
