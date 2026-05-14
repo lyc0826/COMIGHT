@@ -62,7 +62,7 @@
                 </MenuItem>
 
                 <MenuItem Header="Document">
-                    <MenuItem Header="Convert Markdown Into Word Document" Click="MnuConvertMarkdownIntoWordDocument_Click"  />
+                    <MenuItem Header="Convert Markup Text Into Word Document" Click="MnuConvertMarkdownIntoWordDocument_Click"  />
                     <MenuItem Header="Merge Data into Document" Click="MnuMergeDataIntoDocument_Click"  />
                     <MenuItem Header="Format Word Documents" Click="MnuFormatWordDocuments_Click" />
                     <MenuItem Header="Repair Word Documents" Click="MnuRepairWordDocuments_Click"  />

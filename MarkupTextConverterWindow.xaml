@@ -21,7 +21,8 @@
         <TextBox x:Name="txtbxMarkup" Grid.Row ="1" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="False" AcceptsReturn="True"/>
 
         <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal" HorizontalAlignment="Left">
-            <ComboBox x:Name="cmbbxMarkupType" ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = MarkupTypeList, Mode = OneWay}" SelectedIndex="0" />
+            <ComboBox x:Name="cmbbxMarkupType" ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = MarkupTypeList, Mode = OneWay}" SelectedValue="{Binding Path=LatestMarkupType, Mode=TwoWay}" SelectedValuePath="."/>
+            <!--SelectedValuePath="."表示将选项本身作为选中值，而不去寻找其子属性 -->
         </StackPanel>
         
         <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal" HorizontalAlignment="Right">
