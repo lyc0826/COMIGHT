@@ -69,10 +69,7 @@ namespace COMIGHT
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径
 
-                if (!Enum.TryParse((string?)cmbbxMarkupType.SelectedItem, out EnumMarkupType enumMarkupType)) //获取Markdown类型枚举变量
-                {
-                    throw new Exception("No valid Markup Type selected.");
-                }
+                EnumMarkupType enumMarkupType = userRecords.LatestMarkupType; //获取用户记录中的标记文本类型枚举变量
 
                 switch (enumMarkupType) // 根据Markdown类型枚举变量，选择转换方法
                 {
@@ -88,8 +85,8 @@ namespace COMIGHT
                         break;
                     
                     case EnumMarkupType.HTML:
-
-                        using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(targetWordFilePath, WordprocessingDocumentType.Document))
+                        
+                        using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(targetWordFilePath, WordprocessingDocumentType.Document)) // 创建 Word 文档对象
                         {
                             MainDocumentPart mainPart = wordDocument.AddMainDocumentPart(); //创建主文档部分
                             mainPart.Document = new Document(new Body()); //创建 Word 文档基本结构（Document中包括Body）
