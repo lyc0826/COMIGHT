@@ -1,4 +1,5 @@
-﻿using DocSharp.Markdown;
+﻿using DocSharp.Imaging;
+using DocSharp.Markdown;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -69,7 +70,7 @@ namespace COMIGHT
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径
 
-                EnumMarkupType enumMarkupType = userRecords.LatestMarkupType; //获取用户记录中的标记文本类型枚举变量
+                EnumMarkupType enumMarkupType = userRecords.MarkupType; //获取用户记录中的标记文本类型枚举变量
 
                 switch (enumMarkupType) // 根据Markdown类型枚举变量，选择转换方法
                 {
@@ -78,7 +79,8 @@ namespace COMIGHT
                         MarkdownSource markdown = MarkdownSource.FromMarkdownString(markupText); // 创建Markdown源对象
                         MarkdownConverter markdownConverter = new MarkdownConverter() //  创建Markdown转换器对象
                         {
-                            //ImagesBaseUri = Path.GetDirectoryName(targetMDFilePath)  // 设置图片的路径
+                            ImagesBaseUri = Path.GetDirectoryName(targetWordFilePath),  // 设置图片的相对路径
+                            ImageConverter = new ImageSharpConverter() // 设置图片转换器为ImageSharpConverter
                         };
                         markdownConverter.ToDocx(markdown, targetWordFilePath, append: false); // 将Markdown文档转换成Word文档
                         
@@ -90,7 +92,10 @@ namespace COMIGHT
                         {
                             MainDocumentPart mainPart = wordDocument.AddMainDocumentPart(); //创建主文档部分
                             mainPart.Document = new Document(new Body()); //创建 Word 文档基本结构（Document中包括Body）
-                            HtmlConverter htmlConverter = new HtmlConverter(mainPart); //创建 HTML 转换器
+                            HtmlConverter htmlConverter = new HtmlConverter(mainPart)
+                            {
+                                ImageProcessing = ImageProcessingMode.Embed
+                            }; //创建 HTML 转换器对象，设置图片处理模式为嵌入
 
                             // 把 HTML 中的段落、标题、表格、列表、图片等尽量转换为 Word 可识别的 OpenXML 元素。
                             var openXmlElements = htmlConverter.Parse(markupText);

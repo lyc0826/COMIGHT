@@ -286,7 +286,7 @@ namespace COMIGHT
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Dissemble by a Column", "2-Dissemble by Worksheets" };
 
                 //获取功能选项
-                int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: userRecords, propertyName: nameof(userRecords.LatestDisassembleWorkbookOption));
+                int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: userRecords, propertyName: nameof(userRecords.DisassembleWorkbookOption));
                 if (functionNum <= 0) //如果功能选项小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {
                     return;
@@ -606,7 +606,7 @@ namespace COMIGHT
                 // 定义功能选项列表
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric", "5-Adjust Worksheet Format for Printing" };
                 //  获取功能选项
-                int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: userRecords, propertyName: nameof(userRecords.LatestBatchProcessWorkbooksOption));
+                int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: userRecords, propertyName: nameof(userRecords.ProcessWorkbooksOption));
 
                 if (functionNum <= 0) //如果功能选项索引号小于等于0（选择“Cancel”或不在设定范围），则结束本过程
                 {
@@ -1070,7 +1070,7 @@ namespace COMIGHT
                     return;
                 }
 
-                int latestSubpathDepth = userRecords.LatestSubpathDepth;  // 读取用户使用记录中保存的子路径深度
+                int latestSubpathDepth = userRecords.SubpathDepth;  // 读取用户使用记录中保存的子路径深度
                 // 弹出功能选择对话框，提示用户输入子路径深度
                 InputDialog inputDialog = new InputDialog(question: "Input the depth(level) of subdirectories", defaultAnswer: latestSubpathDepth.ToString());
 
@@ -1080,7 +1080,7 @@ namespace COMIGHT
                 }
 
                 int subpathDepth = Convert.ToInt32(inputDialog.Answer); // 获取对话框返回的子路径深度
-                userRecords.LatestSubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
+                userRecords.SubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
 
                 DataTable dataTable = new DataTable(); // 定义DataTable，赋值给DataTable变量
 
