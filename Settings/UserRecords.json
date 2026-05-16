@@ -1,11 +1,11 @@
 {
-  "LatestFolderPath": "C:\\",
-  "LastestHeaderAndFooterRowCountStr": "1,0",
-  "LatestKeyColumnLetter": "A",
-  "LatestWorksheetIndexesStr": "1-1",
-  "LatestOperatingRanges": "B2:C3",
-  "LatestSubpathDepth": 0,
-  "LatestBatchProcessWorkbooksOption": "0-Cancel",
-  "LatestDisassembleWorkbookOption": "0-Cancel",
-  "LatestMarkupType": 0
+  "FolderPath": "C:\\",
+  "HeaderAndFooterRowCountStr": "1,0",
+  "KeyColumnLetter": "A",
+  "WorksheetIndexesStr": "1-1",
+  "OperatingRanges": "B2:C3",
+  "SubpathDepth": 0,
+  "ProcessWorkbooksOption": "0-Cancel",
+  "DisassembleWorkbookOption": "0-Cancel",
+  "MarkupType": 0
 }

@@ -214,15 +214,15 @@ namespace COMIGHT
     //定义用户使用记录类
     //public class UserRecords
     //{
-    //    public string LatestFolderPath { get; set; } = string.Empty;
-    //    public string LastestHeaderAndFooterRowCountStr { get; set; } = string.Empty;
-    //    public string LatestKeyColumnLetter { get; set; } = string.Empty;
-    //    public string LatestWorksheetIndexesStr { get; set; } = string.Empty;
-    //    public string LatestOperatingRanges { get; set; } = string.Empty;
-    //    public int LatestSubpathDepth { get; set; }
-    //    public string LatestBatchProcessWorkbooksOption { get; set; } = string.Empty;
-    //    public string LatestDisassembleWorkbookOption { get; set; } = string.Empty;
-    //    public EnumMarkupType LatestMarkupType { get; set; } = EnumMarkupType.Markdown;
+    //    public string FolderPath { get; set; } = string.Empty;
+    //    public string HeaderAndFooterRowCountStr { get; set; } = string.Empty;
+    //    public string KeyColumnLetter { get; set; } = string.Empty;
+    //    public string WorksheetIndexesStr { get; set; } = string.Empty;
+    //    public string OperatingRanges { get; set; } = string.Empty;
+    //    public int SubpathDepth { get; set; }
+    //    public string ProcessWorkbooksOption { get; set; } = string.Empty;
+    //    public string DisassembleWorkbookOption { get; set; } = string.Empty;
+    //    public EnumMarkupType MarkupType { get; set; } = EnumMarkupType.Markdown;
     //}
 
 
@@ -230,69 +230,69 @@ namespace COMIGHT
     public class UserRecords : ObservableObject
     {
         // 为每个属性创建私有后备字段，默认值与原类保持一致
-        private string _latestFolderPath = string.Empty;
-        private string _lastestHeaderAndFooterRowCountStr = string.Empty;
-        private string _latestKeyColumnLetter = string.Empty;
-        private string _latestWorksheetIndexesStr = string.Empty;
-        private string _latestOperatingRanges = string.Empty;
-        private int _latestSubpathDepth;
-        private string _latestBatchProcessWorkbooksOption = string.Empty;
-        private string _latestDisassembleWorkbookOption = string.Empty;
-        private EnumMarkupType _latestMarkupType = EnumMarkupType.Markdown;
+        private string _folderPath = string.Empty;
+        private string _headerAndFooterRowCountStr = string.Empty;
+        private string _keyColumnLetter = string.Empty;
+        private string _worksheetIndexesStr = string.Empty;
+        private string _operatingRanges = string.Empty;
+        private int _subpathDepth;
+        private string _processWorkbooksOption = string.Empty;
+        private string _disassembleWorkbookOption = string.Empty;
+        private EnumMarkupType _markupType = EnumMarkupType.Markdown;
 
         // 定义所有属性，如果属性变化，使用 SetProperty 来更新字段并触发通知（与AppSettings格式统一）
-        public string LatestFolderPath
+        public string FolderPath
         {
-            get => _latestFolderPath;
-            set => SetProperty(ref _latestFolderPath, value);
+            get => _folderPath;
+            set => SetProperty(ref _folderPath, value);
         }
 
-        public string LastestHeaderAndFooterRowCountStr
+        public string HeaderAndFooterRowCountStr
         {
-            get => _lastestHeaderAndFooterRowCountStr;
-            set => SetProperty(ref _lastestHeaderAndFooterRowCountStr, value);
+            get => _headerAndFooterRowCountStr;
+            set => SetProperty(ref _headerAndFooterRowCountStr, value);
         }
 
-        public string LatestKeyColumnLetter
+        public string KeyColumnLetter
         {
-            get => _latestKeyColumnLetter;
-            set => SetProperty(ref _latestKeyColumnLetter, value);
+            get => _keyColumnLetter;
+            set => SetProperty(ref _keyColumnLetter, value);
         }
 
-        public string LatestWorksheetIndexesStr
+        public string WorksheetIndexesStr
         {
-            get => _latestWorksheetIndexesStr;
-            set => SetProperty(ref _latestWorksheetIndexesStr, value);
+            get => _worksheetIndexesStr;
+            set => SetProperty(ref _worksheetIndexesStr, value);
         }
 
-        public string LatestOperatingRanges
+        public string OperatingRanges
         {
-            get => _latestOperatingRanges;
-            set => SetProperty(ref _latestOperatingRanges, value);
+            get => _operatingRanges;
+            set => SetProperty(ref _operatingRanges, value);
         }
 
-        public int LatestSubpathDepth
+        public int SubpathDepth
         {
-            get => _latestSubpathDepth;
-            set => SetProperty(ref _latestSubpathDepth, value);
+            get => _subpathDepth;
+            set => SetProperty(ref _subpathDepth, value);
         }
 
-        public string LatestBatchProcessWorkbooksOption
+        public string ProcessWorkbooksOption
         {
-            get => _latestBatchProcessWorkbooksOption;
-            set => SetProperty(ref _latestBatchProcessWorkbooksOption, value);
+            get => _processWorkbooksOption;
+            set => SetProperty(ref _processWorkbooksOption, value);
         }
 
-        public string LatestDisassembleWorkbookOption
+        public string DisassembleWorkbookOption
         {
-            get => _latestDisassembleWorkbookOption;
-            set => SetProperty(ref _latestDisassembleWorkbookOption, value);
+            get => _disassembleWorkbookOption;
+            set => SetProperty(ref _disassembleWorkbookOption, value);
         }
 
-        public EnumMarkupType LatestMarkupType
+        public EnumMarkupType MarkupType
         {
-            get => _latestMarkupType;
-            set => SetProperty(ref _latestMarkupType, value);
+            get => _markupType;
+            set => SetProperty(ref _markupType, value);
         }
     }
 

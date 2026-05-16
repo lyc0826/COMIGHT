@@ -69,7 +69,7 @@ namespace COMIGHT
                 //将目标Markdown文档转换为目标Word文档
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径
 
-                EnumMarkupType enumMarkupType = userRecords.LatestMarkupType; //获取用户记录中的标记文本类型枚举变量
+                EnumMarkupType enumMarkupType = userRecords.MarkupType; //获取用户记录中的标记文本类型枚举变量
 
                 switch (enumMarkupType) // 根据Markdown类型枚举变量，选择转换方法
                 {
