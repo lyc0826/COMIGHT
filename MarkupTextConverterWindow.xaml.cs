@@ -92,7 +92,6 @@ namespace COMIGHT
                         {
                             MainDocumentPart mainPart = wordDocument.AddMainDocumentPart(); //创建主文档部分
                             mainPart.Document = new Document(new Body()); //创建 Word 文档基本结构（Document中包括Body）
-                            //HtmlConverter htmlConverter = new HtmlConverter(mainPart); //创建 HTML 转换器
                             HtmlConverter htmlConverter = new HtmlConverter(mainPart)
                             {
                                 ImageProcessing = ImageProcessingMode.Embed
