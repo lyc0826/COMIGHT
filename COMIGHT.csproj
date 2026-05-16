@@ -35,11 +35,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocSharp.Binary.Doc" Version="0.18.1" />
-    <PackageReference Include="DocSharp.Binary.Xls" Version="0.18.1" />
-    <PackageReference Include="DocSharp.Common" Version="0.18.1" />
-    <PackageReference Include="DocSharp.Docx" Version="0.18.1" />
-    <PackageReference Include="DocSharp.Markdown" Version="0.18.1" />
+    <PackageReference Include="DocSharp.Binary.Doc" Version="0.20.0" />
+    <PackageReference Include="DocSharp.Binary.Xls" Version="0.20.0" />
+    <PackageReference Include="DocSharp.Common" Version="0.20.0" />
+    <PackageReference Include="DocSharp.Docx" Version="0.20.0" />
+    <PackageReference Include="DocSharp.ImageSharp" Version="0.20.0" />
+    <PackageReference Include="DocSharp.Markdown" Version="0.20.0" />
     <PackageReference Include="EPPlus" Version="8.5.3" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="3.3.2" />
     <PackageReference Include="itext" Version="9.6.0" />
