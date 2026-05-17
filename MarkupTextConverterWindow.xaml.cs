@@ -79,7 +79,7 @@ namespace COMIGHT
                         MarkdownSource markdown = MarkdownSource.FromMarkdownString(markupText); // 创建Markdown源对象
                         MarkdownConverter markdownConverter = new MarkdownConverter() //  创建Markdown转换器对象
                         {
-                            ImagesBaseUri = Path.GetDirectoryName(targetWordFilePath),  // 设置图片的相对路径
+                            //ImagesBaseUri = Path.GetDirectoryName(mdFilePath),  // 设置图片的相对路径基础目录，此处设置为 Markdown 文件的所在文件夹路径。若不设置，则只有含绝对路径的图片将被处理。
                             ImageConverter = new ImageSharpConverter() // 设置图片转换器为ImageSharpConverter
                         };
                         markdownConverter.ToDocx(markdown, targetWordFilePath, append: false); // 将Markdown文档转换成Word文档
