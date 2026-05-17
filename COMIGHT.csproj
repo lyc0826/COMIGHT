@@ -41,21 +41,21 @@
     <PackageReference Include="DocSharp.Docx" Version="0.20.0" />
     <PackageReference Include="DocSharp.ImageSharp" Version="0.20.0" />
     <PackageReference Include="DocSharp.Markdown" Version="0.20.0" />
-    <PackageReference Include="EPPlus" Version="8.5.3" />
+    <PackageReference Include="EPPlus" Version="8.5.4" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="3.3.2" />
     <PackageReference Include="itext" Version="9.6.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.6.0" />
     <PackageReference Include="itext.font-asian" Version="9.6.0" />
     <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.8.13" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NPOI" Version="2.8.0" />
-    <PackageReference Include="NuGet.CommandLine" Version="7.3.1">
+    <PackageReference Include="NuGet.CommandLine" Version="7.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="QRCoder" Version="1.8.0" />
-    <PackageReference Include="WindowsAPICodePack" Version="8.0.15.1" />
+    <PackageReference Include="WindowsAPICodePack" Version="8.0.15.2" />
   </ItemGroup>
 
   <ItemGroup>
