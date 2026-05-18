@@ -76,9 +76,9 @@
                     <MenuItem Header="Generate QR Code" Click="MnuGenerateQRCode_Click" />
                 </MenuItem>
 
-                <!-- <MenuItem Header="Web">
-                    <MenuItem Header="Browser" Click="MnuBrowser_Click" />
-                </MenuItem> -->
+                <MenuItem Header="Online">
+                    <MenuItem Header="Online Tools" Click="MnuOnlineTools_Click" />
+                </MenuItem>
             </Menu>
             
         </DockPanel>

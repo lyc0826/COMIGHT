@@ -1434,9 +1434,11 @@ namespace COMIGHT
             settingDialog.ShowDialog();
         }
 
-
-
-
+        private void MnuOnlineTools_Click(object sender, RoutedEventArgs e)
+        {
+            OnlineToolsWindow onlineToolsWindow = new OnlineToolsWindow();
+            onlineToolsWindow.Show();
+        }
     }
 
 }

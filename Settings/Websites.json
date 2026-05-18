@@ -1,0 +1,24 @@
+{
+  "Tags": [
+    {
+      "Label": "PDF24",
+      "Url": "https://tools.pdf24.org"
+    },
+    {
+      "Label": "PhotoPea",
+      "Url": "https://www.photopea.com/"
+    },
+    {
+      "Label": "IT Tools",
+      "Url": "https://it-tools.tech/"
+    },
+    {
+      "Label": "World Monitor",
+      "Url": "https://www.worldmonitor.app/"
+    },
+    {
+      "Label": "NewsNow",
+      "Url": "https://newsnow.busiyi.world/"
+    }
+  ]
+}
