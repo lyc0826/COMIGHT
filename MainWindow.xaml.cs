@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using static COMIGHT.Methods;
-using static COMIGHT.Settings;
+using static COMIGHT.AppDataManager;
 using static COMIGHT.Tasks;
 using DataTable = System.Data.DataTable;
 using DocSharpSpreadsheetMapping = DocSharp.Binary.SpreadsheetMLMapping;
@@ -38,7 +38,7 @@ namespace COMIGHT
         {
             InitializeComponent();
 
-            ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //定义EPPlus库许可证类型为非商用
+            ExcelPackage.License.SetNonCommercialPersonal("Yuechen Lou"); //设置EPPlus库许可证类型为非商用
 
         }
 
@@ -52,7 +52,7 @@ namespace COMIGHT
 
             try
             {
-                CreateFolder(appSettings.SavingFolderPath); // 创建保存文件夹
+                CreateFolder(appData.AppSettings.SavingFolderPath); // 创建保存文件夹
             }
             catch (Exception ex)
             {
@@ -63,8 +63,7 @@ namespace COMIGHT
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            appSettingsManager.SaveSettings(appSettings); // 保存应用程序设置到Json文件
-            userRecordsManager.SaveSettings(userRecords);  // 保存最近记录到Json文件
+            appDataAccessor.SaveData(appData); // 保存应用程序设置到Json文件
 
             Environment.Exit(0); // 退出程序，关闭所有窗口
         }
@@ -207,9 +206,9 @@ namespace COMIGHT
 
                 string folderPath = Path.GetDirectoryName(filePaths[0])!; //获取保存转换文件的文件夹路径
 
-                //定义可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
+                //创建可用Excel打开的文件正则表达式变量，匹配模式为: "xls"或"et"，结尾标记，忽略大小写
                 Regex regExExcelFile = new Regex(@"(?:xls|et)$", RegexOptions.IgnoreCase);
-                //定义可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
+                //创建可用Word打开的文件正则表达式，匹配模式为: "doc"或"wps"，结尾标记，忽略大小写
                 Regex regExWordFile = new Regex(@"(?:doc|wps)$", RegexOptions.IgnoreCase);
 
                 foreach (string filePath in filePaths) //遍历所有文件
@@ -231,7 +230,7 @@ namespace COMIGHT
 
                         using (StructuredStorageReader reader = new StructuredStorageReader(filePath)) //使用结构化存储读取器读取当前文件
                         {
-                            SpreadsheetDocumentType outputType = SpreadsheetDocumentType.Workbook; // 定义输出文件类型为Workbook
+                            SpreadsheetDocumentType outputType = SpreadsheetDocumentType.Workbook; // 指定输出文件类型为Workbook，赋值给输出文件类型变量
                             XlsDocument xls = new XlsDocument(reader); // 创建Xls对象
                             using (SpreadsheetDocument xlsx = SpreadsheetDocument.Create(targetFilePath, outputType)) //  创建xlsx目标文件
                             {
@@ -249,7 +248,7 @@ namespace COMIGHT
 
                         using (StructuredStorageReader reader = new StructuredStorageReader(filePath)) // 使用结构化存储读取器读取当前文件
                         {
-                            WordprocessingDocumentType outputType = WordprocessingDocumentType.Document; // 定义输出文件类型为Document
+                            WordprocessingDocumentType outputType = WordprocessingDocumentType.Document; // 指定输出文件类型为Document
                             WordDocument doc = new WordDocument(reader); //  创建Word对象
                             using (WordprocessingDocument docx = WordprocessingDocument.Create(targetFilePath, outputType)) // 创建docx目标文件
                             {
@@ -282,7 +281,7 @@ namespace COMIGHT
         {
             try
             {
-                // 定义功能选项列表
+                // 创建功能选项列表
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Dissemble by a Column", "2-Dissemble by Worksheets" };
 
                 //获取功能选项
@@ -300,11 +299,11 @@ namespace COMIGHT
                     return;
                 }
 
-                // 定义Excel工作簿索引范围、表头表尾行数、列符号变量（初始值均为非法数值或空）
+                // 创建Excel工作簿索引范围、表头表尾行数、列符号变量（初始值均为非法数值或空）
                 int excelWorksheetStartIndex = -1; int excelWorksheetEndIndex = -1;
                 int headerRowCount = -1; int footerRowCount = -1;
                 string? columnLetter = null;
-                bool createDataDict = false; // 定义“创建数据字典”变量，初始值为false
+                bool createDataDict = false; // 创建“是否创建数据字典”变量，初始值为false
 
                 (excelWorksheetStartIndex, excelWorksheetEndIndex) = GetWorksheetRange(); // 获取Excel工作表索引范围
                 if (excelWorksheetStartIndex < 0 || excelWorksheetEndIndex < 0) // 如果获取到的Excel工作表索引号有一个小于0（范围无效），则结束本过程
@@ -343,7 +342,7 @@ namespace COMIGHT
 
                 }
 
-                Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 定义数据字典（保存按列拆分的数据）
+                Dictionary<string, List<ExcelRangeBase>> dataDict = new Dictionary<string, List<ExcelRangeBase>>(); // 创建数据字典（保存按列拆分的数据）
 
                 string targetFolderPath = appSettings.SavingFolderPath; // 获取保存文件夹路径    
                 string excelWorkbookFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); //获取Excel工作簿文件主名
@@ -385,7 +384,7 @@ namespace COMIGHT
                                 {
                                     dataDict[key].Add(excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column]);
                                 }
-                                else // 否则，定义一个列表并向其中添加当前行，而后将列表并添加到字典中
+                                else // 否则，创建一个列表并向其中添加当前行，而后将列表并添加到字典中
                                 {
                                     dataDict[key] = new List<ExcelRangeBase> { excelWorksheet.Cells[j, 1, j, excelWorksheet.Dimension.End.Column] };
                                 }
@@ -603,7 +602,7 @@ namespace COMIGHT
             string currentFilePath = "";
             try
             {
-                // 定义功能选项列表
+                // 创建功能选项列表
                 List<string> lstFunctions = new List<string> { "0-Cancel", "1-Merge Records", "2-Accumulate Values", "3-Extract Cell Data", "4-Convert Textual Numbers into Numeric", "5-Adjust Worksheet Format for Printing" };
                 //  获取功能选项
                 int functionNum = SelectFunction(lstOptions: lstFunctions, objRecords: userRecords, propertyName: nameof(userRecords.ProcessWorkbooksOption));
@@ -658,16 +657,16 @@ namespace COMIGHT
 
                 }
 
-                string? excelFileName = null; //定义被处理Excel工作簿文件名变量
+                string? excelFileName = null; //创建被处理Excel工作簿文件名变量
 
                 ExcelPackage targetExcelPackage = new ExcelPackage(); //新建Excel包，赋值给目标Excel包变量
                 ExcelWorksheet targetExcelWorksheet = targetExcelPackage.Workbook.Worksheets.Add("Sheet1"); //在目标Excel工作簿中添加一个工作表，赋值给目标工作表变量
                 string? targetFolderPath = appSettings.SavingFolderPath; //获取目标文件夹路径
                 string? targetFileMainName = Path.GetFileNameWithoutExtension(filePaths[0]); ; //获取目标文件主名
 
-                // 定义数据表、数据行（功能3“提取单元格数据”时使用）
-                DataTable? dataTable = null; //定义DataTable变量
-                DataRow? dataRow = null; //定义DataTable行变量
+                // 创建数据表、数据行（功能3“提取单元格数据”时使用）
+                DataTable? dataTable = null; //创建DataTable变量
+                DataRow? dataRow = null; //创建DataTable行变量
 
                 int fileCount = 1;
 
@@ -772,7 +771,7 @@ namespace COMIGHT
 
                                     if (fileCount == 1 && i == excelWorksheetStartIndex) //如果是第一个文件的第一个Excel工作表
                                     {
-                                        dataTable = new DataTable(); //定义DataTable
+                                        dataTable = new DataTable(); //创建DataTable
                                         dataTable.Columns.Add("Source Workbook"); //添加列
                                         dataTable.Columns.Add("Source Worksheet");
 
@@ -788,7 +787,7 @@ namespace COMIGHT
                                         }
                                     }
 
-                                    dataRow = dataTable!.NewRow(); //定义DataTable新数据行
+                                    dataRow = dataTable!.NewRow(); //创建DataTable新数据行
                                     dataRow["Source Workbook"] = excelFileName;
                                     dataRow["Source Worksheet"] = excelWorksheet.Name;
                                     foreach (string operatingRange in lstOperatingRanges!) //遍历所有操作区域
@@ -1082,7 +1081,7 @@ namespace COMIGHT
                 int subpathDepth = Convert.ToInt32(inputDialog.Answer); // 获取对话框返回的子路径深度
                 userRecords.SubpathDepth = subpathDepth; // 将子路径深度赋值给用户使用记录
 
-                DataTable dataTable = new DataTable(); // 定义DataTable，赋值给DataTable变量
+                DataTable dataTable = new DataTable(); // 创建DataTable，赋值给DataTable变量
 
                 // 向DataTable添加列（ 索引、文件路径、文件夹路径、子路径、文件名、文件类型、推测生效日期、保存日期、文件大小（MB） ）
                 dataTable.Columns.AddRange(new DataColumn[]
@@ -1233,7 +1232,7 @@ namespace COMIGHT
                 }
 
                 List<string> lstTextToMerge = new List<string>(); // 建立待合并文本列表
-                StringBuilder tableRowStringBuilder = new StringBuilder(); // 定义表格行数据字符串构建器
+                StringBuilder tableRowStringBuilder = new StringBuilder(); // 创建表格行数据字符串构建器
 
                 foreach (string filePath in filePaths) //遍历列表中的所有文件
                 {
@@ -1415,7 +1414,7 @@ namespace COMIGHT
                 //创建ProcessStartInfo对象，包含了启动新进程所需的信息，赋值给启动进程信息变量
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    FileName = appSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
+                    FileName = appData.AppSettings.UserManualUrl, //指定需要打开的网址（用户手册网址）
                     UseShellExecute = true //设定使用操作系统shell执行程序
                 };
                 //启动新的进程

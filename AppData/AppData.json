@@ -1,0 +1,85 @@
+{
+  "AppSettings": {
+    "SavingFolderPath": "C:\\COMIGHT Files",
+    "UserManualUrl": "https://gitcode.com/lyc0826/COMIGHT",
+    "CnTitleFontName": "华文中宋",
+    "CnTitleFontSize": 22,
+    "CnBodyFontName": "仿宋",
+    "CnBodyFontSize": 16,
+    "CnHeading0FontName": "黑体",
+    "CnHeading0FontSize": 16,
+    "CnHeading1FontName": "黑体",
+    "CnHeading1FontSize": 16,
+    "CnHeading2FontName": "楷体",
+    "CnHeading2FontSize": 16,
+    "CnHeading3_4FontName": "仿宋",
+    "CnHeading3_4FontSize": 16,
+    "CnLineSpace": 28,
+    "WorksheetFontName": "Microsoft YaHei UI",
+    "WorksheetFontSize": 11,
+    "PlaceCardFontName": "宋体",
+    "KeepEmojisInMarkup": false,
+    "UserProfile": 0
+  },
+
+  "UserRecords": {
+    "FolderPath": "C:\\",
+    "HeaderAndFooterRowCountStr": "1,0",
+    "KeyColumnLetter": "A",
+    "WorksheetIndexesStr": "1-1",
+    "OperatingRanges": "B2:C3",
+    "SubpathDepth": 0,
+    "ProcessWorkbooksOption": "0-Cancel",
+    "DisassembleWorkbookOption": "0-Cancel",
+    "MarkupType": 0
+  },
+
+  "WebsiteData": {
+    "WebsiteTags": [
+      {
+        "Label": "PDF Tools",
+        "Url": "https://tools.pdf24.org"
+      },
+      {
+        "Label": "OCR Tools",
+        "Url": "https://www.ooccrr.com"
+      },
+      {
+        "Label": "Markdown Editor",
+        "Url": "https://stackedit.io/app#"
+      },
+      {
+        "Label": "Photo Editor",
+        "Url": "https://www.photopea.com/"
+      },
+      {
+        "Label": "Diagram Editor",
+        "Url": "https://app.diagrams.net/"
+      },
+      {
+        "Label": "Graphviz Editor",
+        "Url": "https://dreampuf.github.io/GraphvizOnline"
+      },
+      {
+        "Label": "Seal Generator",
+        "Url": "http://web.aa6666.com/"
+      },
+      {
+        "Label": "File Converter",
+        "Url": "https://anyconv.com/"
+      },
+      {
+        "Label": "IT Tools",
+        "Url": "https://it-tools.tech/"
+      },
+      {
+        "Label": "OSINT Monitor",
+        "Url": "https://www.worldmonitor.app/"
+      },
+      {
+        "Label": "News Aggregator",
+        "Url": "https://newsnow.busiyi.world/"
+      }
+    ]
+  }
+}

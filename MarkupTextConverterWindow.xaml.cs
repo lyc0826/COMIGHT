@@ -8,7 +8,7 @@ using System.Data;
 using System.IO;
 using System.Windows;
 using static COMIGHT.Methods;
-using static COMIGHT.Settings;
+using static COMIGHT.AppDataManager;
 using Window = System.Windows.Window;
 
 

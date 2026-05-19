@@ -12,8 +12,8 @@ namespace COMIGHT
     public partial class App : Application
     {
         
-        private static Mutex? _mutex = null;  // 声明静态私有字段，用于存储互斥量对象，初始化为 null
-        private const string MutexName = "COMIGHT"; // 声明常量字符串，作为互斥量的唯一标识符，需要在系统范围内唯一
+        private static Mutex? _mutex = null;  // 创建静态私有字段，用于存储互斥量对象，初始化为 null
+        private const string mutexName = "COMIGHT"; // 创建常量字符串，作为互斥量的唯一标识符，需要在系统范围内唯一
 
         // 使用 P/Invoke 导入 Windows API 函数 ShowWindow，用于控制窗口的显示状态
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -23,7 +23,7 @@ namespace COMIGHT
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        // 定义常量，表示恢复窗口的命令值，SW_RESTORE = 9：激活并显示窗口，如果窗口被最小化或最大化，则恢复到原来的尺寸和位置
+        // 创建常量，表示恢复窗口的命令值，SW_RESTORE = 9：激活并显示窗口，如果窗口被最小化或最大化，则恢复到原来的尺寸和位置
         private const int SW_RESTORE = 9;
 
 
@@ -32,8 +32,8 @@ namespace COMIGHT
         {
             
             bool createdNew; // 声明布尔变量，用于接收互斥量是否为新创建的结果
-            // 创建命名互斥量对象，参数1: true - 表示当前线程希望立即拥有互斥量；参数2: MutexName - 互斥量的系统级唯一名称；参数3: out createdNew - 输出参数，true表示创建了新互斥量，false表示互斥量已存在
-            _mutex = new Mutex(true, MutexName, out createdNew);
+            // 创建命名互斥量对象，参数1: true - 表示当前线程希望立即拥有互斥量；参数2: mutexName - 互斥量的系统级唯一名称；参数3: out createdNew - 输出参数，true表示创建了新互斥量，false表示互斥量已存在
+            _mutex = new Mutex(true, mutexName, out createdNew);
 
             
             if (!createdNew) // 如果 createdNew 为 false，说明互斥量已经存在，即已有应用程序实例在运行
@@ -57,7 +57,7 @@ namespace COMIGHT
             base.OnExit(e); // 调用基类的 OnExit 方法，执行正常的应用程序退出流程
         }
 
-        // 定义私有方法，用于查找并激活已存在的应用程序窗口
+        // 定义方法，用于查找并激活已存在的应用程序窗口
         private void ActivateExistingWindow()
         {
             // 获取当前进程对象

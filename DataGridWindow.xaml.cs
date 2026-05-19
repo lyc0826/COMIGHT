@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using static COMIGHT.Methods;
-using static COMIGHT.Settings;
+using static COMIGHT.AppDataManager;
 using DataTable = System.Data.DataTable;
 using Window = System.Windows.Window;
 
@@ -13,8 +13,8 @@ namespace COMIGHT
     /// </summary>
     public partial class DataGridWindow : Window
     {
-        private readonly DataTable dataTable; // 定义DataTable变量
-        private readonly string windowTitle = string.Empty; // 定义窗口标题变量
+        private readonly DataTable dataTable; // 创建DataTable变量
+        private readonly string windowTitle = string.Empty; // 创建窗口标题变量
 
         // 默认构造函数
         public DataGridWindow()

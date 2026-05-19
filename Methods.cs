@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Interop;
-using static COMIGHT.Settings;
+using static COMIGHT.AppDataManager;
 using Application = System.Windows.Application;
 using DataTable = System.Data.DataTable;
 using MSWord = Microsoft.Office.Interop.Word;
@@ -39,13 +39,13 @@ namespace COMIGHT
                 msWordApp.ScreenUpdating = false; //关闭屏幕更新
                 msWordApp.DisplayAlerts = MSWord.WdAlertLevel.wdAlertsNone; //关闭警告
                 msWordApp.Visible = false; //“程序窗口可见”设为否
-                MSWordDocument? msWordDocument = null; //定义Word文档变量
+                MSWordDocument? msWordDocument = null; //创建Word文档变量
 
                 string currentFilePath = "";
                 try
                 {
 
-                    // 定义页边距、行距、字体、字号等的值
+                    // 设置页边距、行距、字体、字号等的值
 
                     double topMargin = msWordApp.CentimetersToPoints((float)3.7); // 顶端页边距
                     double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
@@ -82,42 +82,42 @@ namespace COMIGHT
                     float footerFontSize = 14; // 页脚字号为四号
 
 
-                    // 定义正则表达式
+                    // 创建正则表达式
 
-                    // 定义大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-80个，换行符回车符，后方出现：换行符回车符
+                    // 创建大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-80个，换行符回车符，后方出现：换行符回车符
                     Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,80}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-                    // 定义中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
+                    // 创建中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
                     Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
 
-                    // 定义中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。；;”分页符换行符回车符的字符0-40个，换行符回车符
+                    // 创建中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。；;”分页符换行符回车符的字符0-40个，换行符回车符
                     Regex regExCnHeading0 = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[^。；;\f\n\r]{0,40}[\n\r]", RegexOptions.Multiline);
 
-                    // 定义中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
+                    // 创建中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
                     Regex regExCnHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
 
-                    // 定义中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
+                    // 创建中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
                     Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
 
-                    // 定义中文“X是”编号正则表达式变量，匹配模式为：前方出现换行符回车符“。：:；;，,”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”；后方出现非分页符换行符回车符的字符1个及以上
+                    // 创建中文“X是”编号正则表达式变量，匹配模式为：前方出现换行符回车符“。：:；;，,”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”；后方出现非分页符换行符回车符的字符1个及以上
                     Regex regExCnShiNum = new Regex(@"(?<=[\n\r。：:；;，,][ |\t]*)[一二三四五六七八九十〇零]+[ |\t]*是(?=[^\f\n\r]{1,})", RegexOptions.Multiline);
 
-                    // 定义中文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
+                    // 创建中文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
                     Regex regExCnItemNum = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[条款项][：:| |\t]", RegexOptions.Multiline); // 将正则匹配模式设为条款项编号
 
-                    // 定义表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-40个字符），非“。；;”分页符换行符回车符的字符任意多个，“表、单、录、册、回执”，非“。；;”分页符换行符回车符的字符任意多个，换行符回车符
+                    // 创建表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-40个字符），非“。；;”分页符换行符回车符的字符任意多个，“表、单、录、册、回执”，非“。；;”分页符换行符回车符的字符任意多个，换行符回车符
                     Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,40}[\n\r])[^。；;\f\n\r]*(?:表|单|录|册|回执)[^。；;\f\n\r]*[\n\r]", RegexOptions.Multiline);
 
-                    // 定义清单数字编号列表，包含1、2、3、4级编号匹配模式
+                    // 创建清单数字编号列表，包含1、2、3、4级编号匹配模式
                     List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", @"\d+[ |\t]*[、\.，,）\)]", @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]" };
 
-                    // 定义中文附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”，非“。”分页符换行符回车符的字符0-3个，换行符回车符
+                    // 创建中文附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”，非“。”分页符换行符回车符的字符0-3个，换行符回车符
                     Regex regExCnAppendix = new Regex(@"(?<=^|\n|\r)附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r]", RegexOptions.Multiline);
 
-                    // 定义括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
+                    // 创建括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
                     Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
 
-                    // 定义中文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
+                    // 创建中文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
                     Regex regExSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
 
 
@@ -430,7 +430,7 @@ namespace COMIGHT
                         {
                             selection.HomeKey(WdUnits.wdStory);
 
-                            // 定义数字编号清单块正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符至少一个，换行符回车符），以上字符串（捕获组）2个及以上
+                            // 创建数字编号清单块正则表达式变量，匹配模式为：（从开头开始，数字编号，非分页符换行符回车符的字符至少一个，换行符回车符），以上字符串（捕获组）2个及以上
                             Regex regExListBlock = new Regex(@"((?<=^|\n|\r)" + listNum + @"[^\f\n\r]+[\n\r]){2,}", RegexOptions.Multiline);
 
                             MatchCollection matchesListBlocks = regExListBlock.Matches(documentText); // 获取全文文字经过数字编号清单块正则表达式匹配的结果
@@ -491,7 +491,7 @@ namespace COMIGHT
                             selection.Expand(WdUnits.wdLine); // 全选表格上方一行
                             selection.MoveStart(WdUnits.wdLine, -5); // 选区向上扩大5行
 
-                            // 定义表格上方标题正则表达式变量
+                            // 创建表格上方标题正则表达式变量
                             //Regex regExTableTitle = new Regex(tableTitleRegEx, RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
                             MatchCollection matchesTableTitles = regExTableTitle.Matches(selection.Text); // 获取选区文字经过表格上方标题正则表达式匹配的结果
@@ -695,7 +695,7 @@ namespace COMIGHT
             Regex regExRepeatedUnderlines = new Regex(@"_+", RegexOptions.Compiled);
             string cleanedName = inputName.Trim(); // 去除首尾空白字符
 
-            // 定义文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
+            // 指定文件名和文件夹名中不允许出现的字符，赋值给非法字符变量
             string invalidChars = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
 
             // 遍历文件名和文件夹名中的字符：如果为不允许出现的字符，则得到'_'；否则，得到原字符；将以上字符形成数组，再转换成字符串，赋值给清理后的名称变量
@@ -725,12 +725,12 @@ namespace COMIGHT
 
         public static string ConvertArabicNumberIntoChinese(int numbers)
         {
-            // 定义中文位数字字典，包含阿拉伯数字0到9对应的中文数字
+            // 创建中文位数字字典，包含阿拉伯数字0到9对应的中文数字
             Dictionary<char, string> dicChineseDigits = new Dictionary<char, string>
                 { { '0', "零" }, { '1', "一" }, { '2', "二" }, { '3', "三" }, { '4', "四" }, { '5', "五" },
                 { '6', "六" }, { '7', "七" }, { '8', "八" }, { '9', "九" } };
 
-            // 定义中文数字单位数组，包含单位（个，十，百，千，万...）
+            // 创建中文数字单位数组，包含单位（个，十，百，千，万...）
             string[] arrChineseUnits = new string[] { "", "十", "百", "千", "万", "十", "百", "千", "亿" };
 
             string arabicNumberStr = numbers.ToString(); // 将输入的阿拉伯数字转换为字符串
@@ -780,7 +780,7 @@ namespace COMIGHT
                                     var wordElement = wordDocument.BodyElements[i]; // 获取目标Word文档中当前元素，并赋值给Word元素变量
                                     if (wordElement is XWPFTable wordTable) // 如果当前Word元素是表格类型，则将其赋值给新变量 wordTable，然后：
                                     {
-                                        string tableTitle = "Sheet" + wordTableIndex; // 定义表格标题，默认为“Sheet”与当前word文档表格索引号
+                                        string tableTitle = "Sheet" + wordTableIndex; // 设置表格标题，默认为“Sheet”与当前word文档表格索引号
                                         // 获取表格标题 (这部分逻辑与Word文档读取相关，保持不变)
                                         if (i > 0) // 如果当前Word元素不是0号元素
                                         {
@@ -1097,7 +1097,7 @@ namespace COMIGHT
 
         public static DateTime? GetEarliestDateTime(string text)
         {
-            // 定义年份正则表达式
+            // 创建年份正则表达式
             Regex regExYear = new Regex(@"(?<!\d)\d{4}(?=[年\.\-/]|\b)", RegexOptions.Compiled);
 
             try
@@ -1137,7 +1137,7 @@ namespace COMIGHT
                 {
                     Culture.Chinese,
                     Culture.English
-                }; // 定义语言列表
+                }; // 创建语言列表
 
                 // 按多个文化区解析文本中的日期时间表达式，合并所有识别结果，并对重复结果去重，最后转成列表（按每个文化区识别文本中的日期时间，并把所有结果合并；按位置、类型、文本内容对重复结果分组；取每组第一个值，并转成 List）
                 var results = cultures
@@ -1427,8 +1427,9 @@ namespace COMIGHT
                             cell.Value = cell.Text.Trim();
                         }
 
-                        DataTable dataTable = new DataTable(); // 定义DataTable变量
-                                                               //读取Excel工作表并载入DataTable（第一行为表头，将所有错误值视为空值，总是允许无效值）
+                        DataTable dataTable = new DataTable(); // 创建DataTable变量
+                                                               
+                        //读取Excel工作表并载入DataTable（第一行为表头，将所有错误值视为空值，总是允许无效值）
                         dataTable = excelWorksheet.Cells[excelWorksheet.Dimension.Address].ToDataTable(
                             o =>
                             {
@@ -1564,12 +1565,12 @@ namespace COMIGHT
 
         }
 
-        // 定义Emoji正则表达式字符串
+        // 创建Emoji正则表达式字符串
         static string emojiRegEx = @"\p{So}" + //匹配"Symbol, Other" 的所有字符，涵盖了绝大多数BMP平面内的符号。
                 @"|[\uD800-\uDBFF][\uDC00-\uDFFF]" + //匹配补充平面的主要Emoji范围，包括表情、交通、国旗、卡牌等。
                 @"|[\u200D\uFE0F]"; //匹配用于组合Emoji的零宽连字和变体选择器。
 
-        // 定义Emoji字符正则表达式对象
+        // 创建Emoji字符正则表达式对象
         static Regex regExEmoji = new Regex(emojiRegEx, RegexOptions.Compiled);
 
         public static string RemoveEmojis(this string text)
@@ -1577,8 +1578,8 @@ namespace COMIGHT
 
             return regExEmoji.Replace(text, string.Empty); // 正则表达式匹配模式设为所有Emoji字符；将匹配到的字符串替换为空，赋值给函数返回值
         }
-        
-        // 定义HTML标签正则表达式对象
+
+        // 创建HTML标签正则表达式对象
         static Regex regExHtmlTag = new Regex(@"<.*?>", RegexOptions.Compiled);
         
         public static string RemoveHtmlTags(this string html)
@@ -1590,7 +1591,8 @@ namespace COMIGHT
             return regExHtmlTag.Replace(html, string.Empty).Trim();
         }
 
-        public enum EnumFileType { Excel, Word, DocumentAndTable, Convertible, Pdf, All } //定义文件类型枚举
+        //定义文件类型枚举
+        public enum EnumFileType { Excel, Word, DocumentAndTable, Convertible, Pdf, All } 
 
         public static List<string>? SelectFiles(EnumFileType fileType, bool isMultiselect, string dialogTitle)
         {

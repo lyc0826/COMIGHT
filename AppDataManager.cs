@@ -3,54 +3,62 @@ using System.IO;
 
 namespace COMIGHT
 {
-    public class SettingsManager<T> where T : new() // 定义设置管理器泛型类，泛型参数T必须有一个无参数的公共构造函数，允许在类内部通过 new T()创建T类型的新实例。
+    public class AppDataAccessor<T> where T : new() // 定义应用程序数据存取器泛型类，泛型参数T必须有一个无参数的公共构造函数，允许在类内部通过 new T()创建T类型的新实例。
     {
-        private readonly string settingsFilePath; // 定义设置文件路径变量
-        private T settings = new T(); // 定义设置对象变量
+        private readonly string _appDataFilePath; // 创建应用程序数据文件路径变量
+        private T appData = new T(); // 创建应用程序数据对象变量
 
-        public SettingsManager(string settingsFilePath)
+        public AppDataAccessor(string appDataFilePath)
         {
-            this.settingsFilePath = settingsFilePath; // 从方法参数中获取设置JSON文件路径
-            LoadSettings(); // 从设置JSON文件中加载设置
+            this._appDataFilePath = appDataFilePath; // 从方法参数中获取应用程序数据JSON文件路径
+            LoadData(); // 从应用程序数据JSON文件中加载数据
         }
 
-        // 从设置JSON文件中加载设置
-        private void LoadSettings()
+        // 从应用程序数据JSON文件中加载数据
+        private void LoadData()
         {
-            if (File.Exists(settingsFilePath)) // 如果JSON文件存在
+            if (File.Exists(_appDataFilePath)) // 如果JSON文件存在
             {
-                string json = File.ReadAllText(settingsFilePath);
-                settings = JsonConvert.DeserializeObject<T>(json) ?? new T(); //读取Json文件内容并反序列化为设置对象（如果失败返回null，则得到默认初始化对象）
+                string jsonStr = File.ReadAllText(_appDataFilePath);
+                appData = JsonConvert.DeserializeObject<T>(jsonStr) ?? new T(); //读取Json文件内容并反序列化为应用程序数据对象（如果失败返回null，则得到默认初始化对象）
             }
             else // 否则
             {
-                settings = new T(); // 定义新设置对象
+                appData = new T(); // 创建新应用程序数据对象
             }
 
         }
 
-        // 读取设置并返回给调用者
-        public T GetSettings()
+        // 读取应用程序数据并返回给调用者
+        public T GetData()
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(settings)) ?? new T(); //将内部设置对象序列化后再反序列化，形成深拷贝（与原对象无引用关系），赋值给外部调用者（如果序列化失败，则得到默认初始化对象）
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(appData)) ?? new T(); //将应用程序数据对象序列化后再反序列化，形成深拷贝（与原对象无引用关系），赋值给外部调用者（如果序列化失败，则得到默认初始化对象）
         }
 
-        // 保存新设置
-        public void SaveSettings(T newSettings)
+        // 保存新应用程序数据
+        public void SaveData(T newAppData)
         {
-            //将当前设置对象和新设置对象序列化为JSON字符串
-            string currentSettingsJson = JsonConvert.SerializeObject(settings, Formatting.None);
-            string newSettingsJson = JsonConvert.SerializeObject(newSettings, Formatting.None);
+            //将当前应用程序数据对象和新对象序列化为JSON字符串
+            string currentAppDataJsonStr = JsonConvert.SerializeObject(appData, Formatting.None);
+            string newAppDataJsonStr = JsonConvert.SerializeObject(newAppData, Formatting.None);
 
-            // 如果当前设置和新设置序列化后的JSON字符串不同
-            if (currentSettingsJson != newSettingsJson)
+            // 如果当前应用程序数据和新数据的JSON字符串不同
+            if (currentAppDataJsonStr != newAppDataJsonStr)
             {
-                settings = JsonConvert.DeserializeObject<T>(newSettingsJson) ?? new T(); // 将新设置对象的JSON字符串反序列化，形成深拷贝（与原对象无引用关系），赋值给内部设置对象（如果反序列化失败，则得到默认初始化对象）
-                string json = JsonConvert.SerializeObject(settings, Formatting.Indented); // 将内部设置对象序列化为JSON字符串
-                File.WriteAllText(settingsFilePath, json); // 将JSON字符串写入文件
+                appData = JsonConvert.DeserializeObject<T>(newAppDataJsonStr) ?? new T(); // 将新应用程序数据对象的JSON字符串反序列化，形成深拷贝（与原对象无引用关系），赋值给应用程序数据对象（如果反序列化失败，则得到默认初始化对象）
+                string jsonStr = JsonConvert.SerializeObject(appData, Formatting.Indented); // 将应用程序数据对象序列化为JSON字符串
+                File.WriteAllText(_appDataFilePath, jsonStr); // 将JSON字符串写入文件
             }
         }
 
+    }
+
+    // 定义用户配置Profile枚举
+    public enum EnumUserProfile
+    {
+        Profile1,
+        Profile2,
+        Profile3
     }
 
     // 定义应用设置类，继承自 ObservableObject
@@ -201,29 +209,10 @@ namespace COMIGHT
         }
     }
 
-    // 定义用户配置枚举
-    public enum EnumUserProfile
-    {
-        Profile1,
-        Profile2,
-        Profile3
-    }
+    
 
+    // 定义标记文本类型枚举
     public enum EnumMarkupType { Markdown, HTML };
-
-    //定义用户使用记录类
-    //public class UserRecords
-    //{
-    //    public string FolderPath { get; set; } = string.Empty;
-    //    public string HeaderAndFooterRowCountStr { get; set; } = string.Empty;
-    //    public string KeyColumnLetter { get; set; } = string.Empty;
-    //    public string WorksheetIndexesStr { get; set; } = string.Empty;
-    //    public string OperatingRanges { get; set; } = string.Empty;
-    //    public int SubpathDepth { get; set; }
-    //    public string ProcessWorkbooksOption { get; set; } = string.Empty;
-    //    public string DisassembleWorkbookOption { get; set; } = string.Empty;
-    //    public EnumMarkupType MarkupType { get; set; } = EnumMarkupType.Markdown;
-    //}
 
 
     // 定义用户使用记录类，继承自 ObservableObject
@@ -303,34 +292,64 @@ namespace COMIGHT
         public string Url { get; set; } = string.Empty;
     }
 
-    // 定义网址数据类（标签集合），需有公共无参构造函数以满足 SettingsManager<T> 的 new() 约束
+    // 定义网址数据类（网址标签类的集合）
     public class WebsiteData
     {
         public List<WebsiteTag> WebsiteTags { get; set; } = new List<WebsiteTag>();
+
+        public WebsiteData() { } // 公共无参构造函数，满足 AppDataAccessor<T> 的 new() 约束
     }
 
-    // 定义设置类（含应用设置、用户使用记录、网址数据）
-    public static class Settings
-    {
-        // 获取路径
-        public static readonly string appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings"); //获取程序所在文件夹路径
-        public static readonly string appSettingsJsonFilePath = Path.Combine(appSettingsPath, "AppSettings.json"); //获取应用程序设置Json文件路径
-        public static readonly string userRecordsJsonFilePath = Path.Combine(appSettingsPath, "UserRecords.json"); //获取用户使用记录Json文件路径
-        public static readonly string websitesJsonFilePath = Path.Combine(appSettingsPath, "Websites.json"); //获取网址Json文件路径
 
-        // 定义应用设置管理器、用户使用记录管理器、网址管理器对象，应用设置类、用户使用记录类、网址数据类对象，用于存取应用设置、用户使用记录和网址数据
-        public static SettingsManager<AppSettings> appSettingsManager = new SettingsManager<AppSettings>(appSettingsJsonFilePath);
-        public static SettingsManager<UserRecords> userRecordsManager = new SettingsManager<UserRecords>(userRecordsJsonFilePath);
-        public static SettingsManager<WebsiteData> websitesManager = new SettingsManager<WebsiteData>(websitesJsonFilePath);
-        public static AppSettings appSettings = new AppSettings();
-        public static UserRecords userRecords = new UserRecords();
-        public static WebsiteData websiteData = new WebsiteData();
+    // 定义总应用数据类（顶层容器），继承自 ObservableObject，
+    public class AppData : ObservableObject
+    {
+
+        // 创建私有后备字段，对应三个属性
+        private AppSettings _appSettings = new AppSettings();
+        private UserRecords _userRecords = new UserRecords();
+        private WebsiteData _websiteData = new WebsiteData();
         
-        static Settings() // 静态构造函数，在类被首次引用时自动执行
+        // 定义三个属性
+        public AppSettings AppSettings
         {
-            appSettings = appSettingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
-            userRecords = userRecordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
-            websiteData = websitesManager.GetSettings(); // 从网址管理器中读取网址数据，赋值给网址数据对象变量
+            get => _appSettings;
+            set => SetProperty(ref _appSettings, value);
+        }
+
+        public UserRecords UserRecords
+        {
+            get => _userRecords;
+            set => SetProperty(ref _userRecords, value);
+        }
+
+        public WebsiteData WebsiteData
+        {
+            get => _websiteData;
+            set => SetProperty(ref _websiteData, value);
+        }
+    }
+
+    // 定义应用程序数据管理器类
+    public static class AppDataManager
+    {
+        
+        public static readonly string appDataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AppData"); //获取程序所在文件夹路径
+        public static readonly string appDataFilePath = Path.Combine(appDataDir, "AppData.json"); //获取应用程序数据Json文件路径
+
+        // 创建应用程序数据访问器对象，用于读取和保存Json文件
+        public static AppDataAccessor<AppData> appDataAccessor = new AppDataAccessor<AppData>(appDataFilePath);
+        // 创建应用程序数据对象，用于存储所有数据
+        public static AppData appData = new AppData();
+
+        // 创建应用设置、用户使用记录、网址数据三个对象，分别指向 appData 对象的三个属性
+        public static AppSettings appSettings => appData.AppSettings;
+        public static UserRecords userRecords => appData.UserRecords;
+        public static WebsiteData websiteData => appData.WebsiteData;
+
+        static AppDataManager() // 静态构造函数，在类被首次引用时自动执行
+        {
+            appData = appDataAccessor.GetData(); // 从应用程序数据存取器中读取所有数据，赋值给应用程序数据对象变量
         }
     }
 

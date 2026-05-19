@@ -60,13 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Settings\UserRecords.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Settings\AppSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Settings\Websites.json">
+    <None Update="AppData\AppData.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

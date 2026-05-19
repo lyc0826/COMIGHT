@@ -5,8 +5,8 @@ namespace COMIGHT
     public class ListItemsSource : ObservableObject
     {
         // 为每个属性创建私有后备字段
-        private List<string> _fontList = new List<string>(); // 定义字体列表
-        private List<string> _markupTypeList = new List<string>(); // 定义字体家族列表
+        private List<string> _fontList = new List<string>(); // 创建字体列表
+        private List<string> _markupTypeList = new List<string>(); // 创建标记文本类型列表
 
         // 定义字体列表属性
         public List<string> FontList

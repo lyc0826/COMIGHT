@@ -8,7 +8,7 @@ namespace COMIGHT
     {
         private readonly DispatcherTimer timer = new DispatcherTimer();
         private readonly List<Task> lstTasks = new List<Task>();
-        private int _activeTasksCount; // 定义活动任务数私有字段
+        private int _activeTasksCount; // 创建活动任务数私有字段
 
         private int ActiveTasksCount // 定义 ActiveTasksCount 属性
         {
@@ -57,7 +57,7 @@ namespace COMIGHT
 
     public static class Tasks
     {
-        public static TaskManager taskManager = new TaskManager(); //定义任务管理器对象变量，用于执行异步任务，并提供任务执行状态数据
+        public static TaskManager taskManager = new TaskManager(); //创建任务管理器对象变量，用于执行异步任务，并提供任务执行状态数据
     }
     
 }

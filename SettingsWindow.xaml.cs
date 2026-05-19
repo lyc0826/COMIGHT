@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using static COMIGHT.Methods;
-using static COMIGHT.Settings;
+using static COMIGHT.AppDataManager;
 
 
 namespace COMIGHT
@@ -33,7 +33,7 @@ namespace COMIGHT
             var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
             listItemsSource.FontList = lstFontNames; // 将字体名称列表赋值给listItemsSource对象中的字体列表属性
 
-            this.DataContext = appSettings; // 将应用设置窗口的数据环境设为应用设置对象
+            this.DataContext = appData.AppSettings; // 将应用设置窗口的数据环境设为应用设置对象
         }
 
         private void SettingsDialog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

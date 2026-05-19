@@ -3,13 +3,13 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using static COMIGHT.Methods;
-using static COMIGHT.Settings;
+using static COMIGHT.AppDataManager;
 
 namespace COMIGHT
 {
     public partial class QRCodeWindow : Window
     {
-        private byte[]? qrCodeBytes = null; // 定义二维码图片字节数组
+        private byte[]? qrCodeBytes = null; // 创建二维码图片字节数组
 
         public QRCodeWindow()
         {
