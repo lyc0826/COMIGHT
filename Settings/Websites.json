@@ -5,11 +5,15 @@
       "Url": "https://tools.pdf24.org"
     },
     {
+      "Label": "OCR",
+      "Url": "https://www.ooccrr.com"
+    },
+    {
       "Label": "Photo Editor",
       "Url": "https://www.photopea.com/"
     },
     {
-      "Label": "Diagrammer",
+      "Label": "Diagram Editor",
       "Url": "https://app.diagrams.net/"
     },
     {
