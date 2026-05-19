@@ -5,8 +5,12 @@
       "Url": "https://tools.pdf24.org"
     },
     {
-      "Label": "OCR",
+      "Label": "OCR Tools",
       "Url": "https://www.ooccrr.com"
+    },
+    {
+      "Label": "Markdown Editor",
+      "Url": "https://stackedit.io/app#"
     },
     {
       "Label": "Photo Editor",
