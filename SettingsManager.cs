@@ -296,26 +296,41 @@ namespace COMIGHT
         }
     }
 
-    // 定义设置类（含应用设置和用户使用记录）
+    // 定义网址标签类
+    public class WebsiteTag
+    {
+        public string Label { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+
+    // 定义网址数据类（标签集合），需有公共无参构造函数以满足 SettingsManager<T> 的 new() 约束
+    public class WebsiteData
+    {
+        public List<WebsiteTag> WebsiteTags { get; set; } = new List<WebsiteTag>();
+    }
+
+    // 定义设置类（含应用设置、用户使用记录、网址数据）
     public static class Settings
     {
         // 获取路径
         public static readonly string appSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings"); //获取程序所在文件夹路径
-        //public static readonly string websitesJsonFilePath = Path.Combine(appSettingsPath, "Websites.json"); //获取网址Json文件路径
         public static readonly string appSettingsJsonFilePath = Path.Combine(appSettingsPath, "AppSettings.json"); //获取应用程序设置Json文件路径
         public static readonly string userRecordsJsonFilePath = Path.Combine(appSettingsPath, "UserRecords.json"); //获取用户使用记录Json文件路径
         public static readonly string websitesJsonFilePath = Path.Combine(appSettingsPath, "Websites.json"); //获取网址Json文件路径
 
-        // 定义应用设置管理器、用户使用记录管理器对象，应用设置类、用户使用记录类对象，用于读取、保存应用设置和用户使用记录
+        // 定义应用设置管理器、用户使用记录管理器、网址管理器对象，应用设置类、用户使用记录类、网址数据类对象，用于存取应用设置、用户使用记录和网址数据
         public static SettingsManager<AppSettings> appSettingsManager = new SettingsManager<AppSettings>(appSettingsJsonFilePath);
         public static SettingsManager<UserRecords> userRecordsManager = new SettingsManager<UserRecords>(userRecordsJsonFilePath);
+        public static SettingsManager<WebsiteData> websitesManager = new SettingsManager<WebsiteData>(websitesJsonFilePath);
         public static AppSettings appSettings = new AppSettings();
         public static UserRecords userRecords = new UserRecords();
-
+        public static WebsiteData websiteData = new WebsiteData();
+        
         static Settings() // 静态构造函数，在类被首次引用时自动执行
         {
             appSettings = appSettingsManager.GetSettings(); // 从应用设置管理器中读取应用设置，赋值给应用设置对象变量
             userRecords = userRecordsManager.GetSettings(); // 从用户使用记录管理器中读取用户使用记录，赋值给用户使用记录对象变量
+            websiteData = websitesManager.GetSettings(); // 从网址管理器中读取网址数据，赋值给网址数据对象变量
         }
     }
 

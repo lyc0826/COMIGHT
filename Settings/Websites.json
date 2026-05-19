@@ -1,23 +1,27 @@
 {
-  "Tags": [
+  "WebsiteTags": [
     {
-      "Label": "PDF24",
+      "Label": "PDF Tools",
       "Url": "https://tools.pdf24.org"
     },
     {
-      "Label": "PhotoPea",
+      "Label": "Photo Editor",
       "Url": "https://www.photopea.com/"
+    },
+    {
+      "Label": "Seal Generator",
+      "Url": "http://web.aa6666.com/"
     },
     {
       "Label": "IT Tools",
       "Url": "https://it-tools.tech/"
     },
     {
-      "Label": "World Monitor",
+      "Label": "OSINT Monitor",
       "Url": "https://www.worldmonitor.app/"
     },
     {
-      "Label": "NewsNow",
+      "Label": "News Aggregator",
       "Url": "https://newsnow.busiyi.world/"
     }
   ]

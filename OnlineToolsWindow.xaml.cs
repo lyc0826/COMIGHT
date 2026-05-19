@@ -1,11 +1,11 @@
 ﻿using Microsoft.Web.WebView2.Core;
+using System.Windows.Media;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static COMIGHT.Methods;
 using static COMIGHT.Settings;
-
 
 
 namespace COMIGHT
@@ -16,18 +16,6 @@ namespace COMIGHT
      
     public partial class OnlineToolsWindow : Window
     {
-        // 单个网址标签数据类（标签名 + 对应网址）
-        private class WebsiteTag
-        {
-            public string Label { get; set; } = string.Empty;
-            public string Url { get; set; } = string.Empty;
-        }
-
-        // 网址数据类（标签集合），需有公共无参构造函数以满足 SettingsManager<T> 的 new() 约束
-        private class WebsiteData
-        {
-            public List<WebsiteTag> Tags { get; set; } = new List<WebsiteTag>();
-        }
 
         public OnlineToolsWindow()
         {
@@ -80,9 +68,8 @@ namespace COMIGHT
                 DateTime startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                 DateTime endTime = DateTime.UtcNow;
                 await webView2.CoreWebView2.Profile.ClearBrowsingDataAsync(dataKinds, startTime, endTime); // 清理数据
-            }
-
-            ShowSuccessMessage();
+                ShowSuccessMessage();
+            }  
         }
 
         // WebView初始化完成后，执行此过程
@@ -91,13 +78,8 @@ namespace COMIGHT
             try
             {
 
-                // 使用 SettingsManager 加载网址Json文件（文件不存在时会返回默认空对象）
-                SettingsManager<WebsiteData> websitesManager = new SettingsManager<WebsiteData>(websitesJsonFilePath);
-                WebsiteData websiteData = websitesManager.GetSettings();
-
-                // 在 WrapPanel 中生成标签云
-                BuildTagCloud(websiteData);
-
+                // 在 WrapPanel 中生成网址标签，数据来源为网址Json文件
+                BuildWebsiteTags(websiteData);
 
                 // 添加webView事件响应过程
                 webView2.NavigationCompleted += WebView_NavigationCompleted;       // 打开网站完成后触发
@@ -109,21 +91,21 @@ namespace COMIGHT
             }
         }
 
-        // 在 WrapPanel 中生成标签云：每个标签为一个按钮，字号与底色随机变化以呈现标签云效果
-        private void BuildTagCloud(WebsiteData websiteData)
+        // 生成网址标签：每个标签为一个按钮
+        private void BuildWebsiteTags(WebsiteData websiteData)
         {
-            wrpnlTags.Children.Clear(); // 先清空已有标签
+            wrpnlTags.Children.Clear(); // 清空WrapPanel中已有的标签
 
-            if (websiteData?.Tags == null || websiteData.Tags.Count == 0)
+            // 如果网址标签列表为空，则不执行后续操作
+            if (websiteData?.WebsiteTags == null || websiteData.WebsiteTags.Count == 0)
             {
                 return;
             }
 
-
-            foreach (WebsiteTag tag in websiteData.Tags)
+            foreach (WebsiteTag websiteTag in websiteData.WebsiteTags)
             {
                 // 跳过标签名或网址为空白的项
-                if (string.IsNullOrWhiteSpace(tag.Label) || string.IsNullOrWhiteSpace(tag.Url))
+                if (string.IsNullOrWhiteSpace(websiteTag.Label) || string.IsNullOrWhiteSpace(websiteTag.Url))
                 {
                     continue;
                 }
@@ -131,15 +113,18 @@ namespace COMIGHT
                 // 创建标签按钮：Content 为显示文字，Tag 属性存放对应网址，便于点击时取用
                 Button tagButton = new Button
                 {
-                    Content = tag.Label,
-                    Tag = tag.Url, // 存放网址，便于点击时取用
-                    Margin = new Thickness(3),
-                    Padding = new Thickness(3, 3, 3, 3),
-                    Width = double.NaN,
+                    Content = websiteTag.Label,
+                    Tag = websiteTag.Url, // 存放网址，便于点击时取用
+                    Margin = new Thickness(2),
+                    Padding = new Thickness(2, 2, 2, 2),
+                    Width = double.NaN, // 自动宽度
                     FontSize = 13,
                     BorderThickness = new Thickness(1),
                     Cursor = Cursors.Hand,
-                   
+                    Background = Brushes.LightBlue,
+                    Foreground = Brushes.Black,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
                 };
 
                 tagButton.Click += TagButton_Click; // 绑定点击事件
@@ -171,7 +156,7 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            event.target.style.boxShadow = 'inset 0 0 0 3px rgba(80, 255, 80, 0.8)'; // 内阴影，水平偏移0，垂直偏移0，模糊半径0，颜色rgba(80, 255, 80, 0.8)
+                            event.target.style.boxShadow = 'inset 0 0 0 2px rgba(80, 255, 80, 0.8)'; // 内阴影，水平偏移0，垂直偏移0，模糊半径0，宽度3px，颜色：红、绿、蓝、透明度(80, 255, 80, 0.7) 
                         }  
                     });
 
@@ -180,7 +165,7 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            event.target.style.boxShadow = ' 
+                            event.target.style.boxShadow = '';
                         }
                     });
 
@@ -189,36 +174,26 @@ namespace COMIGHT
                     {
                         if (event.target.tagName.toLowerCase() === 'div') 
                         {
-                            var originalBoxShadow = event.target.style.boxShadow;
-                            var textToCopy = event.target.innerText;
-
-                            textToCopy = textToCopy.replace(/^\s*[\r\n]/gm, '')  // 移除空白段落
-                                                .replace(/^\s+|\s+$/gm, '');   // 移除每行首尾空白 （全局+多行模式）
-
-                            var textArea = document.createElement('textarea');
-                            textArea.value = textToCopy;
-                            document.body.appendChild(textArea);
-                            textArea.select();
-                            var successful = document.execCommand('copy');
-                            document.body.removeChild(textArea);
-
-                            if(successful)
-                            {
-                                event.target.style.boxShadow = 'inset 0 0 3px rgba(255, 80, 80, 0.8)' 
-                                setTimeout(
-                                    function() 
-                    {
-                                        event.target.style.boxShadow = originalBoxShadow 
-                                    }
-                                    , 500);    
-                            } 
-                            else 
-                            {
-                alert('Copying Failed!');
-                            }
+                            var target = event.target;
+                            var originalBoxShadow = target.style.boxShadow;
+                            var textToCopy = target.innerText
+                                .replace(/^\s*[\r\n]/gm, '')
+                                .replace(/^\s+|\s+$/gm, '');
+                            navigator.clipboard.writeText(textToCopy).then(
+                                function() {
+                                    target.style.boxShadow = 'inset 0 0 0 2px rgba(255, 80, 80, 0.6)';
+                                    setTimeout(function() {
+                                        target.style.boxShadow = originalBoxShadow;
+                                    }, 500);
+                                },
+                                function(err) {
+                                    alert('Copying Failed: ' + err);
+                                }
+                            );
                         }
-                    });
-                ";
+                    }); 
+
+            ";
 
             await webView2.ExecuteScriptAsync(jsScript);
         }
@@ -244,7 +219,6 @@ namespace COMIGHT
                     url = "http://" + url;
                 }
                 webView2.CoreWebView2.Navigate(url); // 打开网址
-                // latestRecords.LatestUrl = url;     // 将正打开的网址赋值给用户使用记录
             }
         }
     }

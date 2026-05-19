@@ -1,4 +1,4 @@
-﻿<Window x:Class="COMIGHT.OnlineToolsWindow"
+<Window x:Class="COMIGHT.OnlineToolsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -29,11 +29,9 @@
                 <Button x:Name="btnReload" Content="Reload" Width="50" Height="30" Click="BtnReload_Click"/>
                 <Button x:Name="btnClean" Content="Clean" Width="50" Height="30" Click="BtnClean_Click" />
             </WrapPanel>
-
-            <WrapPanel x:Name="wrpnlTags" Grid.Column="1"> </WrapPanel>
+            <WrapPanel x:Name="wrpnlTags" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
 
-        <!-- <Wpf:WebView2 x:Name="webView2" Grid.Row="1" Grid.Column="0" Margin="0,2,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" CoreWebView2InitializationCompleted="WebView_CoreWebView2InitializationCompleted" />  -->
         <Wpf:WebView2 x:Name="webView2" Grid.Row="1" Grid.Column="0" Margin="0,2,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" CoreWebView2InitializationCompleted="WebView_CoreWebView2InitializationCompleted" />
 
     </Grid>
