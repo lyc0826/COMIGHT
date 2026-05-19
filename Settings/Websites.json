@@ -9,8 +9,20 @@
       "Url": "https://www.photopea.com/"
     },
     {
+      "Label": "Diagrammer",
+      "Url": "https://app.diagrams.net/"
+    },
+    {
+      "Label": "Graphviz Editor",
+      "Url": "https://dreampuf.github.io/GraphvizOnline"
+    },
+    {
       "Label": "Seal Generator",
       "Url": "http://web.aa6666.com/"
+    },
+    {
+      "Label": "File Converter",
+      "Url": "https://anyconv.com/"
     },
     {
       "Label": "IT Tools",

@@ -5,12 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="Browser" Width="1200" Height="800" Loaded="OnlineToolsWindow_Loaded">
+        Title="Online Tools" Style="{StaticResource BaseWindowStyle}" Width="1200" Height="800" Loaded="OnlineToolsWindow_Loaded">
 
     <Grid Margin="3,0,3,3" >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,12 +20,13 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <WrapPanel Width="100" Grid.Column="0" >
-                <Button x:Name="btnBack" Content="Back" Width="50" Height="30" Click="BtnBack_Click" />
-                <Button x:Name="btnForward" Content="Forward" Width="50" Height="30" Click="BtnForward_Click"/>
-                <Button x:Name="btnReload" Content="Reload" Width="50" Height="30" Click="BtnReload_Click"/>
-                <Button x:Name="btnClean" Content="Clean" Width="50" Height="30" Click="BtnClean_Click" />
+            <WrapPanel Width ="120" Grid.Column="0" >
+                <Button x:Name="btnBack" Content="Back" Click="BtnBack_Click" />
+                <Button x:Name="btnForward" Content="Forward" Click="BtnForward_Click"/>
+                <Button x:Name="btnReload" Content="Reload" Click="BtnReload_Click"/>
+                <Button x:Name="btnClean" Content="Clean" Click="BtnClean_Click" />
             </WrapPanel>
+            
             <WrapPanel x:Name="wrpnlTags" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
 
