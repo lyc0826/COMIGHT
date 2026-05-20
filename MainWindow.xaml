@@ -76,7 +76,7 @@
                     <MenuItem Header="Generate QR Code" Click="MnuGenerateQRCode_Click" />
                 </MenuItem>
 
-                <MenuItem Header="Online">
+                <MenuItem Header="Misc.">
                     <MenuItem Header="Online Tools" Click="MnuOnlineTools_Click" />
                 </MenuItem>
             </Menu>
