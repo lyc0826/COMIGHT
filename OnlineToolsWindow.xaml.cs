@@ -84,6 +84,7 @@ namespace COMIGHT
                 // 添加webView事件响应过程
                 webView2.NavigationCompleted += WebView_NavigationCompleted;       // 打开网站完成后触发
                 webView2.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested; // 出现新建浏览窗口请求时触发
+                WebView_OpenNewUrl(userRecords.OpenedWebsite); // 打开用户使用记录中记录的网址
             }
             catch (Exception ex)
             {
@@ -219,6 +220,7 @@ namespace COMIGHT
                     url = "http://" + url;
                 }
                 webView2.CoreWebView2.Navigate(url); // 打开网址
+                userRecords.OpenedWebsite = url; // 将打开的网址存入用户使用记录中
             }
         }
     }

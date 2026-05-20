@@ -31,7 +31,8 @@
     "SubpathDepth": 0,
     "ProcessWorkbooksOption": "0-Cancel",
     "DisassembleWorkbookOption": "0-Cancel",
-    "MarkupType": 0
+    "MarkupType": 0,
+    "OpenedWebsite": "https://it-tools.tech/"
   },
 
   "WebsiteData": {

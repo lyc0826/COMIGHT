@@ -228,6 +228,7 @@ namespace COMIGHT
         private string _processWorkbooksOption = string.Empty;
         private string _disassembleWorkbookOption = string.Empty;
         private EnumMarkupType _markupType = EnumMarkupType.Markdown;
+        private string _OpenedWebsite = string.Empty;
 
         // 定义所有属性，如果属性变化，使用 SetProperty 来更新字段并触发通知（与AppSettings格式统一）
         public string FolderPath
@@ -282,6 +283,12 @@ namespace COMIGHT
         {
             get => _markupType;
             set => SetProperty(ref _markupType, value);
+        }
+
+        public string OpenedWebsite
+        {
+            get => _OpenedWebsite;
+            set => SetProperty(ref _OpenedWebsite, value);
         }
     }
 
