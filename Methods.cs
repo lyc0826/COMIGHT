@@ -56,13 +56,13 @@ namespace COMIGHT
                     string titleFontName = appSettings.CnTitleFontName; // 大标题字体
                     string bodyFontName = appSettings.CnBodyFontName; // 正文字体
 
-                    string cnHeading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
-                    string cnHeading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
-                    string cnHeading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
-                    string cnHeading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
-                    string cnItemNumFontName = cnHeading1FontName; // 中文条款项小标题字体
+                    string heading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
+                    string heading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
+                    string heading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
+                    string heading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
+                    string provisionNumFontName = heading1FontName; // 中文条款项小标题字体
 
-                    string tableTitleFontName = cnHeading1FontName; // 表格标题字体
+                    string tableTitleFontName = heading1FontName; // 表格标题字体
                     string tableBodyFontName = bodyFontName; // 表格正文字体
 
                     string footerFontName = "Times New Roman"; // 页脚字体
@@ -70,13 +70,13 @@ namespace COMIGHT
                     float titleFontSize = (float)appSettings.CnTitleFontSize; // 大标题字号
                     float bodyFontSize = (float)appSettings.CnBodyFontSize; // 正文字号
 
-                    float cnHeading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
-                    float cnHeading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
-                    float cnHeading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
-                    float cnHeading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
-                    float cnItemNumFontSize = cnHeading1FontSize; // 中文条款项小标题字号
+                    float heading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
+                    float heading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
+                    float heading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
+                    float heading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
+                    float provisionNumFontSize = heading1FontSize; // 中文条款项小标题字号
 
-                    float tableTitleFontSize = cnHeading1FontSize; // 表格标题字号
+                    float tableTitleFontSize = heading1FontSize; // 表格标题字号
                     float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
 
                     float footerFontSize = 14; // 页脚字号为四号
@@ -84,41 +84,67 @@ namespace COMIGHT
 
                     // 创建正则表达式
 
-                    // 创建大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、非“。”分页符的字符1-80个，换行符回车符，后方出现：换行符回车符
-                    Regex regExTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])[^。\f]){1,80}[\n\r](?=[\n\r])", RegexOptions.Multiline);
+                    // 创建中文大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、非“。”分页符的字符1-80个，换行符回车符，后方出现：换行符回车符
+                    Regex regExCnTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])[^。\f]){1,80}[\n\r](?=[\n\r])", RegexOptions.Multiline);
 
-                    // 创建中文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
-                    Regex regExCnAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
+                    // 创建英文大标题正则表达式变量，匹配模式为：从开头开始，不含2个及以上连续的换行符回车符（允许不连续的换行符回车符）、不含“附件/录”、Appendix注释、非“。”分页符的字符1-200个，换行符回车符，后方出现：换行符回车符
+                    Regex regExEnTitle = new Regex(@"(?<=^|\n|\r)(?:(?![\n\r]{2,})(?!appendix[^。\f\n\r]{0,3}[\n\r])[^。\f]){1,200}[\n\r](?=[\n\r])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+                    // 创建中国公文发往单位正则表达式变量，匹配模式为：从开头开始，换行符回车符（一个空行），不含“附件/录”注释、不含小标题编号、不含“如下：”、非“。：:；;”分页符换行符回车符的字符1个及以上，“：:”，换行符回车符
+                    Regex regExCODAddressee = new Regex(@"(?<=^|\n|\r)[\n\r](?:(?!附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r])(?![（\(]?[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)])(?!如下[：:])[^。：:；;\f\n\r]){1,}[：:][\n\r]", RegexOptions.Multiline);
 
                     // 创建中文0级小标题正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字中文数字1个及以上，空格制表符任意多个，“部分、篇、章、节”，非“。；;”分页符换行符回车符的字符0-40个，换行符回车符
                     Regex regExCnHeading0 = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*(?:部分|篇|章|节)[^。；;\f\n\r]{0,40}[\n\r]", RegexOptions.Multiline);
 
-                    // 创建中文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
-                    Regex regExCnHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
+                    // 创建英文0级小标题正则表达式变量，匹配模式为：从开头开始，“part、charpter、section”标记，空格至少一个，非“；;”分页符换行符回车符的字符0-100个，换行符回车符
+                    Regex regExEnHeading0 = new Regex(@"(?<=^|\n|\r)(?:part|chapter|section)[ |\t]+[^；;\f\n\r]{0,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-                    // 创建中文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
-                    Regex regExCnHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
+                    // 创建中国公文1、2级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），中文数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
+                    Regex regExCODHeading1_2 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
 
-                    // 创建中文“X是”编号正则表达式变量，匹配模式为：前方出现换行符回车符“。：:；;，,”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”；后方出现非分页符换行符回车符的字符1个及以上
-                    Regex regExCnShiNum = new Regex(@"(?<=[\n\r。：:；;，,][ |\t]*)[一二三四五六七八九十〇零]+[ |\t]*是(?=[^\f\n\r]{1,})", RegexOptions.Multiline);
+                    // 创建中国公文3、4级小标题正则表达式变量，匹配模式为：从开头开始，“（(”至多一个（捕获组），空格制表符任意多个，阿拉伯数字1个及以上，空格制表符任意多个，“、.，,）)”，非“。；;”分页符换行符回车符的字符1-40个，“。”换行符回车符
+                    Regex regExCODHeading3_4 = new Regex(@"(?<=^|\n|\r)(（|\()?[ |\t]*\d+[ |\t]*[、\.，,）\)][^。；;\f\n\r]{1,40}[。\n\r]", RegexOptions.Multiline);
 
-                    // 创建中文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
-                    Regex regExCnItemNum = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[条款项][：:| |\t]", RegexOptions.Multiline); // 将正则匹配模式设为条款项编号
+                    // 创建中国公文“X是”编号正则表达式变量，匹配模式为：前方出现换行符回车符“。：:；;，,”，空格制表符任意多个，中文数字1个及以上，空格制表符任意多个，“是”；后方出现非分页符换行符回车符的字符1个及以上
+                    Regex regExCODShiNum = new Regex(@"(?<=[\n\r。：:；;，,][ |\t]*)[一二三四五六七八九十〇零]+[ |\t]*是(?=[^\f\n\r]{1,})", RegexOptions.Multiline);
 
-                    // 创建表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-40个字符），非“。；;”分页符换行符回车符的字符任意多个，“表、单、录、册、回执”，非“。；;”分页符换行符回车符的字符任意多个，换行符回车符
-                    Regex regExTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,40}[\n\r])[^。；;\f\n\r]*(?:表|单|录|册|回执)[^。；;\f\n\r]*[\n\r]", RegexOptions.Multiline);
+                    // 创建中国公文“条款项”编号正则表达式变量，匹配模式为：从开头开始，“第”，空格制表符任意多个，阿拉伯数字或中文数字1个及以上，空格制表符任意多个，“条款项”，“：:”空格制表符
+                    Regex regExCODProvisionNum = new Regex(@"(?<=^|\n|\r)第[ |\t]*[\d一二三四五六七八九十〇零]+[ |\t]*[条款项][：:| |\t]", RegexOptions.Multiline); // 将正则匹配模式设为条款项编号
 
-                    // 创建清单数字编号列表，包含1、2、3、4级编号匹配模式
-                    List<string> listNums = new List<string>() { @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", @"\d+[ |\t]*[、\.，,）\)]", @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]" };
+                    // 定义通用小标题正则表达式变量，匹配模式为：从开头开始，【模式为"1./1.2./1.2.3./1.2.3.4."（最末尾可以省略句点），作为捕获组1】，空格制表符至少一个，非“；;”分页符换行符回车符的字符0-100个，换行符回车符
+                    Regex regExUniversalHeading1_4 = new Regex(@"(?<=^|\n|\r)((?:\d+\.?){1,4})[ |\t]+[^。；;\f\n\r]{1,100}[。\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                    
+                    //Regex regExUniversalHeading1_4 = new Regex(@"(?<=^|\n|\r)((?:part|chapter|section)[ |\t]+)?((?:\d+\.?){1,4})[ |\t]+[^；;\f\n\r]{0,100}?[a-zA-Z][^；;\f\n\r]{0,100}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-                    // 创建中文附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”，非“。”分页符换行符回车符的字符0-3个，换行符回车符
-                    Regex regExCnAppendix = new Regex(@"(?<=^|\n|\r)附[ |\t]*[件录][^。\f\n\r]{0,3}[\n\r]", RegexOptions.Multiline);
+                    // 创建中文表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-100个字符），非“。；;”分页符换行符回车符的字符任意多个，“表、单、录、册、回执、table、form、list、rolster、roll”，非“。；;”分页符换行符回车符的字符任意多个，换行符回车符
+                    Regex regExCnTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,40}[\n\r])[^。；;\f\n\r]*(?:表|单|录|册|回执)[^。；;\f\n\r]*[\n\r]", RegexOptions.Multiline);
 
-                    // 创建括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-40个，“）)”，换行符回车符
-                    Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。\f\n\r]{1,40}[）\)][\n\r]", RegexOptions.Multiline);
+                    // 定义英文表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-100个字符），非“。；;”分页符换行符回车符的字符任意多个，“form,table...”，非“。；;”分页符换行符回车符的字符任意多个，换行符回车符
+                    Regex regExEnTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,100}[\n\r])[^。；;\f\n\r]*(?:table|form|list|rolster|roll)[^。；;\f\n\r]*[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+                    // 创建清单数字编号列表，包含中国公文和通用1、2、3、4级编号匹配模式
+                    List<string> listNums = new List<string>() 
+                    { 
+                            @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", 
+                            @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", 
+                            @"\d+[ |\t]*[、\.，,）\)]", 
+                            @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]", 
+                            @"\d+\.?[ |\t]+", 
+                            @"(?:\d+\.?){2}[ |\t]+", 
+                            @"(?:\d+\.?){3}[ |\t]+", 
+                            @"(?:\d+\.?){4}[ |\t]+" 
+                    };
+
+                    // 创建附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”，非“。”分页符换行符回车符的字符0-3个，换行符回车符
+                    Regex regExAppendix = new Regex(@"(?<=^|\n|\r)(?:附[ |\t]*[件录]|appendix)[^。\f\n\r]{0,3}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+                    // 创建括号注释正则表达式变量，匹配模式为：从开头开始，“（(”，非“（）()。”分页符换行符回车符的字符1-100个，“）)”，换行符回车符
+                    Regex regExBracket = new Regex(@"(?<=^|\n|\r)[（\(][^（）\(\)。；;\f\n\r]{1,100}[）\)][\n\r]", RegexOptions.Multiline);
 
                     // 创建中文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
-                    Regex regExSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
+                    Regex regExCnSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
+                    // 创建英文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
+                    Regex regExEnSignOff = new Regex(@"(?:[a-zA-Z][^；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,20}[12]\d{3}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
 
                     // 批量处理Word文档
@@ -211,17 +237,18 @@ namespace COMIGHT
                             msWordDocument.Paragraphs[msWordDocument.Paragraphs.Count].Range.Delete(); // 删除最后一段
                         }
 
+                        bool isCOD = IsChineseText(documentText); // 判断是否为中文文档，赋值给“是否为中文文档”变量
 
                         // 对齐缩进
                         selection.WholeStory();
                         selection.ClearFormatting(); // 清除全部格式、样式
                         MSWord.ParagraphFormat paragraphFormat = msWordApp.Selection.ParagraphFormat; //将选区段落格式赋值给段落格式变量
                         paragraphFormat.Reset(); // 段落格式清除
-                        paragraphFormat.CharacterUnitFirstLineIndent = 2; // 设置首行缩进：如果为中文文档，则缩进2个字符；否则为0个字符
+                        paragraphFormat.CharacterUnitFirstLineIndent = (isCOD ? 2 : 0); // 设置首行缩进：如果为中文文档，则缩进2个字符；否则为0个字符
+
                         paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进设为0pt
                         paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphJustify; // 对齐方式设为两端对齐
-                        //paragraphFormat.IndentFirstLineCharWidth((short)(isCnDocument ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
-
+                        //paragraphFormat.IndentFirstLineCharWidth((short)(isCOD ? 3 : 0)); // 设置首行缩进：如果为中文文档，则缩进3个字符；否则为0个字符
 
                         // 全文格式初始化
                         selection.WholeStory(); // 选择word所有文档
@@ -241,7 +268,7 @@ namespace COMIGHT
                         paragraphs.AutoAdjustRightIndent = 0; // 不自动调整右缩进
                         paragraphs.DisableLineHeightGrid = -1; //取消“如果定义了网格，则对齐到网格”
                         paragraphs.LineSpacingRule = WdLineSpacing.wdLineSpaceExactly; // 行距设置为固定值
-                                                                                       // '.LineSpacingRule = wdLineSpace1pt5 '行距固定1.5
+                                                       // '.LineSpacingRule = wdLineSpace1pt5 '行距固定1.5
                         paragraphs.LineSpacing = lineSpace; // 行距设为预设值
                         paragraphs.SpaceBefore = msWordApp.CentimetersToPoints(0); // 段落前间距设为0
                         paragraphs.SpaceAfter = msWordApp.CentimetersToPoints(0); // 段落后间距设为0
@@ -262,9 +289,14 @@ namespace COMIGHT
                         selection.HomeKey(WdUnits.wdStory);
 
                         int referencePageNum = 0; //参考页码赋值为0
-                        MatchCollection matchesTitles = regExTitle.Matches(documentText); // 获取全文文字经过大标题正则表达式匹配后的结果
+                        MatchCollection matchesCODTitles = regExCnTitle.Matches(documentText); // 获取全文文字经过大标题正则表达式匹配后的结果
+                        MatchCollection matchesUniversalTitles = regExEnTitle.Matches(documentText); // 获取全文文字经过英文标题正则表达式匹配后的结果
 
-                        foreach (Match matchTitle in matchesTitles) // 遍历所有匹配到的大标题文字
+                        // 将两个匹配结果合并，便于后续遍历
+                        List<Match> matchesCombinedTitles = matchesCODTitles.Cast<Match>().ToList();
+                        matchesCombinedTitles.AddRange(matchesUniversalTitles.Cast<Match>());
+
+                        foreach (Match matchTitle in matchesCombinedTitles) // 遍历所有匹配到的大标题文字
                         {
                             selection.HomeKey(WdUnits.wdStory);
                             find.Text = matchTitle.Value; // 查找大标题
@@ -303,10 +335,10 @@ namespace COMIGHT
                                     selection.Expand(WdUnits.wdLine); // 全选一行
                                     selection.MoveEnd(WdUnits.wdLine, 5); // 选区向下扩大5行
 
-                                    MatchCollection matchesCnAddressees = regExCnAddressee.Matches(selection.Text); // 获取选区文字经过中文发往单位正则表达式匹配的结果
-                                    foreach (Match matchCnAddressee in matchesCnAddressees) // 遍历所有匹配到的中文发往单位文字结果
+                                    MatchCollection matchesCODAddressees = regExCODAddressee.Matches(selection.Text); // 获取选区文字经过中文发往单位正则表达式匹配的结果
+                                    foreach (Match matchCODAddressee in matchesCODAddressees) // 遍历所有匹配到的中文发往单位文字结果
                                     {
-                                        find.Text = matchCnAddressee.Value; // 查找发往单位
+                                        find.Text = matchCODAddressee.Value; // 查找发往单位
                                         find.Execute(); // 执行查找
 
                                         if (!selection.Information[WdInformation.wdWithInTable]) // 如果找到的文字不在表格内
@@ -323,15 +355,17 @@ namespace COMIGHT
                             }
                         }
 
-
-                        // 中文0级（部分、篇、章、节）小标题设置
+                        // 中英文0级（部分、篇、章、节）小标题设置
                         selection.HomeKey(WdUnits.wdStory);
 
                         MatchCollection matchesCnHeading0s = regExCnHeading0.Matches(documentText); // 获取全文文字经过中文0级小标题正则表达式匹配的结果
+                        MatchCollection matchesEnHeading0s = regExEnHeading0.Matches(documentText); // 获取全文文字经过英文0级小标题正则表达式匹配的结果
+                        List<Match> matchesCombinedHeading0s = matchesCnHeading0s.Cast<Match>().ToList();
+                        matchesCombinedHeading0s.AddRange(matchesEnHeading0s.Cast<Match>());
 
-                        foreach (Match matchCnHeading0 in matchesCnHeading0s)
+                        foreach (Match matchHeading0 in matchesCombinedHeading0s)
                         {
-                            find.Text = matchCnHeading0.Value;
+                            find.Text = matchHeading0.Value;
                             find.Execute();
                             if (paragraphs[1].Range.Sentences.Count == 1) // 如果中文小标题所在段落只有一句
                             {
@@ -340,88 +374,129 @@ namespace COMIGHT
                             paragraphFormat.CharacterUnitFirstLineIndent = 0;
                             paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0); // 首行缩进为0
                             paragraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter; // 居中对齐
-                            font.Name = cnHeading0FontName;
-                            font.Size = cnHeading0FontSize;
+                            font.Name = heading0FontName;
+                            font.Size = heading0FontSize;
                             font.Bold = 1;
                             selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                         }
 
-                        // 中文1、2级小标题设置
-                        selection.HomeKey(WdUnits.wdStory);
-
-                        MatchCollection matchesCnHeading1_2s = regExCnHeading1_2.Matches(documentText); // 获取全文文字经过中文1、2级小标题正则表达式匹配的结果
-
-                        foreach (Match matchCnHeading1_2 in matchesCnHeading1_2s)
+                        if (isCOD) // 如果是中文文档
                         {
-                            find.Text = matchCnHeading1_2.Value;
-                            find.Execute();
-                            if (paragraphs[1].Range.Sentences.Count == 1)
+
+                            // 中国公文1、2级小标题设置
+                            selection.HomeKey(WdUnits.wdStory);
+
+                            MatchCollection matchesCODHeading1_2s = regExCODHeading1_2.Matches(documentText); // 获取全文文字经过中国公文1、2级小标题正则表达式匹配的结果
+
+                            foreach (Match matchCODHeading1_2 in matchesCODHeading1_2s)
                             {
-                                if (!matchCnHeading1_2.Groups[1].Success) //如果正则表达式匹配捕获组失败（编号开头不含“（” ）
+                                find.Text = matchCODHeading1_2.Value;
+                                find.Execute();
+                                if (paragraphs[1].Range.Sentences.Count == 1)
                                 {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
-                                    font.Name = cnHeading1FontName;
-                                    font.Size = cnHeading1FontSize;
+                                    if (!matchCODHeading1_2.Groups[1].Success) //如果正则表达式匹配捕获组失败（编号开头不含“（” ）
+                                    {
+                                        paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel1; // 将当前中文小标题的大纲级别设为1级
+                                        font.Name = heading1FontName;
+                                        font.Size = heading1FontSize;
+                                    }
+                                    else // 否则
+                                    {
+                                        paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2; // 将当前中文小标题的大纲级别设为2级
+                                        font.Name = heading2FontName;
+                                        font.Size = heading2FontSize;
+                                    }
                                 }
-                                else // 否则
-                                {
-                                    paragraphs[1].OutlineLevel = WdOutlineLevel.wdOutlineLevel2; // 将当前中文小标题的大纲级别设为2级
-                                    font.Name = cnHeading2FontName;
-                                    font.Size = cnHeading2FontSize;
-                                }
+
+                                font.Bold = 1;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 
-                            font.Bold = 1;
-                            selection.Collapse(WdCollapseDirection.wdCollapseEnd);
-                        }
+                            // 中国公文3、4级小标题设置
+                            selection.HomeKey(WdUnits.wdStory);
 
-                        // 中文3、4级小标题设置
-                        selection.HomeKey(WdUnits.wdStory);
+                            MatchCollection matchesCODHeading3_4s = regExCODHeading3_4.Matches(documentText); // 获取全文文字经过中国公文3、4级小标题正则表达式匹配的结果
 
-                        MatchCollection matchesCnHeading3_4s = regExCnHeading3_4.Matches(documentText); // 获取全文文字经过中文3、4级小标题正则表达式匹配的结果
-
-                        foreach (Match matchCnHeading3_4 in matchesCnHeading3_4s)
-                        {
-                            find.Text = matchCnHeading3_4.Value;
-                            find.Execute();
-
-                            if (paragraphs[1].Range.Sentences.Count == 1)
+                            foreach (Match matchCODHeading3_4 in matchesCODHeading3_4s)
                             {
-                                paragraphs[1].OutlineLevel = !matchCnHeading3_4.Groups[1].Success ? WdOutlineLevel.wdOutlineLevel3 : WdOutlineLevel.wdOutlineLevel4; //设置小标题所在段落的大纲级别：如果正则表达式匹配捕获组失败（ 编号开头不含“（” ），则设为3级；否则，设为4级  
+                                find.Text = matchCODHeading3_4.Value;
+                                find.Execute();
+
+                                if (paragraphs[1].Range.Sentences.Count == 1)
+                                {
+                                    paragraphs[1].OutlineLevel = !matchCODHeading3_4.Groups[1].Success ? WdOutlineLevel.wdOutlineLevel3 : WdOutlineLevel.wdOutlineLevel4; //设置小标题所在段落的大纲级别：如果正则表达式匹配捕获组失败（ 编号开头不含“（” ），则设为3级；否则，设为4级  
+                                }
+
+                                font.Name = heading3_4FontName;
+                                font.Size = heading3_4FontSize;
+                                font.Bold = 1;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }
 
-                            font.Name = cnHeading3_4FontName;
-                            font.Size = cnHeading3_4FontSize;
-                            font.Bold = 1;
-                            selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            // 中国公文“X是”编号设置
+                            selection.HomeKey(WdUnits.wdStory);
+
+                            MatchCollection matchesCODShiNums = regExCODShiNum.Matches(documentText); // 获取全文文字经过中国公文“X是”编号正则表达式匹配的结果
+
+                            foreach (Match matchCODShiNum in matchesCODShiNums)
+                            {
+                                find.Text = matchCODShiNum.Value;
+                                find.Execute();
+                                font.Bold = 1;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            }
+
+                            // 中国公文“条款项”编号设置
+                            selection.HomeKey(WdUnits.wdStory);
+
+                            MatchCollection matchesCODProvisionNums = regExCODProvisionNum.Matches(documentText); // 获取全文文字经过中国公文条款项编号正则表达式匹配的结果
+
+                            foreach (Match matchCODProvisionNum in matchesCODProvisionNums)
+                            {
+                                find.Text = matchCODProvisionNum.Value;
+                                find.Execute();
+                                font.Name = provisionNumFontName;
+                                font.Size = provisionNumFontSize;
+                                font.Bold = 1;
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            }
                         }
 
-                        // 中文“X是”编号设置
-                        selection.HomeKey(WdUnits.wdStory);
-
-                        MatchCollection matchesCnShiNums = regExCnShiNum.Matches(documentText); // 获取全文文字经过“X是”编号正则表达式匹配的结果
-
-                        foreach (Match matchCnShiNum in matchesCnShiNums)
+                        else //如果不是中文文档
                         {
-                            find.Text = matchCnShiNum.Value;
-                            find.Execute();
-                            font.Bold = 1;
-                            selection.Collapse(WdCollapseDirection.wdCollapseEnd);
-                        }
+                            //设置通用小标题格式
+                            selection.HomeKey(WdUnits.wdStory);
 
-                        // 中文“条款项”编号设置
-                        selection.HomeKey(WdUnits.wdStory);
+                            MatchCollection matchesUniveralHeadings = regExUniversalHeading1_4.Matches(documentText); // 获取全文文字经过英文小标题正则表达式匹配的结果
 
-                        MatchCollection matchesCnItemNums = regExCnItemNum.Matches(documentText); // 获取全文文字经过条款项编号正则表达式匹配的结果
+                            foreach (Match matchUniversalHeading in matchesUniveralHeadings)
+                            {
+                                find.Text = matchUniversalHeading.Value;
+                                find.Execute();
 
-                        foreach (Match matchCnItemNum in matchesCnItemNums)
-                        {
-                            find.Text = matchCnItemNum.Value;
-                            find.Execute();
-                            font.Name = cnItemNumFontName;
-                            font.Size = cnItemNumFontSize;
-                            font.Bold = 1;
-                            selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                                // 计算小标题编号中含有几组数字：使用正则表达式以"."分割小标题编号字符串（捕获组1），筛选出不为null或全空白字符的字符串，转换成列表，并统计列表元素个数
+                                int universalHeadingNumsCount = Regex.Split(matchUniversalHeading.Groups[1].Value, @"\.")
+                                    .Where(s => !string.IsNullOrWhiteSpace(s)) // 
+                                    .ToList().Count;
+
+                                // 根据小标题编号中的数字组数设置1-4级小标题字体（有几组数字，就为几级标题）
+                                (font.Name, font.Size) = universalHeadingNumsCount switch
+                                {
+                                    1 => (heading1FontName, heading1FontSize),
+                                    2 => (heading2FontName, heading2FontSize),
+                                    3 => (heading3_4FontName, heading3_4FontSize),
+                                    _ => (heading3_4FontName, heading3_4FontSize),
+                                };
+
+                                font.Bold = 1;
+
+                                if (paragraphs[1].Range.Text.Length <= 100) // 如果小标题所在段落的长度小于等于100个字符
+                                {
+                                    paragraphs[1].OutlineLevel = (WdOutlineLevel)universalHeadingNumsCount; // 根据小标题编号中数字的组数，设置当前英文小标题的大纲级别（有几组数字就为几级大纲）
+                                }
+
+                                selection.Collapse(WdCollapseDirection.wdCollapseEnd);
+                            }
                         }
 
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
@@ -462,14 +537,14 @@ namespace COMIGHT
 
                         }
 
-                        // 中文附件注释设置
+                        // 附件注释设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        MatchCollection matchesCnAppendixes = regExCnAppendix.Matches(documentText); // 获取全文文字经过附件注释正则表达式匹配的结果
+                        MatchCollection matchesAppendixes = regExAppendix.Matches(documentText); // 获取全文文字经过附件注释正则表达式匹配的结果
 
-                        foreach (Match matchCnAppendix in matchesCnAppendixes)
+                        foreach (Match matchAppendix in matchesAppendixes)
                         {
-                            find.Text = matchCnAppendix.Value;
+                            find.Text = matchAppendix.Value;
                             find.Execute();
                             if (selection.Information[WdInformation.wdWithInTable] == false) // 如果查找结果不在表格内
                             {
@@ -491,14 +566,16 @@ namespace COMIGHT
                             selection.Expand(WdUnits.wdLine); // 全选表格上方一行
                             selection.MoveStart(WdUnits.wdLine, -5); // 选区向上扩大5行
 
-                            // 创建表格上方标题正则表达式变量
-                            //Regex regExTableTitle = new Regex(tableTitleRegEx, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                            MatchCollection matchesCODTableTitles = regExCnTableTitle.Matches(selection.Text); // 获取选区文字经过表格上方标题正则表达式匹配的结果
+                            MatchCollection matchesEnTableTitles = regExEnTableTitle.Matches(selection.Text); // 获取选区文字经过英文表格上方标题正则表达式匹配的结果
 
-                            MatchCollection matchesTableTitles = regExTableTitle.Matches(selection.Text); // 获取选区文字经过表格上方标题正则表达式匹配的结果
+                            // 合并表格标题注释的正则表达式匹配结果
+                            List<Match> matchesCombinedTableTitles = matchesCODTableTitles.Cast<Match>().ToList();
+                            matchesCombinedTitles.AddRange(matchesEnTableTitles.Cast<Match>());
 
-                            if (matchesTableTitles.Count > 0) // 如果匹配到的结果集合元素数大于0
+                            if (matchesCombinedTitles.Count > 0) // 如果匹配到的结果集合元素数大于0
                             {
-                                find.Text = matchesTableTitles[0].Value;
+                                find.Text = matchesCombinedTitles[0].Value;
                                 find.Execute();
                                 paragraphFormat.CharacterUnitFirstLineIndent = 0;
                                 paragraphFormat.FirstLineIndent = msWordApp.CentimetersToPoints(0);
@@ -580,9 +657,9 @@ namespace COMIGHT
                         // 落款设置
                         selection.HomeKey(WdUnits.wdStory);
 
-                        MatchCollection matchesSignOffs = regExSignOff.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
+                        MatchCollection matchesCODSignOffs = regExCnSignOff.Matches(documentText); // 获取全文文字经过签名和日期落款正则表达式匹配的结果
 
-                        foreach (Match matchSignOff in matchesSignOffs)
+                        foreach (Match matchSignOff in matchesCODSignOffs)
                         {
                             find.Text = matchSignOff.Value;
                             find.Execute();
