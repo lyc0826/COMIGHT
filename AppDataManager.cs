@@ -349,15 +349,16 @@ namespace COMIGHT
         // 创建应用程序数据对象，用于存储所有数据
         public static AppData appData = new AppData();
 
-        // 创建应用设置、用户使用记录、网址数据三个对象，分别指向 appData 对象的三个属性
-        public static AppSettings appSettings => appData.AppSettings;
-        public static UserRecords userRecords => appData.UserRecords;
-        public static WebsiteData websiteData => appData.WebsiteData;
-
         static AppDataManager() // 静态构造函数，在类被首次引用时自动执行
         {
             appData = appDataAccessor.GetData(); // 从应用程序数据存取器中读取所有数据，赋值给应用程序数据对象变量
         }
+        
+        // 创建应用设置、用户使用记录、网址数据三个对象，分别指向 appData 对象的三个属性
+        public static AppSettings appSettings => appData.AppSettings;
+        public static UserRecords userRecords => appData.UserRecords;
+        public static WebsiteData websiteData => appData.WebsiteData;
+        
     }
 
 }
