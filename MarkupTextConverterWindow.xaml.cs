@@ -139,10 +139,7 @@ namespace COMIGHT
         {
             
             // 设置下拉列表框的项源为枚举类型EnumMarkupType的所有值
-            List<string> lstMarkupTypes = Enum.GetValues(typeof(EnumMarkupType))
-                                 .Cast<EnumMarkupType>()
-                                 .Select(type => type.ToString())
-                                 .ToList();
+            List<string> lstMarkupTypes = Enum.GetNames(typeof(EnumMarkupType)).ToList(); // 获取枚举类型EnumMarkupType的所有值的字符串列表
             var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
             listItemsSource.MarkupTypeList =lstMarkupTypes; // 将标记文本类型列表赋值给listItemsSource对象中的标记文本类型属性
 
