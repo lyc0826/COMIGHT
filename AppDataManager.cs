@@ -53,6 +53,13 @@ namespace COMIGHT
 
     }
 
+    // 定义文档版式选项枚举
+    public enum EnumDocumentLayoutOption
+    {
+        Universal,
+        Chinese_Official,
+    }
+
     // 定义用户配置Profile枚举
     public enum EnumUserProfile
     {
@@ -67,19 +74,20 @@ namespace COMIGHT
         // 为每个属性创建私有后备字段
         private string _savingFolderPath = string.Empty;
         private string _userManualUrl = string.Empty;
-        private string _cnTitleFontName = string.Empty;
-        private double _cnTitleFontSize;
-        private string _cnBodyFontName = string.Empty;
-        private double _cnBodyFontSize;
-        private string _cnHeading0FontName = string.Empty;
-        private double _cnHeading0FontSize;
-        private string _cnHeading1FontName = string.Empty;
-        private double _cnHeading1FontSize;
-        private string _cnHeading2FontName = string.Empty;
-        private double _cnHeading2FontSize;
-        private string _cnHeading3_4FontName = string.Empty;
-        private double _cnHeading3_4FontSize;
-        private double _cnLineSpace;
+        private EnumDocumentLayoutOption _documentLayoutOption = EnumDocumentLayoutOption.Universal;
+        private string _titleFontName = string.Empty;
+        private double _titleFontSize;
+        private string _bodyFontName = string.Empty;
+        private double _bodyFontSize;
+        private string _heading0FontName = string.Empty;
+        private double _heading0FontSize;
+        private string _heading1FontName = string.Empty;
+        private double _heading1FontSize;
+        private string _heading2FontName = string.Empty;
+        private double _heading2FontSize;
+        private string _heading3_4FontName = string.Empty;
+        private double _heading3_4FontSize;
+        private double _lineSpace;
         private string _worksheetFontName = string.Empty;
         private double _worksheetFontSize;
         private string _placeCardFontName = string.Empty;
@@ -100,82 +108,88 @@ namespace COMIGHT
             set => SetProperty(ref _userManualUrl, value);
         }
 
-        public string CnTitleFontName
+        public EnumDocumentLayoutOption DocumentLayoutOption
         {
-            get => _cnTitleFontName;
-            set => SetProperty(ref _cnTitleFontName, value);
+            get => _documentLayoutOption;
+            set => SetProperty(ref _documentLayoutOption, value);
         }
 
-        public double CnTitleFontSize
+        public string TitleFontName
         {
-            get => _cnTitleFontSize;
-            set => SetProperty(ref _cnTitleFontSize, value);
+            get => _titleFontName;
+            set => SetProperty(ref _titleFontName, value);
         }
 
-        public string CnBodyFontName
+        public double TitleFontSize
         {
-            get => _cnBodyFontName;
-            set => SetProperty(ref _cnBodyFontName, value);
+            get => _titleFontSize;
+            set => SetProperty(ref _titleFontSize, value);
         }
 
-        public double CnBodyFontSize
+        public string BodyFontName
         {
-            get => _cnBodyFontSize;
-            set => SetProperty(ref _cnBodyFontSize, value);
+            get => _bodyFontName;
+            set => SetProperty(ref _bodyFontName, value);
         }
 
-        public string CnHeading0FontName
+        public double BodyFontSize
         {
-            get => _cnHeading0FontName;
-            set => SetProperty(ref _cnHeading0FontName, value);
+            get => _bodyFontSize;
+            set => SetProperty(ref _bodyFontSize, value);
         }
 
-        public double CnHeading0FontSize
+        public string Heading0FontName
         {
-            get => _cnHeading0FontSize;
-            set => SetProperty(ref _cnHeading0FontSize, value);
+            get => _heading0FontName;
+            set => SetProperty(ref _heading0FontName, value);
         }
 
-        public string CnHeading1FontName
+        public double Heading0FontSize
         {
-            get => _cnHeading1FontName;
-            set => SetProperty(ref _cnHeading1FontName, value);
+            get => _heading0FontSize;
+            set => SetProperty(ref _heading0FontSize, value);
         }
 
-        public double CnHeading1FontSize
+        public string Heading1FontName
         {
-            get => _cnHeading1FontSize;
-            set => SetProperty(ref _cnHeading1FontSize, value);
+            get => _heading1FontName;
+            set => SetProperty(ref _heading1FontName, value);
         }
 
-        public string CnHeading2FontName
+        public double Heading1FontSize
         {
-            get => _cnHeading2FontName;
-            set => SetProperty(ref _cnHeading2FontName, value);
+            get => _heading1FontSize;
+            set => SetProperty(ref _heading1FontSize, value);
         }
 
-        public double CnHeading2FontSize
+        public string Heading2FontName
         {
-            get => _cnHeading2FontSize;
-            set => SetProperty(ref _cnHeading2FontSize, value);
+            get => _heading2FontName;
+            set => SetProperty(ref _heading2FontName, value);
         }
 
-        public string CnHeading3_4FontName
+        public double Heading2FontSize
         {
-            get => _cnHeading3_4FontName;
-            set => SetProperty(ref _cnHeading3_4FontName, value);
+            get => _heading2FontSize;
+            set => SetProperty(ref _heading2FontSize, value);
         }
 
-        public double CnHeading3_4FontSize
+        public string Heading3_4FontName
         {
-            get => _cnHeading3_4FontSize;
-            set => SetProperty(ref _cnHeading3_4FontSize, value);
+            get => _heading3_4FontName;
+            set => SetProperty(ref _heading3_4FontName, value);
         }
 
-        public double CnLineSpace
+        public double Heading3_4FontSize
         {
-            get => _cnLineSpace;
-            set => SetProperty(ref _cnLineSpace, value);
+            get => _heading3_4FontSize;
+            set => SetProperty(ref _heading3_4FontSize, value);
+        }
+
+        public double LineSpace
+        {
+            get => _lineSpace;
+            set => SetProperty(ref _lineSpace, value);
         }
 
         public string WorksheetFontName

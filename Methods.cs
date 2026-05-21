@@ -51,15 +51,15 @@ namespace COMIGHT
                     double bottomMargin = msWordApp.CentimetersToPoints((float)3.5); // 底端页边距
                     double leftMargin = msWordApp.CentimetersToPoints((float)2.8); // 左页边距
                     double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
-                    float lineSpace = (float)appSettings.CnLineSpace; // 行间距
+                    float lineSpace = (float)appSettings.LineSpace; // 行间距
 
-                    string titleFontName = appSettings.CnTitleFontName; // 大标题字体
-                    string bodyFontName = appSettings.CnBodyFontName; // 正文字体
+                    string titleFontName = appSettings.TitleFontName; // 大标题字体
+                    string bodyFontName = appSettings.BodyFontName; // 正文字体
 
-                    string heading0FontName = appSettings.CnHeading0FontName; // 中文0级小标题
-                    string heading1FontName = appSettings.CnHeading1FontName; // 中文1级小标题
-                    string heading2FontName = appSettings.CnHeading2FontName;  // 中文2级小标题
-                    string heading3_4FontName = appSettings.CnHeading3_4FontName;  // 通用小标题
+                    string heading0FontName = appSettings.Heading0FontName; // 中文0级小标题
+                    string heading1FontName = appSettings.Heading1FontName; // 中文1级小标题
+                    string heading2FontName = appSettings.Heading2FontName;  // 中文2级小标题
+                    string heading3_4FontName = appSettings.Heading3_4FontName;  // 通用小标题
                     string provisionNumFontName = heading1FontName; // 中文条款项小标题字体
 
                     string tableTitleFontName = heading1FontName; // 表格标题字体
@@ -67,13 +67,13 @@ namespace COMIGHT
 
                     string footerFontName = "Times New Roman"; // 页脚字体
 
-                    float titleFontSize = (float)appSettings.CnTitleFontSize; // 大标题字号
-                    float bodyFontSize = (float)appSettings.CnBodyFontSize; // 正文字号
+                    float titleFontSize = (float)appSettings.TitleFontSize; // 大标题字号
+                    float bodyFontSize = (float)appSettings.BodyFontSize; // 正文字号
 
-                    float heading0FontSize = (float)appSettings.CnHeading0FontSize; // 中文0级小标题
-                    float heading1FontSize = (float)appSettings.CnHeading1FontSize; // 中文1级小标题
-                    float heading2FontSize = (float)appSettings.CnHeading2FontSize; // 中文2级小标题
-                    float heading3_4FontSize = (float)appSettings.CnHeading3_4FontSize; // 中文3-4级小标题
+                    float heading0FontSize = (float)appSettings.Heading0FontSize; // 中文0级小标题
+                    float heading1FontSize = (float)appSettings.Heading1FontSize; // 中文1级小标题
+                    float heading2FontSize = (float)appSettings.Heading2FontSize; // 中文2级小标题
+                    float heading3_4FontSize = (float)appSettings.Heading3_4FontSize; // 中文3-4级小标题
                     float provisionNumFontSize = heading1FontSize; // 中文条款项小标题字号
 
                     float tableTitleFontSize = heading1FontSize; // 表格标题字号
@@ -120,17 +120,22 @@ namespace COMIGHT
                     // 定义英文表格标题正则表达式变量，匹配模式为：从开头开始（总长度1-100个字符），非“。；;”分页符换行符回车符的字符任意多个，“form,table...”，非“。；;”分页符换行符回车符的字符任意多个，换行符回车符
                     Regex regExEnTableTitle = new Regex(@"(?<=^|\n|\r)(?=.{1,100}[\n\r])[^。；;\f\n\r]*(?:table|form|list|rolster|roll)[^。；;\f\n\r]*[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-                    // 创建清单数字编号列表，包含中国公文和通用1、2、3、4级编号匹配模式
-                    List<string> listNums = new List<string>() 
+                    // 创建中国公文清单数字编号列表，包含中国公文1、2、3、4级编号匹配模式
+                    List<string> codListNums = new List<string>() 
                     { 
-                            @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", 
-                            @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", 
-                            @"\d+[ |\t]*[、\.，,）\)]", 
-                            @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]", 
-                            @"\d+\.?[ |\t]+", 
-                            @"(?:\d+\.?){2}[ |\t]+", 
-                            @"(?:\d+\.?){3}[ |\t]+", 
-                            @"(?:\d+\.?){4}[ |\t]+" 
+                        @"[一二三四五六七八九十〇零]+[ |\t]*[、\.，,]", 
+                        @"[（\(][ |\t]*[一二三四五六七八九十〇零]+[ |\t]*[）\)]", 
+                        @"\d+[ |\t]*[、\.，,）\)]", 
+                        @"[（\(][ |\t]*\d+[ |\t]*[、\.，,）\)]",
+                    };
+
+                    // 创建通用清单数字编号列表，包含通用1、2、3、4级编号匹配模式
+                    List<string> universalListNums = new List<string>()
+                    {
+                        @"\d+\.?[ |\t]+",
+                        @"\d+\.\d+\.?[ |\t]+",
+                        @"\d+\.\d+\.\d+\.?[ |\t]+",
+                        @"\d+\.\d+\.\d+\.\d+\.?[ |\t]+",
                     };
 
                     // 创建附件注释正则表达式变量，匹配模式为：从开头开始，“附”，空格制表符任意多个，“件录”或appendix，非“。”分页符换行符回车符的字符0-4个，换行符回车符
@@ -381,9 +386,9 @@ namespace COMIGHT
                             selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                         }
 
-                        bool isCOD = true;
+                        
 
-                        if (isCOD) // 如果是中国公文
+                        if (appSettings.DocumentLayoutOption == EnumDocumentLayoutOption.Chinese_Official) // 如果按中国公文版式排版
                         {
 
                             // 中国公文1、2级小标题设置
@@ -504,7 +509,14 @@ namespace COMIGHT
 
                         //将前期被识别为小标题的数字编号清单恢复为正文文字格式
 
-                        foreach (string listNum in listNums)  //遍历清单数字编号正则表达式列表
+                        // 根据文档类型，选择对应的数字编号清单列表
+                        List<string> listNums = appSettings.DocumentLayoutOption switch
+                        {
+                            EnumDocumentLayoutOption.Chinese_Official => codListNums,
+                            _ => universalListNums
+                        };
+                    
+                        foreach (string listNum in listNums)  //遍历清单数字编号列表
                         {
                             selection.HomeKey(WdUnits.wdStory);
 
@@ -516,7 +528,7 @@ namespace COMIGHT
                             foreach (Match matchListBlock in matchesListBlocks) // 遍历数字编号清单块正则表达式匹配结果集合
                             {
                                 //如果数字编号清单块正则表达式匹配到的字符串长度/捕获组匹配数的商（即每个条目的平均字数）大于等于指定数值（中文文档100字，英文文档250字），则不视为清单条目，直接跳过当前循环并进入下一个循环
-                                if (matchListBlock.Value.Length / (matchListBlock.Groups[1].Captures.Count) >= (isCnDocument? 100 : 250))
+                                if (matchListBlock.Value.Length / (matchListBlock.Groups[1].Captures.Count) >= (isCnDocument ? 100 : 250))
                                 {
                                     continue;
                                 }

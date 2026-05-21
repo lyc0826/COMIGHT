@@ -6,6 +6,7 @@ namespace COMIGHT
     {
         // 为每个属性创建私有后备字段
         private List<string> _fontList = new List<string>(); // 创建字体列表
+        private List<string> _documentLayoutOptionList = new List<string>(); // 创建文档版式类型列表
         private List<string> _markupTypeList = new List<string>(); // 创建标记文本类型列表
 
         // 定义字体列表属性
@@ -13,6 +14,13 @@ namespace COMIGHT
         {
             get => _fontList;
             set => SetProperty(ref _fontList, value);
+        }
+
+        // 定义文档版式类型列表属性
+        public List<string> DocumentLayoutOptionList
+        {
+            get => _documentLayoutOptionList;
+            set => SetProperty(ref _documentLayoutOptionList, value);
         }
         
         // 定义标记文本类型列表属性

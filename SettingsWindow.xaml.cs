@@ -28,11 +28,18 @@ namespace COMIGHT
 
         private void SettingsDialog_Loaded(object sender, RoutedEventArgs e)
         {
+            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
+
             InstalledFontCollection installedFontCollention = new InstalledFontCollection();
             List<string> lstFontNames = installedFontCollention.Families.Select(f => f.Name).ToList(); //读取系统中已安装的字体，赋值给字体名称列表变量
-            var listItemsSource = (ListItemsSource)this.Resources["ListItemsSource"]; // 将窗体资源中的ListItemsSource对象赋值给listItemsSource对象
             listItemsSource.FontList = lstFontNames; // 将字体名称列表赋值给listItemsSource对象中的字体列表属性
 
+            List<string> lstDocumentLayoutOptions = Enum.GetValues(typeof(EnumDocumentLayoutOption))
+                                 .Cast<EnumDocumentLayoutOption>()
+                                 .Select(type => type.ToString())
+                                 .ToList();
+            listItemsSource.DocumentLayoutOptionList = lstDocumentLayoutOptions; // 将标记文本类型列表赋值给listItemsSource对象中的标记文本类型属性
+            
             this.DataContext = appData.AppSettings; // 将应用设置窗口的数据环境设为应用设置对象
         }
 
