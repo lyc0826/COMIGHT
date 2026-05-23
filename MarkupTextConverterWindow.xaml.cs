@@ -46,13 +46,13 @@ namespace COMIGHT
             try
             {
 
-                if (string.IsNullOrWhiteSpace(txtbxMarkup.Text)) //如果Markdown文本框为空白，则结束本过程
+                if (string.IsNullOrWhiteSpace(txtbxMarkup.Text)) //如果Markup文本框为空白，则结束本过程
                 {
                     throw new Exception("No text found.");
                 }
 
-                string markupText = txtbxMarkup.Text; //获取Markdown文本框的的文本，赋值给Markdown文本变量
-                markupText = appSettings.KeepEmojisInMarkupText ? markupText : markupText.RemoveEmojis(); //获取Markdown文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markdown文本变量原值；否则，得到删除Markdown文本中Emoji后的值
+                string markupText = txtbxMarkup.Text; //获取Markup文本框的的文本，赋值给Markup文本变量
+                markupText = appSettings.KeepEmojisInMarkupText ? markupText : markupText.RemoveEmojis(); //获取Markup文本变量：如果程序设置允许Office文件中存在Emoji字符，则得到Markup文本变量原值；否则，得到删除Markup文本中Emoji后的值
 
                 //将导出文本框的文字按换行符拆分为数组（删除每个元素前后空白字符，并删除空白元素），转换成列表
                 List<string> lstParagraphs = markupText.RemoveMarkdownMarks().RemoveHtmlTags()
@@ -67,14 +67,15 @@ namespace COMIGHT
                 // 获取目标文件主名：将段落列表所有元素的Markdown标记和不能作为文件名的字符删除后，将不为null或空的字符串的元素的第一个，作为目标文件主名
                 string targetFileMainName = lstParagraphs.ConvertAll(e => CleanPathAndFileName(e)).Where(e => !string.IsNullOrWhiteSpace(e)).First();
 
-                //将目标Markdown文档转换为目标Word文档
+                //将目标Markup文档转换为目标Word文档
+
                 string targetWordFilePath = Path.Combine(targetFolderPath, $"{targetFileMainName}.docx"); //获取目标Word文档文件路径
 
                 EnumMarkupType enumMarkupType = userRecords.MarkupType; //获取用户记录中的标记文本类型枚举变量
 
-                switch (enumMarkupType) // 根据Markdown类型枚举变量，选择转换方法
+                switch (enumMarkupType) // 根据Markup类型枚举变量，选择转换方法
                 {
-                    case EnumMarkupType.Markdown:
+                    case EnumMarkupType.Markdown: // 如果Markup类型枚举变量为Markdown
 
                         MarkdownSource markdown = MarkdownSource.FromMarkdownString(markupText); // 创建Markdown源对象
                         MarkdownConverter markdownConverter = new MarkdownConverter() //  创建Markdown转换器对象
@@ -86,7 +87,7 @@ namespace COMIGHT
                         
                         break;
                     
-                    case EnumMarkupType.HTML:
+                    case EnumMarkupType.HTML: // 如果Markup类型枚举变量为HTML
                         
                         using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(targetWordFilePath, WordprocessingDocumentType.Document)) // 创建 Word 文档对象
                         {
