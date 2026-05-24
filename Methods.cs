@@ -786,7 +786,7 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanPathAndFileName(string inputName, int maxLength = 254)
+        public static string CleanPath(string inputName, int maxLength = 254)
         {
             Regex regExRepeatedUnderlines = new Regex(@"_+", RegexOptions.Compiled);
             string cleanedName = inputName.Trim(); // 去除首尾空白字符

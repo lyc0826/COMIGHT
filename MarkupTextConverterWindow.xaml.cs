@@ -65,7 +65,7 @@ namespace COMIGHT
 
                 string targetFolderPath = appSettings.SavingFolderPath; // 获取目标文件夹路径
                 // 获取目标文件主名：将段落列表所有元素的Markdown标记和不能作为文件名的字符删除后，将不为null或空的字符串的元素的第一个，作为目标文件主名
-                string targetFileMainName = lstParagraphs.ConvertAll(e => CleanPathAndFileName(e)).Where(e => !string.IsNullOrWhiteSpace(e)).First();
+                string targetFileMainName = lstParagraphs.ConvertAll(e => CleanPath(e)).Where(e => !string.IsNullOrWhiteSpace(e)).First();
 
                 //将目标Markup文档转换为目标Word文档
 
@@ -120,7 +120,7 @@ namespace COMIGHT
                 }
 
                 // 提取目标Word文档中的表格并转存为目标Excel文档
-                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanPathAndFileName($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径
+                string targetExcelFilePath = Path.Combine(targetFolderPath, $"{CleanPath($"Tbl_{targetFileMainName}")}.xlsx"); //获取目标Excel文件路径
 
                 bool tableExtracted = ExtractTablesFromWordToExcel(targetWordFilePath, targetExcelFilePath); // 提取目标Word文档中的表格并转存为目标Excel文档，如果成功则将true赋值给“表格已提取”变量
 
