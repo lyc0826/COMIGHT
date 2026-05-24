@@ -147,6 +147,7 @@ namespace COMIGHT
 
                     // 创建中文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
                     Regex regExCnSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
+                    
                     // 创建英文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
                     Regex regExEnSignOff = new Regex(@"(?:[a-zA-Z][^；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,20}[12]\d{3}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
