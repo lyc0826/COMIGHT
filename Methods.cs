@@ -913,9 +913,10 @@ namespace COMIGHT
                                             {
                                                 string wordTableCellText = wordTableCell.GetText();
 
-                                                // 如果当前单元格文字长度小于9且可以成功转换为数字，则将转换后的数字赋值给当前行当前列的Excel单元格；
+                                                // 如果当前单元格纯数字部分少于11个数字，且整体可以成功转换为数字，则将转换后的数值赋值给当前行当前列的Excel单元格；
                                                 // 否则，将文本赋值给单元格
-                                                if (wordTableCellText.Length < 11 && double.TryParse(wordTableCellText, NumberStyles.Any, CultureInfo.InvariantCulture, out double numericValue ))
+                                                if (Regex.Replace(wordTableCellText, @"^\d", "").Length < 11
+                                                    && double.TryParse(wordTableCellText, NumberStyles.Any, CultureInfo.InvariantCulture, out double numericValue ))
                                                 {
                                                     worksheet.Cells[excelRowIndex, excelColumnIndex].Value = numericValue; 
                                                 }
