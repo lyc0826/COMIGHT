@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Word;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Office.Interop.Word;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
 using Microsoft.Win32;
@@ -910,7 +911,19 @@ namespace COMIGHT
                                             int excelColumnIndex = 1; // Excel列索引从1开始
                                             foreach (XWPFTableCell wordTableCell in wordTableRow.GetTableCells()) // 遍历当前Word文档表格当前行中的所有单元格
                                             {
-                                                worksheet.Cells[excelRowIndex, excelColumnIndex++].Value = wordTableCell.GetText(); // 将当前Word文档表格的当前行当前单元格的文字赋值给当前行当前列的Excel单元格
+                                                string wordTableCellText = wordTableCell.GetText();
+
+                                                // 如果当前单元格文字长度小于9且可以成功转换为数字，则将转换后的数字赋值给当前行当前列的Excel单元格；
+                                                // 否则，将文本赋值给单元格
+                                                if (wordTableCellText.Length < 11 && double.TryParse(wordTableCellText, NumberStyles.Any, CultureInfo.InvariantCulture, out double numericValue ))
+                                                {
+                                                    worksheet.Cells[excelRowIndex, excelColumnIndex].Value = numericValue; 
+                                                }
+                                                else
+                                                {
+                                                    worksheet.Cells[excelRowIndex, excelColumnIndex].Value = wordTableCellText;
+                                                }
+                                                excelColumnIndex++; // Excel列索引累加1
                                             }
                                             excelRowIndex++; // Excel行索引累加1
                                         }
@@ -1191,7 +1204,7 @@ namespace COMIGHT
             return (Math.Min(index1, index2), Math.Max(index1, index2)); // 将Excel工作表索引号的2个界值中较小的和较大的值分别作为起始值和结束值赋值给函数返回值元组
         }
 
-        public static DateTime? GetEarliestDateTime(string text)
+        public static DateTime? GetEarliestDate(string text)
         {
             // 创建年份正则表达式
             Regex regExYear = new Regex(@"(?<!\d)\d{4}(?=[年\.\-/]|\b)", RegexOptions.Compiled);
