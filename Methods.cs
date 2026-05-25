@@ -57,11 +57,11 @@ namespace COMIGHT
                     string titleFontName = appSettings.TitleFontName; // 大标题字体
                     string bodyFontName = appSettings.BodyFontName; // 正文字体
 
-                    string heading0FontName = appSettings.Heading0FontName; // 中文0级小标题
-                    string heading1FontName = appSettings.Heading1FontName; // 中文1级小标题
-                    string heading2FontName = appSettings.Heading2FontName;  // 中文2级小标题
-                    string heading3_4FontName = appSettings.Heading3_4FontName;  // 通用小标题
-                    string provisionNumFontName = heading1FontName; // 中文条款项小标题字体
+                    string heading0FontName = appSettings.Heading0FontName; // 0级小标题
+                    string heading1FontName = appSettings.Heading1FontName; // 1级小标题
+                    string heading2FontName = appSettings.Heading2FontName;  // 2级小标题
+                    string heading3_4FontName = appSettings.Heading3_4FontName;  // 3-4级小标题
+                    string cnProvisionNumFontName = heading1FontName; // 中文条款项编号字体
 
                     string tableTitleFontName = heading1FontName; // 表格标题字体
                     string tableBodyFontName = bodyFontName; // 表格正文字体
@@ -71,17 +71,15 @@ namespace COMIGHT
                     float titleFontSize = (float)appSettings.TitleFontSize; // 大标题字号
                     float bodyFontSize = (float)appSettings.BodyFontSize; // 正文字号
 
-                    float heading0FontSize = (float)appSettings.Heading0FontSize; // 中文0级小标题
-                    float heading1FontSize = (float)appSettings.Heading1FontSize; // 中文1级小标题
-                    float heading2FontSize = (float)appSettings.Heading2FontSize; // 中文2级小标题
-                    float heading3_4FontSize = (float)appSettings.Heading3_4FontSize; // 中文3-4级小标题
-                    float provisionNumFontSize = heading1FontSize; // 中文条款项小标题字号
-
+                    float heading0FontSize = (float)appSettings.Heading0FontSize; // 0级小标题
+                    float heading1FontSize = (float)appSettings.Heading1FontSize; // 1级小标题
+                    float heading2FontSize = (float)appSettings.Heading2FontSize; // 2级小标题
+                    float heading3_4FontSize = (float)appSettings.Heading3_4FontSize; // 3-4级小标题
+                    float cnProvisionNumFontSize = heading1FontSize; // 中文条款项编号字号
                     float tableTitleFontSize = heading1FontSize; // 表格标题字号
                     float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
 
                     float footerFontSize = 14; // 页脚字号为四号
-
 
                     // 创建正则表达式
 
@@ -147,7 +145,6 @@ namespace COMIGHT
 
                     // 创建中文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
                     Regex regExCnSignOff = new Regex(@"(?<=^|\n|\r)[\n\r](?:[\u4e00-\u9fa5][^。；;，,\f\n\r]{1,}[\n\r])+[12]\d{3}[ |\t]*年[月日期\d：:\.\-/| |\t]{0,10}[\n\r]", RegexOptions.Multiline);
-                    
                     // 创建英文落款字符串变量，匹配模式为：签名至少1行，日期在最后一行
                     Regex regExEnSignOff = new Regex(@"(?:[a-zA-Z][^；;，,\f\n\r]{1,}[\n\r])+[a-zA-Z\d：:，,\.\-/| |\t]{0,20}[12]\d{3}[\n\r]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -465,7 +462,7 @@ namespace COMIGHT
                             {
                                 find.Text = matchCODProvisionNum.Value;
                                 find.Execute();
-                                font.Name = provisionNumFontName;
+                                font.Name = cnProvisionNumFontName;
                                 font.Size = provisionNumFontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
@@ -788,7 +785,7 @@ namespace COMIGHT
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
-        public static string CleanPath(string inputName, int maxLength = 254)
+        public static string CleanPathAndFileName(string inputName, int maxLength = 254)
         {
             Regex regExRepeatedUnderlines = new Regex(@"_+", RegexOptions.Compiled);
             string cleanedName = inputName.Trim(); // 去除首尾空白字符
@@ -914,10 +911,9 @@ namespace COMIGHT
                                             {
                                                 string wordTableCellText = wordTableCell.GetText();
 
-                                                // 如果当前单元格纯数字部分少于11个数字，且整体可以成功转换为数字，则将转换后的数值赋值给当前行当前列的Excel单元格；
+                                                // 如果当前单元格文字长度小于9且可以成功转换为数字，则将转换后的数字赋值给当前行当前列的Excel单元格；
                                                 // 否则，将文本赋值给单元格
-                                                if (Regex.Replace(wordTableCellText, @"^\d", "").Length < 11
-                                                    && double.TryParse(wordTableCellText, NumberStyles.Any, CultureInfo.InvariantCulture, out double numericValue ))
+                                                if (wordTableCellText.Length < 11 && double.TryParse(wordTableCellText, NumberStyles.Any, CultureInfo.InvariantCulture, out double numericValue ))
                                                 {
                                                     worksheet.Cells[excelRowIndex, excelColumnIndex].Value = numericValue; 
                                                 }
