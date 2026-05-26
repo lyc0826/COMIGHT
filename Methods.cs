@@ -858,6 +858,11 @@ namespace COMIGHT
                                             List<string> lstTableTitle = new List<string>();
                                             for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止
                                             {
+                                                // 如果前方当前Word元素是Word表格，则停止向前遍历（一旦前方遇到另一个表格，需要马上停止向前遍历）
+                                                if (wordDocument.BodyElements[i - k] is XWPFTable) 
+                                                {
+                                                    break; 
+                                                }
                                                 if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
                                                 {
                                                     XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
