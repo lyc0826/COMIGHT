@@ -858,20 +858,17 @@ namespace COMIGHT
                                             List<string> lstTableTitle = new List<string>();
                                             for (int k = 1; k <= 5 && i - k >= 0; k++) // 从当前Word元素开始，向前遍历5个元素，直到0号元素为止
                                             {
-                                                // 如果前方当前Word元素是Word表格，则停止向前遍历（一旦前方遇到另一个表格，需要马上停止向前遍历）
-                                                if (wordDocument.BodyElements[i - k] is XWPFTable) 
+                                                // 如果前方当前Word元素不是段落类型，则停止遍历
+                                                if (!(wordDocument.BodyElements[i - k] is XWPFParagraph)) 
                                                 {
                                                     break; 
                                                 }
-                                                if (wordDocument.BodyElements[i - k] is XWPFParagraph) // 如果前方当前Word元素是Word段落
-                                                {
-                                                    XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
+                                                XWPFParagraph paragraph = (XWPFParagraph)wordDocument.BodyElements[i - k]; // 获取前方当前Word元素，并赋值给段落变量
 
-                                                    // 表格标题正则表达式模式设为：开头标记，不含“。；;”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到表格标题列表中
-                                                    if (Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,100}$", RegexOptions.Multiline))
-                                                    {
-                                                        lstTableTitle.Add(paragraph.Text);
-                                                    }
+                                                // 表格标题正则表达式模式设为：开头标记，不含“。；;”的字符1-100个，结尾标记；如果段落文字被匹配成功，将被增加到表格标题列表中
+                                                if (Regex.IsMatch(paragraph.Text, @"^[^。；;]{1,100}$", RegexOptions.Multiline))
+                                                {
+                                                    lstTableTitle.Add(paragraph.Text);
                                                 }
                                             }
                                             // 获取表格标题：如果表格标题列表不为空，则得到其中长度最短的字符串元素；否则，得到表格标题变量原值
