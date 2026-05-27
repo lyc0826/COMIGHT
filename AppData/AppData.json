@@ -71,7 +71,7 @@
         "Url": "https://snapwc.com/"
       },
       {
-        "Label": "Video/Audio Editor",
+        "Label": "Video Editor",
         "Url": "https://tools.video/"
       },
       {
@@ -85,10 +85,6 @@
       {
         "Label": "OSINT Monitor",
         "Url": "https://www.worldmonitor.app/"
-      },
-      {
-        "Label": "News Aggregator",
-        "Url": "https://newsnow.busiyi.world/"
       }
     ]
   }
