@@ -54,31 +54,40 @@ namespace COMIGHT
                     double rightMargin = msWordApp.CentimetersToPoints((float)2.6); // 右页边距
                     float lineSpace = (float)appSettings.LineSpace; // 行间距
 
-                    string titleFontName = appSettings.TitleFontName; // 大标题字体
-                    string bodyFontName = appSettings.BodyFontName; // 正文字体
 
-                    string heading0FontName = appSettings.Heading0FontName; // 0级小标题
-                    string heading1FontName = appSettings.Heading1FontName; // 1级小标题
-                    string heading2FontName = appSettings.Heading2FontName;  // 2级小标题
-                    string heading3_4FontName = appSettings.Heading3_4FontName;  // 3-4级小标题
-                    string codProvisionNumFontName = heading1FontName; // 中国公文条款项编号字体
+                    // 创建字体名称和大小变量，并为它们赋值（根据用户设置，获取字体名称和大小）
+
+                    (string titleFontName, float titleFontSize,
+                    string bodyFontName, float bodyFontSize,
+                    string heading0FontName, float heading0FontSize,
+                    string heading1FontName, float heading1FontSize,
+                    string heading2FontName, float heading2FontSize,
+                    string heading3_4FontName, float heading3_4FontSize) = appSettings.DocumentLayoutOption switch
+                    {
+                        EnumDocumentLayoutOption.Chinese_Official =>
+                        (appSettings.CODTitleFontName, (float)appSettings.CODTitleFontSize,
+                        appSettings.CODBodyFontName, (float)appSettings.CODBodyFontSize,
+                        appSettings.CODHeading0FontName, (float)appSettings.CODHeading0FontSize,
+                        appSettings.CODHeading1FontName, (float)appSettings.CODHeading1FontSize,
+                        appSettings.CODHeading2FontName, (float)appSettings.CODHeading2FontSize,
+                        appSettings.CODHeading3_4FontName, (float)appSettings.CODHeading3_4FontSize),
+
+                        _ =>
+                        (appSettings.UDTitleFontName, (float)appSettings.UDTitleFontSize,
+                        appSettings.UDBodyFontName, (float)appSettings.UDBodyFontSize,
+                        appSettings.UDHeading0FontName, (float)appSettings.UDHeading0FontSize,
+                        appSettings.UDHeading1FontName, (float)appSettings.UDHeading1FontSize,
+                        appSettings.UDHeading2FontName, (float)appSettings.UDHeading2FontSize,
+                        appSettings.UDHeading3_4FontName, (float)appSettings.UDHeading3_4FontSize)
+                    }; 
 
                     string tableTitleFontName = heading1FontName; // 表格标题字体
-                    string tableBodyFontName = bodyFontName; // 表格正文字体
-
-                    string footerFontName = "Times New Roman"; // 页脚字体
-
-                    float titleFontSize = (float)appSettings.TitleFontSize; // 大标题字号
-                    float bodyFontSize = (float)appSettings.BodyFontSize; // 正文字号
-
-                    float heading0FontSize = (float)appSettings.Heading0FontSize; // 0级小标题
-                    float heading1FontSize = (float)appSettings.Heading1FontSize; // 1级小标题
-                    float heading2FontSize = (float)appSettings.Heading2FontSize; // 2级小标题
-                    float heading3_4FontSize = (float)appSettings.Heading3_4FontSize; // 3-4级小标题
-                    float codProvisionNumFontSize = heading1FontSize; // 中国公文条款项编号字号
                     float tableTitleFontSize = heading1FontSize; // 表格标题字号
+                    
+                    string tableBodyFontName = bodyFontName; // 表格正文字体
                     float tableBodyFontSize = bodyFontSize - 2; // 表格正文字号
 
+                    string footerFontName = "Times New Roman"; // 页脚字体为Times New Roman
                     float footerFontSize = 14; // 页脚字号为四号
 
                     // 创建正则表达式
@@ -442,8 +451,6 @@ namespace COMIGHT
                             {
                                 find.Text = matchCODProvisionNum.Value;
                                 find.Execute();
-                                font.Name = codProvisionNumFontName;
-                                font.Size = codProvisionNumFontSize;
                                 font.Bold = 1;
                                 selection.Collapse(WdCollapseDirection.wdCollapseEnd);
                             }

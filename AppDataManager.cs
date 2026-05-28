@@ -74,20 +74,37 @@ namespace COMIGHT
         // 为每个属性创建私有后备字段
         private string _savingFolderPath = string.Empty;
         private string _userManualUrl = string.Empty;
+
         private EnumDocumentLayoutOption _documentLayoutOption = EnumDocumentLayoutOption.Universal;
-        private string _titleFontName = string.Empty;
-        private double _titleFontSize;
-        private string _bodyFontName = string.Empty;
-        private double _bodyFontSize;
-        private string _heading0FontName = string.Empty;
-        private double _heading0FontSize;
-        private string _heading1FontName = string.Empty;
-        private double _heading1FontSize;
-        private string _heading2FontName = string.Empty;
-        private double _heading2FontSize;
-        private string _heading3_4FontName = string.Empty;
-        private double _heading3_4FontSize;
+
+        private string _udTitleFontName = string.Empty;
+        private double _udTitleFontSize;
+        private string _udBodyFontName = string.Empty;
+        private double _udBodyFontSize;
+        private string _udHeading0FontName = string.Empty;
+        private double _udHeading0FontSize;
+        private string _udHeading1FontName = string.Empty;
+        private double _udHeading1FontSize;
+        private string _udHeading2FontName = string.Empty;
+        private double _udHeading2FontSize;
+        private string _udHeading3_4FontName = string.Empty;
+        private double _udHeading3_4FontSize;
+
+        private string _codTitleFontName = string.Empty;
+        private double _codTitleFontSize;
+        private string _codBodyFontName = string.Empty;
+        private double _codBodyFontSize;
+        private string _codHeading0FontName = string.Empty;
+        private double _codHeading0FontSize;
+        private string _codHeading1FontName = string.Empty;
+        private double _codHeading1FontSize;
+        private string _codHeading2FontName = string.Empty;
+        private double _codHeading2FontSize;
+        private string _codHeading3_4FontName = string.Empty;
+        private double _codHeading3_4FontSize;
+
         private double _lineSpace;
+
         private string _worksheetFontName = string.Empty;
         private double _worksheetFontSize;
         private string _placeCardFontName = string.Empty;
@@ -114,76 +131,147 @@ namespace COMIGHT
             set => SetProperty(ref _documentLayoutOption, value);
         }
 
-        public string TitleFontName
+        public string UDTitleFontName
         {
-            get => _titleFontName;
-            set => SetProperty(ref _titleFontName, value);
+            get => _udTitleFontName;
+            set => SetProperty(ref _udTitleFontName, value);
         }
 
-        public double TitleFontSize
+        public double UDTitleFontSize
         {
-            get => _titleFontSize;
-            set => SetProperty(ref _titleFontSize, value);
+            get => _udTitleFontSize;
+            set => SetProperty(ref _udTitleFontSize, value);
         }
 
-        public string BodyFontName
+        public string UDBodyFontName
         {
-            get => _bodyFontName;
-            set => SetProperty(ref _bodyFontName, value);
+            get => _udBodyFontName;
+            set => SetProperty(ref _udBodyFontName, value);
         }
 
-        public double BodyFontSize
+        public double UDBodyFontSize
         {
-            get => _bodyFontSize;
-            set => SetProperty(ref _bodyFontSize, value);
+            get => _udBodyFontSize;
+            set => SetProperty(ref _udBodyFontSize, value);
         }
 
-        public string Heading0FontName
+        public string UDHeading0FontName
         {
-            get => _heading0FontName;
-            set => SetProperty(ref _heading0FontName, value);
+            get => _udHeading0FontName;
+            set => SetProperty(ref _udHeading0FontName, value);
         }
 
-        public double Heading0FontSize
-        {
-            get => _heading0FontSize;
-            set => SetProperty(ref _heading0FontSize, value);
+        public double UDHeading0FontSize {
+            get => _udHeading0FontSize;
+            set => SetProperty(ref _udHeading0FontSize, value);
         }
 
-        public string Heading1FontName
-        {
-            get => _heading1FontName;
-            set => SetProperty(ref _heading1FontName, value);
+        public string UDHeading1FontName
+            {
+            get => _udHeading1FontName;
+            set => SetProperty(ref _udHeading1FontName, value);
         }
 
-        public double Heading1FontSize
+        public double UDHeading1FontSize
         {
-            get => _heading1FontSize;
-            set => SetProperty(ref _heading1FontSize, value);
+            get => _udHeading1FontSize;
+            set => SetProperty(ref _udHeading1FontSize, value);
         }
 
-        public string Heading2FontName
+        public string UDHeading2FontName
         {
-            get => _heading2FontName;
-            set => SetProperty(ref _heading2FontName, value);
+            get => _udHeading2FontName;
+            set => SetProperty(ref _udHeading2FontName, value);
         }
 
-        public double Heading2FontSize
+        public double UDHeading2FontSize
         {
-            get => _heading2FontSize;
-            set => SetProperty(ref _heading2FontSize, value);
+            get => _udHeading2FontSize;
+            set => SetProperty(ref _udHeading2FontSize, value);
         }
 
-        public string Heading3_4FontName
+        public string UDHeading3_4FontName
         {
-            get => _heading3_4FontName;
-            set => SetProperty(ref _heading3_4FontName, value);
+            get => _udHeading3_4FontName;
+            set => SetProperty(ref _udHeading3_4FontName, value);
         }
 
-        public double Heading3_4FontSize
+        public double UDHeading3_4FontSize
         {
-            get => _heading3_4FontSize;
-            set => SetProperty(ref _heading3_4FontSize, value);
+            get => _udHeading3_4FontSize;
+            set => SetProperty(ref _udHeading3_4FontSize, value);
+        }
+
+        public string CODTitleFontName
+        {
+            get => _codTitleFontName;
+            set => SetProperty(ref _codTitleFontName, value);
+        }
+
+        public double CODTitleFontSize
+        {
+            get => _codTitleFontSize;
+            set => SetProperty(ref _codTitleFontSize, value);
+        }
+
+        public string CODBodyFontName
+        {
+            get => _codBodyFontName;
+            set => SetProperty(ref _codBodyFontName, value);
+        }
+
+        public double CODBodyFontSize
+        {
+            get => _codBodyFontSize;
+            set => SetProperty(ref _codBodyFontSize, value);
+        }
+
+        public string CODHeading0FontName
+        {
+            get => _codHeading0FontName;
+            set => SetProperty(ref _codHeading0FontName, value);
+        }
+
+        public double CODHeading0FontSize
+        {
+            get => _codHeading0FontSize;
+            set => SetProperty(ref _codHeading0FontSize, value);
+        }
+
+        public string CODHeading1FontName
+        {
+            get => _codHeading1FontName;
+            set => SetProperty(ref _codHeading1FontName, value);
+        }
+
+        public double CODHeading1FontSize
+        {
+            get => _codHeading1FontSize;
+            set => SetProperty(ref _codHeading1FontSize, value);
+        }
+
+        public string CODHeading2FontName
+        {
+            get => _codHeading2FontName;
+            set => SetProperty(ref _codHeading2FontName, value);
+        }
+
+        public double CODHeading2FontSize
+        {
+            get => _codHeading2FontSize;
+            set => SetProperty(ref _codHeading2FontSize, value);
+        }
+
+        public string CODHeading3_4FontName
+        {
+            get => _codHeading3_4FontName;
+            set => SetProperty(ref _codHeading3_4FontName, value);
+        }
+
+        public double CODHeading3_4FontSize
+        {
+            get => _codHeading3_4FontSize;
+            set => SetProperty(ref _codHeading3_4FontSize, value);
         }
 
         public double LineSpace

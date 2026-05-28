@@ -67,52 +67,88 @@
                     
                 </Expander>
 
-                <Expander Header="Chinese Document Format">
+                <Expander Header="Document Layout">
 
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Document Layout Option:" />
                             <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = DocumentLayoutOptionList, Mode = OneWay}" SelectedValue="{Binding Path=DocumentLayoutOption, Mode=TwoWay}" SelectedValuePath="."/>
                         </StackPanel>
-                        
+
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Title Font Name/Size:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem = "{Binding Path = TitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = TitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                            <Label Content="Universal Title Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem = "{Binding Path = UDTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = UDTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Body Font Name/Size:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = BodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = BodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                            <Label Content="Universal Body Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = UDBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = UDBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Heading Lv0 Font Name/Size:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = Heading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = Heading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                            <Label Content="Universal Heading Lv0 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = UDHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = UDHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Heading Lv1 Font Name/Size:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = Heading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = Heading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                            <Label Content="Universal Heading Lv1 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = UDHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = UDHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Heading Lv2 Font Name/Size:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = Heading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = Heading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                            <Label Content="Universal Heading Lv2 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = UDHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = UDHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Heading Lv3/4 Font Name/Size:" />
-                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = Heading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
-                            <TextBox Text="{Binding Path = Heading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                            <Label Content="Universal Heading Lv3/4 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = UDHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = UDHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Chinese Line Space:" />
+                            <Label Content="Chinese Official Title Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem = "{Binding Path = CODTitleFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = CODTitleFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Chinese Official Body Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CODBodyFontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = CODBodyFontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Chinese Official Heading Lv0 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CODHeading0FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = CODHeading0FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Chinese Official Heading Lv1 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CODHeading1FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = CODHeading1FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Chinese Official Heading Lv2 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CODHeading2FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = CODHeading2FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Chinese Official Heading Lv3/4 Font:" />
+                            <ComboBox ItemsSource="{Binding Source = {StaticResource ListItemsSource}, Path = FontList, Mode = OneWay}" SelectedItem ="{Binding Path = CODHeading3_4FontName, Mode = TwoWay, UpdateSourceTrigger = Default}"  />
+                            <TextBox Text="{Binding Path = CODHeading3_4FontSize, Mode = TwoWay, UpdateSourceTrigger = Default}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Line Space:" />
                             <TextBox Text="{Binding Path = LineSpace, Mode = TwoWay, UpdateSourceTrigger = Default}" />
                         </StackPanel>
 
