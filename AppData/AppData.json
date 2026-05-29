@@ -78,11 +78,7 @@
       {
         "Label": "Graphviz Editor",
         "Url": "https://dreampuf.github.io/GraphvizOnline"
-      },
-      {
-        "Label": "Seal Generator",
-        "Url": "https://drawstamp.com/"
-      },    
+      },   
       {
         "Label": "Video Editor",
         "Url": "https://tools.video/"
@@ -102,10 +98,6 @@
       {
         "Label": "IT Tools",
         "Url": "https://it-tools.tech/"
-      },
-      {
-        "Label": "OSINT Monitor",
-        "Url": "https://www.worldmonitor.app/"
       }
     ]
   }
