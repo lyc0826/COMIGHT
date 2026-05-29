@@ -69,7 +69,7 @@
       },
       {
         "Label": "Photo Editor",
-        "Url": "https://www.photopea.com/"
+        "Url": "https://remove.photos/"
       },
       {
         "Label": "Diagram Editor",
@@ -82,14 +82,14 @@
       {
         "Label": "Seal Generator",
         "Url": "https://drawstamp.com/"
+      },    
+      {
+        "Label": "Video Editor",
+        "Url": "https://tools.video/"
       },
       {
         "Label": "Video Downloader",
         "Url": "https://snapwc.com/"
-      },
-      {
-        "Label": "Video Editor",
-        "Url": "https://tools.video/"
       },
       {
         "Label": "File Converter",

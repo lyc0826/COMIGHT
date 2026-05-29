@@ -116,8 +116,8 @@ namespace COMIGHT
                 {
                     Content = websiteTag.Label,
                     Tag = websiteTag.Url, // 存放网址，便于点击时取用
-                    Margin = new Thickness(2),
-                    Padding = new Thickness(2, 2, 2, 2),
+                    Margin = new Thickness(3),
+                    Padding = new Thickness(3, 3, 3, 3),
                     Width = double.NaN, // 自动宽度
                     FontSize = 13,
                     BorderThickness = new Thickness(1),
