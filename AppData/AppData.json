@@ -57,7 +57,7 @@
     "WebsiteTags": [
       {
         "Label": "PDF Tools",
-        "Url": "https://tools.pdf24.org"
+        "Url": "https://pdfuck.com"
       },
       {
         "Label": "OCR Tools",
@@ -94,10 +94,6 @@
       {
         "Label": "File Renamer",
         "Url": "https://rename.tools/en/app"
-      },
-      {
-        "Label": "IT Tools",
-        "Url": "https://it-tools.tech/"
       }
     ]
   }
