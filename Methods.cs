@@ -1225,7 +1225,7 @@ namespace COMIGHT
                     Culture.English
                 }; // 创建语言列表
 
-                // 按多个文化区解析文本中的日期时间表达式，合并所有识别结果，并对重复结果去重，最后转成列表（按每个文化区识别文本中的日期时间，并把所有结果合并；按位置、类型、文本内容对重复结果分组；取每组第一个值，并转成 List）
+                // 按每个文化区识别文本中的日期时间，并把所有结果合并；按位置、类型、文本内容对重复结果分组；取每组第一个值，并转成 List
                 var results = cultures
                     .SelectMany(c => DateTimeRecognizer.RecognizeDateTime(text, c, fallbackToDefaultCulture: false))
                     .GroupBy(r => $"{r.Start}-{r.End}-{r.TypeName}-{r.Text}")
@@ -1236,7 +1236,7 @@ namespace COMIGHT
 
                 foreach (var result in results)
                 {
-                    // 如果不是日期时间或日期范围，则跳过
+                    // 如果不是日期或日期范围，则跳过
                     if (result.TypeName != "datetimeV2.date" &&
                         result.TypeName != "datetimeV2.daterange")
                     {
