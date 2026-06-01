@@ -77,7 +77,8 @@ namespace COMIGHT
         {
             try
             {
-
+                // 禁用WebView的状态栏
+                webView2.CoreWebView2.Settings.IsStatusBarEnabled = false;
                 // 在 WrapPanel 中生成网址标签，数据来源为网址Json文件
                 BuildWebsiteTags(websiteData);
 
@@ -143,61 +144,374 @@ namespace COMIGHT
         }
 
         // 网站加载完成后，执行此过程
-        private async void WebView_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        //private async void WebView_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        //{
+        //    /* 添加JS代码：
+        //      向网页添加鼠标悬停事件响应，如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；
+        //      向网页添加鼠标移出事件响应，如果鼠标移出处的标签为div标记，将该处的阴影取消；
+        //      向网页添加鼠标双击事件响应，如果鼠标双击处的标签为div标记，复制该处文字，在该处加上红色阴影，0.5秒后复原；
+        //    */
+        //    string jsScript = @"
+
+        //        document.body.addEventListener('mouseover', 
+        //            function(event) 
+        //            {
+        //                if (event.target.tagName.toLowerCase() === 'div') 
+        //                {
+        //                    event.target.style.boxShadow = 'inset 0 0 0 2px rgba(80, 255, 80, 0.8)'; // 内阴影，水平偏移0，垂直偏移0，模糊半径0，宽度3px，颜色：红、绿、蓝、透明度(80, 255, 80, 0.7) 
+        //                }  
+        //            });
+
+        //        document.body.addEventListener('mouseout', 
+        //            function(event) 
+        //            {
+        //                if (event.target.tagName.toLowerCase() === 'div') 
+        //                {
+        //                    event.target.style.boxShadow = '';
+        //                }
+        //            });
+
+        //        document.body.addEventListener('dblclick', 
+        //            function(event) 
+        //            {
+        //                if (event.target.tagName.toLowerCase() === 'div') 
+        //                {
+        //                    var target = event.target;
+        //                    var originalBoxShadow = target.style.boxShadow;
+        //                    var textToCopy = target.innerText
+        //                        .replace(/^\s*[\r\n]/gm, '')
+        //                        .replace(/^\s+|\s+$/gm, '');
+        //                    navigator.clipboard.writeText(textToCopy).then(
+        //                        function() {
+        //                            target.style.boxShadow = 'inset 0 0 0 2px rgba(255, 80, 80, 0.6)';
+        //                            setTimeout(function() {
+        //                                target.style.boxShadow = originalBoxShadow;
+        //                            }, 500);
+        //                        },
+        //                        function(err) {
+        //                            alert('Copying Failed: ' + err);
+        //                        }
+        //                    );
+        //                }
+        //            }); 
+
+        //    ";
+
+        //    await webView2.ExecuteScriptAsync(jsScript);
+        //}
+
+        private async void WebView_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
-            /* 添加JS代码：
-              向网页添加鼠标悬停事件响应，如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；
-              向网页添加鼠标移出事件响应，如果鼠标移出处的标签为div标记，将该处的阴影取消；
-              向网页添加鼠标双击事件响应，如果鼠标双击处的标签为div标记，复制该处文字，在该处加上红色阴影，0.5秒后复原；
+            /* 功能清单：
+               1. div鼠标悬停绿阴影、移出取消、双击复制文字+红色闪烁阴影
+               2. 屏蔽外部链接、邮件(mailto)、电话(tel)链接
+               3. 终极屏蔽：普通广告 + 弹出式广告/模态弹窗/遮罩弹窗（无闪烁、无残留）
             */
             string jsScript = @"
 
-                document.body.addEventListener('mouseover', 
-                    function(event) 
-                    {
-                        if (event.target.tagName.toLowerCase() === 'div') 
-                        {
-                            event.target.style.boxShadow = 'inset 0 0 0 2px rgba(80, 255, 80, 0.8)'; // 内阴影，水平偏移0，垂直偏移0，模糊半径0，宽度3px，颜色：红、绿、蓝、透明度(80, 255, 80, 0.7) 
-                        }  
-                    });
+                // ==================== 精准屏蔽广告（不影响正常弹出菜单） ====================
+                (function() {
+                    // 1. 【核心】纯广告专属选择器（仅匹配广告，不碰正常UI）
+                    const adBlockSelectors = [
+                        '[class*=ad-],[class*=-ad],[class*=ads],[class*=advert],[class*=adzone],[class*=banner]',
+                        '[id*=ad-],[id*=-ad],[id*=ads],[id*=advert],[id*=adzone],[id*=banner]',
+                        'iframe[src*=ad],iframe[src*=ads],iframe[src*=advertisement]',
+                        '[class*=gg],[class*=guanggao]'
+                    ].join(',');
 
-                document.body.addEventListener('mouseout', 
-                    function(event) 
-                    {
-                        if (event.target.tagName.toLowerCase() === 'div') 
-                        {
-                            event.target.style.boxShadow = '';
-                        }
-                    });
+                    // 2. 【核心】正常UI白名单（不处理：弹出菜单/下拉框/模态框/提示框等）
+                    const safeUISelectors = [
+                        // 所有正常弹出式菜单、下拉、模态框、提示层（彻底避免误伤）
+                        '[class*=dropdown],[class*=menu],[class*=popup],[class*=modal],[class*=tooltip],[class*=popover]',
+                        '[class*=nav],[class*=select],[class*=option],[class*=list],[class*=hover]'
+                    ].join(',');
 
-                document.body.addEventListener('dblclick', 
-                    function(event) 
-                    {
-                        if (event.target.tagName.toLowerCase() === 'div') 
-                        {
-                            var target = event.target;
-                            var originalBoxShadow = target.style.boxShadow;
-                            var textToCopy = target.innerText
-                                .replace(/^\s*[\r\n]/gm, '')
-                                .replace(/^\s+|\s+$/gm, '');
-                            navigator.clipboard.writeText(textToCopy).then(
-                                function() {
-                                    target.style.boxShadow = 'inset 0 0 0 2px rgba(255, 80, 80, 0.6)';
-                                    setTimeout(function() {
-                                        target.style.boxShadow = originalBoxShadow;
-                                    }, 500);
-                                },
-                                function(err) {
-                                    alert('Copying Failed: ' + err);
+                    // 3. 安全隐藏广告（仅隐藏，不删除DOM，不破坏正常UI）
+                    function safeHideAd(el) {
+                        // 白名单1：排除网页根节点，避免崩溃
+                        const rootTags = ['HTML', 'BODY', 'MAIN', 'SECTION', 'ARTICLE', 'NAV', 'HEADER', 'FOOTER', 'DIV'];
+                        if (!el || !el.style || rootTags.includes(el.tagName)) return;
+
+                        // 白名单2：【核心】如果是正常弹出菜单/UI，直接跳过，绝不处理
+                        if (el.matches(safeUISelectors) || el.closest(safeUISelectors)) return;
+
+                        //// 仅温和隐藏广告，不清空HTML、不删除节点（避免破坏网页结构）
+                        //el.style.display = 'none';
+                        //el.style.visibility = 'hidden';
+                        //el.style.pointerEvents = 'none';
+                        //el.style.opacity = '0';
+                        
+                        // 隐藏、清空、删除DOM
+                        el.style.display = 'none';
+                        el.style.visibility = 'hidden';
+                        el.style.pointerEvents = 'none';
+                        el.style.opacity = '0';
+                        el.innerHTML = ''; 
+                        el.remove(); 
+                    }
+
+                    // 4. 批量屏蔽：仅匹配「广告元素」且「排除正常UI」
+                    function blockAllAds() {
+                        document.querySelectorAll(`${adBlockSelectors}:not(${safeUISelectors})`).forEach(item => safeHideAd(item));
+                    }
+
+                    // 5. 轻量化监听（仅处理新增的广告节点，不干扰正常UI）
+                    const adObserver = new MutationObserver(mutations => {
+                        for (let mutation of mutations) {
+                            for (let node of mutation.addedNodes) {
+                                if (node.nodeType === 1) { // 仅处理元素节点
+                                    // 先跳过正常UI，再匹配广告
+                                    if (node.matches(safeUISelectors)) continue;
+                                    const adNode = node.closest(adBlockSelectors);
+                                    if (adNode) safeHideAd(adNode);
                                 }
-                            );
+                            }
                         }
-                    }); 
+                    });
 
+                    // 启动监听
+                    adObserver.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
+
+                    // 初始执行屏蔽
+                    blockAllAds();
+
+                    // 6. 精准拦截恶意广告弹窗（不影响正常window.open）
+                    const originalOpen = window.open;
+                    window.open = function(...args) {
+                        const url = args[0] || '';
+                        // 仅拦截：无地址 / 纯广告链接，放行所有正常弹窗
+                        const isAdPopup = !url || url.includes('advertisement') || url.includes('guanggao') || url.includes('gg');
+                        return isAdPopup ? null : originalOpen.apply(this, args);
+                    };
+
+                })();
+                
+                // ==================== 屏蔽邮件/电话/外部网站超链接 ====================
+                document.body.addEventListener('click', function(event) {
+                    const targetLink = event.target.closest('a');
+                    if (!targetLink) return;
+
+                    const linkHref = targetLink.href || '';
+                    const currentSiteOrigin = window.location.origin;
+                    let needBlock = false;
+
+                    if (linkHref.startsWith('mailto:')) needBlock = true;
+                    else if (linkHref.startsWith('tel:')) needBlock = true;
+                    else if (targetLink.origin !== currentSiteOrigin) needBlock = true;
+
+                    if (needBlock) {
+                        event.preventDefault();
+                    }
+                });
+
+                // ==================== 隐藏指定链接（邮件/电话/代码仓库/社交媒体） ====================
+                // 保留元素占位 = 不破坏网页布局；透明+禁用交互 = 完全不可见不可点
+                (function() {
+
+                    const currentHost = window.location.hostname;
+
+                    // 匹配规则：协议头 + 域名关键词（全覆盖主流平台）
+                    const linkSelectors = [
+                        // 1. 邮件/电话/短信 链接
+                        'a[href^=""mailto:""]',
+                        'a[href^=""tel:""]',
+                        'a[href^=""sms:""]',
+
+                        // 2. 代码仓库
+                        'a[href*=""github.com""]',
+                        'a[href*=""gitlab.com""]',
+                        'a[href*=""gitee.com""]',
+                        'a[href*=""bitbucket.org""]',
+                        'a[href*=""gitcode.net""]',
+                        'a[href*=""coding.net""]',
+                        'a[href*=""codeberg.org""]',
+
+                        // 3. 社交媒体
+                        'a[href*=""weixin.qq.com""]',
+                        'a[href*=""weibo.com""]',
+                        'a[href*=""qq.com""]',
+                        'a[href*=""twitter.com""]',
+                        'a[href*=""x.com""]',
+                        'a[href*=""facebook.com""]',
+                        'a[href*=""instagram.com""]',
+                        'a[href*=""youtube.com""]',
+                        'a[href*=""tiktok.com""]',
+                        'a[href*=""linkedin.com""]',
+                        'a[href*=""instagram.com""]',
+                        'a[href*=""discord.com""]',
+                        'a[href*=""t.me""]',
+                        'a[href*=""whatsapp.com""]',
+                        'a[href*=""bsky.app""]',
+                        'a[href*=""douyin.com""]',
+                        'a[href*=""xiaohongshu.com""]',
+                        'a[href*=""bilibili.com""]',
+
+                    ].join(',');
+
+                    // 安全隐藏：保留布局占位，仅隐藏视觉+禁用交互
+                    function hideTargetLink(el) {
+                        if (!el || !el.style) return;
+                        // 核心样式：visibility保留占位，opacity透明，禁止点击
+                        el.style.display = 'none';
+                        el.style.visibility = 'hidden';
+                        el.style.opacity = '0';
+                        el.style.pointerEvents = 'none';
+                        el.style.userSelect = 'none';
+                    }
+
+                    // 用 endsWith 判断本站/子域名还是外部链接
+                    function hideExternalLinks() {
+                        document.querySelectorAll('a[href]').forEach(link => {
+                            try {
+                                // 跳过：无效链接、锚点、相对路径（本站内部链接）
+                                if (!link.href || link.href.startsWith('#') || link.href.startsWith('/')) return;
+                        
+                                const linkHost = link.hostname;
+                                // 放行规则：
+                                // 1. 完全相同主机名 → 本站
+                                // 2. 以 .当前主机名 结尾 → 子域名（如 www.abc.com → abc.com）
+                                const isSelfSite = linkHost === currentHost || linkHost.endsWith(`.${currentHost}`);
+                        
+                                // 非本站 → 隐藏
+                                if (!isSelfSite) {
+                                    hideTargetLink(link);
+                                }
+                            } catch (e) {}
+                        });
+                    }
+                    
+                    // 初始隐藏所有匹配的链接
+                    function initHideLinks() {
+                        document.querySelectorAll(linkSelectors).forEach(hideTargetLink);
+                        hideExternalLinks();
+                    }
+
+                    // 监听动态加载的链接（网页异步加载的元素也能处理）
+                    const linkObserver = new MutationObserver(mutations => {
+                        for (let mutation of mutations) {
+                            for (let node of mutation.addedNodes) {
+                                if (node.nodeType === 1) {
+                                    const target = node.closest(linkSelectors);
+                                    if (target) hideTargetLink(target);
+                                    hideExternalLinks();  
+                                }
+                            }
+                        }
+                    });
+
+                    // 启动监听
+                    linkObserver.observe(document.body, { childList: true, subtree: true });
+                    initHideLinks();
+
+                })();
+
+
+                
+
+                //// ==================== 屏蔽广告 ====================
+                //(function() {
+                //    // 只匹配纯广告元素，彻底删除所有正常UI关键词（modal/popup/overlay等）
+                //    const blockSelectors = [
+                //        // 纯广告专属类名/ID
+                //        '[class*=ad-],[class*=-ad],[class*=ads],[class*=advert],[class*=adzone],[class*=banner]',
+                //        '[id*=ad-],[id*=-ad],[id*=ads],[id*=advert],[id*=adzone],[id*=banner]',
+                //        // 广告专用iframe
+                //        'iframe[src*=ad],iframe[src*=ads],iframe[src*=advertisement]',
+                //        // 广告脚本/容器
+                //        '[class*=gg],[class*=guanggao]'
+                //    ].join(',');
+
+                //    // 安全隐藏元素 + 白名单保护，不删除正常DOM
+                //    function safeHideAd(el) {
+                //        // 白名单：保护网页核心标签不处理
+                //        const whiteListTags = ['HTML', 'BODY', 'MAIN', 'SECTION', 'ARTICLE', 'NAV', 'HEADER', 'FOOTER', 'DIV'];
+                //        if (!el || !el.style || whiteListTags.includes(el.tagName)) return;
+                
+                //        // 隐藏、清空、删除DOM
+                //        el.style.display = 'none !important';
+                //        el.style.visibility = 'hidden !important';
+                //        el.style.pointerEvents = 'none !important';
+                //        el.style.opacity = '0 !important';
+                //        el.innerHTML = ''; 
+                //        el.remove(); 
+                //    }
+
+                //    // 批量屏蔽广告
+                //    function blockAllAds() {
+                //        document.querySelectorAll(blockSelectors).forEach(item => safeHideAd(item));
+                //    }
+
+                //    // 轻量化监听，仅处理广告节点，不遍历所有DOM
+                //    const observer = new MutationObserver(mutations => {
+                //        for (let mutation of mutations) {
+                //            for (let node of mutation.addedNodes) {
+                //                if (node.nodeType === 1) { // 仅处理元素节点
+                //                    const adNode = node.closest(blockSelectors);
+                //                    if (adNode) safeHideAd(adNode);
+                //                }
+                //            }
+                //        }
+                //    });
+
+                //    // 启动监听
+                //    observer.observe(document.body, {
+                //        childList: true,
+                //        subtree: true
+                //    });
+
+                //    // 初始执行
+                //    blockAllAds();
+
+                //    // 轻量拦截广告弹窗，不影响正常window.open
+                //    const originalOpen = window.open;
+                //    window.open = function(...args) {
+                //        // 仅拦截无地址的恶意广告弹窗，放行正常跳转
+                //        if (!args[0] || args[0].includes('ad')) return null;
+                //        return originalOpen.apply(this, args);
+                //    };
+
+                //})();
+
+
+                // ==================== div标签鼠标交互 ====================
+
+                document.body.addEventListener('mouseover', function(event) {
+                    if (event.target.tagName.toLowerCase() === 'div') {
+                        event.target.style.boxShadow = 'inset 0 0 0 2px rgba(80, 255, 80, 0.8)';
+                    }
+                });
+
+                document.body.addEventListener('mouseout', function(event) {
+                    if (event.target.tagName.toLowerCase() === 'div') {
+                        event.target.style.boxShadow = '';
+                    }
+                });
+
+                document.body.addEventListener('dblclick', function(event) {
+                    if (event.target.tagName.toLowerCase() === 'div') {
+                        var target = event.target;
+                        var originalBoxShadow = target.style.boxShadow;
+                        var textToCopy = target.innerText
+                            .replace(/^\s*[\r\n]/gm, '')
+                            .replace(/^\s+|\s+$/gm, '');
+                        navigator.clipboard.writeText(textToCopy).then(
+                            function() {
+                                target.style.boxShadow = 'inset 0 0 0 2px rgba(255, 80, 80, 0.6)';
+                                setTimeout(function() {
+                                    target.style.boxShadow = originalBoxShadow;
+                                }, 500);
+                            },
+                        );
+                    }
+                });
             ";
 
             await webView2.ExecuteScriptAsync(jsScript);
         }
+
 
         private void WebView_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
