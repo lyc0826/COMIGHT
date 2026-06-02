@@ -234,12 +234,6 @@ namespace COMIGHT
 
                         // 白名单2：【核心】如果是正常弹出菜单/UI，直接跳过，绝不处理
                         if (el.matches(safeUISelectors) || el.closest(safeUISelectors)) return;
-
-                        //// 仅温和隐藏广告，不清空HTML、不删除节点（避免破坏网页结构）
-                        //el.style.display = 'none';
-                        //el.style.visibility = 'hidden';
-                        //el.style.pointerEvents = 'none';
-                        //el.style.opacity = '0';
                         
                         // 隐藏、清空、删除DOM
                         el.style.display = 'none';
@@ -290,96 +284,24 @@ namespace COMIGHT
                 })();
 
 
-                // ==================== 【优化版】Header 净化 + Footer 全隐藏 ====================
+                // ==================== 删除footer ====================
                 (function() {
-                    // 1. 【核心白名单】100%保护所有导航菜单，绝不误隐藏
-                    const safeMenuSelectors = [
-                        // 导航核心
-                        'nav, [class*=nav],[id*=nav],[class*=navigation],[id*=navigation]',
-                        // 菜单
-                        '[class*=menu],[id*=menu],[class*=menus],[id*=menus]',
-                        // 下拉/按钮/链接
-                        '[class*=dropdown],[class*=btn],[class*=button],[class*=link],[class*=item]',
-                        '[class*=nav-item],[class*=nav-link],[class*=menu-item]',
-                        // 列表容器
-                        'ul, li, a'
-                    ].join(',');
-
-                    // 2. 【核心Logo匹配】强制隐藏所有Logo图片/文字/容器
-                    const logoSelectors = [
-                        '[class*=logo],[id*=logo]',
-                        '[class*=brand],[id*=brand]',
-                        '[class*=site-logo],[class*=brand-logo],[class*=logotype]',
-                        'img[class*=logo],img[id*=logo],img[alt*=logo],img[alt*=品牌]'
-                    ].join(',');
-
-                    // 处理 Header：只隐藏Logo，保留所有菜单
-                    function cleanHeader() {
-                        const headers = document.querySelectorAll('header');
-                        headers.forEach(header => {
-                            // 第一步：强制隐藏所有Logo（图片/容器/文字）
-                            document.querySelectorAll(logoSelectors).forEach(logo => {
-                                if (logo.closest('header')) {
-                                    logo.style.display = 'none';
-                                    logo.style.visibility = 'hidden';
-                                    logo.style.width = '0';
-                                    logo.style.height = '0';
-                                }
-                            });
-
-                            // 第二步：保护所有导航菜单，绝不隐藏
-                            header.querySelectorAll('*').forEach(child => {
-                                // 如果是菜单相关元素，直接跳过，不做任何隐藏
-                                if (child.matches(safeMenuSelectors) || child.closest(safeMenuSelectors)) {
-                                    return;
-                                }
-                            });
-                        });
-                    }
-
-                    // 处理 Footer：全部隐藏
+                    // 隐藏Footer
                     function hideFooter() {
-                        document.querySelectorAll('footer').forEach(footer => {
-                            footer.style.display = 'none';
-                            footer.style.visibility = 'hidden';
-                            footer.style.height = '0';
-                            footer.style.margin = '0';
-                            footer.style.padding = '0';
-                        });
+                        document.querySelectorAll('footer').forEach(footer => footer.remove());
                     }
 
-                    // 初始执行
-                    cleanHeader();
+                    // 立即执行
                     hideFooter();
 
-                    // 监听动态加载
-                    const layoutObserver = new MutationObserver(() => {
-                        cleanHeader();
+                    // 永久监听动态内容
+                    const observer = new MutationObserver(() => {
                         hideFooter();
                     });
-
-                    layoutObserver.observe(document.body, { childList: true, subtree: true });
+                    observer.observe(document.body, { childList: true, subtree: true, attributes: false });
                 })();
 
                 
-                //// ==================== 屏蔽邮件/电话/外部网站超链接 ====================
-                //document.body.addEventListener('click', function(event) {
-                //    const targetLink = event.target.closest('a');
-                //    if (!targetLink) return;
-
-                //    const linkHref = targetLink.href || '';
-                //    const currentSiteOrigin = window.location.origin;
-                //    let needBlock = false;
-
-                //    if (linkHref.startsWith('mailto:')) needBlock = true;
-                //    else if (linkHref.startsWith('tel:')) needBlock = true;
-                //    else if (targetLink.origin !== currentSiteOrigin) needBlock = true;
-
-                //    if (needBlock) {
-                //        event.preventDefault();
-                //    }
-                //});
-
                 // ==================== 隐藏指定链接（邮件/电话/代码仓库/社交媒体） ====================
                 // 保留元素占位 = 不破坏网页布局；透明+禁用交互 = 完全不可见不可点
                 (function() {
@@ -483,6 +405,9 @@ namespace COMIGHT
 
 
                 // ==================== div标签鼠标交互 ====================
+                /*如果鼠标悬停处的标签为div标记，在该处加上绿色阴影；
+                如果鼠标移出处的标签为div标记，将该处的阴影取消；
+                如果鼠标双击处的标签为div标记，复制该处文字，在该处加上红色阴影，0.5秒后复原；*/
 
                 document.body.addEventListener('mouseover', function(event) {
                     if (event.target.tagName.toLowerCase() === 'div') {
