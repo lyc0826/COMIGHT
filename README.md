@@ -37,7 +37,7 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
 ## Table
 
-### **Batch Process Excel Worksheets**
+### **Process Excel Worksheets**
 
 - **Merge Records:** Vertically merges records from multiple worksheets with the same header to create a summary sheet.
 
@@ -55,7 +55,7 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
 - **Adjust Worksheet Format for Printing:** Automatically adjusts borders, fonts, line breaks, column widths, row heights, and page layout based on the worksheet content for optimal printing.
 
-### **Batch Disassemble Excel Workbook**
+### **Disassemble Excel Workbook**
 
 - **Split by a Column into Workbooks:** Splits worksheets into separate workbooks based on the values in a specified column. The worksheets must have the same structure.
 
@@ -63,11 +63,11 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
 - **Disassemble by Worksheets:** Disperse the worksheets of a workbook into separate workbooks.
   
-### **Batch Unhide Excel Worksheets**
+### **Unhide Excel Worksheets**
 
 - Make all hidden worksheets visible in all selected workbooks.
 
-### **Batch Extract Tables From Word**
+### **Extract Tables From Word**
 
 - Extracts tables from Word documents and imports them into Excel workbooks.
 
@@ -85,7 +85,7 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
 - Merges multiple Word documents and Excel spreadsheets into one document file (txt, pdf) for easy uploading to AI chat clients.
 
-### **Batch Format Word Documents**
+### **Format Word Documents**
 
 - Formats Word documents into official styles and adds outline structures.
 
@@ -97,13 +97,13 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
   - Heading numbers shall be presented in the formats as follows: 
 
-  | Heading Level | Chinese Heading Number Format |
-  |---|---|
-  | 0 | 第一部分 / 第二部分 / 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| 
-  | 1 | 一、 / 二、 / 三、... |
-  | 2 | （一） / （二） / （三） ... |
-  | 3 | 1. / 2. / 3. ...|
-  | 4 | (1) / (2) / (3) ... |
+  | Heading Level | Universal Layout | Chinese Official Layout |
+  |---|---|---|
+  | 0 | Charpter / Part / Section 1, 2... |第一部分 / 第二部分 / 第三部分 ... <br>（“部分” can be replaced with “篇”“章”“节”）| 
+  | 1 | 1 / 2 / 3 ... | 一、 / 二、 / 三、... |
+  | 2 | 1.1 / 1.2 / 2.1 ...|（一） / （二） / （三） ... |
+  | 3 | 1.1.1 / 1.1.2 / 2.1.1 ... |1. / 2. / 3. ...|
+  | 4 | 1.1.1.1 / 1.1.1.2 / 2.1.1.1 ... |(1) / (2) / (3) ... |
 
   - Tables shall be separated from its following text by at least one blank line.
 
@@ -111,21 +111,21 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 
   - **Documents with columns, complex tables, or mixed text and images are not applicable!**
 
-### **Batch Repair Word Documents**
+### **Repair Word Documents**
 
 - Fixes the problematic Word Documents whose styles and formats cannot be adjusted correctly.
 
 ## Tools
 
-### **Batch Convert Office File Types**
+### **Convert Office File Types**
 
 - Converts older Excel (.xls), Word (.doc), WPS Spreadsheet (.et), and WPS Document (.wps) files into .xlsx and .docx formats.
 
-### **Batch Create Folders**
+### **Create Folders**
 
 - Creates folders based on the folder structure data in an Excel worksheet. Folders are created hierarchically from left to right, with the leftmost folder being the highest level (closest to the root directory) and the rightmost folder being the lowest level (furthest from the root directory). Use the template workbook provided with this application to organize the folder structure data.
 
-### **Batch Create Place Cards**
+### **Create Place Cards**
 
 - Creates place cards (20 x 10 cm) based on the roster data in an Excel worksheet. One item can be split into two lines within a cell. Use the template workbook provided with this application to organize the roster data.
 
@@ -136,3 +136,9 @@ Key features include merging and splitting Excel worksheets, formatting Word doc
 ### **Generate QR Code**
 
 - Creates the QR code from the input text. The text and code are all processed locally to prevent leakage onto the internet.
+
+## Misc.
+
+### Online Tools
+
+- Mulitple tools, including: document, image, video, audio editors and converters, and more.
