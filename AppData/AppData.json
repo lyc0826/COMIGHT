@@ -65,7 +65,7 @@
       },
       {
         "Label": "Markdown Editor",
-        "Url": "https://stackedit.io/app#"
+        "Url": "https://stackedit.io/app"
       },
       {
         "Label": "Photo Editor",
@@ -78,7 +78,7 @@
       {
         "Label": "Graphviz Editor",
         "Url": "https://dreampuf.github.io/GraphvizOnline"
-      },   
+      },
       {
         "Label": "Video Editor",
         "Url": "https://tools.video/"
@@ -93,7 +93,11 @@
       },
       {
         "Label": "File Renamer",
-        "Url": "https://rename.tools/en/app"
+        "Url": "https://rename.tools/app"
+      },
+      {
+        "Label": "File Transmitter",
+        "Url": "https://privydrop.app/"
       }
     ]
   }

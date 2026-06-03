@@ -200,6 +200,9 @@ namespace COMIGHT
         //    await webView2.ExecuteScriptAsync(jsScript);
         //}
 
+
+
+
         private async void WebView_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
             /* 功能清单：
@@ -234,14 +237,14 @@ namespace COMIGHT
 
                         // 白名单2：【核心】如果是正常弹出菜单/UI，直接跳过，绝不处理
                         if (el.matches(safeUISelectors) || el.closest(safeUISelectors)) return;
-                        
-                        // 隐藏、清空、删除DOM
+
+                        // 隐藏
                         el.style.display = 'none';
                         el.style.visibility = 'hidden';
                         el.style.pointerEvents = 'none';
                         el.style.opacity = '0';
-                        el.innerHTML = ''; 
-                        el.remove(); 
+                        //el.innerHTML = ''; 
+                        //el.remove(); 
                     }
 
                     // 4. 批量屏蔽：仅匹配「广告元素」且「排除正常UI」
@@ -284,11 +287,15 @@ namespace COMIGHT
                 })();
 
 
-                // ==================== 删除footer ====================
+                // ==================== 隐藏footer ====================
                 (function() {
                     // 隐藏Footer
                     function hideFooter() {
-                        document.querySelectorAll('footer').forEach(footer => footer.remove());
+                        //document.querySelectorAll('footer').forEach(footer => footer.remove());
+                        document.querySelectorAll('footer').forEach(footer => {
+                            footer.style.display = 'none';
+                            footer.style.visibility = 'hidden';
+                        });
                     }
 
                     // 立即执行
@@ -301,7 +308,7 @@ namespace COMIGHT
                     observer.observe(document.body, { childList: true, subtree: true, attributes: false });
                 })();
 
-                
+
                 // ==================== 隐藏指定链接（邮件/电话/代码仓库/社交媒体） ====================
                 // 保留元素占位 = 不破坏网页布局；透明+禁用交互 = 完全不可见不可点
                 (function() {
@@ -363,13 +370,13 @@ namespace COMIGHT
                             try {
                                 // 跳过：无效链接、锚点、相对路径（本站内部链接）
                                 if (!link.href || link.href.startsWith('#') || link.href.startsWith('/')) return;
-                        
+
                                 const linkHost = link.hostname;
                                 // 放行规则：
                                 // 1. 完全相同主机名 → 本站
                                 // 2. 以 .当前主机名 结尾 → 子域名（如 www.abc.com → abc.com）
                                 const isSelfSite = linkHost === currentHost || linkHost.endsWith(`.${currentHost}`);
-                        
+
                                 // 非本站 → 隐藏
                                 if (!isSelfSite) {
                                     hideTargetLink(link);
@@ -377,7 +384,7 @@ namespace COMIGHT
                             } catch (e) {}
                         });
                     }
-                    
+
                     // 初始隐藏所有匹配的链接
                     function initHideLinks() {
                         document.querySelectorAll(linkSelectors).forEach(hideTargetLink);
