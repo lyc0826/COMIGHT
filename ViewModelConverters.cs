@@ -15,8 +15,9 @@ namespace COMIGHT
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null || parameter == null)
+            {
                 return false;
-
+            }
             string enumValue = value.ToString()!;
             string targetValue = parameter.ToString()!;
 
@@ -24,15 +25,17 @@ namespace COMIGHT
         }
 
         // 将布尔值转换回枚举值（当RadioButton被选中时更新源属性）
-        // "value" 源布尔值（来自RadioButton的IsChecked属性）
-        // "targetType"目标类型（枚举类型）
-        // "parameter">转换参数（来自XAML中ConverterParameter指定的枚举值字符串）
-        // "culture">当前区域性信息
+        // "value"：源布尔值（来自RadioButton的IsChecked属性）
+        // "targetType"：目标类型（枚举类型）
+        // "parameter"：转换参数（来自XAML中ConverterParameter指定的枚举值字符串）
+        // "culture"：当前区域性信息
         // 如果value为true则返回对应的枚举值，否则返回Binding.DoNothing表示不进行更新
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null || parameter == null)
+            {
                 return Binding.DoNothing;
+            }
 
             bool isChecked = (bool)value;
             if (!isChecked)
